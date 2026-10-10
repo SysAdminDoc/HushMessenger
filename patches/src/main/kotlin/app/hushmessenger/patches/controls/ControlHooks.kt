@@ -376,6 +376,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(MESSAGE_LOG).addAll(findMessageLogHook(classes))
     messageLogContract = resolveMessageLogContract(classes)
     found.getValue(SYSTEM_CAMERA).addAll(findSystemCamera(classes))
+    for ((hook, methods) in findCustomFont(classes)) found.getValue(hook).addAll(methods)
     return found
 }
 

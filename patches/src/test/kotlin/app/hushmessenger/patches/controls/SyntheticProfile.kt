@@ -84,6 +84,11 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     ORIGINAL_VIDEO to setOf(VIDEO_TRANSCODE),
     SYSTEM_CAMERA to setOf("LX/7Jp;->DXV($MONTAGE_PARAMS$NAVIGATION_TRIGGER)V", CHAT_CAMERA_FACTORY, CHAT_CAMERA_START, THIRD_PARTY_URI_CHECK,
         INTERNAL_FILE_OPEN),
+    FONT_LAYOUT to setOf(FONT_LAYOUT_SETTER),
+    FONT_REPOSITORY to setOf(FONT_RESOLVER),
+    FONT_ROBOTO to setOf(FONT_ROBOTO_BUILDER),
+    FONT_BY_NAME to setOf(FONT_BY_NAME_LOOKUP),
+    FONT_INPUT to setOf(FONT_INPUT_FIELD, FONT_INPUT_ALIGNED, FONT_INPUT_HINTED),
     "avatar_tabs" to setOf("Lcom/facebook/messaging/msys/thread/composer/configuration/xapp/BaseXappComposerConfigurationFactory;->A0P()$IMMUTABLE_LIST"),
     "menu_settings" to setOf(
         "LX/9rv;->A1i()V",

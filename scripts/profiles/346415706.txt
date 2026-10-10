@@ -90,6 +90,13 @@ hook facebook LX/JP4;->A01()Z
 hook facebook LX/JP6;->A06()Z
 hook facebook LX/JP7;->A06()Z
 hook facebook LX/JP8;->A06()Z
+hook font_by_name LX/K3X;->A00(Landroid/content/Context;Ljava/lang/String;I)Landroid/graphics/Typeface;
+hook font_input LX/5QA;->A08(Landroid/content/res/ColorStateList;Landroid/content/res/ColorStateList;Landroid/graphics/Typeface;Landroid/graphics/drawable/Drawable;Landroid/text/TextUtils$TruncateAt;Landroid/text/method/MovementMethod;Landroid/widget/EditText;LX/50l;Ljava/lang/CharSequence;Ljava/lang/CharSequence;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;[Ljava/lang/String;IIIIIIIIIIIZZZZ)V
+hook font_input LX/LDe;->A06(Landroid/content/res/ColorStateList;Landroid/content/res/ColorStateList;Landroid/graphics/Typeface;Landroid/text/Layout$Alignment;Landroid/text/TextUtils$TruncateAt;Landroid/widget/EditText;Landroid/widget/TextView$OnEditorActionListener;Ljava/lang/CharSequence;Ljava/lang/CharSequence;Ljava/util/List;FFFFIIIIIIIIIIIIIIZZ)V
+hook font_input LX/P5q;->A01(Landroid/content/res/ColorStateList;Landroid/content/res/ColorStateList;Landroid/graphics/Typeface;Landroid/graphics/drawable/Drawable;Landroid/text/TextUtils$TruncateAt;Landroid/text/method/MovementMethod;Landroid/widget/EditText;Ljava/lang/CharSequence;Ljava/lang/CharSequence;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;LX/5DY;[Ljava/lang/String;FFFIIIIIIIIIIIZZZZZ)V
+hook font_layout LX/2Td;->A0D(Landroid/graphics/Typeface;)V
+hook font_repository LX/7Tu;->A00(LX/7Tr;LX/7Tu;LX/5mk;I)Landroid/graphics/Typeface;
+hook font_roboto LX/1z0;->A00(Landroid/content/Context;Ljava/lang/Integer;)Landroid/graphics/Typeface;
 hook friend_requests LX/1z9;->A09()Z
 hook friend_requests LX/2I1;->A01()Z
 hook growth LX/1z9;->A0A()Z

@@ -239,6 +239,24 @@ final class SettingsText {
         ENGLISH.put("message_log_unknown_thread", "Unknown chat");
         ENGLISH.put("message_log_no_text", "(no text)");
         ENGLISH.put("message_log_cleared", "Message log cleared");
+        ENGLISH.put("font_file_choose", "Choose a font file");
+        ENGLISH.put("font_phone", "Use your phone's font");
+        ENGLISH.put("font_file_help", "With a file picked, a few of Messenger's screens still use your phone's font.");
+        ENGLISH.put("font_file_none", "None chosen, so your phone's font is used. Choose a .ttf or .otf font file of up to %1$d MB.");
+        ENGLISH.put("font_file_using", "Using %1$s. Choose another file to replace it.");
+        ENGLISH.put("font_file_missing", "HushMessenger's copy of %1$s is gone, so your phone's font is used. Choose the file again.");
+        ENGLISH.put("font_file_copying", "Copying the font file...");
+        ENGLISH.put("font_file_set", "Font set to %1$s. Restart Messenger to see it.");
+        ENGLISH.put("font_file_not_font", "That isn't a .ttf or .otf font file. Your font didn't change.");
+        ENGLISH.put("font_file_too_large", "That font file is over %1$d MB. Your font didn't change.");
+        ENGLISH.put("font_file_wont_load", "Android couldn't use that font file. Your font didn't change.");
+        ENGLISH.put("font_file_not_saved", "Couldn't save a copy of that font. Check that the phone has room, then try again.");
+        ENGLISH.put("font_file_unreadable", "Couldn't open that file. Your font didn't change.");
+        ENGLISH.put("font_file_no_picker", "This phone has no file picker, so there's no way to choose a file here.");
+        ENGLISH.put("font_file_picker_failed", "Couldn't open the file picker. Try again.");
+        ENGLISH.put("font_file_busy", "Couldn't start that. Try again in a moment.");
+        ENGLISH.put("font_phone_set", "Back to your phone's font. Restart Messenger to see it.");
+        ENGLISH.put("font_phone_failed", "Couldn't go back to your phone's font. Try again.");
     }
 
     static String english(String id) {

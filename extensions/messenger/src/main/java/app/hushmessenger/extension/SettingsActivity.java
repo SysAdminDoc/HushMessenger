@@ -78,7 +78,16 @@ public final class SettingsActivity extends Activity {
     private volatile long updateGeneration;
     private java.net.HttpURLConnection updateConnection;
     private LinearLayout emptyState;
-    static final int SAVE_CHOICES = 7101, READ_CHOICES = 7102;
+    static final int SAVE_CHOICES = 7101, READ_CHOICES = 7102, PICK_FONT = 7103;
+    /** The names providers give fonts, and plain bytes for one that doesn't know a font. The copy checks what it really is. */
+    static final String[] FONT_TYPES = {"font/ttf", "font/otf", "font/collection", "font/sfnt", "application/x-font-ttf",
+        "application/x-font-otf", "application/font-sfnt", "application/vnd.ms-opentype", "application/octet-stream"};
+    static final int MAX_FONT_NAME = 80;
+    /** A font copy is running. Process-wide, like the page that shows it, which the theme switch can recreate. */
+    private static final java.util.concurrent.atomic.AtomicBoolean fontBusy = new java.util.concurrent.atomic.AtomicBoolean();
+    private static java.lang.ref.WeakReference<SettingsActivity> fontPage = new java.lang.ref.WeakReference<>(null);
+    private TextView fontStatus;
+    private Button fontChoose, fontPhone;
     private String documentExport;
     private boolean documentImport;
     private boolean documentBusy;
@@ -133,6 +142,7 @@ public final class SettingsActivity extends Activity {
         {"save_stories", "Save any story", "Adds Save to the More options menu on other people's stories, so you can keep the photo or video on your phone.", "privacy"},
         {"material_you", "Material You theme", "Colors Messenger's dark mode with your wallpaper colors on Android 12 and newer, and a fixed blue on Android 11. Turn on dark mode in Messenger first.", "theme"},
         {"app_icons", "Unlock app icons", "Lets you pick any icon in Messenger's App icon setting without a subscription. Messenger decides whether that setting shows for you. Turning this off can bring the default icon back.", "theme"},
+        {"custom_font", "Use your own font", "Shows Messenger's text in your phone's font instead of Meta's, or in a .ttf or .otf font file you choose below. Emoji don't change. Restart Messenger to see a change.", "theme"},
     };
 
     static final String DRAWER_ALIAS = "app.hushmessenger.extension.SettingsLauncher";
@@ -308,6 +318,7 @@ public final class SettingsActivity extends Activity {
             }
             for (RadioButton mode : bubbleModes) mode.setChecked(mode.getTag().equals("bubble_" + Settings.selectedBubbleMode()));
         } finally { binding = false; }
+        refreshFontFile();
         updateSetup();
     }
 
@@ -496,10 +507,11 @@ public final class SettingsActivity extends Activity {
                 groups.add(group);
             }
             LinearLayout row = controlRow(spec[0], text.control(spec, 1), text.control(spec, 2), true);
-            if ("bubbles".equals(spec[0])) {
+            if ("bubbles".equals(spec[0]) || OwnFont.KEY.equals(spec[0])) {
                 LinearLayout wrapper = ui.column();
                 ui.add(wrapper, row, 0);
-                addBubbleModes(wrapper);
+                if ("bubbles".equals(spec[0])) addBubbleModes(wrapper);
+                else addFontFile(wrapper);
                 row = wrapper;
             }
             row.setTag(spec[3]);
@@ -577,6 +589,156 @@ public final class SettingsActivity extends Activity {
             conversations.setOnClickListener(view -> openNotificationSettings("android.settings.CONVERSATION_SETTINGS"));
             ui.add(content, conversations, 8);
         }
+    }
+
+    /** The font file rows under Use your own font. Use your phone's font shows only while there's a file to go back from. */
+    private void addFontFile(LinearLayout content) {
+        fontPage = new java.lang.ref.WeakReference<>(this);
+        fontStatus = ui.text("", 13, ui.muted, false);
+        fontStatus.setTag("font_file_status");
+        fontStatus.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        ui.add(content, fontStatus, 8);
+        fontChoose = ui.button(text.get("font_file_choose"));
+        fontChoose.setTag("font_file");
+        fontChoose.setOnClickListener(view -> pickFontFile());
+        ui.add(content, fontChoose, 8);
+        fontPhone = ui.button(text.get("font_phone"));
+        fontPhone.setTag("font_phone");
+        fontPhone.setOnClickListener(view -> usePhoneFont());
+        ui.add(content, fontPhone, 8);
+        ui.add(content, ui.text(text.get("font_file_help"), 13, ui.muted, false), 8);
+        refreshFontFile();
+    }
+
+    private void refreshFontFile() {
+        if (fontStatus == null) return;
+        String name = Settings.preferences.getString(OwnFont.NAME_KEY, "");
+        boolean copy = FontFile.file(this).isFile(), busy = fontBusy.get();
+        String status = busy ? text.get("font_file_copying") : name.isEmpty() ? text.get("font_file_none", FontFile.MAX_MEGABYTES)
+            : text.get(copy ? "font_file_using" : "font_file_missing", name);
+        if (!status.contentEquals(fontStatus.getText())) fontStatus.setText(status);
+        fontChoose.setEnabled(!busy);
+        fontPhone.setEnabled(!busy);
+        // A copy no name points at still gets a way out.
+        fontPhone.setVisibility(!name.isEmpty() || copy ? View.VISIBLE : View.GONE);
+    }
+
+    private void pickFontFile() {
+        if (fontBusy.get()) return;
+        Intent picker = new Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
+            .putExtra(Intent.EXTRA_MIME_TYPES, FONT_TYPES);
+        try { startActivityForResult(picker, PICK_FONT); }
+        catch (android.content.ActivityNotFoundException missing) { feedback(text.get("font_file_no_picker"), Toast.LENGTH_LONG); }
+        catch (RuntimeException error) { feedback(text.get("font_file_picker_failed"), Toast.LENGTH_LONG); }
+    }
+
+    /** Copies the picked file in on a worker. The saved name changes only once the copy has passed its checks. */
+    private void copyFontFile(android.net.Uri uri) {
+        if (!fontBusy.compareAndSet(false, true)) {
+            feedback(text.get("font_file_busy"), Toast.LENGTH_LONG);
+            return;
+        }
+        refreshFontFile();
+        Context app = getApplicationContext();
+        SettingsText words = text;
+        SharedPreferences prefs = Settings.preferences;
+        Thread worker = new Thread(() -> {
+            String message;
+            try {
+                message = copyFont(app, prefs, uri, words);
+            } catch (RuntimeException | LinkageError error) {
+                android.util.Log.e("HushMessenger", "Can't copy the font file: " + error.getClass().getSimpleName());
+                message = words.get("font_file_not_saved");
+            } finally {
+                fontBusy.set(false);
+            }
+            String said = message;
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> fontDone(app, said));
+        }, "HushMessengerFontCopy");
+        worker.setDaemon(true);
+        worker.start();
+    }
+
+    static String copyFont(Context app, SharedPreferences prefs, android.net.Uri uri, SettingsText words) {
+        String name = fontName(app, uri);
+        String before = prefs.getString(OwnFont.NAME_KEY, "");
+        try {
+            java.io.InputStream input;
+            try {
+                input = app.getContentResolver().openInputStream(uri);
+            } catch (java.io.IOException | RuntimeException error) {
+                // The class only: a provider's message can carry the document's name or address.
+                throw new FontFile.Refused(FontFile.Refusal.UNREADABLE, error.getClass().getSimpleName());
+            }
+            FontFile.copy(input, FontFile.file(app), OwnFont.fileCheck, new FontFile.Choice() {
+                @Override public boolean save() { return prefs.edit().putString(OwnFont.NAME_KEY, name).commit(); }
+                @Override public void undo() { prefs.edit().putString(OwnFont.NAME_KEY, before).commit(); }
+            });
+            return words.get("font_file_set", name);
+        } catch (FontFile.Refused refused) {
+            android.util.Log.i("HushMessenger", "Font file refused: " + refused.reason);
+            switch (refused.reason) {
+                case NOT_A_FONT: return words.get("font_file_not_font");
+                case TOO_LARGE: return words.get("font_file_too_large", FontFile.MAX_MEGABYTES);
+                case WONT_LOAD: return words.get("font_file_wont_load");
+                case NOT_SAVED: return words.get("font_file_not_saved");
+                default: return words.get("font_file_unreadable");
+            }
+        }
+    }
+
+    /** The picked file's name as its provider gives it, or the last part of its address. Never its path. */
+    static String fontName(Context context, android.net.Uri uri) {
+        String name = null;
+        try (android.database.Cursor cursor = context.getContentResolver().query(uri,
+                new String[] {android.provider.OpenableColumns.DISPLAY_NAME}, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) name = cursor.getString(0);
+        } catch (RuntimeException unknown) {
+            // A provider that can't say leaves the address's own last part.
+        }
+        if (name == null || name.trim().isEmpty()) name = uri.getLastPathSegment();
+        return cleanFontName(name);
+    }
+
+    /** One line with no control or formatting characters, at most {@link #MAX_FONT_NAME} long, and "font" when nothing's left. */
+    static String cleanFontName(String name) {
+        if (name == null) return "font";
+        StringBuilder clean = new StringBuilder();
+        int kept = 0;
+        for (int index = 0; index < name.length() && kept < MAX_FONT_NAME; ) {
+            int at = name.codePointAt(index);
+            index += Character.charCount(at);
+            int type = Character.getType(at);
+            if (type == Character.CONTROL || type == Character.FORMAT || type == Character.UNASSIGNED || type == Character.LINE_SEPARATOR
+                || type == Character.PARAGRAPH_SEPARATOR || type == Character.PRIVATE_USE || type == Character.SURROGATE) continue;
+            clean.appendCodePoint(Character.isWhitespace(at) ? ' ' : at);
+            kept++;
+        }
+        String trimmed = clean.toString().trim().replaceAll(" {2,}", " ");
+        return trimmed.isEmpty() ? "font" : trimmed;
+    }
+
+    /** Back on the main thread: the page showing the rows now, which may be a newer one than started the copy. */
+    private static void fontDone(Context app, String message) {
+        SettingsActivity page = fontPage.get();
+        if (page != null && !page.isDestroyed()) {
+            page.refreshFontFile();
+            page.feedback(message, Toast.LENGTH_LONG);
+            return;
+        }
+        if (toast != null) toast.cancel();
+        toast = Toast.makeText(app, message, Toast.LENGTH_LONG);
+        toast.show();
+    }
+
+    /** Saves the phone's font as the choice, then removes the copy, so the name never points at a deleted file. */
+    private void usePhoneFont() {
+        if (fontBusy.get()) return;
+        boolean saved = Settings.preferences.edit().putString(OwnFont.NAME_KEY, "").commit();
+        java.io.File copy = FontFile.file(this);
+        if (saved && copy.exists() && !copy.delete()) android.util.Log.i("HushMessenger", "The font file copy couldn't be removed");
+        refreshFontFile();
+        feedback(text.get(saved ? "font_phone_set" : "font_phone_failed"), Toast.LENGTH_LONG);
     }
 
     private void openNotificationSettings(String action) {
@@ -1290,6 +1452,13 @@ public final class SettingsActivity extends Activity {
 
     @Override protected void onActivityResult(int request, int result, Intent data) {
         super.onActivityResult(request, result, data);
+        if (request == PICK_FONT) {
+            // Cancelled: nothing to do and nothing to say.
+            if (result != RESULT_OK || data == null || data.getData() == null) return;
+            if ("content".equals(data.getData().getScheme())) copyFontFile(data.getData());
+            else feedback(text.get("font_file_unreadable"), Toast.LENGTH_LONG);
+            return;
+        }
         if (request != SAVE_CHOICES && request != READ_CHOICES) return;
         String export = documentExport;
         boolean importing = documentImport;

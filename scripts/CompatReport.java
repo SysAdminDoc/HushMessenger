@@ -196,6 +196,7 @@ public class CompatReport {
         PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "read_mailbox"));
         PATCHES.put("Keep unsent messages", List.of("keep_unsent", "unsent_indicator", "delta_unsent"));
         PATCHES.put("Unlock app icons", List.of("app_icons"));
+        PATCHES.put("Use your own font", List.of("font_layout", "font_repository", "font_roboto", "font_by_name", "font_input"));
         PATCHES.put("View stories anonymously", List.of("anonymous_stories"));
         PATCHES.put("Save any story", List.of("save_stories"));
         PATCHES.put("Slide chats in and out", List.of("chat_animation", "chat_fragment", "chat_inbox", "chat_legacy"));
@@ -2161,6 +2162,80 @@ public class CompatReport {
         return launches;
     }
 
+    static final String FONT_LAYOUT_ANCHOR = "Hit OEM font NPE in Paint.setTypeface, keeping previous typeface";
+    static final String FONT_REPOSITORY_ANCHOR = "The requested font, %s, does not have a backing source. " +
+        "You need to provide either a systemFontName, assetFontName, or a fileDescriptor.";
+    static final String FONT_ROBOTO_ANCHOR = "Unable to create roboto typeface: %s";
+    static final String TYPEFACE = "Landroid/graphics/Typeface;";
+    static final String FONT_COLORS = "Landroid/content/res/ColorStateList;";
+
+    static List<String> fontParameters(Method m) {
+        return m.getParameterTypes().stream().map(Object::toString).toList();
+    }
+
+    static Set<String> fontCalls(Method m) {
+        var calls = new HashSet<String>();
+        for (var i : instructions(m)) if (i instanceof ReferenceInstruction r && r.getReference() instanceof MethodReference) calls.add(ref(i));
+        return calls;
+    }
+
+    /**
+     * custom_font: Litho's text layout setTypeface, Messenger's typeface repository and its Roboto builder, each the one
+     * holder of its string, the by-name lookup that asks that repository, and every Litho text input that hands its
+     * EditText a typeface. Mirrors CustomFont.kt.
+     */
+    static Map<String, List<Method>> customFontHooks(List<ClassDef> classes) {
+        var holders = new LinkedHashMap<String, Set<Method>>();
+        for (var anchor : List.of(FONT_LAYOUT_ANCHOR, FONT_REPOSITORY_ANCHOR, FONT_ROBOTO_ANCHOR)) holders.put(anchor, new LinkedHashSet<>());
+        var byName = new ArrayList<Method>();
+        var inputs = new ArrayList<Method>();
+        for (var cls : classes) for (var m : cls.getMethods()) {
+            if (m.getImplementation() == null) continue;
+            for (var i : m.getImplementation().getInstructions())
+                if (i instanceof ReferenceInstruction r && r.getReference() instanceof StringReference sr && holders.containsKey(sr.getString()))
+                    holders.get(sr.getString()).add(m);
+            if (!AccessFlags.STATIC.isSet(m.getAccessFlags())) continue;
+            var params = fontParameters(m);
+            if (TYPEFACE.equals(m.getReturnType()) && params.equals(List.of("Landroid/content/Context;", "Ljava/lang/String;", "I"))) {
+                var calls = fontCalls(m);
+                if (calls.contains(TYPEFACE + "->create(Ljava/lang/String;I)" + TYPEFACE) && calls.contains(TYPEFACE + "->create(" + TYPEFACE + "I)" + TYPEFACE))
+                    byName.add(m);
+            }
+            if ("V".equals(m.getReturnType()) && params.size() >= 3 && params.subList(0, 3).equals(List.of(FONT_COLORS, FONT_COLORS, TYPEFACE)) &&
+                params.contains("Landroid/widget/EditText;") && fontCalls(m).contains("Landroid/widget/TextView;->setTypeface(" + TYPEFACE + "I)V"))
+                inputs.add(m);
+        }
+        var layout = holders.get(FONT_LAYOUT_ANCHOR).size() == 1 ? holders.get(FONT_LAYOUT_ANCHOR).iterator().next() : null;
+        if (layout != null && (AccessFlags.STATIC.isSet(layout.getAccessFlags()) || !"V".equals(layout.getReturnType()) ||
+            !fontParameters(layout).equals(List.of(TYPEFACE)))) layout = null;
+        var repository = holders.get(FONT_REPOSITORY_ANCHOR).size() == 1 ? holders.get(FONT_REPOSITORY_ANCHOR).iterator().next() : null;
+        if (repository != null) {
+            var params = fontParameters(repository);
+            if (!AccessFlags.STATIC.isSet(repository.getAccessFlags()) || !TYPEFACE.equals(repository.getReturnType()) || params.size() != 4 ||
+                !params.get(0).startsWith("L") || !params.get(1).equals(repository.getDefiningClass()) || !"I".equals(params.get(3)) ||
+                !fontCalls(repository).contains("Ljava/lang/Enum;->name()Ljava/lang/String;")) repository = null;
+        }
+        var roboto = holders.get(FONT_ROBOTO_ANCHOR).size() == 1 ? holders.get(FONT_ROBOTO_ANCHOR).iterator().next() : null;
+        if (roboto != null && (!AccessFlags.STATIC.isSet(roboto.getAccessFlags()) || !TYPEFACE.equals(roboto.getReturnType()) ||
+            !fontParameters(roboto).equals(List.of("Landroid/content/Context;", "Ljava/lang/Integer;")))) roboto = null;
+        var asked = new ArrayList<Method>();
+        if (repository != null) for (var m : byName) {
+            boolean asks = false;
+            for (var i : instructions(m))
+                if (i instanceof ReferenceInstruction r && r.getReference() instanceof MethodReference mr &&
+                    mr.getDefiningClass().equals(repository.getDefiningClass()) && TYPEFACE.equals(mr.getReturnType()) &&
+                    List.of(fontParameters(repository).get(0)).equals(mr.getParameterTypes().stream().map(Object::toString).toList())) asks = true;
+            if (asks) asked.add(m);
+        }
+        var found = new LinkedHashMap<String, List<Method>>();
+        found.put("font_layout", layout == null ? List.of() : List.of(layout));
+        found.put("font_repository", repository == null ? List.of() : List.of(repository));
+        found.put("font_roboto", roboto == null ? List.of() : List.of(roboto));
+        found.put("font_by_name", asked);
+        found.put("font_input", inputs);
+        return found;
+    }
+
     // Google Play's bound task route into GooglePlayUploadService, which skips onStartCommand. Mirrors AnalyticsUploads.kt.
     static final String GOOGLE_PLAY_UPLOAD_SERVICE = "Lcom/facebook/analytics2/logger/GooglePlayUploadService;";
     static final String TASK_SERVICE_COMPAT = "Lcom/facebook/common/jobscheduler/compat/GcmTaskServiceCompat;";
@@ -2397,6 +2472,7 @@ public class CompatReport {
         found.get("ad_events").addAll(adEvents(classes));
         found.get("message_log").addAll(messageLogHooks(classes));
         found.get("system_camera").addAll(systemCameraLaunches(classes));
+        customFontHooks(classes).forEach((key, methods) -> found.get(key).addAll(methods));
         for (var cls : classes) for (var method : cls.getMethods())
             if (!screenshotViewerSites(method).isEmpty()) found.get("screenshot_viewers").add(method);
         var jewelCandidates = new ArrayList<Map.Entry<Method, Set<String>>>();

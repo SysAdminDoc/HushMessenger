@@ -42,6 +42,7 @@
         <meta-data android:name="hush.feature.save_stories" android:value="true" />
         <meta-data android:name="hush.feature.material_you" android:value="true" />
         <meta-data android:name="hush.feature.app_icons" android:value="true" />
+        <meta-data android:name="hush.feature.custom_font" android:value="true" />
         <provider android:name="app.hushmessenger.extension.SettingsProvider" android:authorities="${applicationId}.hush.settings" android:exported="false" />
         <activity android:name="app.hushmessenger.extension.SettingsActivity" android:icon="@android:drawable/ic_menu_preferences" android:exported="true" />
         <provider android:name="app.hushmessenger.extension.CameraProvider" android:authorities="${applicationId}.hush.camera" android:exported="false" android:grantUriPermissions="true" />

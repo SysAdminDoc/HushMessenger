@@ -40,7 +40,7 @@ public class SettingsNavigationTest {
             assertEquals(View.GONE, root.findViewWithTag("empty_state").getVisibility());
             assertTrue(root.findViewWithTag("category_all").isSelected());
             root.findViewWithTag("category_more").performClick();
-            assertEquals(ExpectedTotals.shown(18), count.getText().toString());
+            assertEquals(ExpectedTotals.shown(19), count.getText().toString());
             assertEquals(View.VISIBLE, ((View) root.findViewWithTag("facebook").getParent()).getVisibility());
         }
     }

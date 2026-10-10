@@ -55,6 +55,9 @@ public final class Settings {
         if (installed.contains(MessageLog.KEY) && appContext.getPackageName().equals(android.app.Application.getProcessName())) {
             MessageLog.scheduleExpiry();
         }
+        if (installed.contains(OwnFont.KEY) && appContext.getPackageName().equals(android.app.Application.getProcessName())) {
+            OwnFont.warmUp();
+        }
     }
 
     static Set<String> bundled(String list) {
@@ -203,7 +206,8 @@ public final class Settings {
      * safe mode now says otherwise. Null when the control doesn't hold one, Messenger hasn't asked yet, or they agree.
      */
     static Boolean heldUntilRestart(String key) {
-        Boolean held = "meta_ai".equals(key) ? metaAiTab : "emoji_drawer".equals(key) ? oldEmojiDrawer : null;
+        Boolean held = "meta_ai".equals(key) ? metaAiTab : "emoji_drawer".equals(key) ? oldEmojiDrawer
+            : OwnFont.KEY.equals(key) ? customFont : null;
         return held == null || held == wouldUse(key) ? null : held;
     }
 
@@ -692,6 +696,90 @@ public final class Settings {
                 new android.graphics.fonts.Font.Builder(messengerFont).build()).build())
             .setSystemFallback("sans-serif")
             .build();
+    }
+
+    /** First answer this process gave for the font switch, or null before Messenger asked for a typeface. */
+    static volatile Boolean customFont;
+    private static final Object CUSTOM_FONT = new Object();
+
+    /**
+     * Messenger keeps many typefaces it gets for the whole run, so the font switch holds its first answer until a restart
+     * and a change can't leave half the screen in each font. Nothing is held before the settings load.
+     */
+    static boolean customFontOn() {
+        Boolean on = customFont;
+        if (on != null) return on;
+        if (!HostScreens.started) HostScreens.initializeLate();
+        if (preferences == null && !HostScreens.failed) return false;
+        synchronized (CUSTOM_FONT) {
+            if (customFont == null) customFont = wouldUse(OwnFont.KEY);
+            return customFont;
+        }
+    }
+
+    private static android.graphics.Typeface fontUsed(android.graphics.Typeface original, android.graphics.Typeface chosen) {
+        if (chosen != original) activeAt.put(OwnFont.KEY, System.currentTimeMillis());
+        return chosen;
+    }
+
+    /** Litho's text layouts hand over each typeface before laying text out. A picked file replaces the phone's font. */
+    public static android.graphics.Typeface customFontLayout(android.graphics.Typeface original) {
+        try {
+            return customFontOn() ? fontUsed(original, OwnFont.replacePhoneFont(original)) : original;
+        } catch (RuntimeException | LinkageError error) {
+            hookFailed(OwnFont.KEY, "Can't change a text layout's font", error);
+            return original;
+        }
+    }
+
+    /**
+     * Messenger's typeface repository hands over each font family it resolves, with the weight asked for. The Optimistic
+     * families become the phone's font or the picked file. Roboto Mono and the rest stay Messenger's.
+     */
+    public static android.graphics.Typeface customFontRepository(android.graphics.Typeface original, Object family, int weight) {
+        try {
+            if (!customFontOn()) return original;
+            String name = family instanceof Enum ? ((Enum<?>) family).name() : null;
+            return fontUsed(original, OwnFont.replace(original, name, weight));
+        } catch (RuntimeException | LinkageError error) {
+            hookFailed(OwnFont.KEY, "Can't change Messenger's font", error);
+            return original;
+        }
+    }
+
+    /** Messenger's Roboto builder hands over the phone's sans-serif at a text style's weight. A picked file replaces it. */
+    public static android.graphics.Typeface customFontRoboto(android.graphics.Typeface original) {
+        if (original == null) return null;
+        try {
+            return customFontOn() ? fontUsed(original, OwnFont.replacePhoneFont(original)) : original;
+        } catch (RuntimeException | LinkageError error) {
+            hookFailed(OwnFont.KEY, "Can't change the Roboto font", error);
+            return original;
+        }
+    }
+
+    /** MIG's typeface by name hands over what it found for [name]. A picked file replaces the phone's sans-serif. */
+    public static android.graphics.Typeface customFontByName(android.graphics.Typeface original, String name) {
+        if (original == null) return null;
+        try {
+            if (!customFontOn()) return original;
+            boolean phone = OwnFont.isPhoneSans(name) || OwnFont.isPhoneTypeface(original);
+            return fontUsed(original, phone ? OwnFont.pickedInstead(original) : original);
+        } catch (RuntimeException | LinkageError error) {
+            hookFailed(OwnFont.KEY, "Can't change a font picked by name", error);
+            return original;
+        }
+    }
+
+    /** Litho's text inputs set their typeface here. A picked file replaces the phone's font, and the style applies as usual. */
+    public static void customFontInput(android.widget.TextView view, android.graphics.Typeface typeface, int style) {
+        android.graphics.Typeface chosen = typeface;
+        try {
+            if (customFontOn()) chosen = fontUsed(typeface, OwnFont.replacePhoneFont(typeface));
+        } catch (RuntimeException | LinkageError error) {
+            hookFailed(OwnFont.KEY, "Can't change a text input's font", error);
+        }
+        view.setTypeface(chosen, style);
     }
 
     /** Null means return the exact original list. Only typed ad rows are removed. */
