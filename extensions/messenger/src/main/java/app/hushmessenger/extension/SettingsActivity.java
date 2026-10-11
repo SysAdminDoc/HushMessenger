@@ -696,8 +696,13 @@ public final class SettingsActivity extends Activity {
         } catch (RuntimeException unknown) {
             // A provider that can't say leaves the address's own last part.
         }
-        if (name == null || name.trim().isEmpty()) name = uri.getLastPathSegment();
+        if (name == null || name.trim().isEmpty()) name = lastPart(uri.getLastPathSegment());
         return cleanFontName(name);
+    }
+
+    /** A document ID like "primary:Download/Fonts/x.ttf" is a path, so only what follows its last '/' or ':' is kept. */
+    static String lastPart(String segment) {
+        return segment == null ? null : segment.substring(Math.max(segment.lastIndexOf('/'), segment.lastIndexOf(':')) + 1);
     }
 
     /** One line with no control or formatting characters, at most {@link #MAX_FONT_NAME} long, and "font" when nothing's left. */

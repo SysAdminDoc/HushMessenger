@@ -278,6 +278,13 @@ public class CustomFontSettingsTest {
         assertEquals(SettingsActivity.MAX_FONT_NAME, SettingsActivity.cleanFontName("x".repeat(500)).length());
         Uri uri = Uri.parse("content://fonts/document/Inter-Regular.otf");
         assertEquals("Inter-Regular.otf", SettingsActivity.fontName(RuntimeEnvironment.getApplication(), uri));
+        // A storage document ID carries its folders, which never show.
+        Uri document = Uri.parse("content://com.android.externalstorage.documents/document/primary%3ADownload%2FFonts%2FInter-Regular.otf");
+        assertEquals("primary:Download/Fonts/Inter-Regular.otf", document.getLastPathSegment());
+        assertEquals("Inter-Regular.otf", SettingsActivity.fontName(RuntimeEnvironment.getApplication(), document));
+        assertEquals("Inter-Regular.otf", SettingsActivity.lastPart("primary:Inter-Regular.otf"));
+        assertEquals("font", SettingsActivity.cleanFontName(SettingsActivity.lastPart("primary:Download/")));
+        assertNull(SettingsActivity.lastPart(null));
     }
 
     private static void awaitToast(String prefix) throws InterruptedException {
