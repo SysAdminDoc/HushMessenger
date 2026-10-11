@@ -622,6 +622,7 @@ public final class Settings {
     static volatile java.io.File messengerEmojiFile;
     static java.io.File mergedEmojiFile;
     static android.graphics.Typeface mergedEmoji;
+    static int mergeTries;
 
     /** Where Messenger's emoji font was the last time it loaded, kept across runs. */
     static final String EMOJI_FONT_PATH = "messenger_emoji_font";
@@ -669,7 +670,10 @@ public final class Settings {
             return system;
         }
         synchronized (Settings.class) {
-            if (!file.equals(mergedEmojiFile)) {
+            // A merge that failed gets a couple more tries on the same file, since a font still being written fails once.
+            if (!file.equals(mergedEmojiFile) || (mergedEmoji == null && mergeTries < 3)) {
+                if (!file.equals(mergedEmojiFile)) mergeTries = 0;
+                mergeTries++;
                 mergedEmojiFile = file;
                 mergedEmoji = null;
                 try {
