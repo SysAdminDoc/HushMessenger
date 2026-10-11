@@ -39,6 +39,21 @@ public final class OriginalPhoto {
     static Executor completion = Executors.newSingleThreadExecutor();
     /** Where the copies go; null is the app's cache, where Messenger's own transcoder writes its output too. */
     static File tempDir;
+    static final long KEEP_COPIES_MS = 7L * 24 * 60 * 60 * 1000;
+    private static final java.util.concurrent.atomic.AtomicBoolean SWEPT = new java.util.concurrent.atomic.AtomicBoolean();
+
+    /**
+     * An async send hands its copy to Messenger, and Messenger may never delete a file it didn't write. Once a run,
+     * copies older than a week go, so they can't pile up in the cache at up to 20 MB each. A week leaves room for a
+     * send that waits days offline before it uploads.
+     */
+    static void sweepOldCopies(File folder, long now) {
+        File[] copies = folder == null ? null : folder.listFiles((dir, name) -> name.startsWith("hush-photo") && name.endsWith(".jpg"));
+        if (copies == null) return;
+        for (File copy : copies) {
+            if (now - copy.lastModified() > KEEP_COPIES_MS && !copy.delete() && copy.exists()) Log.w("HushMessenger", "Can't remove an old photo copy");
+        }
+    }
     interface InputOpener { FileInputStream open(File file) throws IOException; }
     static InputOpener inputOpener = FileInputStream::new;
 
@@ -233,6 +248,7 @@ public final class OriginalPhoto {
         if (longTarget > 0 && (longSide > longTarget || shortSide > shortTarget)) {
             return skip(bounds[0] + "x" + bounds[1] + " is larger than " + (int) maxWidth + "x" + (int) maxHeight);
         }
+        if (SWEPT.compareAndSet(false, true)) sweepOldCopies(tempDir != null ? tempDir : new File(System.getProperty("java.io.tmpdir")), System.currentTimeMillis());
         File copy = File.createTempFile("hush-photo", ".jpg", tempDir);
         try {
             copyImageData(file, copy, orientation);

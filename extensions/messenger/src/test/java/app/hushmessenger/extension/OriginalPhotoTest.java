@@ -77,6 +77,24 @@ public class OriginalPhotoTest {
         ShadowLog.clear();
     }
 
+    @Test public void copiesOlderThanAWeekAreSweptAndNothingElseIs() throws Exception {
+        long now = System.currentTimeMillis();
+        File old = new File(OriginalPhoto.tempDir, "hush-photo123.jpg");
+        File fresh = new File(OriginalPhoto.tempDir, "hush-photo456.jpg");
+        File waiting = new File(OriginalPhoto.tempDir, "hush-photo789.jpg");
+        File other = new File(OriginalPhoto.tempDir, "previous.jpg");
+        for (File file : new File[] {old, fresh, waiting, other}) assertTrue(file.createNewFile());
+        assertTrue(old.setLastModified(now - OriginalPhoto.KEEP_COPIES_MS - 60_000));
+        assertTrue(waiting.setLastModified(now - 3L * 24 * 60 * 60 * 1000));
+        assertTrue(other.setLastModified(now - OriginalPhoto.KEEP_COPIES_MS - 60_000));
+        OriginalPhoto.sweepOldCopies(OriginalPhoto.tempDir, now);
+        assertFalse(old.exists());
+        assertTrue(fresh.exists());
+        assertTrue("a send queued offline for days keeps its copy", waiting.exists());
+        assertTrue("only HushMessenger's own copies go", other.exists());
+        OriginalPhoto.sweepOldCopies(null, now);
+    }
+
     @After public void restore() {
         OriginalPhoto.completion = completion;
         OriginalPhoto.tempDir = null;
