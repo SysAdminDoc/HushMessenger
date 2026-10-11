@@ -318,13 +318,15 @@ public final class Settings {
     }
     /**
      * Messenger 582's chat asks this before it copies a picked photo, and only copies from apps outside Meta's. The capture
-     * screen's photo comes from a provider inside Messenger, so that one photo is let through. It doesn't follow the switch,
-     * because a photo already on its way back must not close Messenger, and everything else gets Messenger's own answer.
+     * screen's photo comes from a provider inside Messenger, so the one it just handed back is let through while its file
+     * is there. It doesn't follow the switch, because a photo already on its way back must not close Messenger, and
+     * everything else, other names in the same folder included, gets Messenger's own answer.
      */
     public static boolean trustCapturedPhoto(android.net.Uri uri) {
         try {
             Context context = appContext;
-            return context != null && CameraProvider.fileFor(context, uri) != null;
+            java.io.File photo = context == null ? null : CameraProvider.fileFor(context, uri);
+            return photo != null && photo.getName().equals(CameraActivity.handedBack) && photo.isFile();
         } catch (RuntimeException error) {
             hookFailed(CameraActivity.KEY, "Couldn't check the camera photo", error);
             return false;

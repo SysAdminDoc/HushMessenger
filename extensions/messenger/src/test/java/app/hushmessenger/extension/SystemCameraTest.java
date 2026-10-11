@@ -37,6 +37,20 @@ public class SystemCameraTest {
         Settings.activeAt.clear();
         CrashGuard.resetForTests();
         provider = Robolectric.setupContentProvider(CameraProvider.class, app.getPackageName() + CameraProvider.AUTHORITY_SUFFIX);
+        CameraActivity.handedBack = null;
+        File[] left = CameraProvider.directory(app).listFiles();
+        if (left != null) for (File file : left) assertTrue(file.delete());
+    }
+
+    /** A photo the camera app wrote into the capture folder. */
+    private File captured(String name) throws Exception {
+        File folder = CameraProvider.directory(app);
+        assertTrue(folder.isDirectory() || folder.mkdirs());
+        File photo = new File(folder, name);
+        try (FileOutputStream out = new FileOutputStream(photo)) {
+            out.write(PHOTO);
+        }
+        return photo;
     }
 
     @Test public void onlyItsOwnSwitchSendsTheCameraButtonToThePhonesCamera() {
@@ -86,23 +100,34 @@ public class SystemCameraTest {
         assertTrue(Settings.hookErrors.isEmpty());
     }
 
-    @Test public void onlyTheCaptureScreensOwnPhotoPassesTheChatsSourceCheck() {
+    @Test public void onlyTheCaptureScreensOwnPhotoPassesTheChatsSourceCheck() throws Exception {
         Settings.hookErrors.clear();
-        Uri photo = CameraProvider.uriFor(app, new File("IMG_1791657600000.jpg"));
+        File file = captured("IMG_1791657600000.jpg");
+        Uri photo = CameraProvider.uriFor(app, file);
         assertNotNull(CameraProvider.fileFor(app, photo));
+        assertFalse("Nothing was handed back yet", Settings.trustCapturedPhoto(photo));
+        CameraActivity.handedBack = file.getName();
         assertTrue(Settings.trustCapturedPhoto(photo));
-        // Anything else gets Messenger's own answer: other providers, other files in ours, and file URIs.
+        // Anything else gets Messenger's own answer: another capture in the same folder, other providers, other files
+        // in ours, and file URIs.
+        assertFalse(Settings.trustCapturedPhoto(CameraProvider.uriFor(app, captured("IMG_1791657600001.jpg"))));
         assertFalse(Settings.trustCapturedPhoto(null));
         assertFalse(Settings.trustCapturedPhoto(Uri.parse("content://media/external/images/media/12")));
         assertFalse(Settings.trustCapturedPhoto(Uri.parse("content://" + app.getPackageName() + ".provider/IMG_1791657600000.jpg")));
         assertFalse(Settings.trustCapturedPhoto(photo.buildUpon().appendPath("x").build()));
         assertFalse(Settings.trustCapturedPhoto(Uri.parse("file:///data/data/" + app.getPackageName() + "/IMG_1791657600000.jpg")));
+        // Once the file is gone, its name alone doesn't pass.
+        assertTrue(file.delete());
+        assertFalse(Settings.trustCapturedPhoto(photo));
         assertTrue(Settings.hookErrors.isEmpty());
     }
 
-    @Test public void onlyTheCaptureScreensOwnPhotoPassesTheOpensOwnFileCheck() {
+    @Test public void onlyTheCaptureScreensOwnPhotoPassesTheOpensOwnFileCheck() throws Exception {
         Settings.hookErrors.clear();
-        Uri photo = CameraProvider.uriFor(app, new File("IMG_1791657600000.jpg"));
+        File file = captured("IMG_1791657600000.jpg");
+        Uri photo = CameraProvider.uriFor(app, file);
+        assertTrue("Not handed back, so Messenger still refuses its own file", Settings.internalFile(true, photo));
+        CameraActivity.handedBack = file.getName();
         assertFalse(Settings.internalFile(true, photo));
         // Every other file Messenger owns is still refused, and a file it doesn't own stays allowed.
         assertTrue(Settings.internalFile(true, Uri.parse("content://" + app.getPackageName() + ".provider/IMG_1791657600000.jpg")));
@@ -133,6 +158,9 @@ public class SystemCameraTest {
             assertEquals(output, result.getData());
             assertEquals("image/jpeg", result.getType());
             assertEquals("image/jpeg", provider.getType(result.getData()));
+            assertEquals(output.getLastPathSegment(), CameraActivity.handedBack);
+            assertTrue("The chat's copy checks let this photo through", Settings.trustCapturedPhoto(result.getData()));
+            assertFalse(Settings.internalFile(true, result.getData()));
             byte[] read = new byte[PHOTO.length + 1];
             try (ParcelFileDescriptor descriptor = provider.openFile(result.getData(), "r");
                  FileInputStream in = new FileInputStream(descriptor.getFileDescriptor())) {
@@ -157,6 +185,7 @@ public class SystemCameraTest {
             assertTrue(controller.get().isFinishing());
             assertEquals(Activity.RESULT_CANCELED, screen.getResultCode());
             assertEquals(0, folder.listFiles().length);
+            assertNull("A cancelled photo is never handed back", CameraActivity.handedBack);
         }
     }
 }
