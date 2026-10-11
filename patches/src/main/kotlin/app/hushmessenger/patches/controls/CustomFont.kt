@@ -36,6 +36,8 @@ private const val TYPEFACE = "Landroid/graphics/Typeface;"
 private const val CONTEXT = "Landroid/content/Context;"
 private const val TEXT_VIEW = "Landroid/widget/TextView;"
 private const val COLORS = "Landroid/content/res/ColorStateList;"
+/** Long and double, the parameter types that take two registers. */
+private val WIDE_TYPES = setOf("J", "D")
 private const val ENUM_NAME = "Ljava/lang/Enum;->name()Ljava/lang/String;"
 private const val CREATE_BY_NAME = "$TYPEFACE->create(Ljava/lang/String;I)$TYPEFACE"
 private const val CREATE_STYLED = "$TYPEFACE->create(${TYPEFACE}I)$TYPEFACE"
@@ -65,9 +67,12 @@ private fun Method.writes(register: Int) = fontCode().any { insn ->
 internal fun Method.isFontLayout() = !AccessFlags.STATIC.isSet(accessFlags) && returnType == "V" &&
     fontParameters() == listOf(TYPEFACE) && holds(FONT_LAYOUT_ANCHOR)
 
-/** The repository's resolver: a family constant, the repository and a weight, answered from its cache, a file or an asset. */
+/**
+ * The repository's resolver: a family constant, the repository and a weight, answered from its cache, a file or an asset.
+ * The third parameter takes one register, so the family and weight sit where the site and the call expect them.
+ */
 internal fun Method.isFontRepository() = AccessFlags.STATIC.isSet(accessFlags) && returnType == TYPEFACE &&
-    fontParameters().let { it.size == 4 && it[0].startsWith("L") && it[1] == definingClass && it[3] == "I" } &&
+    fontParameters().let { it.size == 4 && it[0].startsWith("L") && it[1] == definingClass && it[2] !in WIDE_TYPES && it[3] == "I" } &&
     fontCode().any { it.fontCall()?.toString() == ENUM_NAME } && holds(FONT_REPOSITORY_ANCHOR)
 
 /** The Roboto builder: the phone's sans-serif at the weight a text style names. */

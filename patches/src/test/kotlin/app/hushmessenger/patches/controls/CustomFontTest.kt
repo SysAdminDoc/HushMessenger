@@ -242,11 +242,16 @@ class CustomFontTest {
     @Test fun repositoryAndByNameRegistersHaveToStillHoldTheirParameters() {
         // The weight past v15 can't go through a plain call.
         // Its parameters past v15 come down to low registers first, the way real code reaches them.
-        val wideBody = "move-object/from16 v4, p0\nmove-object/from16 v5, p1\n" +
+        val highBody = "move-object/from16 v4, p0\nmove-object/from16 v5, p1\n" +
             RESOLVER_BODY.replace("p1,", "v5,").replace("{v0, p0}", "{v0, v4}").replace("{p0}", "{v4}")
-        val wide = fixtureMethod(FONT_RESOLVER, wideBody, registers = 20, flags = STATIC)
-        assertTrue(wide.isFontRepository())
-        assertFailsWith<PatchException> { wide.validateCustomFont(FONT_REPOSITORY) }
+        val high = fixtureMethod(FONT_RESOLVER, highBody, registers = 20, flags = STATIC)
+        assertTrue(high.isFontRepository())
+        assertFailsWith<PatchException> { high.validateCustomFont(FONT_REPOSITORY) }
+        // A long or double third parameter moves the weight a register further, so the shape itself refuses it.
+        for (wide in listOf("J", "D")) {
+            assertFalse(fixtureMethod(FONT_RESOLVER.replace("LX/5oI;I)", "${wide}I)"), RESOLVER_BODY, registers = 9, flags = STATIC)
+                .isFontRepository())
+        }
         // A family register written before the return no longer holds the family.
         val reused = RESOLVER_BODY.replace("check-cast v1", "const/4 p0, 0x0\ncheck-cast v1")
         assertFailsWith<PatchException> { fixtureMethod(FONT_RESOLVER, reused, registers = 8, flags = STATIC).validateCustomFont(FONT_REPOSITORY) }
