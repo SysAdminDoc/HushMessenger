@@ -1006,7 +1006,7 @@ public final class Settings {
             if (title == null) return;
             title.set(clone, "HushMessenger");
             list.add(at + 1, clone);
-        } catch (Exception e) {
+        } catch (Exception | LinkageError e) {
             hookFailed("menu_row", "addMenuSettingsEntry failed", e);
         }
     }
@@ -1055,6 +1055,7 @@ public final class Settings {
         }
     }
 
+    // The menu entry hooks don't ask Pause or safe mode first, on purpose: they're the way back into settings to undo either.
     @SuppressWarnings("unchecked")
     public static java.util.List addMenuDrawerEntry(java.util.List list) {
         try {
@@ -1081,15 +1082,19 @@ public final class Settings {
             java.util.ArrayList result = new java.util.ArrayList(list);
             result.add(clone);
             return result;
-        } catch (Exception e) {
+        } catch (Exception | LinkageError e) {
             hookFailed("menu_row", "addMenuDrawerEntry failed", e);
             return list;
         }
     }
 
     public static void handleMenuItemBound(Object viewHolder) {
+        if (viewHolder == null) return;
         try {
-            java.lang.reflect.Field textField = viewHolder.getClass().getDeclaredField("A06");
+            java.lang.reflect.Field textField;
+            // The binder serves several holder types. Only the text row has this field; the others aren't failures.
+            try { textField = viewHolder.getClass().getDeclaredField("A06"); }
+            catch (NoSuchFieldException otherHolder) { return; }
             textField.setAccessible(true);
             Object tv = textField.get(viewHolder);
             if (!(tv instanceof android.widget.TextView)) return;
@@ -1104,15 +1109,60 @@ public final class Settings {
             viewField.setAccessible(true);
             android.view.View itemView = (android.view.View) viewField.get(viewHolder);
             if (itemView == null) return;
-            itemView.setOnClickListener(v -> {
+            android.view.View.OnClickListener stock = clickListenerOf(itemView);
+            if (stock instanceof MenuRowClick) return;
+            itemView.setOnClickListener(new MenuRowClick(stock, (android.widget.TextView) tv));
+        } catch (Exception | LinkageError e) {
+            hookFailed("menu_row", "handleMenuItemBound failed", e);
+        }
+    }
+
+    /**
+     * Messenger sets a row's listener once, when the holder is created, and reuses the holder for other rows as the menu
+     * scrolls. So the row is read at tap time: ours opens settings, any other row gets the listener Messenger set.
+     */
+    static final class MenuRowClick implements android.view.View.OnClickListener {
+        final android.view.View.OnClickListener stock;
+        private final android.widget.TextView label;
+
+        MenuRowClick(android.view.View.OnClickListener stock, android.widget.TextView label) {
+            this.stock = stock;
+            this.label = label;
+        }
+
+        @Override public void onClick(android.view.View v) {
+            CharSequence text = label.getText();
+            if ("HushMessenger".equals(text != null ? text.toString() : null)) {
                 try {
                     HostScreens.open(v.getContext(), HostScreens.SETTINGS);
                 } catch (RuntimeException e) {
                     hookFailed("menu_row", "Opening settings failed", e);
                 }
-            });
-        } catch (Exception e) {
-            hookFailed("menu_row", "handleMenuItemBound failed", e);
+            } else if (stock != null) {
+                stock.onClick(v);
+            }
+        }
+    }
+
+    private static final java.util.concurrent.atomic.AtomicBoolean MENU_LISTENER_LOGGED = new java.util.concurrent.atomic.AtomicBoolean();
+
+    /** The listener already on [view], read from View's hidden ListenerInfo. Null when there's none or it can't be read. */
+    // No public getter exists, and a field that moves only costs the delegation, logged privately once a run since
+    // every bound row would hit the same failure.
+    @android.annotation.SuppressLint("DiscouragedPrivateApi")
+    private static android.view.View.OnClickListener clickListenerOf(android.view.View view) {
+        try {
+            java.lang.reflect.Field info = android.view.View.class.getDeclaredField("mListenerInfo");
+            info.setAccessible(true);
+            Object listeners = info.get(view);
+            if (listeners == null) return null;
+            java.lang.reflect.Field click = listeners.getClass().getDeclaredField("mOnClickListener");
+            click.setAccessible(true);
+            return (android.view.View.OnClickListener) click.get(listeners);
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError error) {
+            if (MENU_LISTENER_LOGGED.compareAndSet(false, true))
+                hookFailedPrivately("menu_row", "The menu row's own listener couldn't be read", error);
+            return null;
         }
     }
 
@@ -1137,7 +1187,7 @@ public final class Settings {
                 }
             }
             return dst;
-        } catch (Exception e) {
+        } catch (Exception | LinkageError e) {
             hookFailed("menu_row", "shallowClone failed", e);
             return null;
         }
