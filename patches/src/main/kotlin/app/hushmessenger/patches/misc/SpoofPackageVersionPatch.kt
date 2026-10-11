@@ -30,7 +30,12 @@ internal fun Document.spoofVersionCode(real: String, spoofed: Int) {
     if (!validSpoofedVersionCode(spoofed)) refuse("$spoofed isn't a version code from 1 to $HIGHEST_VERSION_CODE")
     if (root.hasAttribute("android:versionCodeMajor")) refuse("AndroidManifest.xml sets a versionCodeMajor")
     val code = root.getAttribute("android:versionCode").trim()
-    if (code != real.trim() || code.toIntOrNull() == null) refuse("AndroidManifest.xml says its version code is \"$code\", not $real")
+    val own = code.toIntOrNull()
+    if (code != real.trim() || own == null) refuse("AndroidManifest.xml says its version code is \"$code\", not $real")
+    // A lower number has the Play Store offering this same release as an update, and Android won't install it over
+    // the version it came from.
+    if (spoofed < own) throw PatchException(
+        "$SPOOF_VERSION_PATCH: $spoofed is lower than this Messenger's own version code $own. Set the version number to $own or higher.")
     root.setAttribute("android:versionCode", spoofed.toString())
 }
 
@@ -50,7 +55,7 @@ val spoofPackageVersionPatch = resourcePatch(
         key = SPOOF_VERSION_KEY,
         default = HIGHEST_VERSION_CODE,
         title = "Version number",
-        description = "A whole number from 1 to $HIGHEST_VERSION_CODE. Pick one higher than Messenger's version in the Play Store, or it will keep offering updates. The default is the highest Android allows.",
+        description = "A whole number up to $HIGHEST_VERSION_CODE, no lower than the Messenger you're patching. Pick one higher than Messenger's version in the Play Store, or it will keep offering updates. The default is the highest Android allows.",
         required = true,
     ) { validSpoofedVersionCode(it) }
 

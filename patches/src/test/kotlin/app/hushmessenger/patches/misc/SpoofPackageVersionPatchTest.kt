@@ -33,8 +33,19 @@ class SpoofPackageVersionPatchTest {
         assertEquals("582.0.0.61.92", document.documentElement.getAttribute("android:versionName"))
 
         val lowest = manifest("346415706")
-        lowest.spoofVersionCode("346415706", 1)
-        assertEquals("1", lowest.code)
+        lowest.spoofVersionCode("346415706", 346415706)
+        assertEquals("346415706", lowest.code)
+    }
+
+    @Test
+    fun refusesACodeBelowMessengersOwnBeforeChangingIt() {
+        for (code in listOf(1, 346415685)) {
+            val document = manifest()
+            val failure = assertFailsWith<PatchException> { document.spoofVersionCode("346415686", code) }
+            assertContains(failure.message.orEmpty(), "lower than this Messenger's own version code 346415686. Set the version number to 346415686 or higher.")
+            assertFalse("Use an unmodified" in failure.message.orEmpty(), "the APK is fine, only the option needs changing")
+            assertEquals("346415686", document.code)
+        }
     }
 
     @Test
