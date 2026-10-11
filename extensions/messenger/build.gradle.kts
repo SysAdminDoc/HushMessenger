@@ -49,4 +49,7 @@ tasks.withType<Test>().configureEach {
     javaLauncher.set(testLauncher)
     // Robolectric's API 36 file-descriptor bridge needs this JDK 21 export.
     jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
+    // One worker holds a Robolectric sandbox per SDK (28, 36, and 30 with native graphics for the font tests).
+    // Gradle's 512 MB default filled up with all three, and the worker then spun in GC at exit instead of ending.
+    maxHeapSize = "1g"
 }
