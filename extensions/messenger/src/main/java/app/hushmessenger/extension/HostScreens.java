@@ -94,8 +94,16 @@ public final class HostScreens {
         Application app = application;
         if (app == null || app.getBaseContext() == null || !app.getPackageName().equals(Application.getProcessName())) return;
         start(app);
-        if (started && hosted(app)) publishShortcuts(app);
+        // The first hook to ask runs this, often on the UI thread, and the shortcut calls are three trips to Android.
+        if (started && hosted(app)) shortcutWork.execute(() -> publishShortcuts(app));
     }
+
+    /** Where the Root Mount shortcuts get published. Tests run it in place. */
+    static java.util.concurrent.Executor shortcutWork = work -> {
+        Thread thread = new Thread(work, "HushShortcuts");
+        thread.setDaemon(true);
+        thread.start();
+    };
 
     /**
      * Android reads static shortcuts when a package is installed or updated, and a Root Mount install is neither, so
@@ -155,6 +163,7 @@ public final class HostScreens {
         // the startup lock so a second startup thread cannot wait on that initializer while it waits on this lock.
         if (started && !failed && Settings.installed.contains("material_you")) MaterialYouTheme.bind();
         // After CrashGuard, so safe mode can keep a picked font file that crashes the font loader from loading again.
+        // A native crash in the loader only counts from Android 11, where the exit history records it.
         if (started && !failed && Settings.installed.contains(OwnFont.KEY)
                 && context.getPackageName().equals(Application.getProcessName())) OwnFont.warmUp();
     }

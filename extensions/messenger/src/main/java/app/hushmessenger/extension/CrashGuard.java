@@ -22,7 +22,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Pauses all controls after three consecutive crashes within a minute of startup.
- * Runs once per process in {@link SettingsProvider#onCreate()}, before any hook.
+ * Runs once per process from {@link HostScreens#start}: in {@link SettingsProvider#onCreate()} on a normal install,
+ * and inside the first hook, settings screen or restart on Root Mount. From Android 11 it counts native crashes and
+ * ANR kills through the exit history too; older Android sees only Java crashes, which our handler marks.
  */
 final class CrashGuard {
     static final String START_RECORD = "hushmessenger-start";

@@ -36,6 +36,7 @@ public class HostScreensTest {
         Settings.initialize(RuntimeEnvironment.getApplication());
         Settings.preferences.edit().clear().commit();
         CrashGuard.resetForTests();
+        HostScreens.shortcutWork = Runnable::run;
     }
 
     @After public void forgetApplication() {
