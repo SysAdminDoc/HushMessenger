@@ -174,6 +174,7 @@ public class SetupSummaryTest {
                 assertTrue(control[0], report.contains(", scope=" + control[2] + "\n"));
             assertTrue(report.matches("(?s).*hide_read_receipts: installed=true, selected=true, active=true, last_active=\\d+s ago, scope=.*"));
             assertTrue(report.contains("Replying or switching this off may notify them."));
+            assertTrue(report.contains("Group chats aren't tested. Messenger's own Read receipts setting under Privacy & safety"));
             assertTrue(report.contains("Encrypted chats aren't supported and group chats aren't tested."));
             assertTrue(report.contains("It doesn't add replay or saving."));
             assertTrue(report.contains("Native Bubbles needs Android 11 or newer, a supported account and notification permission."));
