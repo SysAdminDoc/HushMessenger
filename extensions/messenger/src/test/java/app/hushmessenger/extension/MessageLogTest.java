@@ -170,6 +170,11 @@ public class MessageLogTest {
         MessageLog.write(Settings.appContext, seeded);
         long time = MessageLog.read(logFile()).get(0).time;
         assertTrue(time <= System.currentTimeMillis());
+        assertTrue(MessageLog.repairedOnRead);
+        // The moved time is written back, or the stored one would read as fresh on every run and never expire.
+        assertEquals(1, MessageLog.entries().size());
+        assertTrue(MessageLog.read(logFile()).get(0).time <= System.currentTimeMillis());
+        assertFalse(MessageLog.repairedOnRead);
     }
 
     @Test public void longMessagesAreCutWithoutSplittingAnEmoji() throws Exception {
@@ -256,6 +261,23 @@ public class MessageLogTest {
         List<MessageLog.Entry> entries = MessageLog.entries();
         assertEquals(1, entries.size());
         assertEquals("kept", entries.get(0).text);
+        // The messages a failed write couldn't keep wait in the queue, and the next write keeps them in order.
+        MessageLog.storeNow("retried", "t");
+        entries = MessageLog.entries();
+        assertEquals(List.of("retried", "also lost", "lost", "kept"), entries.stream().map(entry -> entry.text).toList());
+    }
+
+    @Test public void aLogLeftByARepatchWithoutTheControlIsDeletedWithItsKey() throws Exception {
+        MessageLog.storeNow("left behind", "t");
+        assertTrue(logFile().exists());
+        int keyBefore = softwareVault.generation;
+        java.util.concurrent.Future<?> dropped = MessageLog.dropLeftovers(Settings.appContext);
+        assertNotNull(dropped);
+        dropped.get(10, java.util.concurrent.TimeUnit.SECONDS);
+        assertFalse(logFile().exists());
+        assertNotEquals("the key goes too", keyBefore, softwareVault.generation);
+        // Nothing to drop means nothing scheduled.
+        assertNull(MessageLog.dropLeftovers(Settings.appContext));
     }
 
     @Test public void clearDropsMessagesStillWaitingToBeWritten() throws Exception {

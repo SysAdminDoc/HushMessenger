@@ -1313,13 +1313,16 @@ public final class SettingsActivity extends Activity {
         LinearLayout.LayoutParams clearParams = new LinearLayout.LayoutParams(-2, -2);
         clearParams.setMarginStart(ui.dp(8));
         actions.addView(clear, clearParams);
-        ui.add(labels, actions, 6);
+        ui.add(content, actions, 8);
     }
 
     private void showMessageLog() {
         Dialog dialog = new Dialog(this);
         messageLogDialog = dialog;
+        // The log holds chat text, so the Recents thumbnail leaves it out while it's open. Screenshots still work.
+        if (Build.VERSION.SDK_INT >= 33) setRecentsScreenshotEnabled(false);
         dialog.setOnDismissListener(dismissed -> {
+            if (Build.VERSION.SDK_INT >= 33) setRecentsScreenshotEnabled(true);
             if (messageLogDialog == dismissed) {
                 messageLogDialog = null;
                 messageLogList = null;

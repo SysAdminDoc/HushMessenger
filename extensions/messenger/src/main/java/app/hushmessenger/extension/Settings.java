@@ -33,12 +33,14 @@ public final class Settings {
         // Messenger's Application has no application context of its own until Android finishes attaching it.
         appContext = app != null ? app : context;
         Set<String> features = new HashSet<>();
-        preview = false;
-        bubbleRoutes = false;
+        // Worked out in locals: the settings and restart screens run this again, and a notification built on another
+        // thread meanwhile must not see the bubble routes drop out and back.
+        boolean previewNow = false, bubbleRoutesNow = false, listed = false;
         try {
             Bundle metadata = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA).metaData;
-            preview = metadata != null && metadata.getBoolean("hush.preview", false);
-            bubbleRoutes = preview || HostScreens.nativeBubbleRoutes() ||
+            listed = true;
+            previewNow = metadata != null && metadata.getBoolean("hush.preview", false);
+            bubbleRoutesNow = previewNow || HostScreens.nativeBubbleRoutes() ||
                     (metadata != null && metadata.getBoolean("hush.native_bubble_routes", false));
             if (metadata != null) for (String name : metadata.keySet()) {
                 if (name.startsWith("hush.feature.") && metadata.getBoolean(name, false)) features.add(name.substring(13));
@@ -48,12 +50,16 @@ public final class Settings {
         }
         // A Root Mount install keeps the stock manifest, so the controls come from the patched code instead.
         features.addAll(bundled(HostScreens.bundledControls()));
+        preview = previewNow;
+        bubbleRoutes = bubbleRoutesNow;
         installed = Collections.unmodifiableSet(features);
         // Set last: a hook that sees preferences also sees the installed controls.
         preferences = appContext.getSharedPreferences("hushmessenger", Context.MODE_PRIVATE);
         // Only the main process writes the log; its lock doesn't reach other processes.
-        if (installed.contains(MessageLog.KEY) && appContext.getPackageName().equals(android.app.Application.getProcessName())) {
-            MessageLog.scheduleExpiry();
+        if (appContext.getPackageName().equals(android.app.Application.getProcessName())) {
+            if (installed.contains(MessageLog.KEY)) MessageLog.scheduleExpiry();
+            // Only when the installed list was read for sure, so a failed read can't cost a log the control still has.
+            else if (listed && !preview) MessageLog.dropLeftovers(appContext);
         }
     }
 

@@ -156,6 +156,11 @@ public final class MessageLog {
                 save(context, entries);
                 Settings.activeAt.put(KEY, System.currentTimeMillis());
             } catch (Throwable failure) {
+                // Back in front of the queue, so the next notification's write tries them again. The cap still holds.
+                synchronized (PENDING) {
+                    for (int i = batch.size() - 1; i >= 0; i--) PENDING.addFirst(batch.get(i));
+                    while (PENDING.size() > MAX_ENTRIES) PENDING.removeFirst();
+                }
                 Settings.hookFailedPrivately(KEY, "Can't keep the message log", failure);
             }
         }
@@ -168,7 +173,7 @@ public final class MessageLog {
         try {
             synchronized (LOCK) {
                 List<Entry> entries = load(context);
-                if (prune(entries, System.currentTimeMillis())) save(context, entries);
+                if (prune(entries, System.currentTimeMillis()) || repairedOnRead) save(context, entries);
                 List<Entry> newestFirst = new ArrayList<>(entries.size());
                 for (int i = entries.size() - 1; i >= 0; i--) newestFirst.add(entries.get(i));
                 return newestFirst;
@@ -194,12 +199,23 @@ public final class MessageLog {
             synchronized (LOCK) {
                 if (!new File(context.getFilesDir(), FILE).exists()) return;
                 List<Entry> entries = load(context);
-                if (prune(entries, System.currentTimeMillis())) save(context, entries);
+                if (prune(entries, System.currentTimeMillis()) || repairedOnRead) save(context, entries);
             }
         } catch (Throwable failure) {
             // Caught here because a periodic task that throws is never run again.
             Settings.hookFailedPrivately(KEY, "Can't expire old messages in the log", failure);
         }
+    }
+
+    /**
+     * A repatch without this control leaves the file and its key behind, and the settings screen can't clear them any
+     * more. Settings calls this at startup then, so the log doesn't outlive the control. Returns the clear, or null.
+     */
+    static java.util.concurrent.Future<?> dropLeftovers(Context context) {
+        for (String name : new String[] {FILE, FILE + ".tmp", DAMAGED}) {
+            if (new File(context.getFilesDir(), name).exists()) return WRITER.submit(MessageLog::clear);
+        }
+        return null;
     }
 
     /** Deletes the file, anything set aside and the key, and drops messages still waiting to be written. */
@@ -272,8 +288,15 @@ public final class MessageLog {
         }
     }
 
+    /**
+     * Set by {@link #read} when a stored time had to be moved. The callers hold {@link #LOCK}, and they write the file
+     * back even when nothing expired, or a time the clock got wrong would read as fresh on every run and never expire.
+     */
+    static boolean repairedOnRead;
+
     static List<Entry> read(File file) throws Exception {
         List<Entry> entries = new ArrayList<>();
+        repairedOnRead = false;
         if (!file.exists()) return entries;
         if (file.length() > MAX_FILE_BYTES) throw new Damaged("too large: " + file.length(), null);
         byte[] blob = readAll(file);
@@ -297,7 +320,10 @@ public final class MessageLog {
             } catch (NumberFormatException malformed) {
                 continue;
             }
-            if (time > latest) time = System.currentTimeMillis();
+            if (time > latest) {
+                time = System.currentTimeMillis();
+                repairedOnRead = true;
+            }
             entries.add(new Entry(time, clip(unescape(parts[1]), MAX_THREAD_CHARS), clip(unescape(parts[2]), MAX_TEXT_CHARS)));
         }
         return entries;
