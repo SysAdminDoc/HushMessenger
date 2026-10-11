@@ -269,6 +269,9 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 injectNativeBubbles(methods.getValue("bubbles").single(), methods.getValue("bubble_mode").single(),
                     capability, nativeBubbleRoutesVerified)
                 nativeRoutesApplied = nativeBubbleRoutesVerified
+                // Settings then treats the control as unavailable (Settings.available), and the patcher log says why.
+                if (!nativeBubbleRoutesVerified) java.util.logging.Logger.getLogger("").warning(
+                    "Allow chat bubbles: this Messenger's native bubble routes don't match the tested build, so the switch shows as unavailable in HushMessenger settings")
             } else {
                 injectControl(key, methods)
                 inboxRoute?.let { (route, stub) -> stub.writeInboxRefreshRoute(route) }
