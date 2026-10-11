@@ -201,6 +201,38 @@ class MaterialYouPatchTest {
         }
     }
 
+    /** 582's A02 only hands its token to A01, which is already wrapped, so wrapping A02 would remap the color twice. */
+    @Test fun aReturnThatOnlyHandsBackAnotherColorsAnswerIsntRemappedTwice(@TempDir temporary: Path) {
+        val resolver = "$FDS_COLORS->A00(Landroid/content/Context;II)I"
+        val classes = themeClasses().map { cls ->
+            if (cls.type != FDS_COLORS) cls else ImmutableClassDef.of(fixtureClass(FDS_COLORS, cls.methods.toList() + listOf(
+                fixtureMethod("$FDS_COLORS->A02(Landroid/content/Context;I)I", """
+                    const/4 v0, 0x0
+                    invoke-static {p0, p1, v0}, $resolver
+                    move-result v1
+                    return v1
+                """.trimIndent(), registers = 4, flags = 9),
+                // Delegates on one path and returns its own color on the other, so only the own color is wrapped.
+                fixtureMethod("$FDS_COLORS->A03(Landroid/content/Context;I)I", """
+                    if-eqz p1, :own
+                    const/4 v0, 0x0
+                    invoke-static {p0, p1, v0}, $resolver
+                    move-result v1
+                    return v1
+                    :own
+                    const v1, -0xf7f7f7
+                    return v1
+                """.trimIndent(), registers = 4, flags = 9),
+            )))
+        }
+        withThemeContext(temporary, classes) { context, _ ->
+            materialYouPatch.execute(context)
+            fun wraps(name: String) = context.classDefBy(FDS_COLORS).methods.single { it.name == name }.implementation!!
+                .instructions.count { (it as? ReferenceInstruction)?.reference.toString() == "Lapp/hushmessenger/extension/MaterialYouTheme;->fds(I)I" }
+            assertEquals(listOf(1, 0, 1), listOf("A00", "A02", "A03").map(::wraps))
+        }
+    }
+
     private fun themeClasses() = listOf(
         fixtureClass(DARK_SCHEME, listOf(tokenMethod("DCz", "LX/Token;", "color"))),
         fixtureClass(FDS_COLORS, listOf(fixtureMethod("$FDS_COLORS->A00(Landroid/content/Context;II)I", """
