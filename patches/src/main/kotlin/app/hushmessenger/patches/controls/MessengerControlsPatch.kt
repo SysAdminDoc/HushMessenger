@@ -364,7 +364,7 @@ val stopAdEventsPatch = controlPatch("ad_events", "Stop inbox and ad link loggin
 @Suppress("unused")
 val allowScreenshotPatch = controlPatch("allow_screenshot", "Allow screenshots", "Lets you screenshot protected chat media, such as view-once photos and Quicksnap, and stops screenshot notices. It doesn't add replay or saving.", "Privacy", "allow_screenshot", "screenshot_viewers")
 @Suppress("unused")
-val hideReadReceiptsPatch = controlPatch("hide_read_receipts", "Hide read receipts", "Stops Messenger from telling people you read their message. Encrypted chats you open can stay unread on this phone. Replying or switching this off may notify the sender.", "Privacy", "hide_read_receipts", "read_mailbox")
+val hideReadReceiptsPatch = controlPatch("hide_read_receipts", "Hide read receipts", "Stops Messenger from telling people you read their message. Encrypted chats you open can stay unread on this phone. Replying or switching this off may notify the sender. Messenger's own Read receipts setting under Privacy & safety marks chats read without showing Seen.", "Privacy", "hide_read_receipts", "read_mailbox")
 @Suppress("unused")
 val keepUnsentPatch = controlPatch("keep_unsent", "Keep unsent messages", "Keeps messages on screen after someone unsends them, in chats where it works. Encrypted chats aren't supported, and group chats aren't tested.", "Privacy", "keep_unsent", "unsent_indicator", "delta_unsent")
 @Suppress("unused")
