@@ -49,7 +49,7 @@ private val expectedManifestRoles = mapOf(
     ),
 )
 
-// Component names and instruction sites match both supported arm64 APKs.
+// Component names and instruction sites match every supported 582 arm64 APK.
 internal val expectedGuardOwners = mapOf(
     APP_COMMUNICATION to mapOf(
         "activity" to setOf(

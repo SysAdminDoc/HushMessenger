@@ -13,13 +13,16 @@ internal const val MESSAGE_SOUND_KEY = "soundFile"
 internal const val MESSAGE_SOUND_LIMIT = 1_048_576L
 
 /**
- * SHA-256 of Messenger's raw/new_message, the same 11,615-byte Ogg file in all 37 supported builds.
+ * SHA-256 of Messenger's raw/new_message, the same 11,615-byte Ogg file in every supported 582 build.
  * Its path inside the APK is obfuscated and differs between builds (res/ll4.ogg, res/lns.ogg and
  * eight others), so the patch finds it by its bytes and refuses when there isn't exactly one copy.
  */
 internal const val STOCK_NEW_MESSAGE_SHA256 = "724eedfb0f57edff1b82468d3f9f9076f790a7041e55c2df42113053ed7c10c2"
 
-/** Formats Android's media player opens from an app's raw resources, keyed by file extension. */
+/**
+ * Formats Android's media player opens from an app's raw resources, keyed by file extension. Only the start of the file
+ * is checked, so a cut-off file or an MP4 video still passes, and the phone plays whatever audio it can find in it.
+ */
 internal val MESSAGE_SOUND_FORMATS: Map<String, (ByteArray) -> Boolean> = linkedMapOf(
     "ogg" to { it.startsWith("OggS") },
     "mp3" to { it.startsWith("ID3") || (it.size > 1 && it[0] == 0xFF.toByte() && (it[1].toInt() and 0xE0) == 0xE0) },

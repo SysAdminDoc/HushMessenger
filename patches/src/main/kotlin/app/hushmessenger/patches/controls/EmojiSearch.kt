@@ -82,7 +82,7 @@ internal fun Method.emojiSearchCall(): Int {
     if (!search || (before as OneRegisterInstruction).registerA != mode) searchChanged("search mode")
     // Only the plain path may jump straight to the call, or the search value could skip the extension.
     val entries = code.indices.filter { code[it] is OffsetInstruction && code.branchTarget(it) == call }
-    if (entries != listOf(plain + 1)) searchChanged("other jumps into the call")
+    if (entries != listOf(plain + 1) || call in jumpTargets(branches = false)) searchChanged("other jumps into the call")
     // The helper is a plain invoke, which reaches v15 at most. The call's own registers already fit that.
     if (mode > 15) searchChanged("register out of range")
     return call

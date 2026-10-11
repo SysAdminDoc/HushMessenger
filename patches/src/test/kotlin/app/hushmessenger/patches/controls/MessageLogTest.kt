@@ -18,8 +18,8 @@ private const val BODY_FIELD = "$MESSAGE->A0n:$SECRET_STRING"
 private const val SECRET_FIELD = "$SECRET_STRING->A00:Ljava/lang/String;"
 private const val THREAD_KEY_FIELD = "$MESSAGE->A0e:$THREAD_KEY_TYPE"
 
-private fun field(owner: String, name: String, type: String) =
-    ImmutableField(owner, name, type, AccessFlags.PUBLIC.value, null, null, null)
+private fun field(owner: String, name: String, type: String, flags: Int = AccessFlags.PUBLIC.value) =
+    ImmutableField(owner, name, type, flags, null, null, null)
 
 /** The three stock classes the message log reads from, cut down to the shape the resolver checks. */
 internal fun messageLogFixture(
@@ -47,16 +47,18 @@ internal fun messageLogFixture(
         iget-object v0, p2, $THREAD_KEY_FIELD
         return-void
     """.trimIndent(),
+    bodyFlags: Int = AccessFlags.PUBLIC.value,
+    secretFlags: Int = AccessFlags.PUBLIC.value,
 ): List<MutableClass> {
     val notificationCtor = newMessageNotificationCtor("LX/5qJ;", "LX/5Yc;")
     val secret = fixtureClass(SECRET_STRING, listOf(
         fixtureMethod("$SECRET_STRING-><init>(Ljava/lang/String;)V", secretCtor, 4),
-    ), extraFields = listOf(field(SECRET_STRING, "A00", "Ljava/lang/String;"), field(SECRET_STRING, "A01", "Ljava/lang/String;")))
+    ), extraFields = listOf(field(SECRET_STRING, "A00", "Ljava/lang/String;", secretFlags), field(SECRET_STRING, "A01", "Ljava/lang/String;")))
     val message = fixtureClass(MESSAGE, listOf(
         fixtureMethod("$MESSAGE->A0G()$SECRET_STRING", bodyGetter, 3),
         // A decoy that also returns a SecretString but names a different field, so "text" has to disambiguate.
         fixtureMethod("$MESSAGE->A0F()$SECRET_STRING", "const-string v0, \"snippet\"\niget-object v0, v1, $MESSAGE->A0m:$SECRET_STRING\nreturn-object v0", 2),
-    ), extraFields = listOf(field(MESSAGE, "A0n", SECRET_STRING), field(MESSAGE, "A0m", SECRET_STRING), field(MESSAGE, "A0e", THREAD_KEY_TYPE)))
+    ), extraFields = listOf(field(MESSAGE, "A0n", SECRET_STRING, bodyFlags), field(MESSAGE, "A0m", SECRET_STRING), field(MESSAGE, "A0e", THREAD_KEY_TYPE)))
     val notification = fixtureClass(NEW_MESSAGE_NOTIFICATION, listOf(
         fixtureMethod(notificationCtor, ctorBody, ctorRegisters),
         // The Parcel constructor the resolver must skip.
@@ -126,6 +128,26 @@ class MessageLogTest {
         val before = ctor.code()
         assertFailsWith<PatchException> { injectControl(MESSAGE_LOG, mapOf(MESSAGE_LOG to listOf(ctor))) }
         assertEquals(before, ctor.code())
+    }
+
+    /**
+     * The hook reads both fields from the notification constructor, in another package, so a private or package-private
+     * one would fail Android's verifier on every notification.
+     */
+    @Test fun aTextFieldTheNotificationCantReadRefusesTheSwitchBeforeAnyEdit() {
+        for (classes in listOf(
+            messageLogFixture(bodyFlags = AccessFlags.PRIVATE.value),
+            messageLogFixture(secretFlags = AccessFlags.PRIVATE.value),
+            messageLogFixture(bodyFlags = 0),
+            messageLogFixture(secretFlags = 0),
+        )) {
+            findControls(classes)
+            assertEquals(null, messageLogContract)
+            val ctor = ctorOf(classes)
+            val before = ctor.code()
+            assertFailsWith<PatchException> { injectControl(MESSAGE_LOG, mapOf(MESSAGE_LOG to listOf(ctor))) }
+            assertEquals(before, ctor.code())
+        }
     }
 
     @Test fun aConstructorWithoutARoomForTheHookIsRefused() {

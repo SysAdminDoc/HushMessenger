@@ -111,6 +111,26 @@ class EmojiSearchTest {
                 const-string v0, "expression"
                 goto :call
             """.trimIndent(), registers = 12),
+            // A switch case isn't a branch instruction's target, so it needs its own check.
+            "a switch case lands on the call" to fixtureMethod(WATCHER, """
+                const-string v2, "afterTextChanged"
+                iget-object v1, p0, LX/7Sa;->A05:LX/H7o;
+                packed-switch v3, :cases
+                if-eqz v10, :plain
+                $LOOKUP
+                :call
+                invoke-interface {v1, v0}, LX/H7o;->DUX(Ljava/lang/String;)V
+                goto :done
+                :plain
+                const-string v0, "expression"
+                goto :call
+                :done
+                return-void
+                :cases
+                .packed-switch 0x1
+                :call
+                .end packed-switch
+            """.trimIndent(), registers = 12),
             "plain mode doesn't jump" to fixtureMethod(WATCHER, """
                 const-string v2, "afterTextChanged"
                 const-string v0, "expression"

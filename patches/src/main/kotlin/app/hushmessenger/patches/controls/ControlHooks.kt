@@ -115,7 +115,8 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
                 it.returnType == IMMUTABLE_LIST && AccessFlags.PUBLIC.isSet(it.accessFlags) && AccessFlags.STATIC.isSet(it.accessFlags)
         }
     }
-    // Static fields initialized from the Notifications tab's own "hide suggestions" preference key.
+    // Static fields stored by any class initializer that mentions the Notifications tab's "hide suggestions" preference
+    // key. validatePeopleSection checks the exact key before anything is edited.
     val peopleJewelKeys = classes.flatMap { cls ->
         val code = cls.methods.singleOrNull { it.name == "<clinit>" }?.implementation?.instructions?.toList().orEmpty()
         if (code.none { ((it as? ReferenceInstruction)?.reference as? StringReference)?.string == PEOPLE_JEWEL_KEY }) emptyList()
@@ -161,10 +162,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
         messageIdGetterName = rawId
         messageIsUnsentGetterName = rawUnsent
         for (wrapperCls in classes) {
-            if (!AccessFlags.ABSTRACT.isSet(wrapperCls.accessFlags) || wrapperCls.interfaces.size != 1) continue
-            val wf = wrapperCls.fields.filter { !AccessFlags.STATIC.isSet(it.accessFlags) }
-            if (wf.size != 1 || wf[0].type != "Ljava/util/List;") continue
-            if (wrapperCls.methods.none { it.name == "getCount" && it.returnType == "I" && it.parameterTypes.isEmpty() }) continue
+            if (!wrapperCls.isRowWrapper()) continue
             fun resolve(raw: String, ret: String): String {
                 if (wrapperCls.methods.any { it.name == raw && it.returnType == ret && it.parameterTypes == listOf("I") }) return raw
                 return wrapperCls.methods.firstOrNull { wm ->
@@ -197,7 +195,11 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
                 try {
                     method.screenshotViewerSites()
                     add("screenshot_viewers")
-                } catch (_: PatchException) { changedViewer = true }
+                } catch (refusal: PatchException) {
+                    // The reason would be lost behind the generic "hooks differ", so validateControls repeats it.
+                    changedViewer = true
+                    screenshotViewerRefusal = refusal.message
+                }
             }
             val instructions = method.implementation?.instructions?.toList() ?: continue
             val refs = instructions.mapNotNull { (it as? ReferenceInstruction)?.reference }
@@ -265,22 +267,13 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
             if (method.returnType == "V" && method.parameterTypes.size == 3 &&
                 method.parameterTypes[0] == "Landroid/content/Intent;" &&
                 strings.any { "ACTION_REVOKE_MESSAGE" in it }) add("keep_unsent")
-            if (messageTextGetterName.isNotEmpty() &&
-                method.name == messageTextGetterName &&
+            // Both unsent hooks call the wrapper's own message id getter, so the wrapper that holds them has to have one.
+            if (messageTextGetterName.isNotEmpty() && method.name == messageTextGetterName &&
                 method.returnType == "Ljava/lang/String;" && method.parameterTypes == listOf("I") &&
-                AccessFlags.ABSTRACT.isSet(cls.accessFlags) && cls.interfaces.size == 1) {
-                val instanceFields = cls.fields.filter { !AccessFlags.STATIC.isSet(it.accessFlags) }
-                if (instanceFields.size == 1 && instanceFields[0].type == "Ljava/util/List;" &&
-                    cls.methods.any { it.name == "getCount" && it.returnType == "I" && it.parameterTypes.isEmpty() }) add("unsent_indicator")
-            }
-            if (messageIsUnsentGetterName.isNotEmpty() &&
-                method.name == messageIsUnsentGetterName &&
+                cls.isRowWrapper() && cls.hasMessageIdGetter()) add("unsent_indicator")
+            if (messageIsUnsentGetterName.isNotEmpty() && method.name == messageIsUnsentGetterName &&
                 method.returnType == "Z" && method.parameterTypes == listOf("I") &&
-                AccessFlags.ABSTRACT.isSet(cls.accessFlags) && cls.interfaces.size == 1) {
-                val instanceFields = cls.fields.filter { !AccessFlags.STATIC.isSet(it.accessFlags) }
-                if (instanceFields.size == 1 && instanceFields[0].type == "Ljava/util/List;" &&
-                    cls.methods.any { it.name == "getCount" && it.returnType == "I" && it.parameterTypes.isEmpty() }) add("delta_unsent")
-            }
+                cls.isRowWrapper() && cls.hasMessageIdGetter()) add("delta_unsent")
             if (method.returnType == "Z" && AccessFlags.STATIC.isSet(method.accessFlags) &&
                 method.parameterTypes == listOf(cls.type) &&
                 strings.any { "SearchAiagentImplementationsKillSwitch" in it }) add("ai_search")
@@ -366,7 +359,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
         chip?.methods?.singleOrNull { it.name == "render" && it.returnType == field.returnType }
             ?.let { found.getValue("ai_search_chip").add(it) }
     }
-    if (changedViewer) found.getValue("screenshot_viewers").clear()
+    if (changedViewer) found.getValue("screenshot_viewers").clear() else screenshotViewerRefusal = null
     found.getValue(EMOJI_DRAWER).addAll(connectEmojiDrawer(drawerReaders, drawerAnchors))
     found.getValue(EMOJI_SEARCH).addAll(findEmojiSearch(classes))
     found.getValue(DISAPPEARING_SWIPE).addAll(findDisappearingSwipe(classes))
@@ -389,11 +382,15 @@ internal fun validateControls(
         val expected = activeProfile.hooks.getValue(feature)
         val actual = found[feature].orEmpty().map { it.hookId() }
         if (actual.size != expected.size || actual.toSet() != expected) {
-            throw PatchException("Messenger controls: $feature hooks differ from the tested build. " +
+            val why = screenshotViewerRefusal?.takeIf { feature == "screenshot_viewers" }?.let { " $it." } ?: ""
+            throw PatchException("Messenger controls: $feature hooks differ from the tested build.$why " +
                 "Use an unmodified arm64 Messenger ${MessengerTarget.supportedApks(versions)}.")
         }
     }
 }
+
+/** Why the screenshot viewer hooks were dropped during discovery, so the refusal can say more than "differ". */
+internal var screenshotViewerRefusal: String? = null
 
 /** New plugin gates use the same switch/pause contract without one Java getter per feature. */
 internal fun MutableMethod.injectFeatureSwitch(key: String) {
@@ -644,8 +641,11 @@ internal fun List<Instruction>.branchTarget(index: Int): Int {
     return -1
 }
 
-/** Instruction indexes a branch, a switch case or a catch handler can land on. */
-internal fun Method.jumpTargets(): Set<Int> {
+/**
+ * Instruction indexes a branch, a switch case or a catch handler can land on. With [branches] false, only the switch
+ * cases and catch handlers, for a check that already counts the plain branches itself.
+ */
+internal fun Method.jumpTargets(branches: Boolean = true): Set<Int> {
     val code = implementation!!.instructions.toList()
     val addresses = IntArray(code.size + 1)
     for (i in code.indices) addresses[i + 1] = addresses[i] + code[i].codeUnits
@@ -658,7 +658,7 @@ internal fun Method.jumpTargets(): Set<Int> {
             // Case offsets count from the switch instruction, not from its payload.
             (indexAt[landing]?.let(code::get) as? SwitchPayload)?.switchElements
                 ?.forEach { case -> indexAt[addresses[i] + case.offset]?.let(targets::add) }
-        } else indexAt[landing]?.let(targets::add)
+        } else if (branches) indexAt[landing]?.let(targets::add)
     }
     implementation!!.tryBlocks.forEach { block ->
         block.exceptionHandlers.forEach { handler -> indexAt[handler.handlerCodeAddress]?.let(targets::add) }
@@ -666,7 +666,23 @@ internal fun Method.jumpTargets(): Set<Int> {
     return targets
 }
 
-/** The Notifications tab's server flag ID. Each release renumbers it. */
+/** The register that holds parameter p[n], counting `this` as p0 on an instance method. */
+internal fun Method.parameterRegister(n: Int): Int {
+    val words = parameterTypes.sumOf { if (it == "J" || it == "D") 2 else 1 } + if (AccessFlags.STATIC.isSet(accessFlags)) 0 else 1
+    return implementation!!.registerCount - words + n
+}
+
+/** An abstract row wrapper: one interface, one List field and a getCount(), the shape both unsent hooks live in. */
+internal fun ClassDef.isRowWrapper(): Boolean =
+    AccessFlags.ABSTRACT.isSet(accessFlags) && interfaces.size == 1 &&
+        fields.filter { !AccessFlags.STATIC.isSet(it.accessFlags) }.let { it.size == 1 && it[0].type == "Ljava/util/List;" } &&
+        methods.any { it.name == "getCount" && it.returnType == "I" && it.parameterTypes.isEmpty() }
+
+/** The unsent hooks are assembled with the message id getter's name, so an empty or missing one stops discovery. */
+internal fun ClassDef.hasMessageIdGetter(): Boolean = messageIdGetterName.isNotEmpty() &&
+    methods.any { it.name == messageIdGetterName && it.returnType == "Ljava/lang/String;" && it.parameterTypes == listOf("I") }
+
+/** The Notifications tab's server flag ID. Meta renumbers it with each release; this is 582's. */
 private val PEOPLE_SERVER_FLAGS = setOf(72344188615734930L)
 
 /**
@@ -785,7 +801,7 @@ internal fun MutableMethod.validatePeopleSearch(): Triple<Int, Int, Int> {
     val result = code.getOrNull(end - 1)
     val field = (status as? ReferenceInstruction)?.reference as? FieldReference
     val call = (wrap as? ReferenceInstruction)?.reference as? DexMethodReference
-    val targets = code.indices.map { code.branchTarget(it) }.toSet()
+    val targets = jumpTargets()
     val matches = !AccessFlags.STATIC.isSet(accessFlags) && end >= 3 &&
         status?.opcode == Opcode.SGET_OBJECT && field?.type == "Ljava/lang/Integer;" &&
         wrap?.opcode == Opcode.INVOKE_STATIC && call != null && call.returnType == returnType &&
@@ -1102,6 +1118,9 @@ internal fun MutableMethod.validateKeepUnsent() {
     if (returnType != "V") throw PatchException("Messenger controls: keep_unsent hook must return void")
     if (parameterTypes.getOrNull(0) != "Landroid/content/Intent;")
         throw PatchException("Messenger controls: keep_unsent hook first param must be Intent")
+    // The hook reads the Intent from p1 with a plain invoke, so this has to be an instance method with p1 in reach.
+    if (AccessFlags.STATIC.isSet(accessFlags) || parameterRegister(1) > 15)
+        throw PatchException("Messenger controls: keep_unsent hook must be an instance method with its Intent at v15 or below")
 }
 
 internal fun MutableMethod.injectKeepUnsent() {
@@ -1126,7 +1145,8 @@ internal fun MutableMethod.validateUnsentIndicator() {
     val shape = listOf(Opcode.IGET_OBJECT, Opcode.INVOKE_INTERFACE, Opcode.MOVE_RESULT_OBJECT, Opcode.CHECK_CAST,
         Opcode.INVOKE_INTERFACE, Opcode.MOVE_RESULT_OBJECT, Opcode.RETURN_OBJECT)
     if (code.size != shape.size) throw PatchException("Messenger controls: unsent_indicator hook has ${code.size} instructions, expected ${shape.size}")
-    if (code.map { it.opcode } != shape || (code.last() as OneRegisterInstruction).registerA != 0 || implementation!!.registerCount != 3)
+    if (code.map { it.opcode } != shape || (code.last() as OneRegisterInstruction).registerA != 0 || implementation!!.registerCount != 3 ||
+        AccessFlags.STATIC.isSet(accessFlags))
         throw PatchException("Messenger controls: unsent_indicator hook no longer reads the row's text from its list")
 }
 
@@ -1149,6 +1169,12 @@ internal fun MutableMethod.validateDeltaUnsent() {
     if (code.size != 5) throw PatchException("Messenger controls: delta_unsent hook has ${code.size} instructions, expected 5")
     if (code[4].opcode != Opcode.RETURN) throw PatchException("Messenger controls: delta_unsent hook must end with return")
     if (code[0].opcode != Opcode.INVOKE_STATIC) throw PatchException("Messenger controls: delta_unsent hook must start with invoke-static")
+    // The hook passes v0 on as the answer and calls the id getter on p0 with p1, so the answer has to end in v0 of an
+    // instance method whose p0 and p1 are v1 and v2.
+    val answer = code[3]
+    if (answer.opcode != Opcode.MOVE_RESULT || (answer as OneRegisterInstruction).registerA != 0 ||
+        (code[4] as OneRegisterInstruction).registerA != 0 || implementation!!.registerCount != 3 || AccessFlags.STATIC.isSet(accessFlags))
+        throw PatchException("Messenger controls: delta_unsent hook no longer answers from v0 of a three-register instance method")
 }
 
 internal fun MutableMethod.injectDeltaUnsent() {
@@ -1178,9 +1204,12 @@ internal fun MutableMethod.validateStorySeen(): Int {
         insn.opcode == Opcode.INVOKE_STATIC && (insn as ReferenceInstruction).reference.toString() == IMMUTABLE_LIST_OF &&
             (insn as FiveRegisterInstruction).registerCount == 1 && insn.registerC == card
     }
-    if (cache <= 1 || cache !in jumpTargets()) {
+    val targets = jumpTargets()
+    if (cache <= 1 || cache !in targets) {
         throw PatchException("Messenger controls: the story mark-read handler's local seen update isn't where the send ends")
     }
+    // The gate goes in at index 1, and a jump back there would send the seen state past it.
+    if (1 in targets) throw PatchException("Messenger controls: the story mark-read handler jumps back to its start")
     val send = code.subList(1, cache)
     val exits = setOf(Opcode.RETURN_VOID, Opcode.RETURN, Opcode.RETURN_WIDE, Opcode.RETURN_OBJECT, Opcode.THROW)
     if (send.any { it.opcode in exits } ||

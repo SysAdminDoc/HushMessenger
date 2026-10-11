@@ -102,7 +102,9 @@ internal fun Method.inboxVisibilitySubmit(): VisibilitySubmit {
     } ?: refuse()
     val skipped = name + 1..submit
     val targets = jumpTargets()
-    if (skipped.any { it in targets || code[it] is OffsetInstruction || !code[it].opcode.canContinue() }) refuse()
+    // Skipping half of a lock pair would leave the lock held, or release one this thread never took.
+    if (skipped.any { it in targets || code[it] is OffsetInstruction || !code[it].opcode.canContinue() ||
+            code[it].opcode == Opcode.MONITOR_ENTER || code[it].opcode == Opcode.MONITOR_EXIT }) refuse()
     for (i in name + 1 until submit) {
         val call = (code[i] as? ReferenceInstruction)?.reference as? MethodReference
         val receiver = when (val instruction = code[i]) {

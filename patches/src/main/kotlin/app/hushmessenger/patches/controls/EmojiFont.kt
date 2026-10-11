@@ -50,8 +50,9 @@ internal fun Method.emojiFontHolder(classDefBy: (String) -> ClassDef?): String {
 internal fun Method.validateEmojiFontHolder() {
     val first = implementation?.instructions?.firstOrNull()
     val call = (first as? ReferenceInstruction)?.reference as? MethodReference
+    // The file arrives in p2, which a plain invoke can only pass from v15 or below.
     if (first?.opcode != Opcode.INVOKE_DIRECT || call?.definingClass != "Ljava/lang/Object;" || call.name != "<init>" ||
-        1 in jumpTargets()) emojiFontChanged()
+        1 in jumpTargets() || parameterRegister(2) > 15) emojiFontChanged()
 }
 
 /** Messenger still loads its own font; the extension learns where it lives so its glyphs can sit behind the phone's. */

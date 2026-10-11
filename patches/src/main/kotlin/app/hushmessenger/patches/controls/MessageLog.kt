@@ -89,6 +89,9 @@ internal fun resolveMessageLogContract(classes: Iterable<ClassDef>): MessageLogC
             fieldId(reference) else null
     }.distinct()
     val secretField = secretFields.singleOrNull() ?: return null
+    // The hook reads both from the notification class, so one it can't access would fail the verifier on every
+    // notification.
+    if (!message.declaresReadable(body, NEW_MESSAGE_NOTIFICATION) || !secret.declaresReadable(secretField, NEW_MESSAGE_NOTIFICATION)) return null
 
     // The thread key is whatever ThreadKey field the notification constructor itself loads from the message.
     val ctor = messageLogHook(notification) ?: return null
@@ -96,6 +99,14 @@ internal fun resolveMessageLogContract(classes: Iterable<ClassDef>): MessageLogC
     val threadKeyField = threadKeys.singleOrNull() ?: return null
 
     return MessageLogContract(body, secretField, threadKeyField)
+}
+
+/** Whether the class declares [fieldId] as a field code in [reader] may read: public, or non-private in its package. */
+private fun ClassDef.declaresReadable(fieldId: String, reader: String): Boolean {
+    val field = fields.firstOrNull { fieldId(it) == fieldId } ?: return false
+    fun pkg(type: String) = type.substringBeforeLast('/')
+    return AccessFlags.PUBLIC.isSet(field.accessFlags) ||
+        (!AccessFlags.PRIVATE.isSet(field.accessFlags) && pkg(type) == pkg(reader))
 }
 
 private fun messageLogHook(notification: ClassDef): Method? = notification.methods.singleOrNull {

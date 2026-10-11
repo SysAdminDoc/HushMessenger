@@ -60,9 +60,10 @@ val restoreTrustPatch = bytecodePatch(
         val method = PackageSignersFingerprint.method
         val owner = mutableClassDefBy(method.definingClass)
 
-        val packageInfoFields = owner.fields.filter { it.type == PACKAGE_INFO }
+        // The hook reads the field off `this` with iget-object, so it has to be an instance field.
+        val packageInfoFields = owner.fields.filter { it.type == PACKAGE_INFO && !AccessFlags.STATIC.isSet(it.accessFlags) }
         check(packageInfoFields.size == 1) {
-            "Expected 1 PackageInfo field on ${method.definingClass}, found ${packageInfoFields.size}"
+            "Expected 1 PackageInfo instance field on ${method.definingClass}, found ${packageInfoFields.size}"
         }
         val packageInfo = packageInfoFields.single().name
 
@@ -89,9 +90,12 @@ val restoreTrustPatch = bytecodePatch(
  * compiler leaves out an instruction whose register doesn't fit, without a word.
  */
 internal fun MutableMethod.answerOriginalSigners(packageInfo: String, signers: String) {
-    val self = if (AccessFlags.STATIC.isSet(accessFlags)) 0 else 1
+    // The smali below copies p0 as `this`, which a static method doesn't have.
+    if (AccessFlags.STATIC.isSet(accessFlags)) throw PatchException(
+        "Restore screens on re-signed builds: $definingClass->$name is static, expected an instance method"
+    )
     val paramWidth = parameterTypes.sumOf { if (it == "J" || it == "D") 2 else 1 }
-    val locals = implementation!!.registerCount - self - paramWidth
+    val locals = implementation!!.registerCount - 1 - paramWidth
     if (locals < 3) throw PatchException(
         "Restore screens on re-signed builds: $definingClass->$name has $locals local register(s), needs 3"
     )

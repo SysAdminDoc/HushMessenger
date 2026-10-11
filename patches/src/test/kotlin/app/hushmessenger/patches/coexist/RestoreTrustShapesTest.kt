@@ -21,13 +21,13 @@ class RestoreTrustShapesTest {
     private val originalSigners = "Lapp/hushmessenger/extension/MessengerSignature;->" +
         "originalSigners(Landroid/content/pm/PackageInfo;)Ljava/util/List;"
 
-    private fun signersMethod(registers: Int): MutableMethod = MutableMethod(
+    private fun signersMethod(registers: Int, flags: Int = AccessFlags.PUBLIC.value or AccessFlags.FINAL.value): MutableMethod = MutableMethod(
         ImmutableMethod(
             "Lfixture/Trust;",
             "signers",
             emptyList(),
             "Lfixture/Signers;",
-            AccessFlags.PUBLIC.value or AccessFlags.FINAL.value,
+            flags,
             null,
             null,
             ImmutableMethodImplementation(registers, emptyList(), null, null),
@@ -81,5 +81,14 @@ class RestoreTrustShapesTest {
             assertThrows(PatchException::class.java, { signersMethod(registers).answerOriginalSigners("packageInfo", "Lfixture/Signers;") },
                 "$registers registers")
         }
+    }
+
+    @Test
+    fun `a static method has no this to read the field from and stops the patch`() {
+        val method = signersMethod(6, AccessFlags.PUBLIC.value or AccessFlags.STATIC.value)
+        val before = method.body()
+        val failure = assertThrows(PatchException::class.java) { method.answerOriginalSigners("packageInfo", "Lfixture/Signers;") }
+        assertEquals(true, failure.message.orEmpty().contains("is static"))
+        assertEquals(before, method.body())
     }
 }

@@ -97,6 +97,35 @@ class ControlsTest {
         assertFailsWith<PatchException> { otherRegister.validateUnsentIndicator() }
     }
 
+    @Test fun unsentFlagHookMustAnswerFromV0OfAnInstanceMethod() {
+        messageWrapperFixture().methods.single { it.name == "Btd" }.validateDeltaUnsent()
+        fun flag(body: String, registers: Int = 3, flags: Int = AccessFlags.PUBLIC.value) =
+            fixtureMethod("Lfixture/MessageWrapper;->Btd(I)Z", body.trimIndent(), registers, flags)
+        val stock = """
+            invoke-static {p0, p1}, Lfixture/MessageWrapper;->A00(Lfixture/MessageWrapper;I)Lfixture/KKn;
+            move-result-object v0
+            invoke-interface {v0}, Lfixture/KKn;->Btc()Z
+            move-result v0
+            return v0
+        """
+        flag(stock).validateDeltaUnsent()
+        val otherRegister = stock.replace("move-result v0", "move-result p1").replace("return v0", "return p1")
+        assertFailsWith<PatchException> { flag(otherRegister).validateDeltaUnsent() }
+        assertFailsWith<PatchException> { flag(stock, registers = 4).validateDeltaUnsent() }
+        val static = stock.replace("{p0, p1}", "{p0, v1}")
+        assertFailsWith<PatchException> { flag(static, flags = AccessFlags.PUBLIC.value or AccessFlags.STATIC.value).validateDeltaUnsent() }
+    }
+
+    @Test fun keptUnsentHookMustBeAnInstanceMethodWithItsIntentInReach() {
+        fun revoke(registers: Int, flags: Int = AccessFlags.PUBLIC.value) = fixtureMethod(
+            "Lfixture/Revoke;->A00(Landroid/content/Intent;Ljava/lang/String;Ljava/lang/Object;)V", "return-void", registers, flags)
+        revoke(5).validateKeepUnsent()
+        assertFailsWith<PatchException> { revoke(5, AccessFlags.PUBLIC.value or AccessFlags.STATIC.value).validateKeepUnsent() }
+        // p1 lands on v15 with 18 registers and on v16 with 19, where a plain invoke can't reach it.
+        revoke(18).validateKeepUnsent()
+        assertFailsWith<PatchException> { revoke(19).validateKeepUnsent() }
+    }
+
     @Test fun settingsHaveALauncherEntryAndAPrivateProviderWithoutChangingHostPermissions() {
         val document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ByteArrayInputStream(
             """<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application><activity android:name="stock.Activity" android:permission="stock.permission" /></application></manifest>""".toByteArray(),

@@ -201,6 +201,8 @@ class AdEventsTest {
                 "invoke-interface {v0, v11}, Ljava/util/List;->add(Ljava/lang/Object;)Z"),
             "the event code writes a static" to VISIBILITY_BODY.replace(getter, "sput-boolean v13, LX/24f;->A09:Z"),
             "the event code writes an array" to VISIBILITY_BODY.replace(getter, "aput v6, v0, v6"),
+            "the event code takes a lock" to VISIBILITY_BODY.replace(getter, "monitor-enter v11"),
+            "the event code releases a lock" to VISIBILITY_BODY.replace(getter, "monitor-exit v11"),
             "the rethrow reads the event" to VISIBILITY_BODY.replace("move-exception v1\nthrow v1",
                 "move-exception v1\ninvoke-static {v2, v1}, LX/36T;->A01(Ljava/lang/Object;Ljava/lang/Throwable;)V\nthrow v1"),
         )

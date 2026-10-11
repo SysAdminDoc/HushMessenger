@@ -280,8 +280,9 @@ internal fun prepareLegacyDrawer(
         drawerChanged("settings row receiver changed")
     val iconResult = add.drawerOrigin(rowCallAt, rowArgs[3])
     val addCode = add.drawerCode()
-    // The factory below rebuilds the Settings icon the same way the native builder does: 582's main family constructs it in
-    // place from the glyph and a color, the other family calls the icon's static factory with the glyph.
+    // The factory below rebuilds the Settings icon the same way the native builder does: the twelve 582 builds on the
+    // 346415686 mapping construct it in place from the glyph and a color, 346415706 and 346415707 call the icon's static
+    // factory with the glyph.
     val (settingsGlyph, iconSetup) = if (addCode[iconResult].opcode == Opcode.NEW_INSTANCE) {
         val iconType = addCode[iconResult].drawerRef().toString()
         val ctorAt = iconResult + 1
@@ -373,6 +374,8 @@ internal fun prepareLegacyDrawer(
         kind.name != "A1P" || state.name != "A01" || kind.type != INTEGER || state.type != INTEGER ||
         kind.definingClass != state.definingClass) drawerChanged("native section constants changed")
     models.field(kind, true); models.field(state, true)
+    // Stock passes its own section model as the first argument, where this one-row section passes null, and the other
+    // nulls and zeros aren't compared with a stock call argument by argument. The drawer has drawn and opened it this way.
     val generated = MutableMethod(ImmutableMethod(stub.definingClass, stub.name, stub.parameters, stub.returnType,
         stub.accessFlags, stub.annotations, stub.hiddenApiRestrictions, ImmutableMethodImplementation(11, emptyList(), null, null)))
     generated.addInstructions(0, "move-object v1, p0\nconst/4 v2, 0x0\n$iconSetup\n" + """

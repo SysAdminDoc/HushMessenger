@@ -32,7 +32,7 @@ private const val ADD_ITEM = "$FRAGMENT->A0f($ICON$FRAGMENT${MENU}Ljava/lang/Str
 private const val CONTROLLER = "$FRAGMENT->A0D($FRAGMENT)LX/JQP;"
 private const val SAVE_ID = 0x7f0b0652L
 
-/** Build 346013440 lists the card controllers Save works for. */
+/** The card controllers Save works for, listed as 580 (346013440) first did and 582 still does. */
 private val CARD_TYPES = """
     instance-of v1, v2, LX/HBq;
     if-nez v1, :save

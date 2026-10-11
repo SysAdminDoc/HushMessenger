@@ -53,6 +53,16 @@ class AnonymousStoriesTest {
         assertTrue(code.none { it is ReferenceInstruction && reference(it).contains("markStorySeen") })
     }
 
+    /** The gate sits at index 1, so a jump back there would run the send without asking it. */
+    @Test fun aHandlerThatJumpsBackToItsStartIsRejectedBeforeAnyEdit() {
+        val method = handler(STORY_MARK_READ_BODY.lf()
+            .replace("const/4 v0, 0x0\n", "const/4 v0, 0x0\n:again\n")
+            .replace("const-string v3, \"StoryOptimisticMarkRead\"\n", "const-string v3, \"StoryOptimisticMarkRead\"\nif-eqz v3, :again\n"))
+        val before = method.implementation!!.instructions.toList()
+        assertFailsWith<PatchException> { method.injectStorySeen() }
+        assertEquals(before, method.implementation!!.instructions.toList())
+    }
+
     @Test fun readSetIsTheClassTheLocalUpdateHandsTheCardTo() {
         val add = handler().storyReadSetAdd()
         assertEquals(STORY_READ_SET_ADD, add.toString())
