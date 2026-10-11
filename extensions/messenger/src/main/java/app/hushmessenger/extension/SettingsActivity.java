@@ -130,7 +130,7 @@ public final class SettingsActivity extends Activity {
         {"disappearing_swipe", "Turn off the swipe up for disappearing messages", "Swiping up at the bottom of a chat no longer turns on disappearing messages. Scrolling works as usual, and you can still set them in the chat's settings.", "conversations"},
         {"system_camera", "Use the phone's camera app", "The camera button in a chat opens your phone's camera app. The photo opens in Messenger's editor, ready to send. Photos only.", "conversations"},
         {"external_browser", "Open web links externally", "Opens web links (http and https) in your default browser. Other link types work as before.", "links_bubbles"},
-        {"bubbles", "Allow chat bubbles", "Choose Stock, Chat Heads or Native Bubbles below. Native Bubbles needs Android 11 or newer, a supported account and notification permission. Restart Messenger after changing.", "links_bubbles"},
+        {"bubbles", "Allow chat bubbles", "Choose Stock, Chat heads or Native Bubbles below. Native Bubbles needs Android 11 or newer, a supported account and notification permission. Restart Messenger after changing.", "links_bubbles"},
         {"analytics_uploads", "Stop analytics uploads", "Stops Messenger's background services from uploading usage statistics. It still records them on your phone, and they can upload after you turn this off.", "privacy"},
         {"attribution_uploads", "Stop ad attribution uploads", "Stops the job that reads your phone's advertising ID and sends it to Meta with your ad tracking setting. The ID itself doesn't change.", "privacy"},
         {"ad_events", "Stop inbox and ad link logging", "Stops two reports Messenger logs. One says which part of your chat list was on screen, which Messenger files under inbox ads. The other says which ad brought you in when a link from an ad opens a chat.", "privacy"},
@@ -507,11 +507,13 @@ public final class SettingsActivity extends Activity {
                 groups.add(group);
             }
             LinearLayout row = controlRow(spec[0], text.control(spec, 1), text.control(spec, 2), true);
-            if ("bubbles".equals(spec[0]) || OwnFont.KEY.equals(spec[0])) {
+            if ("bubbles".equals(spec[0]) || OwnFont.KEY.equals(spec[0]) || MessageLog.KEY.equals(spec[0])) {
+                // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
                 ui.add(wrapper, row, 0);
                 if ("bubbles".equals(spec[0])) addBubbleModes(wrapper);
-                else addFontFile(wrapper);
+                else if (OwnFont.KEY.equals(spec[0])) addFontFile(wrapper);
+                else addMessageLogActions(wrapper);
                 row = wrapper;
             }
             row.setTag(spec[3]);
@@ -571,8 +573,8 @@ public final class SettingsActivity extends Activity {
             bubbleModes.add(choice);
         }
         ui.add(content, modes, 8);
-        ui.add(content, ui.text(text.get(Settings.available("bubbles") ? "bubble_help" :
-            Build.VERSION.SDK_INT >= 30 ? "bubble_unsupported" : "unavailable"), 13, ui.muted, false), 8);
+        // An unavailable bundle already says so in the row's description.
+        if (Settings.available("bubbles")) ui.add(content, ui.text(text.get("bubble_help"), 13, ui.muted, false), 8);
         if (Build.VERSION.SDK_INT >= 30) {
             Button permissions = ui.button(text.get("bubble_permissions"));
             permissions.setTag("bubble_permissions");
@@ -613,9 +615,12 @@ public final class SettingsActivity extends Activity {
     private void refreshFontFile() {
         if (fontStatus == null) return;
         String name = Settings.preferences.getString(OwnFont.NAME_KEY, "");
-        boolean copy = FontFile.file(this).isFile(), busy = fontBusy.get();
-        String status = busy ? text.get("font_file_copying") : name.isEmpty() ? text.get("font_file_none", FontFile.MAX_MEGABYTES)
-            : text.get(copy ? "font_file_using" : "font_file_missing", name);
+        boolean copy = FontFile.file(this).isFile(), busy = fontBusy.get(), on = Settings.preferences.getBoolean(OwnFont.KEY, false);
+        // With the switch off nothing here is in use yet, so the line says what turning it on would do.
+        String status = busy ? text.get("font_file_copying")
+            : name.isEmpty() ? text.get(on ? "font_file_none" : "font_file_none_off", FontFile.MAX_MEGABYTES)
+            : !copy ? text.get("font_file_missing", name)
+            : text.get(on ? "font_file_using" : "font_file_picked_off", name);
         if (!status.contentEquals(fontStatus.getText())) fontStatus.setText(status);
         fontChoose.setEnabled(!busy);
         fontPhone.setEnabled(!busy);
@@ -705,9 +710,9 @@ public final class SettingsActivity extends Activity {
         return segment == null ? null : segment.substring(Math.max(segment.lastIndexOf('/'), segment.lastIndexOf(':')) + 1);
     }
 
-    /** One line with no control or formatting characters, at most {@link #MAX_FONT_NAME} long, and "font" when nothing's left. */
+    /** One line with no control or formatting characters, at most {@link #MAX_FONT_NAME} long, and a stand-in when nothing's left. */
     static String cleanFontName(String name) {
-        if (name == null) return "font";
+        if (name == null) return "your font file";
         StringBuilder clean = new StringBuilder();
         int kept = 0;
         for (int index = 0; index < name.length() && kept < MAX_FONT_NAME; ) {
@@ -720,7 +725,7 @@ public final class SettingsActivity extends Activity {
             kept++;
         }
         String trimmed = clean.toString().trim().replaceAll(" {2,}", " ");
-        return trimmed.isEmpty() ? "font" : trimmed;
+        return trimmed.isEmpty() ? "your font file" : trimmed;
     }
 
     /** Back on the main thread: the page showing the rows now, which may be a newer one than started the copy. */
@@ -791,7 +796,6 @@ public final class SettingsActivity extends Activity {
             activityLabels.put(key, activeLabel);
             ui.add(labels, activeLabel, 4);
         }
-        if ("message_log".equals(key)) addMessageLogActions(labels);
         row.addView(labels, new LinearLayout.LayoutParams(0, -2, 1));
         Switch control = ui.toggle(key, text.display(title), text.display(("ads".equals(key) ? text.format("experimental") + ". " : "") + description), Settings.preferences.getBoolean(key, false));
         LinearLayout.LayoutParams switchParams = new LinearLayout.LayoutParams(ui.dp(48), -2);
@@ -979,7 +983,7 @@ public final class SettingsActivity extends Activity {
             try { startActivityForResult(picker, READ_CHOICES); }
             catch (android.content.ActivityNotFoundException | SecurityException error) {
                 documentImport = false;
-                feedback(text.get("import_invalid"), Toast.LENGTH_LONG);
+                feedback(text.get("choices_file_no_picker"), Toast.LENGTH_LONG);
             }
         });
         ui.add(about, readFile, 8);
@@ -991,7 +995,8 @@ public final class SettingsActivity extends Activity {
         cancelChoicesFile = ui.button(text.get("cancel_choices_file"));
         cancelChoicesFile.setTag("cancel_choices_file");
         cancelChoicesFile.setVisibility(View.GONE);
-        cancelChoicesFile.setOnClickListener(view -> cancelDocumentJob("choices_file_canceled"));
+        cancelChoicesFile.setOnClickListener(view -> cancelDocumentJob(
+            documentJob != null && documentJob.request == READ_CHOICES ? "choices_file_canceled_read" : "choices_file_canceled"));
         ui.add(about, cancelChoicesFile, 8);
         ui.add(about, ui.text(text.get("choices_file_help"), 13, ui.muted, false), 8);
         ui.add(content, about, 12);
@@ -1027,6 +1032,13 @@ public final class SettingsActivity extends Activity {
         support.setFocusable(true);
         support.setBackground(ui.interactive(ui.surface, ui.line, 8));
         support.setContentDescription(text.get("support") + ". " + text.get("support_help"));
+        support.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+            @Override public void onInitializeAccessibilityNodeInfo(View host, android.view.accessibility.AccessibilityNodeInfo info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+                // A panel that opens a page is a button to a screen reader.
+                info.setClassName(Button.class.getName());
+            }
+        });
         ui.add(support, ui.text(text.get("support"), 16, ui.accent, true), 0);
         ui.add(support, ui.text(text.get("support_help"), 14, ui.muted, false), 4);
         support.setOnClickListener(view -> openPage(SUPPORT_PAGE));
@@ -1187,7 +1199,9 @@ public final class SettingsActivity extends Activity {
                 updateRelease = view;
                 view.setOnClickListener(v -> openPage(release.page));
                 ViewGroup parent = (ViewGroup) updateStatus.getParent();
-                parent.addView(view, parent.indexOfChild(updateStatus) + 1);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+                params.topMargin = ui.dp(8);
+                parent.addView(view, parent.indexOfChild(updateStatus) + 1, params);
             } else updateStatus.setText(comparison == 0 ? text.get("up_to_date")
                 : text.get("update_ahead", BuildConfig.VERSION_NAME, latest));
             updateStatus.setVisibility(View.VISIBLE);
@@ -1287,7 +1301,7 @@ public final class SettingsActivity extends Activity {
     private LinearLayout messageLogList;
 
     /** Two actions under the message-log switch: open the log or wipe it, no confirmation, just a toast. */
-    private void addMessageLogActions(LinearLayout labels) {
+    private void addMessageLogActions(LinearLayout content) {
         LinearLayout actions = ui.row();
         Button view = ui.button(text.get("message_log_view"));
         view.setTag("message_log_view");
@@ -1314,6 +1328,9 @@ public final class SettingsActivity extends Activity {
         LinearLayout frame = ui.column();
         frame.setBackgroundColor(ui.background);
         frame.setPadding(ui.dp(20), ui.dp(20), ui.dp(20), ui.dp(16));
+        // A dialog doesn't inherit the activity root's direction, and TalkBack announces the pane by this title.
+        frame.setLayoutDirection(text.layoutDirection());
+        frame.setAccessibilityPaneTitle(text.get("message_log_title"));
         frame.addView(ui.text(text.get("message_log_title"), 20, ui.text, true));
         ui.add(frame, ui.text(text.get("message_log_hint"), 13, ui.muted, false), 4);
         ScrollView scroll = new ScrollView(this);
@@ -1364,7 +1381,7 @@ public final class SettingsActivity extends Activity {
         card.setBackground(ui.shape(ui.surface, ui.line, 8));
         card.setPadding(ui.dp(12), ui.dp(10), ui.dp(12), ui.dp(10));
         String who = entry.thread == null || entry.thread.isEmpty() ? text.get("message_log_unknown_thread") : entry.thread;
-        card.addView(ui.text(who + "  ·  " + formatSince(entry.time, "active_now", "active_ago"), 12, ui.muted, false));
+        card.addView(ui.text(who + "  ·  " + formatSince(entry.time, "message_log_now", "message_log_ago"), 12, ui.muted, false));
         ui.add(card, ui.text(entry.text == null || entry.text.isEmpty() ? text.get("message_log_no_text") : entry.text, 15, ui.text, false), 4);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
         params.topMargin = ui.dp(8);
@@ -1389,7 +1406,8 @@ public final class SettingsActivity extends Activity {
         long minutes = seconds / 60;
         if (minutes < 60) return text.get(ago, text.format("minutes_short", minutes));
         long hours = minutes / 60;
-        return text.get(ago, text.format("hours_short", hours));
+        if (hours < 48) return text.get(ago, text.format("hours_short", hours));
+        return text.get(ago, text.format("days_short", hours / 24));
     }
 
     private void exportChoices() {
@@ -1452,7 +1470,9 @@ public final class SettingsActivity extends Activity {
         for (Map.Entry<String, Boolean> choice : supported.entrySet()) editor.putBoolean(choice.getKey(), choice.getValue());
         editor.apply();
         refreshChoices();
-        feedback(text.count("imported", supported.size()) + skipped, Toast.LENGTH_LONG);
+        // A backup can carry the pause, and a restored pause is easy to miss.
+        String paused = Boolean.TRUE.equals(supported.get("paused")) ? " " + text.get("changes_paused") + "." : "";
+        feedback(text.count("imported", supported.size()) + paused + skipped, Toast.LENGTH_LONG);
     }
 
     @Override protected void onActivityResult(int request, int result, Intent data) {
@@ -1475,7 +1495,7 @@ public final class SettingsActivity extends Activity {
         android.net.Uri uri = data.getData();
         // A document picker must return a provider grant, never a path opened with Messenger's own UID.
         if (!"content".equals(uri.getScheme())) {
-            feedback(text.get(request == SAVE_CHOICES ? "export_failed" : "import_invalid"), Toast.LENGTH_LONG);
+            feedback(text.get(request == SAVE_CHOICES ? "export_failed" : "restore_failed"), Toast.LENGTH_LONG);
             return;
         }
         if (!documentSlots.tryAcquire()) {
@@ -1521,7 +1541,8 @@ public final class SettingsActivity extends Activity {
         readChoicesFile.setEnabled(true);
         cancelChoicesFile.setVisibility(View.GONE);
         documentStatus.setVisibility(View.GONE);
-        if (!success) feedback(text.get(job.request == SAVE_CHOICES ? "export_failed" : "import_invalid"), Toast.LENGTH_LONG);
+        // A file that can't be read isn't a bad backup, so the two get different advice.
+        if (!success) feedback(text.get(job.request == SAVE_CHOICES ? "export_failed" : job.invalid ? "import_invalid" : "restore_failed"), Toast.LENGTH_LONG);
         else if (job.request == SAVE_CHOICES) feedback(text.get("choices_file_saved"), Toast.LENGTH_SHORT);
         else if (job.generation == documentGeneration && job.before.equals(ChoiceCodec.encode(Settings.preferences, Settings.installed)))
             restoreChoices(choices);
@@ -1542,6 +1563,8 @@ public final class SettingsActivity extends Activity {
         final Runnable deadline;
         final Thread worker;
         volatile boolean canceled;
+        /** The document was read but isn't a backup, as opposed to a document that couldn't be read. */
+        volatile boolean invalid;
         volatile android.content.res.AssetFileDescriptor asset;
         volatile java.io.Closeable stream;
         private int users = 1;
@@ -1673,7 +1696,8 @@ public final class SettingsActivity extends Activity {
                         try (java.io.InputStream input = brokenSkip ? pipeSlice(opened) : opened.createInputStream()) {
                             stream = input;
                             if (canceled) return;
-                            choices = ChoiceCodec.parse(ChoiceCodec.read(input));
+                            try { choices = ChoiceCodec.parse(ChoiceCodec.read(input)); }
+                            catch (ChoiceCodec.TooLarge | IllegalArgumentException malformed) { invalid = true; throw malformed; }
                         }
                     }
                 }
@@ -1879,7 +1903,8 @@ public final class SettingsActivity extends Activity {
     private void filterControls(String query) {
         String needle = query.trim().toLowerCase(Locale.ROOT);
         String drawerWords = "hide app drawer icon launcher settings " + text.get("hide_drawer_icon");
-        drawerSearchLink.setVisibility(controlRows.isEmpty() || (!needle.isEmpty() && drawerWords.toLowerCase(Locale.ROOT).contains(needle)) ? View.VISIBLE : View.GONE);
+        // One letter matches almost anything, so the link waits for a second one.
+        drawerSearchLink.setVisibility(controlRows.isEmpty() || (needle.length() >= 2 && drawerWords.toLowerCase(Locale.ROOT).contains(needle)) ? View.VISIBLE : View.GONE);
         int visible = 0;
         for (int i = 0; i < controlRows.size(); i++) {
             String[] spec = installedControls.get(i);
@@ -1895,7 +1920,9 @@ public final class SettingsActivity extends Activity {
             int count = 0;
             for (View row : controlRows) if (row.getTag().equals(group.getTag()) && row.getVisibility() == View.VISIBLE) count++;
             group.setVisibility(count == 0 ? View.GONE : View.VISIBLE);
-            ((TextView) ((LinearLayout) group.getChildAt(0)).getChildAt(1)).setText(text.number(count));
+            TextView tally = (TextView) ((LinearLayout) group.getChildAt(0)).getChildAt(1);
+            tally.setText(text.number(count));
+            tally.setContentDescription(text.count("group_count", count));
         }
         for (Button button : categories) {
             boolean selected = button.getTag().equals("category_" + category);

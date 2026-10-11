@@ -296,7 +296,8 @@ public class ChoiceBackupTest {
                     () -> { throw new SecurityException("Refused"); });
                 ShadowToast.reset();
                 activity.onActivityResult(SettingsActivity.READ_CHOICES, Activity.RESULT_OK, new Intent().setData(uri));
-                awaitToast("Not a valid");
+                // A document that can't be read gets different advice from one that isn't a backup.
+                awaitToast("unreadable".equals(data) ? "Couldn't read that file" : "Not a valid");
                 assertEquals(before, Settings.preferences.getAll());
             }
         }
@@ -323,7 +324,7 @@ public class ChoiceBackupTest {
             Uri uri = Uri.fromFile(file);
             activity.getWindow().getDecorView().findViewWithTag("read_choices_file").performClick();
             activity.onActivityResult(SettingsActivity.READ_CHOICES, Activity.RESULT_OK, new Intent().setData(uri));
-            awaitToast("Not a valid");
+            awaitToast("Couldn't read that file");
             assertEquals(before, Settings.preferences.getAll());
             ShadowToast.reset();
             activity.getWindow().getDecorView().findViewWithTag("save_choices_file").performClick();
@@ -342,7 +343,7 @@ public class ChoiceBackupTest {
                 () -> { throw new IllegalStateException("private provider details"); });
             activity.getWindow().getDecorView().findViewWithTag("read_choices_file").performClick();
             activity.onActivityResult(SettingsActivity.READ_CHOICES, Activity.RESULT_OK, new Intent().setData(uri));
-            awaitToast("Not a valid");
+            awaitToast("Couldn't read that file");
             assertEquals(before, Settings.preferences.getAll());
             assertTrue(org.robolectric.shadows.ShadowLog.getLogsForTag("HushMessenger").stream()
                 .noneMatch(log -> log.throwable != null && "private provider details".equals(log.throwable.getMessage())));
@@ -369,7 +370,7 @@ public class ChoiceBackupTest {
             Map<String, ?> before = Settings.preferences.getAll();
             activity.getWindow().getDecorView().findViewWithTag("read_choices_file").performClick();
             activity.onActivityResult(SettingsActivity.READ_CHOICES, Activity.RESULT_OK, new Intent().setData(uri));
-            awaitToast("Not a valid");
+            awaitToast("Couldn't read that file");
             assertEquals(before, Settings.preferences.getAll());
             activity.getWindow().getDecorView().findViewWithTag("save_choices_file").performClick();
             activity.onActivityResult(SettingsActivity.SAVE_CHOICES, Activity.RESULT_OK, new Intent().setData(uri));
@@ -407,7 +408,7 @@ public class ChoiceBackupTest {
                 ShadowToast.reset();
                 activity.getWindow().getDecorView().findViewWithTag("read_choices_file").performClick();
                 activity.onActivityResult(SettingsActivity.READ_CHOICES, Activity.RESULT_OK, new Intent().setData(uri));
-                awaitToast("Not a valid");
+                awaitToast("Couldn't read that file");
                 assertEquals(before, Settings.preferences.getAll());
                 assertEquals(0, reads.get());
                 ShadowToast.reset();
@@ -824,7 +825,8 @@ public class ChoiceBackupTest {
             SeekableOs.errno = android.system.OsConstants.EBADF;
             DocumentResolver.opener = (uri, signal) -> new AssetFileDescriptor(descriptor, 0, original.length);
             startFile(screen.get(), false, Uri.parse("content://choices/bad-seek"));
-            awaitToast("Not a valid HushMessenger backup");
+            // A seek that fails is a read failure, not a bad backup.
+            awaitToast("Couldn't read that file");
             finishWorkers();
             assertFalse(Settings.preferences.getBoolean("stories", false));
             assertArrayEquals(original, Files.readAllBytes(file));

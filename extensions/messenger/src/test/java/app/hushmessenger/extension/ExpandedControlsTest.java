@@ -143,7 +143,7 @@ public class ExpandedControlsTest {
             search.setText("Stickers");
             assertEquals(ExpectedTotals.shown(4), status.getText().toString());
             search.setText("missing control xyz");
-            assertEquals("No matching controls. Try another search.", status.getText().toString());
+            assertEquals("No matching controls.", status.getText().toString());
             search.setText("");
             assertEquals(ExpectedTotals.shown(ExpectedTotals.CONTROLS), status.getText().toString());
         }

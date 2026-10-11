@@ -123,7 +123,7 @@ public class SettingsReliabilityTest {
                     if ("failed".equals(state)) Settings.hookErrors.put("people", "java.lang.IllegalStateException at Settings.test|" + (now + 1));
                     if ("paused".equals(state)) Settings.preferences.edit().putBoolean("paused", true).commit();
                     screen.resume();
-                    String expected = "paused".equals(state) ? "Changes paused" : "failed".equals(state) ? "Stopped with an error just now"
+                    String expected = "paused".equals(state) ? "Changes paused" : "failed".equals(state) ? "Stopped with an error just now. Copy setup on the App tab has details."
                         : "used".equals(state) ? "Used just now" : "Not used yet since Messenger started";
                     assertSame(choice, root.findViewWithTag("people"));
                     assertSame(label, root.findViewWithTag("active_people"));

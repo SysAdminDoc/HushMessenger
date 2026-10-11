@@ -229,7 +229,7 @@ public class SetupSummaryTest {
         Settings.hookFailed("menu_row", "test", new IllegalStateException("private-chat-text"));
         try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
             View root = screen.get().getWindow().getDecorView();
-            assertEquals("Stopped with an error just now", ((android.widget.TextView) root.findViewWithTag("active_avatar_stickers")).getText().toString());
+            assertEquals("Stopped with an error just now. Copy setup on the App tab has details.", ((android.widget.TextView) root.findViewWithTag("active_avatar_stickers")).getText().toString());
             assertEquals("Used just now", ((android.widget.TextView) root.findViewWithTag("active_people")).getText().toString());
             String text = copiedSetup(root);
             String time = ", \\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ\n";
@@ -245,6 +245,40 @@ public class SetupSummaryTest {
         try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
             View root = screen.get().getWindow().getDecorView();
             assertEquals("Used just now", ((android.widget.TextView) root.findViewWithTag("active_avatar_stickers")).getText().toString());
+        }
+    }
+
+    @Test public void anOlderUseCountsInHoursThenDays() throws Exception {
+        installedFeatures("people");
+        Settings.preferences.edit().putBoolean("people", true).commit();
+        long now = System.currentTimeMillis();
+        Settings.activeAt.put("people", now - 30L * 60 * 60 * 1000);
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            assertEquals("Used 30h ago", ((android.widget.TextView) screen.get().getWindow().getDecorView().findViewWithTag("active_people")).getText().toString());
+        }
+        Settings.activeAt.put("people", now - 3L * 24 * 60 * 60 * 1000 - 60_000);
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            assertEquals("Used 3d ago", ((android.widget.TextView) screen.get().getWindow().getDecorView().findViewWithTag("active_people")).getText().toString());
+        }
+    }
+
+    /** A row's label column hides its children from TalkBack, so the buttons under a row must sit outside it. */
+    @Test public void theLogAndFontButtonsAreReachableAndADisabledButtonLooksOff() throws Exception {
+        installedFeatures(MessageLog.KEY, OwnFont.KEY);
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            View root = screen.get().getWindow().getDecorView();
+            for (String tag : new String[] {"message_log_view", "message_log_clear", "font_file"}) {
+                View button = root.findViewWithTag(tag);
+                assertNotNull(tag, button);
+                for (android.view.ViewParent parent = button.getParent(); parent instanceof View; parent = parent.getParent()) {
+                    assertNotEquals(tag, View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS, ((View) parent).getImportantForAccessibility());
+                }
+            }
+            android.widget.Button view = root.findViewWithTag("message_log_view");
+            int enabled = view.getCurrentTextColor();
+            view.setEnabled(false);
+            assertNotEquals("a disabled button needs its own color", enabled, view.getCurrentTextColor());
+            view.setEnabled(true);
         }
     }
 

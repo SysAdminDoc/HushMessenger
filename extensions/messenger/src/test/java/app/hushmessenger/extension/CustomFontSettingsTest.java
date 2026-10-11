@@ -219,7 +219,8 @@ public class CustomFontSettingsTest {
             SettingsActivity activity = screen.get();
             View root = activity.getWindow().getDecorView();
             TextView status = root.findViewWithTag("font_file_status");
-            assertEquals("None chosen, so your phone's font is used. Choose a .ttf or .otf font file of up to 20 MB.", status.getText().toString());
+            // With the switch off nothing is in use yet, so the line says what turning it on would do.
+            assertEquals("None chosen. Turn the switch on to use your phone's font, or choose a .ttf or .otf font file of up to 20 MB.", status.getText().toString());
             assertEquals(View.GONE, root.findViewWithTag("font_phone").getVisibility());
 
             root.findViewWithTag("font_file").performClick();
@@ -249,9 +250,12 @@ public class CustomFontSettingsTest {
             awaitToast("Font set to Rubik-Regular.ttf. Restart Messenger to see it.");
             assertEquals("Rubik-Regular.ttf", Settings.preferences.getString(OwnFont.NAME_KEY, ""));
             assertArrayEquals(FontFileTest.font(FontFileTest.STATIC_FONT), Files.readAllBytes(FontFile.file(activity).toPath()));
-            assertEquals("Using Rubik-Regular.ttf. Choose another file to replace it.", status.getText().toString());
+            assertEquals("Rubik-Regular.ttf is picked. Turn the switch on to use it.", status.getText().toString());
             assertEquals(View.VISIBLE, root.findViewWithTag("font_phone").getVisibility());
             assertTrue(root.findViewWithTag("font_file").isEnabled());
+            ((android.widget.CompoundButton) root.findViewWithTag(OwnFont.KEY)).setChecked(true);
+            assertEquals("Using Rubik-Regular.ttf. Choose another file to replace it.", status.getText().toString());
+            ((android.widget.CompoundButton) root.findViewWithTag(OwnFont.KEY)).setChecked(false);
 
             root.findViewWithTag("font_phone").performClick();
             assertEquals("", Settings.preferences.getString(OwnFont.NAME_KEY, null));
@@ -271,8 +275,8 @@ public class CustomFontSettingsTest {
     }
 
     @Test public void aPickedNameIsOneShortLineWithNothingHidden() {
-        assertEquals("font", SettingsActivity.cleanFontName(null));
-        assertEquals("font", SettingsActivity.cleanFontName(" ‎\u0007 "));
+        assertEquals("your font file", SettingsActivity.cleanFontName(null));
+        assertEquals("your font file", SettingsActivity.cleanFontName(" ‎\u0007 "));
         assertEquals("My Font.ttf", SettingsActivity.cleanFontName("My‮  Font\u0000.ttf"));
         assertEquals("a line break goes, it doesn't split the row", "MyFont.ttf", SettingsActivity.cleanFontName("My\nFont.ttf"));
         assertEquals(SettingsActivity.MAX_FONT_NAME, SettingsActivity.cleanFontName("x".repeat(500)).length());
@@ -283,7 +287,7 @@ public class CustomFontSettingsTest {
         assertEquals("primary:Download/Fonts/Inter-Regular.otf", document.getLastPathSegment());
         assertEquals("Inter-Regular.otf", SettingsActivity.fontName(RuntimeEnvironment.getApplication(), document));
         assertEquals("Inter-Regular.otf", SettingsActivity.lastPart("primary:Inter-Regular.otf"));
-        assertEquals("font", SettingsActivity.cleanFontName(SettingsActivity.lastPart("primary:Download/")));
+        assertEquals("your font file", SettingsActivity.cleanFontName(SettingsActivity.lastPart("primary:Download/")));
         assertNull(SettingsActivity.lastPart(null));
     }
 

@@ -92,6 +92,8 @@ final class SettingsUi {
         StateListDrawable states = new StateListDrawable();
         GradientDrawable focused = shape(fill, focus, radius);
         focused.setStroke(dp(2), focus);
+        // A disabled button keeps the fill and loses the accent border, so it reads as off.
+        states.addState(new int[] {-android.R.attr.state_enabled}, shape(fill, line, radius));
         states.addState(new int[] {android.R.attr.state_focused}, focused);
         states.addState(new int[] {}, shape(fill, border, radius));
         return new RippleDrawable(ColorStateList.valueOf(ripple), states, shape(0xffffffff, 0, radius));
@@ -103,7 +105,7 @@ final class SettingsUi {
         view.setTextSize(14);
         view.setAllCaps(false);
         view.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-        view.setTextColor(accent);
+        view.setTextColor(new ColorStateList(new int[][] {{-android.R.attr.state_enabled}, {}}, new int[] {muted, accent}));
         view.setMinHeight(dp(48));
         view.setMinimumHeight(dp(48));
         view.setMinWidth(0);
