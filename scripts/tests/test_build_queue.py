@@ -77,6 +77,13 @@ class BuildQueueCommands(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "empty argument"):
                 queue.queued(["java", "", "desktop.jar"], "job")
 
+    def test_curly_quotes_stay_inside_the_literal(self):
+        # PowerShell ends a single-quoted string at a curly quote as well as at ', so each one is doubled.
+        self.assertEqual("'O\u2019\u2019Brien \u2018\u2018x\u201a\u201ay\u201b\u201b'", queue.quote("O\u2019Brien \u2018x\u201ay\u201b"))
+        with self.environment(queue_script=self.queue_script):
+            command = queue.queued(["java", "C:/Users/O\u2019Brien/it's.apk"], "job")
+        self.assertIn("'C:/Users/O\u2019\u2019Brien/it''s.apk'", command[-1])
+
     def test_a_named_script_that_is_missing_stops_instead_of_running_unqueued(self):
         missing = self.root / "gone.ps1"
         with self.environment(wrapper=missing, queue_script=missing):

@@ -665,6 +665,17 @@ class ReleaseChecks(unittest.TestCase):
             f"`{fingerprint}`", (REPO / "README.md").read_text(encoding="utf-8")
         )
 
+    def test_a_signer_line_with_no_key_is_named_instead_of_crashing(self):
+        with tempfile.TemporaryDirectory() as folder:
+            signers = Path(folder, "no_key_signers")
+            for text in ('release namespaces="file"\n', "release ssh-ed25519\n"):
+                signers.write_text(text, encoding="utf-8")
+                with (
+                    self.subTest(text=text),
+                    self.assertRaisesRegex(ValueError, "no_key_signers has a signer line with no key"),
+                ):
+                    release.signer_fingerprints(signers)
+
     def test_changed_catalog_metadata_and_stale_artifact_evidence_fail(self):
         for key, value in [
             ("name", "Different"),

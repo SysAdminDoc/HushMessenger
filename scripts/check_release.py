@@ -480,7 +480,9 @@ def signer_fingerprints(path):
         fields = line.split()
         if not fields or fields[0].startswith("#"):
             continue
-        at = next(i for i, f in enumerate(fields) if f.startswith(KEY_TYPES))
+        at = next((i for i, f in enumerate(fields) if f.startswith(KEY_TYPES)), None)
+        if at is None or at + 1 >= len(fields):
+            raise ValueError(f"{path.name} has a signer line with no key: {line[:60]!r}")
         digest = hashlib.sha256(base64.b64decode(fields[at + 1])).digest()
         prints.append("SHA256:" + base64.b64encode(digest).decode().rstrip("="))
     return prints

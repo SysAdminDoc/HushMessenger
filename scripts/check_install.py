@@ -26,11 +26,20 @@ def recorded_builds(directory: Path = PROFILES) -> dict[int, tuple[str, str]]:
             key, _, value = line.partition(" ")
             if key in ("version", "code", "sha256"):
                 fields[key] = value
-        builds[int(fields["code"])] = (fields["version"], fields["sha256"])
+        try:
+            builds[int(fields["code"])] = (fields["version"], fields["sha256"])
+        except (KeyError, ValueError) as error:
+            raise ValueError(f"{path.name} is missing a version, code or sha256 line") from error
     return builds
 
 
-BUILDS = recorded_builds()
+try:
+    BUILDS = recorded_builds()
+    PROFILE_ERROR = None
+except (OSError, ValueError) as error:
+    # A broken record has to read as CHECK FAILED (exit 2) from main, never as a traceback with exit 1.
+    BUILDS = {}
+    PROFILE_ERROR = f"The recorded builds can't be read: {error}"
 STOCK_SHA256 = {code: sha256 for code, (_, sha256) in BUILDS.items()}
 
 
@@ -626,6 +635,8 @@ def main() -> int:
     parser.add_argument("--adb", type=Path, default=Path("adb"))
     args = parser.parse_args()
     try:
+        if PROFILE_ERROR:
+            raise ValueError(PROFILE_ERROR)
         return check(args)
     except subprocess.TimeoutExpired:
         print(

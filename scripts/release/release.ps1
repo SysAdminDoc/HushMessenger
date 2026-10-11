@@ -37,7 +37,7 @@
 param(
     [Parameter(Mandatory = $true)][ValidateSet('prepare', 'preflight', 'build', 'publish', 'index')][string]$Stage,
     [Parameter(Mandatory = $true)][ValidatePattern('^\d+\.\d+\.\d+$')][string]$Version,
-    [string]$Date,
+    [ValidatePattern('^(\d{4}-\d{2}-\d{2})?$')][string]$Date,
     [string]$SigningKey,
     [string]$DesktopJar,
     [string]$CompatClasspath,
@@ -245,16 +245,17 @@ switch ($Stage) {
         Write-Step 'bundle and catalog (one Gradle run)'
         try {
             Invoke-Gradle @(':patches:buildAndroid', ':patches:generatePatchCatalog', '--no-configuration-cache')
+            $digest = Get-FileSha256 (Join-Path $root "patches/build/libs/$bundleName")
+            $readme = Get-Content -LiteralPath $readmePath -Raw
+            $line = [regex]"(?m)^[a-f0-9]{64}  $([regex]::Escape($bundleName))(\r?)$"
+            if (-not $line.IsMatch($readme)) { throw "README.md has no checksum line for $bundleName to update." }
+            Write-Text $readmePath $line.Replace($readme, "$digest  $bundleName`$1", 1)
         } catch {
-            # Put the cut back, so prepare starts again from a clean tree after the fix.
+            # Put the cut back, so prepare starts again from a clean tree after the fix. A missing bundle or
+            # checksum line fails here too, not only Gradle.
             if ($heading -eq 'Unreleased') { & git -C $root checkout -- gradle.properties CHANGELOG.md README.md patches-bundle.json }
             throw
         }
-        $digest = Get-FileSha256 (Join-Path $root "patches/build/libs/$bundleName")
-        $readme = Get-Content -LiteralPath $readmePath -Raw
-        $line = [regex]"(?m)^[a-f0-9]{64}  $([regex]::Escape($bundleName))(\r?)$"
-        if (-not $line.IsMatch($readme)) { throw "README.md has no checksum line for $bundleName to update." }
-        Write-Text $readmePath $line.Replace($readme, "$digest  $bundleName`$1", 1)
         Save-Stage 'prepare' @{ base = (Get-Head); sha256 = $digest }
         Write-Step "bundle SHA-256 $digest"
         Write-Host 'Next: update the README intro and counts and the index description by hand, review the diff,'
@@ -359,7 +360,7 @@ switch ($Stage) {
             [ordered]@{ code = $code; bundle_sha256 = $digest; stock_sha256 = $stock; profile_sha256 = $profileHash; commit = $commit; profile = 'identical' } |
                 ConvertTo-Json | Set-Content -LiteralPath $receipt -Encoding utf8
         }
-        Save-Stage 'build' @{ commit = $commit; sha256 = $digest }
+        Save-Stage 'build' @{ commit = $commit; sha256 = $digest; sums_sha256 = (Get-FileSha256 $sums); sig_sha256 = (Get-FileSha256 "$sums.sig") }
         Write-Step "passed. Assets are in $assets. Next: -Stage publish."
     }
 
@@ -369,6 +370,10 @@ switch ($Stage) {
         $files = @($bundleName, 'SHA256SUMS.txt', 'SHA256SUMS.txt.sig') | ForEach-Object { Join-Path $assets $_ }
         foreach ($file in $files) { if (-not (Test-Path -LiteralPath $file)) { throw "Missing release asset $file." } }
         if ((Get-FileSha256 $files[0]) -ne $build.sha256) { throw 'The bundle in the assets folder changed after the build stage.' }
+        # The checksum file and its signature were verified in the build stage, so they must be the same bytes now.
+        if ($build.sums_sha256 -and ((Get-FileSha256 $files[1]) -ne $build.sums_sha256 -or (Get-FileSha256 $files[2]) -ne $build.sig_sha256)) {
+            throw 'SHA256SUMS.txt or its signature changed after the build stage. Run -Stage build again.'
+        }
         $notes = Join-Path $work 'notes.md'
         Write-Text $notes ((Get-ChangelogSection) + "`n")
 
@@ -404,17 +409,26 @@ switch ($Stage) {
     }
 
     'index' {
-        $published = Assert-Stage 'publish' -SameCommit
+        $published = Assert-Stage 'publish'
+        # main can move between publish and index. HEAD has to carry the published commit, so a merge of
+        # origin/main is fine and a rebase isn't: the tag and the release already point at that commit.
+        & git -C $root merge-base --is-ancestor $published.commit HEAD
+        if ($LASTEXITCODE) { throw "HEAD doesn't contain the published commit $($published.commit). Merge it in, never rebase, then run -Stage index again." }
+        Invoke-Git fetch origin main
+        & git -C $root merge-base --is-ancestor origin/main HEAD
+        if ($LASTEXITCODE) { throw 'origin/main has commits this checkout lacks. Merge origin/main in, never rebase, then run -Stage index again.' }
         Write-Step 'pushing main with the new source index'
         Invoke-Git push origin HEAD:main
-        $raw = "https://raw.githubusercontent.com/$Repository/main/patches-bundle.json?release=$Version-$([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())"
         $served = $null
         foreach ($attempt in 1..10) {
-            $served = Invoke-RestMethod -Uri $raw -Headers @{ 'Cache-Control' = 'no-cache' }
-            if ($served.version -eq $Version) { break }
+            $raw = "https://raw.githubusercontent.com/$Repository/main/patches-bundle.json?release=$Version-$([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())"
+            # A 404 or a 5xx right after the push is as transient as stale content, so it gets the same retries.
+            try { $served = Invoke-RestMethod -Uri $raw -Headers @{ 'Cache-Control' = 'no-cache' } }
+            catch { Write-Step "source index not served yet: $($_.Exception.Message)" }
+            if ($served -and $served.version -eq $Version) { break }
             Start-Sleep -Seconds 15
         }
-        if ($served.version -ne $Version) { throw "GitHub still serves source index $($served.version)." }
+        if (-not $served -or $served.version -ne $Version) { throw "GitHub still serves source index $($served.version)." }
         $check = Join-Path $work 'index-download.mpp'
         Invoke-WebRequest -Uri $served.download_url -OutFile $check
         if ((Get-FileSha256 $check) -ne $published.sha256) { throw "The index download URL doesn't return the released bundle." }

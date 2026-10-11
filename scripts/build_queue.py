@@ -53,8 +53,11 @@ def _user_setting(name):
 
 
 def quote(text):
-    """A PowerShell single-quoted literal, which expands nothing."""
-    return "'" + str(text).replace("'", "''") + "'"
+    """A PowerShell single-quoted literal, which expands nothing. PowerShell closes one at a curly quote too."""
+    quoted = str(text)
+    for mark in "'‘’‚‛":
+        quoted = quoted.replace(mark, mark + mark)
+    return "'" + quoted + "'"
 
 
 def shell():

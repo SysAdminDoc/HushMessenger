@@ -518,6 +518,26 @@ class ParserAndCliChecks(unittest.TestCase):
             with self.subTest(output=output), self.assertRaises(ValueError):
                 checker.package_names(output)
 
+    def test_a_broken_build_record_is_a_check_failure_not_a_traceback(self):
+        argv = ["check_install.py", "--apk", "missing.apk", "--serial", "phone", "--build-tools", "tools"]
+        output = io.StringIO()
+        with (
+            patch("sys.argv", argv),
+            patch.object(checker, "PROFILE_ERROR", "The recorded builds can't be read: 1.txt is missing a version, code or sha256 line"),
+            patch.object(checker, "check", side_effect=AssertionError("the check must not run on broken records")),
+            redirect_stderr(output),
+        ):
+            self.assertEqual(checker.main(), 2)
+        self.assertIn("CHECK FAILED: The recorded builds can't be read", output.getvalue())
+        self.assertNotIn("Traceback", output.getvalue())
+        with tempfile.TemporaryDirectory() as folder:
+            Path(folder, "1.txt").write_text("version 1.0\ncode 1\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "1.txt is missing a version, code or sha256 line"):
+                checker.recorded_builds(Path(folder))
+            Path(folder, "1.txt").write_text("version 1.0\ncode one\nsha256 ab\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "1.txt is missing"):
+                checker.recorded_builds(Path(folder))
+
     def test_cli_errors_and_conflicts_have_stable_exit_codes_without_tracebacks(self):
         argv = [
             "check_install.py",
