@@ -150,17 +150,14 @@ final class OwnFont {
     }
 
     /**
-     * With the switch saved on, reads the picked file and builds the phone's typefaces on a worker, so Messenger's first
-     * text doesn't wait on them.
+     * Reads the picked file and builds the phone's typefaces on a worker, so Messenger's first text doesn't wait on them.
+     * HostScreens starts it once CrashGuard has run.
      */
     static void warmUp() {
         if (picked != null || !WARMING.compareAndSet(false, true)) return;
         Thread worker = new Thread(() -> {
             try {
-                SharedPreferences prefs = Settings.preferences;
-                if (prefs == null || !prefs.getBoolean(KEY, false) || prefs.getBoolean("paused", false)) return;
-                phoneTypefaces();
-                picked();
+                warm();
             } catch (RuntimeException | LinkageError error) {
                 // The first typeface Messenger asks for reads it again.
                 android.util.Log.w("HushMessenger", "custom_font: couldn't read the font ahead of time", error);
@@ -168,6 +165,13 @@ final class OwnFont {
         }, "HushMessengerFont");
         worker.setDaemon(true);
         worker.start();
+    }
+
+    /** The warm-up's reads, only while the switch is in effect: on, not paused and not in safe mode. */
+    static void warm() {
+        if (!Settings.wouldUse(KEY)) return;
+        phoneTypefaces();
+        picked();
     }
 
     /** Forgets this run's font, for tests. Messenger itself keeps it until a restart. */

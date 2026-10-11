@@ -154,6 +154,9 @@ public final class HostScreens {
         // Colour hooks can initialize this process while their class initializer is running. Bind after releasing
         // the startup lock so a second startup thread cannot wait on that initializer while it waits on this lock.
         if (started && !failed && Settings.installed.contains("material_you")) MaterialYouTheme.bind();
+        // After CrashGuard, so safe mode can keep a picked font file that crashes the font loader from loading again.
+        if (started && !failed && Settings.installed.contains(OwnFont.KEY)
+                && context.getPackageName().equals(Application.getProcessName())) OwnFont.warmUp();
     }
 
     /** The settings provider's authority is the package name plus this, on a clone install too. */

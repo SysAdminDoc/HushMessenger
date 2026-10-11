@@ -55,9 +55,6 @@ public final class Settings {
         if (installed.contains(MessageLog.KEY) && appContext.getPackageName().equals(android.app.Application.getProcessName())) {
             MessageLog.scheduleExpiry();
         }
-        if (installed.contains(OwnFont.KEY) && appContext.getPackageName().equals(android.app.Application.getProcessName())) {
-            OwnFont.warmUp();
-        }
     }
 
     static Set<String> bundled(String list) {

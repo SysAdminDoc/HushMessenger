@@ -59,7 +59,7 @@ public class OwnFontTest {
         FontFile.testFolder = folder.newFolder();
         OwnFont.fileCheck = OwnFontTest::loadsCopy;
         Context app = RuntimeEnvironment.getApplication();
-        // Cleared before Settings starts, so its font warm-up finds the switch off and reads nothing.
+        // Cleared before Settings starts, so nothing from an earlier test's switches carries over.
         app.getSharedPreferences("hushmessenger", Context.MODE_PRIVATE).edit().clear().commit();
         Settings.initialize(app);
         OwnFont.forget();
@@ -114,6 +114,30 @@ public class OwnFontTest {
         int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
         bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
         return (int) Arrays.stream(pixels).filter(pixel -> Color.alpha(pixel) > 128).count();
+    }
+
+    @Test public void theWarmUpReadsTheFileOnlyWhileTheSwitchIsInEffect() throws Exception {
+        pick(FontFileTest.STATIC_FONT, "Rubik-Regular.ttf");
+        CrashGuard.resetForTests();
+        HostScreens.started = true;
+        try {
+            OwnFont.warm();
+            assertNull("Switch off", org.robolectric.util.ReflectionHelpers.getStaticField(OwnFont.class, "picked"));
+            Settings.preferences.edit().putBoolean(OwnFont.KEY, true).putBoolean("paused", true).commit();
+            OwnFont.warm();
+            assertNull("Paused", org.robolectric.util.ReflectionHelpers.getStaticField(OwnFont.class, "picked"));
+            Settings.preferences.edit().putBoolean("paused", false).commit();
+            // A picked file that crashed the font loader is what safe mode has to keep from loading again.
+            org.robolectric.util.ReflectionHelpers.setStaticField(CrashGuard.class, "safeModeActive", true);
+            OwnFont.warm();
+            assertNull("Safe mode", org.robolectric.util.ReflectionHelpers.getStaticField(OwnFont.class, "picked"));
+            org.robolectric.util.ReflectionHelpers.setStaticField(CrashGuard.class, "safeModeActive", false);
+            OwnFont.warm();
+            assertNotNull("In effect", org.robolectric.util.ReflectionHelpers.getStaticField(OwnFont.class, "picked"));
+            assertNotNull(OwnFont.picked());
+        } finally {
+            CrashGuard.resetForTests();
+        }
     }
 
     @Test public void onlyTheOptimisticFamiliesAreMetasInterfaceFont() {
