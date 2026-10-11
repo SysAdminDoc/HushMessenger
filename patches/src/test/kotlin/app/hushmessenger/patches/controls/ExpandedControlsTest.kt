@@ -325,28 +325,6 @@ class ExpandedControlsTest {
         )) assertFailsWith<PatchException> { builder(changed).menuFolderItemType() }
     }
 
-    @Test fun keyboardTabFilterReplacesTheOnlyExitAndKeepsItsBranches() {
-        val body = "if-eqz v2, :done\nconst/4 v1, 0x0\n:done\nreturn-object v0"
-        val method = method("Lcom/facebook/messaging/msys/thread/composer/configuration/xapp/BaseXappComposerConfigurationFactory;",
-            "A0P", 8, IMMUTABLE_LIST, body)
-        method.injectKeyboardTabs()
-        val code = method.implementation!!.instructions.toList()
-        val addresses = code.runningFold(0) { address, instruction -> address + instruction.codeUnits }
-        // The early branch now lands on the filter call that replaced the original return.
-        val branchTarget = code[addresses.indexOf((code[0] as OffsetInstruction).codeOffset)]
-        assertEquals("$SETTINGS->filterKeyboardTabs(Ljava/util/List;)Ljava/util/List;", (branchTarget as ReferenceInstruction).reference.toString())
-        assertEquals(1, (code[3] as OneRegisterInstruction).registerA)
-        assertEquals(Opcode.IF_EQZ, code[4].opcode)
-        assertEquals(0, (code[6] as OneRegisterInstruction).registerA)
-        assertEquals(Opcode.RETURN_OBJECT, code.last().opcode)
-        assertEquals(0, (code.last() as OneRegisterInstruction).registerA)
-        assertEquals(addresses[code.size - 1], addresses[4] + (code[4] as OffsetInstruction).codeOffset)
-        assertFailsWith<PatchException> {
-            method("LX/Fixture;", "A0P", 8, IMMUTABLE_LIST, "if-eqz v2, :other\nreturn-object v0\n:other\nreturn-object v1").injectKeyboardTabs()
-        }
-        assertFailsWith<PatchException> { method("LX/Fixture;", "A0P", 1, IMMUTABLE_LIST, "return-object p0").injectKeyboardTabs() }
-    }
-
     @Test fun encryptedTypingFlagIsFilteredBeforeTheMailboxCallReadsIt() {
         val id = "LX/8eb;->A0I(Ljava/lang/String;Z)LX/325;"
         val method = fixtureMethod(id, "const-string v0, \"$TYPING_MAILBOX_CALL\"\nconst/4 v0, 0x0\nreturn-object v0", registers = 13)

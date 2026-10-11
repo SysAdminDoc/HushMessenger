@@ -291,10 +291,8 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
                 DRAWER_FOLDER_SELECTED in strings) add("menu_settings")
             if (method.returnType == "V" && method.parameterTypes.isEmpty() &&
                 !AccessFlags.STATIC.isSet(method.accessFlags) && DRAWER_REFRESH in strings) add("menu_settings")
-            // The Litho sticker keyboard's tab list builder reads the avatar tab's activate event.
-            if (method.returnType == IMMUTABLE_LIST && method.parameterTypes.isEmpty() &&
-                refs.any { it.toString().startsWith("$AVATAR_TAB_EVENT->") }) add("avatar_tabs")
-            // Some builds fill that list inline in a void method of the composer factory instead.
+            // The sticker keyboard's tab list is filled inline in a void composer factory method that reads the avatar
+            // tab's activate event.
             if (method.returnType == "V" && cls.type == COMPOSER_FACTORY &&
                 refs.any { it.toString().startsWith("$AVATAR_TAB_EVENT->") } &&
                 refs.any { it.toString().startsWith("$IMMUTABLE_LIST->builder()") }) add("avatar_tabs")
@@ -927,33 +925,6 @@ internal fun MutableMethod.injectMenuDrawerAdd() {
     addInstructions(0, """
         invoke-static/range {p1 .. p1}, $SETTINGS->addMenuDrawerEntry(Ljava/util/List;)Ljava/util/List;
         move-result-object p1
-    """.trimIndent())
-}
-
-internal fun MutableMethod.validateKeyboardTabs(): Int {
-    val code = implementation!!.instructions.toList()
-    val exits = code.indices.filter { code[it].opcode == Opcode.RETURN_OBJECT }
-    val parameterWords = parameterTypes.sumOf { if (it == "J" || it == "D") 2 else 1 } +
-        if (AccessFlags.STATIC.isSet(accessFlags)) 0 else 1
-    if (returnType != IMMUTABLE_LIST || exits.size != 1 || implementation!!.registerCount - parameterWords < 2) {
-        throw PatchException("Messenger controls: the sticker keyboard tab builder differs from the tested build")
-    }
-    return exits.single()
-}
-
-/** Replacing the return keeps every branch to it; any register but the result is free there. */
-internal fun MutableMethod.injectKeyboardTabs() {
-    val exit = validateKeyboardTabs()
-    val result = (getInstruction(exit) as OneRegisterInstruction).registerA
-    val scratch = if (result == 0) 1 else 0
-    replaceInstruction(exit, "invoke-static {v$result}, $SETTINGS->filterKeyboardTabs(Ljava/util/List;)Ljava/util/List;")
-    addInstructionsWithLabels(exit + 1, """
-        move-result-object v$scratch
-        if-eqz v$scratch, :original_tabs
-        invoke-static {v$scratch}, $IMMUTABLE_LIST->copyOf(Ljava/util/Collection;)$IMMUTABLE_LIST
-        move-result-object v$result
-        :original_tabs
-        return-object v$result
     """.trimIndent())
 }
 

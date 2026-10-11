@@ -89,7 +89,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     FONT_ROBOTO to setOf(FONT_ROBOTO_BUILDER),
     FONT_BY_NAME to setOf(FONT_BY_NAME_LOOKUP),
     FONT_INPUT to setOf(FONT_INPUT_FIELD, FONT_INPUT_ALIGNED, FONT_INPUT_HINTED),
-    "avatar_tabs" to setOf("Lcom/facebook/messaging/msys/thread/composer/configuration/xapp/BaseXappComposerConfigurationFactory;->A0P()$IMMUTABLE_LIST"),
+    "avatar_tabs" to setOf("$COMPOSER_FACTORY->A6X(LX/5vA;)V"),
     "menu_settings" to setOf(
         "LX/9rv;->A1i()V",
         "LX/HFb;->Ax1(LX/0MG;)Ljava/util/ArrayList;",

@@ -398,14 +398,13 @@ public class SettingsTest {
         KeyboardTab emoji = new KeyboardTab(new Object());
         KeyboardTab avatar = new KeyboardTab(new com.facebook.xapp.messaging.composer.avatar.composertab.event.ActivateAvatarSticker());
         KeyboardTab gifs = new KeyboardTab("gifs");
-        java.util.List<Object> tabs = java.util.List.of(emoji, avatar, gifs);
-        assertNull(Settings.filterKeyboardTabs(tabs));
-        Settings.preferences.edit().putBoolean("avatar_stickers", true).apply();
-        assertEquals(java.util.List.of(emoji, gifs), Settings.filterKeyboardTabs(tabs));
-        assertNull(Settings.filterKeyboardTabs(java.util.List.of(emoji, gifs)));
-        assertNull(Settings.filterKeyboardTabs(null));
-        Settings.preferences.edit().putBoolean("paused", true).apply();
-        assertNull(Settings.filterKeyboardTabs(tabs));
+        java.util.List<Object> tabs = new java.util.ArrayList<>(java.util.List.of(emoji, avatar, gifs));
+        Settings.preferences.edit().putBoolean("avatar_stickers", true).putBoolean("paused", true).apply();
+        Settings.removeAvatarTabs(tabs);
+        assertEquals(3, tabs.size());
+        Settings.preferences.edit().putBoolean("paused", false).apply();
+        Settings.removeAvatarTabs(tabs);
+        assertEquals(java.util.List.of(emoji, gifs), tabs);
     }
 
     // Robolectric's default Typeface stand-in accepts any path; the native one fails on a missing file like a phone does.

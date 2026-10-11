@@ -17,6 +17,8 @@ private val SECURE_WINDOW_BODY = """
     return-void
 """.trimIndent()
 
+private const val LIST_BUILDER = "Lcom/google/common/collect/ImmutableList\$Builder;"
+
 class ControlDiscoveryTest {
     private val originals = mapOf(
         "LX/2UL;" to "InboxSubtabsItemSupplierImplementation\$onSubscribe\$1",
@@ -64,7 +66,16 @@ class ControlDiscoveryTest {
                     "original_photo" -> if (id.endsWith(")[B")) "const/4 v0, 0x0\nreturn-object v0" else "return-void"
                     ORIGINAL_VIDEO -> VIDEO_TRANSCODE_BODY
                     "emoji_typeface" -> "const-string v0, \"FacebookEmojiTypefaceProviderImpl\"\nconst/4 v0, 0x0\nreturn-object v0"
-                    "avatar_tabs" -> "sget-object v0, $AVATAR_TAB_EVENT->A03:$AVATAR_TAB_EVENT\nreturn-object v0"
+                    "avatar_tabs" -> """
+                        sget-object v0, $AVATAR_TAB_EVENT->A03:$AVATAR_TAB_EVENT
+                        new-instance v1, Ljava/util/ArrayList;
+                        invoke-static {}, $IMMUTABLE_LIST->builder()$LIST_BUILDER
+                        move-result-object v2
+                        invoke-virtual {v2, v1}, $LIST_BUILDER->addAll(Ljava/lang/Iterable;)$LIST_BUILDER
+                        invoke-static {v2}, LX/34B;->A01($LIST_BUILDER)$IMMUTABLE_LIST
+                        move-result-object v3
+                        return-void
+                    """.trimIndent()
                     "ai_search_chip" -> "const/4 v0, 0x0\nreturn-object v0"
                     "typing_mailbox" -> "const-string v0, \"$TYPING_MAILBOX_CALL\"\nconst/4 v0, 0x0\nreturn-object v0"
                     "read_mailbox" -> "const-string v0, \"$READ_MAILBOX_CALL\"\nreturn-void"

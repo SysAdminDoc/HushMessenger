@@ -85,9 +85,9 @@ public class CompatReport {
         + "PeopleTabPYMKHandler$fetchPymkSuggestions$$inlined$CoroutineExceptionHandler$1;";
     static final String PEOPLE_JEWEL_KEY = "pymk_jewel_section_hidden";
     static final String STORY_CARD_DATE_KEY = "last_date_creation_card_shown";
-    // The Notifications tab's server flag ID. Each release renumbers it.
+    // The Notifications tab's server flag ID. Meta renumbers it with each release; this is 582's.
     static final Set<Long> PEOPLE_SERVER_FLAGS = Set.of(72344188615734930L);
-    // The redesigned emoji drawer's server flag. Each release renumbers it.
+    // The redesigned emoji drawer's server flag. Meta renumbers it with each release; this is 582's.
     static final Set<Long> EMOJI_DRAWER_FLAGS = Set.of(36320652931710646L);
     // The drawer renderer throws this when the redesign can't draw, which ties the flag to the emoji drawer
     static final String EMOJI_DRAWER_ANCHOR = "Cannot render redesigned drawer with search icon ";
@@ -2925,13 +2925,7 @@ public class CompatReport {
                     found.get("people_inbox_refresh").add(method);
                 }
 
-                // avatar_tabs: the Litho sticker keyboard's tab list builder
-                if (IMMUTABLE_LIST.equals(method.getReturnType()) && paramTypes.isEmpty() &&
-                    refs.stream().anyMatch(r -> r.toString().startsWith(
-                        "Lcom/facebook/xapp/messaging/composer/avatar/composertab/event/ActivateAvatarSticker;->"))) {
-                    found.get("avatar_tabs").add(method);
-                }
-                // Some builds fill that list inline in a void method of the composer factory instead.
+                // avatar_tabs: the sticker keyboard's tab list, filled inline in a void composer factory method.
                 if ("V".equals(method.getReturnType()) &&
                     "Lcom/facebook/messaging/msys/thread/composer/configuration/xapp/BaseXappComposerConfigurationFactory;".equals(cls.getType()) &&
                     refs.stream().anyMatch(r -> r.toString().startsWith(
@@ -3114,7 +3108,8 @@ public class CompatReport {
         if (!buildTools.isDirectory()) return null;
         String[] versions = buildTools.list();
         if (versions == null || versions.length == 0) return null;
-        Arrays.sort(versions, Comparator.reverseOrder());
+        // As text, 9.0.0 outranks 36.1.0 and 37.0.0-rc1 outranks 37.0.0, so sort by the numbers.
+        Arrays.sort(versions, Comparator.comparing(CompatReport::versionKey).reversed());
         boolean win = System.getProperty("os.name", "").toLowerCase().contains("win");
         for (String v : versions) {
             File dir = new File(buildTools, v);
@@ -3168,14 +3163,26 @@ public class CompatReport {
             pb.redirectErrorStream(true);
             var proc = pb.start();
             String output = new String(proc.getInputStream().readAllBytes());
-            int exit = proc.waitFor();
+            if (proc.waitFor() != 0) return null;
             var m = Pattern.compile("certificate sha-256 digest:\\s+([0-9a-f]+)").matcher(output.toLowerCase());
             if (m.find()) return m.group(1);
             return null;
         } catch (Exception e) {
-            System.out.println("DEBUG apksigner exception: " + e);
+            System.out.println("[WARN] apksigner couldn't run, so the signer line is skipped: " + e);
             return null;
         }
+    }
+
+    /** A sort key where 36.1.0 outranks 9.0.0 and a final build outranks its release candidates. */
+    static String versionKey(String name) {
+        var key = new StringBuilder();
+        var part = Pattern.compile("\\d+|[^\\d.]+").matcher(name);
+        while (part.find()) {
+            String piece = part.group();
+            if (Character.isDigit(piece.charAt(0))) key.append(String.format("%012d", Long.parseLong(piece.length() > 12 ? piece.substring(0, 12) : piece))).append('.');
+            else key.append(piece);
+        }
+        return key.append('~').toString();
     }
 
     static final String APP_COMPONENT_FACTORY = "com.facebook.common.appcomponentfactory.m4a.M4aAppComponentFactory";
@@ -3658,6 +3665,10 @@ public class CompatReport {
             System.out.println("PROFILE: every control resolved. Run again with --save to record this build.");
         } else if (found.code.isEmpty()) {
             System.out.println("PROFILE: not written. aapt2 couldn't read the version code.");
+            anyFail = true;
+        } else if (!found.code.matches("\\d{1,10}")) {
+            // The code names the record file, so only a plain number may reach the path.
+            System.out.println("PROFILE: not written. The version code " + found.code + " isn't a plain number.");
             anyFail = true;
         } else {
             Path record = saveDir.resolve(found.code + ".txt");

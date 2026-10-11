@@ -829,20 +829,12 @@ public final class Settings {
 
     private static final String AVATAR_TAB_EVENT = "com.facebook.xapp.messaging.composer.avatar.composertab.event.ActivateAvatarSticker";
 
-    /** Null means keep Messenger's sticker keyboard tabs; otherwise the tabs without the avatar tab. */
-    public static List<?> filterKeyboardTabs(List<?> tabs) {
-        if (tabs == null || tabs.isEmpty() || !enabled("avatar_stickers")) return null;
-        List<Object> kept = new ArrayList<>(tabs.size());
-        for (Object tab : tabs) if (!opensAvatarTab(tab)) kept.add(tab);
-        return kept.size() == tabs.size() ? null : kept;
-    }
-
-    /** Builds that fill the tab list inline pass it here before copying it; the list is theirs to change. */
+    /** The composer factory passes its local tab list here just before copying it, so the list is ours to change. */
     public static void removeAvatarTabs(Iterable<?> tabs) {
         if (!(tabs instanceof java.util.Collection) || !enabled("avatar_stickers")) return;
         try {
             ((java.util.Collection<?>) tabs).removeIf(Settings::opensAvatarTab);
-        } catch (RuntimeException error) {
+        } catch (RuntimeException | LinkageError error) {
             hookFailed("avatar_stickers", "Can't filter the sticker keyboard tabs", error);
         }
     }
@@ -854,7 +846,11 @@ public final class Settings {
 
     private static boolean holdsAvatarEvent(Object value, int depth) {
         if (value == null || depth == 0) return false;
-        for (java.lang.reflect.Field f : value.getClass().getDeclaredFields()) {
+        java.lang.reflect.Field[] fields;
+        // Listing the fields resolves each field's type, and one that won't load says nothing about the avatar tab.
+        try { fields = value.getClass().getDeclaredFields(); }
+        catch (LinkageError unloadable) { return false; }
+        for (java.lang.reflect.Field f : fields) {
             if (java.lang.reflect.Modifier.isStatic(f.getModifiers()) || f.getType().isPrimitive()) continue;
             try {
                 f.setAccessible(true);
