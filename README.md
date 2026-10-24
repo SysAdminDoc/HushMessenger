@@ -3,8 +3,8 @@
 <p align="center">
   <a href="https://github.com/SysAdminDoc/HushMessenger/releases/tag/v0.26.0"><img src="https://img.shields.io/badge/version-0.26.0-0084FF" alt="Version 0.26.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License GPL-3.0"></a>
-  <img src="https://img.shields.io/badge/platform-Android%209%2B%20arm64-3DDC84" alt="Platform Android 9 or newer, arm64">
-  <img src="https://img.shields.io/badge/Messenger-584.0.0.49.98-0084FF" alt="Messenger 584.0.0.49.98">
+  <img src="https://img.shields.io/badge/platform-Android%209%2B%20arm64%20%7C%20armv7-3DDC84" alt="Platform Android 9 or newer, arm64 and armv7">
+  <img src="https://img.shields.io/badge/Messenger-584.0.0.49.98%20%7C%20584.1.0.61.98-0084FF" alt="Messenger 584.0.0.49.98 and 584.1.0.61.98">
 </p>
 
 <p align="center">
@@ -30,7 +30,7 @@ Every switch starts off, so a freshly patched Messenger behaves like stock until
 
 ## Install
 
-1. **Get the APK.** HushMessenger patches arm64 Messenger 584.0.0.49.98 only. Download it from [APKMirror's 584.0.0.49.98 page](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-584-0-0-49-98-release/), which has one arm64 build so far. A 32-bit build shares the version name and won't work.
+1. **Get the APK.** HushMessenger patches the arm64 Messenger 584.0.0.49.98 build and the armv7 584.1.0.61.98 build `346816966`. Download 584.0 from [APKMirror's 584.0.0.49.98 page](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-584-0-0-49-98-release/) or 584.1 from [APKMirror's Messenger page](https://www.apkmirror.com/apk/facebook-2/messenger/). Other builds share a version name but aren't supported yet, including the 32-bit 584.0 builds and the arm64 584.1 builds.
 2. **Add the source.** Open the link above on your phone with Morphe Manager (2.0.0 or newer) installed. Or in Manager open **Sources**, tap **+**, choose **Remote** and enter `github.com/SysAdminDoc/HushMessenger`. The card should show **63 patches**. If it shows an older version, tap its refresh button.
 3. **Patch Messenger.** The default selection includes every switch. Three patches start unselected because they change the app package itself: **Clone install under another package name**, **Spoof package version** and **Custom new-message sound**. To add one, turn on **Settings → Advanced → Expert mode** in Manager and use **Choose patches**.
 4. **Keep one source.** Don't add the remote source and a local copy together, and don't mix in Messenger patches from other sources.
@@ -130,7 +130,7 @@ The screenshots below show the settings in the current release, in the dark and 
 - **Can't find the settings.** Long-press Messenger's home screen icon and tap **Patch controls**. Not there? You may have hidden the icon shortcuts, so use the **HushMessenger** row in the Menu tab or long-press the Messenger logo at the top of Chats. If no way in shows up at all, refresh the source and patch again.
 - **Switches do nothing.** The settings live inside the patched Messenger, and refreshing a source only downloads patches. Patch and install again. The Meta AI tab and the old emoji drawer only change after **Restart Messenger**. Inbox options wait for the next chat list Messenger builds, and a restart applies them right away.
 - **The source shows an old version or misses a patch.** Refresh it and check that it shows the version of the [latest release](https://github.com/SysAdminDoc/HushMessenger/releases/latest). A local source needs the new `.mpp` added by hand.
-- **APK rejected.** Use an unmodified arm64 Messenger 584.0.0.49.98 whose version code is in the [supported builds](#supported-messenger-builds). The error names the builds it checked. When the log says "This Messenger build (version code N) isn't supported yet", that's the whole problem, and the patch Manager names above it (often **Allow chat bubbles**) didn't fail on its own.
+- **APK rejected.** Use an unmodified supported Messenger build whose version code is in the [supported builds](#supported-messenger-builds). The error names the builds it checked. When the log says "This Messenger build (version code N) isn't supported yet", that's the whole problem, and the patch Manager names above it (often **Allow chat bubbles**) didn't fail on its own.
 - **Android won't install over stock Messenger.** A re-signed APK can't replace Meta's signed copy. Back up first, since going from one to the other means uninstalling. Later updates of your patched copy need the same key.
 - **`signatures do not match` even though you uninstalled Messenger.** Every user on a phone shares one copy of an app, so Messenger is probably still installed somewhere else: Samsung's Secure Folder, a work profile or a second user. Look there before changing anything, and back up that copy's chats if you decide to remove it. **Clone install under another package name** gets around it without touching that copy. The [install check](#verify-a-download) lists the signer it finds.
 - **`INSTALL_FAILED_VERSION_DOWNGRADE ... older than current 2147483647`.** Another patch set raised Messenger's version code to Android's maximum, and Android remembers it even after an uninstall that kept data. Don't uninstall or clear data to get past it. An in-place update needs the same signing key and a version code at least that high, so patch with **Spoof package version** selected at that number.
@@ -157,18 +157,19 @@ With **Hide read receipts** on, a chat you open stays unread on your phone, beca
 | Field | Value |
 | --- | --- |
 | Package | `com.facebook.orca` |
-| Version | `584.0.0.49.98` |
-| Version codes | `346814894` |
-| Architecture | `arm64-v8a` |
+| Version | `584.0.0.49.98`, `584.1.0.61.98` |
+| Version codes | `346814894`, `346816966` |
+| Architecture | `arm64-v8a` (584.0), `armeabi-v7a` (584.1) |
 | Minimum Android version | Android 9 (API 28) |
-| APKMirror downloads | [584.0.0.49.98](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-584-0-0-49-98-release/) |
+| APKMirror downloads | [584.0.0.49.98](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-584-0-0-49-98-release/), [Messenger page for 584.1](https://www.apkmirror.com/apk/facebook-2/messenger/) |
 
-HushMessenger takes the one arm64 build APKMirror lists for 584.0.0.49.98. The patch checks the version code before it changes anything and stops on a build that isn't listed. Older Messenger versions aren't supported by current bundles. v0.25.0 still takes 583.0.0.29.95, and v0.23.0 takes 582.0.0.61.92.
+HushMessenger takes the one arm64 build APKMirror lists for 584.0.0.49.98 and the armv7 build `346816966` of 584.1.0.61.98. The patch checks the version code before it changes anything and stops on a build that isn't listed. Older Messenger versions aren't supported by current bundles. v0.25.0 still takes 583.0.0.29.95, and v0.23.0 takes 582.0.0.61.92.
 
 SHA-256 of the stock APKs the checks ran against:
 
 ```text
 346814894  3cdcde5608814756f409e21ef5bcb679931edb34dfe33e36f84b1de663ddf966
+346816966  aef8470956cdddbf62b57544e765a0ca09b80cda7a4015228796785e4d777410
 ```
 
 On Windows, compare your file with `Get-FileHash -Algorithm SHA256 .\messenger.apk`. Meta sometimes publishes different APKs under one version name.
@@ -208,7 +209,7 @@ python -m unittest discover -s scripts/tests -v
 
 The bundle lands in `patches/build/libs/`, and clean builds from the same source give the same checksum. `:patches:check` wants the exact stock APK of every supported build in a folder named by `HUSH_NATIVE_FIXTURES`, each file named with its version code after the last dash, like `messenger-584-346814894.apk`. `:patches:test` runs without them and skips the tests that replay on those APKs.
 
-To exercise Messenger itself, use ARM64 Android or an emulator image with ARM translation. Messenger `584/346814894` was checked on the Android 12L Google APIs x86_64 image with `libndk_translation.so`. Keep separate emulator data directories for Meta-signed stock and re-signed builds. Android users and work profiles share the installed APK and its signing key.
+To exercise Messenger itself, use ARM64 Android or an emulator image with ARM translation. Messenger `584/346814894` was checked on the Android 12L Google APIs x86_64 image with `libndk_translation.so`. Keep separate emulator data directories for Meta-signed stock and re-signed builds. Android users and work profiles share the installed APK and its signing key. The 584.1 armv7 build has passed the compatibility checks and a full Desktop rebuild, but hasn't been walked on an armv7 phone yet.
 
 For a low-RAM check, verify `ActivityManager.isLowRamDevice()` inside the app. A userdebug image can apply `debug.force_low_ram` temporarily after a framework restart. Reducing the emulator's RAM alone doesn't establish that classification. Restore the property and verify the original result afterward.
 

@@ -290,6 +290,27 @@ class ExpandedControlsTest {
         assertEquals(original.drop(6), code.drop(11))
     }
 
+    @Test fun a5841ClickWithAnAlreadyTypedRowFieldNeedsNoCast() {
+        val method = fixtureMethod("LX/Jwp;->onClick(Landroid/view/View;)V", """
+            move-object/from16 v3, p0
+            iget-object v0, v3, LX/Jwp;->A01:LX/HRf;
+            move-object/from16 v16, v0
+            iget-object v0, v3, LX/Jwp;->A02:Ljava/lang/Object;
+            const-string v1, "$DRAWER_FOLDER_SELECTED"
+            return-void
+        """.trimIndent(), registers = 20)
+        method.injectMenuFolderClick("LX/HRf;")
+        val code = method.implementation!!.instructions.toList()
+        val call = code.filterIsInstance<RegisterRangeInstruction>().single {
+            (it as ReferenceInstruction).reference.toString() == "$SETTINGS->drawerFolderClicked(Ljava/lang/Object;)Ljava/lang/Object;"
+        }
+        assertEquals(16, call.startRegister)
+        assertTrue(code.any { instruction ->
+            instruction.opcode == Opcode.CHECK_CAST && (instruction as OneRegisterInstruction).registerA == 16 &&
+                ((instruction as ReferenceInstruction).reference as TypeReference).type == "LX/HRf;"
+        })
+    }
+
     @Test fun drawerFolderClickRejectsAMissingMarkerOrAnUnclearRowCast() {
         for (body in listOf(
             folderClick.replace(DRAWER_FOLDER_SELECTED, "HomeDrawerFragmentBase.somethingElse"),
@@ -326,6 +347,15 @@ class ExpandedControlsTest {
             "new-instance v1, LX/HRf;\n",
             "",
         )) assertFailsWith<PatchException> { builder(changed).menuFolderItemType() }
+    }
+
+    @Test fun anIconBuiltInPlaceBeforeThe5841SettingsRowIsAccepted() {
+        val id = "LX/HFb;->Ax1(LX/0MG;)Ljava/util/ArrayList;"
+        val icon = "sget-object v1, LX/1jj;->A66:LX/1jj;\nsget-object v3, LX/UD9;->A00:LX/UD9;\n" +
+            "new-instance v2, LX/KGb;\ninvoke-direct {v2, v1, v3}, LX/KGb;-><init>(LX/1jj;LX/UD9;)V\n" +
+            "move-object v3, v2\n"
+        val method = fixtureMethod(id, icon + folderRow("LX/HRf;", settingsKey) + "const/4 v0, 0x0\nreturn-object v0", 10)
+        assertEquals("LX/HRf;", method.menuFolderItemType())
     }
 
     @Test fun encryptedTypingFlagIsFilteredBeforeTheMailboxCallReadsIt() {
@@ -414,12 +444,22 @@ class ExpandedControlsTest {
         assertEquals(1, swapped.registerCount)
         assertEquals(stockDecode.filterIndexed { i, _ -> i != 1 }, decodeCode.drop(4).filterIndexed { i, _ -> i != 1 })
 
+        val customScale = fixtureMethod(DECODE_BITMAP,
+            DECODE_BITMAP_BODY.replace("Landroid/graphics/Bitmap;->createScaledBitmap", "LX/UKC;->A0G"), 22)
+        customScale.injectOriginalPhoto()
+        assertTrue(customScale.implementation!!.instructions.any {
+            (it as? ReferenceInstruction)?.reference?.toString() ==
+                "Lapp/hushmessenger/extension/OriginalPhoto;->decodeFile(Ljava/lang/String;)Landroid/graphics/Bitmap;"
+        })
+
         val refused = listOf(
             TRANSCODE_CONFIG to TRANSCODE_CONFIG_BODY.replace("ENABLE_UIT_TRANSCODING", "ENABLE_UIT_V2"),
             TRANSCODE_CONFIG to TRANSCODE_CONFIG_BODY.replace("return-object v2", "if-eqz v1, :again\nreturn-object v2\n:again\nreturn-object v2"),
             DECODE_BITMAP to DECODE_BITMAP_BODY.replace("move-result-object v1\nmove-wide",
                 "move-result-object v1\ninvoke-static {v11}, Landroid/graphics/BitmapFactory;->decodeFile(Ljava/lang/String;)Landroid/graphics/Bitmap;\nmove-wide"),
-            DECODE_BITMAP to DECODE_BITMAP_BODY.replace("invoke-static {v1, v2, v4, v5}, Landroid/graphics/Bitmap;->createScaledBitmap", "invoke-static {v1, v2, v4, v5}, LX/Fixture;->scale"),
+            DECODE_BITMAP to DECODE_BITMAP_BODY.replace(
+                "invoke-static {v1, v2, v4, v5}, Landroid/graphics/Bitmap;->createScaledBitmap(Landroid/graphics/Bitmap;IIZ)Landroid/graphics/Bitmap;",
+                "invoke-static {v1}, LX/Fixture;->scale(Landroid/graphics/Bitmap;)Landroid/graphics/Bitmap;"),
             DECODE_BITMAP to ":top\n" + DECODE_BITMAP_BODY.replace("return-object v1", "if-eqz v1, :top\nreturn-object v1"),
         )
         for ((id, body) in refused) assertFailsWith<PatchException>(body) { fixtureMethod(id, body, registers = 22).injectOriginalPhoto() }

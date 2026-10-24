@@ -89,7 +89,8 @@ internal const val TRANSCODE_CONFIG = "$MEDIA_TRANSCODER->getTranscodeConfig()Lj
 internal const val DECODE_BITMAP = "$MEDIA_TRANSCODER->decodeBitmap(Ljava/lang/String;DD)Landroid/graphics/Bitmap;"
 internal val ORIGINAL_PHOTO_HOOKS = setOf(TRANSCODE_IMAGE, TRANSCODE_IMAGE_ASYNC, TRANSCODE_CONFIG, DECODE_BITMAP)
 private const val DECODE_FILE = "Landroid/graphics/BitmapFactory;->decodeFile(Ljava/lang/String;)Landroid/graphics/Bitmap;"
-private const val SCALE_BITMAP = "Landroid/graphics/Bitmap;->createScaledBitmap(Landroid/graphics/Bitmap;IIZ)Landroid/graphics/Bitmap;"
+private const val BITMAP = "Landroid/graphics/Bitmap;"
+private val SCALE_BITMAP_PARAMS = listOf(BITMAP, "I", "I", "Z")
 private const val ORIGINAL_PHOTO = "Lapp/hushmessenger/extension/OriginalPhoto;"
 private const val FLAG_SECURE = 0x2000
 
@@ -197,7 +198,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
             ?.initialValue.let { (it as? StringEncodedValue)?.value }
         for (method in cls.methods) {
             fun add(key: String) { found.getValue(key).add(method) }
-            if ((cls.type == EPHEMERAL_VIEWER && (method.name == EPHEMERAL_DIALOG || method.name == "onResume")) ||
+            if ((cls.type == EPHEMERAL_VIEWER && (method.name in EPHEMERAL_DIALOGS || method.name == "onResume")) ||
                 (cls.type == QUICKSNAP_VIEWER && method.name == "onCreateView")) {
                 try {
                     method.screenshotViewerSites()
@@ -595,7 +596,13 @@ private fun Method.decodeFileCall(): Int {
     val code = implementation!!.instructions.toList()
     val calls = code.indices.filter { (code[it] as? ReferenceInstruction)?.reference?.toString() == DECODE_FILE }
     val call = calls.singleOrNull()?.let(code::get)
-    val scale = code.indexOfFirst { (it as? ReferenceInstruction)?.reference?.toString() == SCALE_BITMAP }
+    // 584.1 routes the shrink through Messenger's own static helper rather than Bitmap.createScaledBitmap.
+    val scale = code.indexOfFirst { instruction ->
+        instruction.opcode in setOf(Opcode.INVOKE_STATIC, Opcode.INVOKE_STATIC_RANGE) &&
+            ((instruction as? ReferenceInstruction)?.reference as? DexMethodReference)?.let { reference ->
+                reference.returnType == BITMAP && reference.parameterTypes.map(CharSequence::toString) == SCALE_BITMAP_PARAMS
+            } == true
+    }
     if (call == null || call.opcode !in setOf(Opcode.INVOKE_STATIC, Opcode.INVOKE_STATIC_RANGE) || call.registerList().size != 1 ||
         scale < calls.single() || 0 in jumpTargets()) {
         throw PatchException("Messenger controls: the photo transcoder's decode changed in ${hookId()}")
@@ -1094,10 +1101,56 @@ internal fun Method.menuFolderItemType(): String {
     val code = implementation!!.instructions.toList()
     val types = code.filter { it.opcode == Opcode.NEW_INSTANCE }
         .map { ((it as ReferenceInstruction).reference as TypeReference).type }.toSet()
-    val row = ((code[settingsRowCall()] as ReferenceInstruction).reference as DexMethodReference).definingClass
-    if (row !in types || types.any { it != row && !(it.startsWith(DRAWER_MODEL) && it.endsWith("FolderKey;")) })
-        throw PatchException("Messenger controls: menu settings item builder creates ${types.size} types, expected its rows and folder keys")
+    val rowCall = settingsRowCall()
+    val row = ((code[rowCall] as ReferenceInstruction).reference as DexMethodReference).definingClass
+    // 584.1 builds the row icon in place before passing it to the constructor; that allocation is the only
+    // non-folder-key type besides the row itself.
+    val extras = types.filter { it != row && !(it.startsWith(DRAWER_MODEL) && it.endsWith("FolderKey;")) }
+    val iconAt = if (extras.size == 1) code[rowCall].drawerArgs().getOrNull(3)?.let { drawerOrigin(rowCall, it) } ?: -1 else -1
+    val icon = code.getOrNull(iconAt)?.takeIf { it.opcode == Opcode.NEW_INSTANCE }?.let { instruction ->
+        val type = ((instruction as ReferenceInstruction).reference as TypeReference).type
+        val inserted = code.getOrNull(iconAt + 1) as? ReferenceInstruction
+        val ctor = inserted?.reference as? DexMethodReference
+        val allocation = instruction as OneRegisterInstruction
+        if (type == extras.single() && inserted is FiveRegisterInstruction && inserted.opcode == Opcode.INVOKE_DIRECT &&
+            ctor?.definingClass == type && ctor.name == "<init>" && inserted.registerC == allocation.registerA) type else null
+    }
+    if (row !in types || types.any { it != row && it != icon && !(it.startsWith(DRAWER_MODEL) && it.endsWith("FolderKey;")) })
+        throw PatchException("Messenger controls: menu settings item builder creates ${types.size} types, expected its rows, icons and folder keys")
     return row
+}
+
+private val ROW_MOVES = setOf(Opcode.MOVE_OBJECT, Opcode.MOVE_OBJECT_FROM16, Opcode.MOVE_OBJECT_16)
+
+/**
+ * The register holding a folder row at [marker], following the field read or check-cast and any plain object
+ * moves after it. 584.1 already types the row field, so its click handler has no cast before the marker.
+ */
+private fun Method.rowRegisterAt(marker: Int, folderItemType: String): Int? {
+    val code = implementation!!.instructions.toList()
+    val readAt = (marker - 1 downTo 0).firstOrNull { index ->
+        when (code[index].opcode) {
+            Opcode.CHECK_CAST -> ((code[index] as ReferenceInstruction).reference as? TypeReference)?.type == folderItemType
+            Opcode.IGET_OBJECT -> ((code[index] as ReferenceInstruction).reference as? FieldReference)?.type == folderItemType
+            else -> false
+        }
+    } ?: return null
+    val read = code[readAt]
+    val seed = when (read.opcode) {
+        Opcode.CHECK_CAST -> (read as OneRegisterInstruction).registerA
+        else -> (read as TwoRegisterInstruction).registerA
+    }
+    val aliases = mutableSetOf(seed)
+    for (index in readAt + 1 until marker) {
+        val instruction = code[index]
+        if (instruction is TwoRegisterInstruction && instruction.opcode in ROW_MOVES) {
+            if (instruction.registerB in aliases) aliases.add(instruction.registerA)
+            else aliases.remove(instruction.registerA)
+        } else if (instruction is OneRegisterInstruction && instruction.opcode.setsRegister()) {
+            aliases.remove(instruction.registerA)
+        }
+    }
+    return aliases.singleOrNull()?.takeIf { it < implementation!!.registerCount }
 }
 
 /** Messenger casts the tapped folder row just before its folder-selected trace section starts. */
@@ -1113,10 +1166,20 @@ internal fun Method.menuFolderCastIndex(folderItemType: String): Int {
     }
     val marker = markers.singleOrNull()
         ?: throw PatchException("Messenger controls: drawer folder click has ${markers.size} folder-selected markers, expected 1")
-    val casts = code.indices.filter { index ->
-        index < marker && marker - index <= 12 && code[index].opcode == Opcode.CHECK_CAST &&
+    val allCasts = code.indices.filter { index ->
+        code[index].opcode == Opcode.CHECK_CAST &&
             ((code[index] as ReferenceInstruction).reference as TypeReference).type == folderItemType
     }
+    if (allCasts.isEmpty()) {
+        if (rowRegisterAt(marker, folderItemType) == null) {
+            throw PatchException("Messenger controls: drawer folder click has no row read before its marker")
+        }
+        if ((0 until marker).any { it in jumpTargets() } || marker in jumpTargets()) {
+            throw PatchException("Messenger controls: drawer folder click can bypass its row read")
+        }
+        return marker
+    }
+    val casts = allCasts.filter { index -> index < marker && marker - index <= 12 }
     val cast = casts.singleOrNull()
         ?: throw PatchException("Messenger controls: drawer folder click has ${casts.size} row casts before its marker, expected 1")
     if ((code[cast] as OneRegisterInstruction).registerA >= impl.registerCount) {
@@ -1167,10 +1230,12 @@ internal fun Method.menuFolderCastIndex(folderItemType: String): Int {
 }
 
 internal fun MutableMethod.injectMenuFolderClick(folderItemType: String) {
-    val cast = menuFolderCastIndex(folderItemType)
-    val row = (getInstruction(cast) as OneRegisterInstruction).registerA
+    val at = menuFolderCastIndex(folderItemType)
+    val instruction = getInstruction(at)
+    val row = if (instruction.opcode == Opcode.CHECK_CAST) (instruction as OneRegisterInstruction).registerA
+        else rowRegisterAt(at, folderItemType) ?: throw PatchException("Messenger controls: drawer folder click has no row read before its marker")
     // Null means the HushMessenger row opened settings; any other row continues with Messenger's handling.
-    addInstructionsWithLabels(cast + 1, """
+    addInstructionsWithLabels(at + 1, """
         invoke-static/range {v$row .. v$row}, $SETTINGS->drawerFolderClicked(Ljava/lang/Object;)Ljava/lang/Object;
         move-result-object v$row
         if-nez v$row, :hush_folder_row

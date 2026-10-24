@@ -295,8 +295,9 @@ class NativeMediaControlsTest {
             screenshotViewerFixture("$EPHEMERAL_VIEWER->A1D(Landroid/os/Bundle;)Landroid/app/Dialog;").screenshotViewerSites()
         }
         val quick = "$QUICKSNAP_VIEWER->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;"
-        // Messenger 584 runs it to 451, with the same guarded prefix.
+        // Messenger 584 runs it to 451, 584.1 armv7 to 446, both with the same guarded prefix.
         assertEquals(listOf(32), screenshotViewerFixture(quick, 451).screenshotViewerSites())
+        assertEquals(listOf(32), screenshotViewerFixture(quick, 446).screenshotViewerSites())
         assertFailsWith<PatchException> { screenshotViewerFixture(quick, 444).screenshotViewerSites() }
         // 583's 449 and 450 and 582's 438 and 441 instruction bodies are refused.
         for (size in listOf(438, 441, 449, 450)) assertFailsWith<PatchException> { screenshotViewerFixture(quick, size).screenshotViewerSites() }
@@ -315,9 +316,11 @@ class NativeMediaControlsTest {
             // "Generate custom stickers" in the menu label's place: the custom sticker cell isn't the AI menu.
             assertTrue(findAiStickerCells(aiStickerCellFixture(cell.render, menu = 0x7f14128f)).isEmpty())
         }
-        // 584's cell offers its AI label from four renders and its Generate menu label from one.
-        assertEquals(listOf(listOf(GENERATE_AI_LABEL, 4, 107, GENERATE_MENU_LABEL, 1)),
-            aiCells.map { listOf(it.label, it.sources, it.size, it.menu, it.menuSources) })
+        // 584's and 584.1 armv7's cells offer their AI label from four renders and their Generate menu label from one.
+        assertEquals(listOf(
+            listOf(GENERATE_AI_LABEL, 4, 107, GENERATE_MENU_LABEL, 1),
+            listOf(GENERATE_AI_LABEL, 4, 109, GENERATE_MENU_LABEL_5841, 1),
+        ), aiCells.map { listOf(it.label, it.sources, it.size, it.menu, it.menuSources) })
     }
 
     @Test fun aMenuLabelThatBranchesBeforeTheCellIsNotASource() {
@@ -390,9 +393,8 @@ class NativeMediaControlsTest {
         }
     }
 
-    /** 584's cell under its own name, to check the injection compares 584's label. */
-    @Test fun eachCellCompares584sLabel() {
-        assertEquals(1, aiCells.size)
+    /** Each cell under its own name, to check the injection compares that cell's labels. */
+    @Test fun eachCellComparesItsOwnLabels() {
         for (cell in aiCells) {
             val base = SYNTHETIC_PROFILE
             activeProfile = ControlProfile(base.hooks + ("ai_sticker_cell" to setOf(cell.render)), base.pluginSentinel, base.preferenceGetter,
@@ -404,8 +406,8 @@ class NativeMediaControlsTest {
             method.injectAiStickerCell()
             val after = method.implementation!!.instructions.toList()
             assertEquals(before, after.drop(12), cell.type)
-            assertEquals(GENERATE_AI_LABEL, (after[2] as NarrowLiteralInstruction).narrowLiteral)
-            assertEquals(GENERATE_MENU_LABEL, (after[4] as NarrowLiteralInstruction).narrowLiteral)
+            assertEquals(cell.label, (after[2] as NarrowLiteralInstruction).narrowLiteral)
+            assertEquals(cell.menu, (after[4] as NarrowLiteralInstruction).narrowLiteral)
             assertEquals(6, after.branchTarget(3))
             assertEquals(12, after.branchTarget(5))
             assertEquals(12, after.branchTarget(9))
@@ -486,7 +488,8 @@ class NativeMediaControlsTest {
             val grid = method.validateAiStickerGrid()
             assertEquals(4, grid.flag)
             assertEquals(Opcode.MOVE, code[grid.skip].opcode)
-            assertEquals(listOf(GENERATE_MENU_LABEL, GENERATE_AI_LABEL), grid.sites.map { (code[it] as NarrowLiteralInstruction).narrowLiteral })
+            val menu = aiCells.single { it.render == activeProfile.hooks.getValue("ai_sticker_cell").single() }.menu
+            assertEquals(listOf(menu, GENERATE_AI_LABEL), grid.sites.map { (code[it] as NarrowLiteralInstruction).narrowLiteral })
             assertGridInjected(method, "fixture")
         }
         // A bare render that builds the menu cell with no loop around it is no grid.

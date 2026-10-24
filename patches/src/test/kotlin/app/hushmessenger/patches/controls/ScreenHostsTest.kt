@@ -92,7 +92,8 @@ class ScreenHostsTest {
 
     @Test fun everySupportedBuildRecordsItsNameCodeAndMapping() {
         for ((name, codes) in app.hushmessenger.patches.MessengerTarget.VERSIONS) for (code in codes) {
-            assertEquals("$name|$code|base", originalBuild(name, code.toString(), controlProfiles), "$code")
+            val mapping = if (controlProfiles.getValue(code) === BASE_PROFILE) "base" else code.toString()
+            assertEquals("$name|$code|$mapping", originalBuild(name, code.toString(), controlProfiles), "$code")
         }
         // A build that shares another profile reports the lowest code of the builds that share it.
         val shared = controlProfiles + mapOf(348000002 to SYNTHETIC_PROFILE, 348000001 to SYNTHETIC_PROFILE)

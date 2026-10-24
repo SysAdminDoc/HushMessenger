@@ -4,6 +4,7 @@
 
 ### Changed and fixed
 
+- HushMessenger now also patches Messenger 584.1.0.61.98, armv7 build `346816966`, alongside the arm64 584.0.0.49.98 build. Every patch was checked against it, and Morphe Desktop applied and rebuilt all of them. The arm64 584.1 builds and the 32-bit 584.0 builds still aren't supported.
 - **Hide Meta AI** now reaches the search screen too. Tap the search bar and the box at the top used to say "Ask Meta AI or search" even with the switch on. Now it shows the plain search hint, like the bar on the Chats list. Search still finds people and chats the same way.
 - With **Slide chats in and out** on, a chat whose first frames come late no longer jumps partway in. That happened most on the first chat you open after starting Messenger. The chat now waits off screen until Messenger draws on time (a quarter second at most), then slides in from the edge. Going back works the same way.
 

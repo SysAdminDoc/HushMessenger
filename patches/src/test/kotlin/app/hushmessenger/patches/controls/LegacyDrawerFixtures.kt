@@ -11,7 +11,7 @@ import com.android.tools.smali.dexlib2.immutable.ImmutableMethodImplementation
 internal data class DrawerFixtureMapping(
     val provider: String, val getter: String, val row: String, val section: String,
     val dispatcher: String, val iconBase: String, val icon: String, val glyph: String, val enums: String,
-    /** The Settings icon is built in place instead of coming from the icon's static factory, a 582 form that's refused. */
+    /** The Settings icon is built in place instead of coming from the icon's static factory (582 and 584.1). */
     val inlineIcon: Boolean = false,
     /** 584 builds its QR code row after Settings, from the same row class and its own folder key. */
     val qrRow: Boolean = false,
@@ -21,6 +21,8 @@ private fun drawerMapping(refreshOwner: String) = when (refreshOwner) {
     "LX/9rv;" -> DrawerFixtureMapping("LX/CTJ;", "Ax4", "LX/HRf;", "LX/HRe;", "LX/Cfq;", "LX/Imx;", "LX/HNS;", "LX/1hJ;", "LX/0R2;")
     "LX/8Yj;" -> DrawerFixtureMapping("LX/BgF;", "B0B", "LX/GKf;", "LX/GKz;", "LX/GJL;", "LX/H1A;", "LX/GNd;", "LX/1jJ;", "LX/0OS;",
         qrRow = true)
+    "LX/8WE;" -> DrawerFixtureMapping("LX/Bcw;", "B0I", "LX/XwG;", "LX/Lxq;", "LX/GKD;", "LX/HA9;", "LX/Lyd;", "LX/1jj;", "LX/0OY;",
+        inlineIcon = true, qrRow = true)
     else -> error("Unrecorded drawer mapping: $refreshOwner")
 }
 
@@ -57,16 +59,26 @@ private fun drawerConstructor(owner: String, params: List<String>, names: List<S
         append("return-void")
     }, registers = params.size + 2, flags = PUBLIC_CONSTRUCTOR)
 
-/** The Settings icon from the icon's static factory, as 584 gets it, or built in place the way 582 did. */
+/** The Settings icon from the icon's static factory, as 584 gets it, or built in place the way 582 and 584.1 do. */
 private fun settingsIcon(model: DrawerFixtureMapping, broken: String): String {
     val glyph = "${model.glyph}->${if (broken == "glyph") "A64" else "A65"}:${model.glyph}"
-    return (if (model.inlineIcon) listOf(
-        "sget-object v9, $glyph",
-        "sget-object v10, $FIXTURE_COLOR->A0A:$FIXTURE_COLOR",
-        "new-instance v3, ${model.icon}",
-        "invoke-direct {v3, v9, v10}, ${model.icon}-><init>(${model.glyph}$FIXTURE_COLOR_TYPE)V",
-        "nop",
-    ) else listOf(
+    return (if (model.inlineIcon) {
+        val type = if (broken == "inline-icon-type") "LX/WrongIcon;" else model.icon
+        val color = if (broken == "inline-icon-color") "$FIXTURE_COLOR->A0B:$FIXTURE_COLOR"
+            else "$FIXTURE_COLOR->A0A:$FIXTURE_COLOR"
+        val constructor = when (broken) {
+            "inline-icon-missing-ctor" -> ""
+            "inline-icon-constructor" -> "invoke-direct {v3, v9}, $type-><init>(${model.glyph})V"
+            else -> "invoke-direct {v3, v9, v10}, $type-><init>(${model.glyph}$FIXTURE_COLOR_TYPE)V"
+        }
+        listOf(
+            "sget-object v9, $glyph",
+            "sget-object v10, $color",
+            "new-instance v3, $type",
+            constructor,
+            "nop",
+        ).filter { it.isNotEmpty() }
+    } else listOf(
         "sget-object v3, $glyph",
         "invoke-static {v3}, ${model.icon}->A00(${model.glyph})${model.icon}",
         "move-result-object ${if (broken == "icon-origin") "v2" else "v3"}",
