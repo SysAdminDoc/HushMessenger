@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### New
+
+- `Search saved messages` is a new switch under Conversations, for old chats Messenger's own search finds nothing in. It adds a button to a chat's search results that looks through the messages this phone has saved for that chat, and tapping a result opens the chat there. It works in chats that aren't end-to-end encrypted. It can only find what the phone has loaded, so the screen says how far back it got, and scrolling up in the chat loads more. It reads Messenger's data without changing it, and it starts off. Refs #92.
+
 ### Fixed
 
 - Android Auto's launcher opens Messenger again instead of showing the HushMessenger settings entry in its place. The drawer entry now sorts after Messenger's own, so anything that launches Messenger by package name (Android Auto, the Facebook app's Messenger button, a Manager's Open button) lands in Messenger. The `Android Auto messages` text now says Unknown sources is only enough on a desktop head unit, since a real car can still leave Messenger out. Refs #75.

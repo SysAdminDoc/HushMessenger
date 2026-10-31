@@ -214,6 +214,7 @@ public class CompatReport {
         PATCHES.put("Auto reply", List.of("auto_reply"));
         PATCHES.put("Quiet incoming calls", List.of("quiet_call_ring", "quiet_call_notification"));
         PATCHES.put("Android Auto messages", List.of("car_messages"));
+        PATCHES.put("Search saved messages", List.of("local_chat_search"));
         PATCHES.put("Allow screenshots", List.of("allow_screenshot", "screenshot_viewers"));
         PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read"));
         PATCHES.put("Mark as read button", List.of("mark_read_bar", "mark_read_click"));
@@ -5669,6 +5670,73 @@ public class CompatReport {
         return List.of(method);
     }
 
+    static final String LOCAL_SEARCH_LIST = "message_search_thread_message_list_fragment";
+    static final String LOCAL_THREAD_SUMMARY = "Lcom/facebook/messaging/model/threads/ThreadSummary;";
+    static final String LOCAL_THREAD_KEY = "Lcom/facebook/messaging/model/threadkey/ThreadKey;";
+
+    static String localSearchMade(List<Instruction> code, int at) {
+        if (at < 0 || at >= code.size() || code.get(at).getOpcode() != Opcode.NEW_INSTANCE) return null;
+        return code.get(at) instanceof ReferenceInstruction ri && ri.getReference() instanceof TypeReference type ? type.getType() : null;
+    }
+
+    /** The list the picker makes for a chat that isn't encrypted, or null. Mirrors localSearchListType in LocalChatSearch.kt. */
+    static String localSearchListType(Method method) {
+        if (!"V".equals(method.getReturnType()) || !params(method).equals(List.of(LOCAL_THREAD_SUMMARY, "Ljava/lang/String;", "I"))) return null;
+        var code = instructions(method);
+        if (code.stream().noneMatch(i -> LOCAL_SEARCH_LIST.equals(text(i)))) return null;
+        var lists = new ArrayList<String>();
+        for (int i = 0; i + 3 < code.size(); i++) {
+            if (code.get(i).getOpcode() != Opcode.INVOKE_VIRTUAL || !(code.get(i) instanceof ReferenceInstruction ri)
+                || !(ri.getReference() instanceof MethodReference call) || !LOCAL_THREAD_KEY.equals(call.getDefiningClass())
+                || !"Z".equals(call.getReturnType()) || !call.getParameterTypes().isEmpty()
+                || code.get(i + 1).getOpcode() != Opcode.MOVE_RESULT || code.get(i + 2).getOpcode() != Opcode.IF_EQZ) continue;
+            String encrypted = localSearchMade(code, i + 3), plain = localSearchMade(code, mediaTarget(code, i + 2));
+            if (encrypted != null && plain != null && !plain.equals(encrypted)) lists.add(plain);
+        }
+        return lists.size() == 1 ? lists.get(0) : null;
+    }
+
+    /** The list's search method reading the chat's key off the summary once, with the words untouched by then. */
+    static boolean isLocalSearchMethod(Method method) {
+        if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || !"V".equals(method.getReturnType())
+            || !params(method).equals(List.of(LOCAL_THREAD_SUMMARY, "Ljava/lang/String;"))) return false;
+        var code = instructions(method);
+        int summary = parameterRegister(method, 1), words = parameterRegister(method, 2), read = -1;
+        for (int i = 0; i < code.size(); i++) {
+            if (code.get(i).getOpcode() == Opcode.IGET_OBJECT && code.get(i) instanceof ReferenceInstruction ri
+                && ri.getReference() instanceof FieldReference field && LOCAL_THREAD_SUMMARY.equals(field.getDefiningClass())
+                && LOCAL_THREAD_KEY.equals(field.getType()) && ((TwoRegisterInstruction) code.get(i)).getRegisterB() == summary) {
+                if (read >= 0) return false;
+                read = i;
+            }
+        }
+        if (read < 0 || ((TwoRegisterInstruction) code.get(read)).getRegisterA() > 15 || words > 15 || mediaTargets(method).contains(read + 1)) return false;
+        for (int i = 0; i < read; i++)
+            if (code.get(i).getOpcode().setsRegister() && code.get(i) instanceof OneRegisterInstruction one && one.getRegisterA() == words) return false;
+        return true;
+    }
+
+    /** local_chat_search: one picker naming one list with one search method and one view. Mirrors LocalChatSearch.kt. */
+    static List<Method> localChatSearch(List<ClassDef> classes) {
+        var types = new ArrayList<String>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            String type = localSearchListType(method);
+            if (type != null) types.add(type);
+        }
+        if (types.size() != 1) return List.of();
+        var search = new ArrayList<Method>();
+        var view = new ArrayList<Method>();
+        for (var cls : classes) {
+            if (!types.get(0).equals(cls.getType())) continue;
+            for (var method : cls.getMethods()) {
+                if (isLocalSearchMethod(method)) search.add(method);
+                if (!AccessFlags.STATIC.isSet(method.getAccessFlags()) && "onViewCreated".equals(method.getName()) && "V".equals(method.getReturnType())
+                    && params(method).equals(List.of("Landroid/view/View;", "Landroid/os/Bundle;")) && method.getImplementation() != null) view.add(method);
+            }
+        }
+        return search.size() == 1 && view.size() == 1 ? List.of(search.get(0), view.get(0)) : List.of();
+    }
+
     static final String PHONE_ID_PROVIDER = ".provider.phoneid";
     static final String GET_PHONE_ID = "com.facebook.GET_PHONE_ID";
     static final String INSTALLED_PACKAGES = "Landroid/content/pm/PackageManager;->getInstalledPackages(I)Ljava/util/List;";
@@ -6354,6 +6422,7 @@ public class CompatReport {
         found.get("quiet_call_ring").addAll(quietCallRing(classes));
         found.get("quiet_call_notification").addAll(quietCallNotification(classes));
         found.get("car_messages").addAll(carMessages(classes));
+        found.get("local_chat_search").addAll(localChatSearch(classes));
         var markRead = markReadButton(classes);
         if (!markRead.isEmpty()) {
             found.get("mark_read_bar").add(markRead.get(0));

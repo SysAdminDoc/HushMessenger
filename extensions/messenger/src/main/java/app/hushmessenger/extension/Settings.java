@@ -1046,6 +1046,11 @@ public final class Settings {
             Context context = appContext;
             return context == null || TextStyleActivity.present(context);
         }
+        // A Root Mount install keeps the stock manifest, with no search screen.
+        if (LocalChatSearch.KEY.equals(key)) {
+            Context context = appContext;
+            return context == null || LocalSearchActivity.present(context);
+        }
         if ("hide_menu_row".equals(key)) return menuRowCanHide();
         if (HIDE_ICON_SHORTCUTS.equals(key) || HIDE_LOGO_PRESS.equals(key)) return anotherWayIn(key);
         // Android 9 lets no app add to the shared Recordings or Music folders without the storage permission.

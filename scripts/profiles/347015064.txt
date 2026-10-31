@@ -136,6 +136,8 @@ hook inbox_promotions LX/25z;->A0K()Z
 hook instants_button LX/1mx;->A0D(LX/1mx;)V
 hook instants_button LX/ZnZ;->A0X(LX/ZnZ;)V
 hook keep_unsent LX/MRd;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V
+hook local_chat_search LX/HjU;->Evp(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V
+hook local_chat_search LX/HjU;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook mark_read_action LX/HYn;->A0V()Z
 hook mark_read_action LX/Jlk;->A0F()Z
 hook mark_read_bar LX/54Y;->A07(Landroid/content/Context;LX/0XX;Lcom/facebook/auth/usersession/FbUserSession;LX/4ym;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KOM;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5Nd;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/D52;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;
