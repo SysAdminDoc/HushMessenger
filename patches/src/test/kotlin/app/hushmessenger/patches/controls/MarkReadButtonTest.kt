@@ -67,6 +67,8 @@ private val BAR_BODY = """
     invoke-direct {v1, v8}, Ljava/util/ArrayList;-><init>(I)V
     move-object v2, p0
     const/4 v13, 0x4
+    const-string v8, "audio_call_button"
+    const-string v8, "video_call_button"
     const-string v8, "$QR_BUTTON_NAME"
     iget-object v12, v2, $SOCKET->A05:$QR_BUTTON
     iget-object v8, v12, $QR_BUTTON->A00:Landroid/content/Context;

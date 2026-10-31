@@ -6181,6 +6181,12 @@ public class CompatReport {
         Method details = null;
         if (detailsOwner != null) for (var m : detailsOwner.getMethods()) if (hookId(m).equals(detailsRef)) details = m;
         if (details == null || !tagsDetails(details, tagField)) return List.of();
+        // The extension leaves a full bar's call buttons in place by these tags.
+        for (String callTag : CALL_TAGS) {
+            boolean named = false;
+            for (var insn : c) if (insn instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference s && callTag.equals(s.getString())) named = true;
+            if (!named) return List.of();
+        }
         // The newer bar is the one other method that makes the details button.
         Method factory = null;
         String barId = hookId(bar);
@@ -6205,6 +6211,8 @@ public class CompatReport {
     static final String LIST_COPY = "Lcom/google/common/collect/ImmutableList;->copyOf(Ljava/util/Collection;)Lcom/google/common/collect/ImmutableList;";
     /** MarkReadButton.DETAILS_TAG. */
     static final String DETAILS_TAG = "settings_button";
+    /** MarkReadButton.kt's MARK_READ_CALL_TAGS. */
+    static final List<String> CALL_TAGS = List.of("audio_call_button", "video_call_button");
     static final Set<String> FACTORY_RETURNS = Set.of("Ljava/lang/Object;", "Ljava/lang/Iterable;", "Ljava/util/Collection;", "Ljava/util/List;", IMMUTABLE_LIST);
 
     /**

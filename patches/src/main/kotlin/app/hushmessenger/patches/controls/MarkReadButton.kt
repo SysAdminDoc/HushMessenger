@@ -29,6 +29,8 @@ internal const val MARK_READ_BUILD = "$MARK_READ->build(Ljava/lang/Object;)Ljava
 internal const val MARK_READ_BUTTON_BUILD = "$MARK_READ->button(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
 /** MarkReadButton.DETAILS_TAG, the chat details button's test tag, which both top bars' details builder sets. */
 internal const val MARK_READ_DETAILS_TAG = "settings_button"
+/** The two everyday MarkReadButton.CALL_TAGS, which the older top bar names, so a build that renames them is refused. */
+internal val MARK_READ_CALL_TAGS = listOf("audio_call_button", "video_call_button")
 internal const val MARK_READ_CLICKED = "$MARK_READ->clicked(Ljava/lang/Object;Landroid/view/View;)Z"
 internal const val MARK_READ_TAG = "$MARK_READ->tag(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
 internal const val MARK_READ_LABEL = "$MARK_READ->label()Ljava/lang/String;"
@@ -390,6 +392,8 @@ internal fun resolveMarkReadRecipe(classes: Iterable<ClassDef>): MarkReadRecipe?
     val site = bar.markReadSite(list, pluginRead.registerB, socketType) ?: return null
     if (!bar.markReadCapMatches()) return null
     val tag = tagField ?: return null
+    // The extension leaves a full bar's call buttons in place by these tags.
+    if (MARK_READ_CALL_TAGS.any { name -> c.none { (it.markRef() as? StringReference)?.string == name } }) return null
     // The chat details button's builder: the bar's one call that takes the chat colors last and returns a button.
     val detailsRef = c.mapNotNull { insn ->
         (insn.markRef() as? MethodReference)?.takeIf { insn.opcode == Opcode.INVOKE_VIRTUAL && it.returnType == specType && it.params().lastOrNull() == MIG_SCHEME }
