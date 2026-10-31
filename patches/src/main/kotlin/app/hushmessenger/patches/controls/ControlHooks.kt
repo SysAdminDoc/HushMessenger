@@ -416,6 +416,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     readReceiptThreadFields = resolveReadReceiptThreadFields(classes)
     val (markReadBar, markReadClick) = findMarkReadButton(classes)
     found.getValue(MARK_READ_BAR).addAll(markReadBar)
+    found.getValue(HIDE_CALL_BAR).addAll(markReadBar)
     found.getValue(MARK_READ_CLICK).addAll(markReadClick)
     found.getValue(SYSTEM_CAMERA).addAll(findSystemCamera(classes))
     found.getValue(EXTERNAL_GALLERY).addAll(findExternalGallery(classes))

@@ -45,6 +45,7 @@
         <meta-data android:name="hush.feature.car_messages" android:value="true" />
         <meta-data android:name="hush.feature.local_chat_search" android:value="true" />
         <meta-data android:name="hush.feature.call_recording" android:value="true" />
+        <meta-data android:name="hush.feature.hide_call_buttons" android:value="true" />
         <meta-data android:name="hush.feature.external_browser" android:value="true" />
         <meta-data android:name="hush.feature.bubbles" android:value="true" />
         <meta-data android:name="hush.feature.allow_screenshot" android:value="true" />

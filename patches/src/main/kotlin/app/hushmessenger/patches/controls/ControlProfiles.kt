@@ -152,6 +152,10 @@ internal val PROFILE_347015062 = ControlProfile(
         "growth" to setOf("LX/1r8;->A09()Z"),
         "growth_notes" to setOf("Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->A01(Landroidx/fragment/app/Fragment;LX/Tv8;Ljava/util/List;LX/5TQ;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;"),
         "growth_story_card" to setOf("Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->A15(Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;)Z"),
+        "hide_call_bar" to setOf(
+            "LX/54Y;->A07(Landroid/content/Context;LX/0XX;Lcom/facebook/auth/usersession/FbUserSession;LX/4ym;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KOM;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5Nd;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/D52;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;",
+            "LX/7PI;->Exj(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/77J;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
+        ),
         "hide_read_receipts" to setOf("LX/4mA;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4mA;Ljava/lang/String;)V"),
         "inbox_promotions" to setOf("LX/25z;->A0J()Z", "LX/25z;->A0K()Z"),
         "instants_button" to setOf("LX/1mx;->A0D(LX/1mx;)V", "LX/ZnZ;->A0X(LX/ZnZ;)V"),
@@ -388,6 +392,10 @@ internal val PROFILE_347014996 = ControlProfile(
         "growth" to setOf("LX/1r8;->A09()Z"),
         "growth_notes" to setOf("Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->A01(Landroidx/fragment/app/Fragment;LX/Tv8;Ljava/util/List;LX/5TQ;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;"),
         "growth_story_card" to setOf("Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->A15(Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;)Z"),
+        "hide_call_bar" to setOf(
+            "LX/54Y;->A07(Landroid/content/Context;LX/0XX;Lcom/facebook/auth/usersession/FbUserSession;LX/4ym;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KOM;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5Nd;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/D52;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;",
+            "LX/7PI;->Exj(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/77J;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
+        ),
         "hide_read_receipts" to setOf("LX/4mA;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4mA;Ljava/lang/String;)V"),
         "inbox_promotions" to setOf("LX/25z;->A0J()Z", "LX/25z;->A0K()Z"),
         "instants_button" to setOf("LX/1mx;->A0D(LX/1mx;)V", "LX/ZnZ;->A0X(LX/ZnZ;)V"),
@@ -624,6 +632,10 @@ internal val PROFILE_347014974 = ControlProfile(
         "growth" to setOf("LX/1sP;->A09()Z"),
         "growth_notes" to setOf("Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->A01(Landroidx/fragment/app/Fragment;LX/Or6;Ljava/util/List;LX/5WB;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;"),
         "growth_story_card" to setOf("Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->A15(Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;)Z"),
+        "hide_call_bar" to setOf(
+            "LX/57I;->A07(Landroid/content/Context;LX/0XX;Lcom/facebook/auth/usersession/FbUserSession;LX/51V;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KUB;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5QO;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/DAk;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;",
+            "LX/7Sf;->EyE(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/7Af;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
+        ),
         "hide_read_receipts" to setOf("LX/4ot;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4ot;Ljava/lang/String;)V"),
         "inbox_promotions" to setOf("LX/27L;->A0J()Z", "LX/27L;->A0K()Z"),
         "instants_button" to setOf("LX/1oE;->A0D(LX/1oE;)V", "LX/ZiQ;->A0X(LX/ZiQ;)V"),
@@ -859,6 +871,10 @@ internal val PROFILE_347014990 = ControlProfile(
         "growth" to setOf("LX/1rY;->A09()Z"),
         "growth_notes" to setOf("Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->A01(Landroidx/fragment/app/Fragment;LX/Od5;Ljava/util/List;LX/5So;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;"),
         "growth_story_card" to setOf("Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->A13(Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;)Z"),
+        "hide_call_bar" to setOf(
+            "LX/53w;->A07(Landroid/content/Context;LX/0XU;Lcom/facebook/auth/usersession/FbUserSession;LX/4yA;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/Jx7;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5N1;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/D4Q;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;",
+            "LX/7NK;->Ey6(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/75L;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
+        ),
         "hide_read_receipts" to setOf("LX/4lY;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4lY;Ljava/lang/String;)V"),
         "inbox_promotions" to setOf("LX/26P;->A0J()Z", "LX/26P;->A0K()Z"),
         "instants_button" to setOf("LX/1nN;->A0D(LX/1nN;)V", "LX/HVr;->A0W(LX/HVr;)V"),

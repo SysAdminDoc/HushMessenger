@@ -216,6 +216,7 @@ public class CompatReport {
         PATCHES.put("Android Auto messages", List.of("car_messages"));
         PATCHES.put("Search saved messages", List.of("local_chat_search"));
         PATCHES.put("Record calls", List.of("call_recording"));
+        PATCHES.put("Hide call buttons", List.of("hide_call_bar"));
         PATCHES.put("Allow screenshots", List.of("allow_screenshot", "screenshot_viewers"));
         PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read"));
         PATCHES.put("Mark as read button", List.of("mark_read_bar", "mark_read_click"));
@@ -6465,6 +6466,8 @@ public class CompatReport {
         if (!markRead.isEmpty()) {
             found.get("mark_read_bar").add(markRead.get(0));
             found.get("mark_read_bar").add(markRead.get(2));
+            found.get("hide_call_bar").add(markRead.get(0));
+            found.get("hide_call_bar").add(markRead.get(2));
             found.get("mark_read_click").add(markRead.get(1));
         }
         found.get("text_style").addAll(textStyleField(classes));

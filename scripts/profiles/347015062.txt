@@ -132,6 +132,8 @@ hook gallery_to_chat LX/NFg;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object
 hook growth LX/1r8;->A09()Z
 hook growth_notes Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->A01(Landroidx/fragment/app/Fragment;LX/Tv8;Ljava/util/List;LX/5TQ;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 hook growth_story_card Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->A15(Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;)Z
+hook hide_call_bar LX/54Y;->A07(Landroid/content/Context;LX/0XX;Lcom/facebook/auth/usersession/FbUserSession;LX/4ym;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KOM;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5Nd;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/D52;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;
+hook hide_call_bar LX/7PI;->Exj(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/77J;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V
 hook hide_read_receipts LX/4mA;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4mA;Ljava/lang/String;)V
 hook inbox_promotions LX/25z;->A0J()Z
 hook inbox_promotions LX/25z;->A0K()Z

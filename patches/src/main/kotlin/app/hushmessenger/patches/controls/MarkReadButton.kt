@@ -22,6 +22,9 @@ internal const val MARK_READ_BUTTON = "mark_read_button"
 internal const val MARK_READ_BAR = "mark_read_bar"
 /** The shared top bar listener the button's tap goes through. */
 internal const val MARK_READ_CLICK = "mark_read_click"
+internal const val HIDE_CALL_BUTTONS = "hide_call_buttons"
+/** The same two top bar methods as [MARK_READ_BAR]. Hide call buttons works through the calls that seam makes. */
+internal const val HIDE_CALL_BAR = "hide_call_bar"
 internal const val MARK_READ = "Lapp/hushmessenger/extension/MarkReadButton;"
 internal const val MARK_READ_ADD = "$MARK_READ->add(Ljava/util/List;Ljava/lang/Object;)V"
 internal const val MARK_READ_ADD_TO = "$MARK_READ->addTo(Ljava/util/List;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;"
@@ -100,7 +103,10 @@ internal data class MarkReadRecipe(
     val factorySite: MarkReadFactory,
     /** The details button's builder, which both bars call. */
     val details: String,
-)
+) {
+    /** The top bar methods whose seam is in. Two controls share it, and whichever comes first writes it. */
+    val seamWritten = mutableSetOf<String>()
+}
 
 internal var markReadRecipe: MarkReadRecipe? = null
 
@@ -444,7 +450,9 @@ private fun markReadRequire(condition: Boolean, detail: String) {
 internal fun MutableMethod.validateMarkReadBar(): MarkReadRecipe {
     val recipe = markReadRecipe
     markReadRequire(recipe != null && (recipe.bar.hookId() == hookId() || recipe.factory.hookId() == hookId()), "no button recipe")
-    if (recipe!!.factory.hookId() == hookId()) {
+    // Written already, by the other control, so the method no longer reads as stock.
+    if (hookId() in recipe!!.seamWritten) return recipe
+    if (recipe.factory.hookId() == hookId()) {
         markReadRequire(markReadFactorySite(recipe.details) { it.markRef()?.toString() == recipe.factorySite.build } == recipe.factorySite,
             "button list return")
         return recipe
@@ -456,6 +464,7 @@ internal fun MutableMethod.validateMarkReadBar(): MarkReadRecipe {
 
 internal fun MutableMethod.injectMarkReadBar() {
     val recipe = validateMarkReadBar()
+    if (!recipe.seamWritten.add(hookId())) return
     if (recipe.factory.hookId() != hookId()) {
         addInstructions(recipe.site, "invoke-static {v${recipe.list}, v${recipe.socket}}, $MARK_READ_ADD")
         return

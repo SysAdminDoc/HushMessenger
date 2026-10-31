@@ -164,7 +164,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         SAVE_VOICE -> validateSaveVoice()
         HIDE_READ_RECEIPTS -> validateChatSeen()
         REPLY_READ -> validateReplyRead()
-        MARK_READ_BAR -> validateMarkReadBar()
+        MARK_READ_BAR, HIDE_CALL_BAR -> validateMarkReadBar()
         MARK_READ_CLICK -> validateMarkReadClick()
         ANALYTICS_UPLOADS -> validateAnalyticsUpload()
         ATTRIBUTION_UPLOADS -> validateAttributionUpload()
@@ -233,7 +233,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             "allow_screenshot" -> method.injectSwitch("$SETTINGS->allowScreenshot()Z", "0x0")
             HIDE_READ_RECEIPTS -> method.injectChatSeen()
             REPLY_READ -> method.injectReplyRead()
-            MARK_READ_BAR -> method.injectMarkReadBar()
+            MARK_READ_BAR, HIDE_CALL_BAR -> method.injectMarkReadBar()
             MARK_READ_CLICK -> method.injectMarkReadClick()
             "keep_unsent" -> method.injectKeepUnsent()
             "unsent_indicator" -> method.injectUnsentIndicator()
@@ -528,6 +528,9 @@ val localChatSearchPatch = controlPatch("local_chat_search", "Search saved messa
 @Suppress("unused")
 val callRecordingPatch = controlPatch("call_recording", "Record calls",
     "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first.", "Conversations")
+@Suppress("unused")
+val hideCallButtonsPatch = controlPatch("hide_call_buttons", "Hide call buttons",
+    "Takes the audio and video call buttons out of a chat's top bar, so you can't tap one by accident. Calls still ring, and you can still join one that's going.", "Conversations", HIDE_CALL_BAR)
 @Suppress("unused")
 val systemCameraPatch = controlPatch("system_camera", "Use the phone's camera app",
     "The camera button in a chat opens your phone's own camera app. The photo then opens in Messenger's editor, ready to send. Photos only.", "Photos and videos",

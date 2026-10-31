@@ -465,6 +465,8 @@ final class SettingsTextZhTw {
         {"local_chat_search.description", "在聊天室的搜尋結果中加入一個按鈕，用來搜尋儲存在這支手機上的訊息。對於 Messenger 內建搜尋找不到任何內容的舊聊天室很有幫助。此功能適用於未採用端對端加密的聊天室，而且只能找到手機已載入的內容，所以請先在聊天室中向上捲動。"},
         {"call_recording.title", "通話錄音"},
         {"call_recording.description", "在通話期間於 Messenger 上方加入錄音按鈕。通話會存成一個音訊檔，放在手機的 Recordings/Messenger Calls（Android 10 和 11 為 Music/Messenger Calls）。Messenger 不會通知其他人，而各地的錄音法規不同，所以請先取得所有人的同意。"},
+        {"hide_call_buttons.title", "隱藏通話按鈕"},
+        {"hide_call_buttons.description", "移除聊天室頂端列的語音與視訊通話按鈕，避免誤觸。來電仍會響鈴，也仍可加入進行中的通話。"},
         {"original_photo.title", "以原始畫質傳送相片"},
         {"original_photo.description", "啟用 HD 時，以完整尺寸傳送 JPEG 相片，不再縮小。仍會移除位置資訊。超過 20 MB 的相片仍會縮小。"},
         {"original_video.title", "傳送影片時不重新編碼"},

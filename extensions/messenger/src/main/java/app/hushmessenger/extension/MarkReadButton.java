@@ -77,6 +77,7 @@ public final class MarkReadButton {
      * that isn't for calls, such as Add friend, so no chat goes without it and no call button is ever pushed out or moved.
      */
     public static void add(List<Object> buttons, Object socket) {
+        CallButtons.blank(buttons);
         try {
             if (buttons != null && shown()) place(buttons, build(socket));
         } catch (Throwable error) {
@@ -89,6 +90,7 @@ public final class MarkReadButton {
      * returns. The button goes in by the same rule as {@link #add}, in a copy; the list comes back as it was otherwise.
      */
     public static List<Object> addTo(List<Object> buttons, Object session, Object thread, Object mig) {
+        buttons = CallButtons.without(buttons);
         try {
             if (buttons == null || !shown()) return buttons;
             Object button = button(session, thread, mig);
