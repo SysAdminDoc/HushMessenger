@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Android Auto's launcher opens Messenger again instead of showing the HushMessenger settings entry in its place. The drawer entry now sorts after Messenger's own, so anything that launches Messenger by package name (Android Auto, the Facebook app's Messenger button, a Manager's Open button) lands in Messenger. The `Android Auto messages` text now says Unknown sources is only enough on a desktop head unit, since a real car can still leave Messenger out. Refs #75.
+
 ## 0.28.0 (2026-10-31)
 
 ### New

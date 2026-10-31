@@ -438,7 +438,7 @@ final class SettingsTextZhTw {
         {"quiet_calls.title", "將來電設為靜音"},
         {"quiet_calls.description", "仍會接到來電，但 Messenger 不會響鈴、震動，或在畫面上彈出來電。來電會留在通知欄中，並提供接聽與拒接按鈕。未接來電仍會顯示在聊天室中。開啟「只限選定的聊天室」後，只有你挑選的聊天室會這樣，其他來電照常響鈴。若手機上已安裝 Facebook 應用程式，它仍可能因同一通來電而響鈴。"},
         {"car_messages.title", "Android Auto 訊息"},
-        {"car_messages.description", "讓 Android Auto 在它自己的訊息畫面上朗讀你的訊息，並傳送你口述的回覆。在你於 Android Auto 的開發人員設定中開啟「不明來源」之前，它只會顯示從 Play 商店安裝的應用程式。"},
+        {"car_messages.description", "讓 Android Auto 在它自己的訊息畫面上朗讀你的訊息，並傳送你口述的回覆。Android Auto 只會顯示從 Play 商店安裝的應用程式。開啟其開發人員設定中的「不明來源」後，桌面主機 (Desktop Head Unit) 就會顯示，但實際的車輛仍可能不列出 Messenger。"},
         {"original_photo.title", "以原始畫質傳送相片"},
         {"original_photo.description", "啟用 HD 時，以完整尺寸傳送 JPEG 相片，不再縮小。仍會移除位置資訊。超過 20 MB 的相片仍會縮小。"},
         {"original_video.title", "傳送影片時不重新編碼"},

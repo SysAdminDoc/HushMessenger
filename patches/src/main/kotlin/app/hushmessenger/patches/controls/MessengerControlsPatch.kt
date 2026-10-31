@@ -41,7 +41,8 @@ internal fun Document.addSettingsEntry() {
     val launcher = application.child("activity-alias", "name" to "app.hushmessenger.extension.SettingsLauncher",
         "targetActivity" to "app.hushmessenger.extension.SettingsActivity", "label" to "HushMessenger settings",
         "icon" to "@android:drawable/ic_menu_preferences", "exported" to "true")
-    val filter = launcher.child("intent-filter")
+    // Android opens the first launcher match for the package (Android Auto too), so this one sorts after Messenger's.
+    val filter = launcher.child("intent-filter", "priority" to "-1")
     filter.child("action", "name" to "android.intent.action.MAIN")
     filter.child("category", "name" to "android.intent.category.LAUNCHER")
     // Launcher shortcuts start it as Messenger itself, so no other app needs a way to kill the process.
@@ -515,7 +516,7 @@ val quietIncomingCallsPatch = controlPatch("quiet_calls", "Quiet incoming calls"
     QUIET_CALL_RING, QUIET_CALL_NOTIFICATION)
 @Suppress("unused")
 val carMessagesPatch = controlPatch("car_messages", "Android Auto messages",
-    "Lets Android Auto read your Messenger messages out loud and send the replies you speak, through its own messaging screen. Android Auto only shows apps installed from the Play Store until you turn on Unknown sources in its developer settings.", "Conversations")
+    "Lets Android Auto read your Messenger messages out loud and send the replies you speak, through its own messaging screen. Android Auto only shows apps installed from the Play Store. Unknown sources in its developer settings opens that up on a desktop head unit, and a real car can still leave Messenger out.", "Conversations")
 @Suppress("unused")
 val systemCameraPatch = controlPatch("system_camera", "Use the phone's camera app",
     "The camera button in a chat opens your phone's own camera app. The photo then opens in Messenger's editor, ready to send. Photos only.", "Photos and videos",
