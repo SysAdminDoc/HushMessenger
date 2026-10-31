@@ -66,6 +66,8 @@ hook bubbles LX/2WC;->A00()Z
 hook business_suggestions LX/7Q1;->A05(LX/7Q1;)Z
 hook business_suggestions LX/7R7;->A04(LX/7R7;)Z
 hook business_suggestions LX/WAU;->A02()Z
+hook call_recording LX/B3a;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V
+hook call_recording LX/B3a;->setIsCallActive(Z)V
 hook car_messages LX/0Qr;->Ahg(LX/0M7;)V
 hook chat_animation Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;
 hook chat_fragment LX/1kZ;-><init>()V

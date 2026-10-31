@@ -215,6 +215,7 @@ public class CompatReport {
         PATCHES.put("Quiet incoming calls", List.of("quiet_call_ring", "quiet_call_notification"));
         PATCHES.put("Android Auto messages", List.of("car_messages"));
         PATCHES.put("Search saved messages", List.of("local_chat_search"));
+        PATCHES.put("Record calls", List.of("call_recording"));
         PATCHES.put("Allow screenshots", List.of("allow_screenshot", "screenshot_viewers"));
         PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read"));
         PATCHES.put("Mark as read button", List.of("mark_read_bar", "mark_read_click"));
@@ -5737,6 +5738,34 @@ public class CompatReport {
         return search.size() == 1 && view.size() == 1 ? List.of(search.get(0), view.get(0)) : List.of();
     }
 
+    static final String AUDIO_PROXY = "Lcom/facebook/rsys/audio/gen/AudioProxy;";
+    static final String AUDIO_API = "Lcom/facebook/rsys/audio/gen/AudioApi;";
+
+    /** call_recording: setApi and setIsCallActive of the one class under AudioProxy that really runs calls. Mirrors CallRecording.kt. */
+    static List<Method> callRecording(List<ClassDef> classes) {
+        var parents = new HashMap<String, String>();
+        for (var cls : classes) parents.put(cls.getType(), cls.getSuperclass());
+        var proxies = new ArrayList<List<Method>>();
+        for (var cls : classes) {
+            boolean proxy = false;
+            String parent = parents.get(cls.getType());
+            for (int hops = 0; parent != null && hops < 8 && !proxy; hops++) {
+                proxy = AUDIO_PROXY.equals(parent);
+                parent = parents.get(parent);
+            }
+            if (!proxy) continue;
+            var api = new ArrayList<Method>();
+            var active = new ArrayList<Method>();
+            for (var method : cls.getMethods()) {
+                if (!"V".equals(method.getReturnType()) || method.getImplementation() == null) continue;
+                if ("setApi".equals(method.getName()) && params(method).equals(List.of(AUDIO_API))) api.add(method);
+                if ("setIsCallActive".equals(method.getName()) && params(method).equals(List.of("Z")) && instructions(method).size() > 1) active.add(method);
+            }
+            if (api.size() == 1 && active.size() == 1) proxies.add(List.of(api.get(0), active.get(0)));
+        }
+        return proxies.size() == 1 ? proxies.get(0) : List.of();
+    }
+
     static final String PHONE_ID_PROVIDER = ".provider.phoneid";
     static final String GET_PHONE_ID = "com.facebook.GET_PHONE_ID";
     static final String INSTALLED_PACKAGES = "Landroid/content/pm/PackageManager;->getInstalledPackages(I)Ljava/util/List;";
@@ -6431,6 +6460,7 @@ public class CompatReport {
         found.get("quiet_call_notification").addAll(quietCallNotification(classes));
         found.get("car_messages").addAll(carMessages(classes));
         found.get("local_chat_search").addAll(localChatSearch(classes));
+        found.get("call_recording").addAll(callRecording(classes));
         var markRead = markReadButton(classes);
         if (!markRead.isEmpty()) {
             found.get("mark_read_bar").add(markRead.get(0));

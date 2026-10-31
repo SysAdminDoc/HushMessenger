@@ -58,6 +58,12 @@ final class LocalSearchStore {
         return files != null && files.length == 1 ? files[0] : null;
     }
 
+    /** The current account's id, or null when it can't tell which one that is. */
+    static String currentUser(File folder) {
+        File current = database(folder);
+        return current == null ? null : current.getName().substring(DATABASE.length());
+    }
+
     private static String account(File folder) {
         try {
             String id = new String(Files.readAllBytes(new File(folder, CURRENT_ACCOUNT).toPath()), StandardCharsets.UTF_8).trim();

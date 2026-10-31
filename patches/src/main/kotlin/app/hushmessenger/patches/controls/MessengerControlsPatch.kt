@@ -182,6 +182,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         QUIET_CALL_NOTIFICATION -> validateQuietCallNotification()
         CAR_MESSAGES -> validateCarMessages()
         LOCAL_CHAT_SEARCH -> validateLocalChatSearch()
+        CALL_RECORDING -> validateCallRecording()
         TEXT_STYLE -> validateTextStyleField()
         MESSAGE_LOG, AUTO_REPLY -> validateMessageLog()
         UNSENT_RECALL -> validateUnsentRecall()
@@ -271,6 +272,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             QUIET_CALL_NOTIFICATION -> method.injectQuietCallNotification()
             CAR_MESSAGES -> method.injectCarMessages()
             LOCAL_CHAT_SEARCH -> method.injectLocalChatSearch()
+            CALL_RECORDING -> method.injectCallRecording()
             TEXT_STYLE -> method.injectTextStyleField()
             MESSAGE_LOG -> method.injectMessageLog()
             UNSENT_RECALL -> method.injectUnsentRecall()
@@ -523,6 +525,9 @@ val carMessagesPatch = controlPatch("car_messages", "Android Auto messages",
 val localChatSearchPatch = controlPatch("local_chat_search", "Search saved messages",
     "Adds a button to a chat's search results that searches the messages saved on this phone, for old chats Messenger's own search finds nothing in. It works in chats that aren't end-to-end encrypted, and it can only find what the phone has loaded.", "Conversations",
     manifest = { addLocalSearch() })
+@Suppress("unused")
+val callRecordingPatch = controlPatch("call_recording", "Record calls",
+    "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first.", "Conversations")
 @Suppress("unused")
 val systemCameraPatch = controlPatch("system_camera", "Use the phone's camera app",
     "The camera button in a chat opens your phone's own camera app. The photo then opens in Messenger's editor, ready to send. Photos only.", "Photos and videos",

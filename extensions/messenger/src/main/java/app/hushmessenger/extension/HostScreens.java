@@ -48,6 +48,11 @@ public final class HostScreens {
             Log.e("HushMessenger", "Can't watch for chats opening", error);
         }
         try {
+            if (app != null && Settings.bundled(bundledControls()).contains(CallRecording.KEY)) CallRecording.register(app);
+        } catch (RuntimeException error) {
+            Log.e("HushMessenger", "Can't watch for calls", error);
+        }
+        try {
             if (app != null) SettingsReopen.watch(app);
         } catch (RuntimeException error) {
             Log.e("HushMessenger", "Can't watch for the first screen after a restart", error);

@@ -405,6 +405,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(QUIET_CALL_NOTIFICATION).addAll(findQuietCallNotification(classes))
     found.getValue(CAR_MESSAGES).addAll(findCarMessages(classes))
     found.getValue(LOCAL_CHAT_SEARCH).addAll(findLocalChatSearch(classes))
+    found.getValue(CALL_RECORDING).addAll(findCallRecording(classes))
     found.getValue(TEXT_STYLE).addAll(findTextStyleField(classes))
     found.getValue(MESSAGE_LOG).addAll(findMessageLogHook(classes))
     found.getValue(AUTO_REPLY).addAll(findMessageLogHook(classes))

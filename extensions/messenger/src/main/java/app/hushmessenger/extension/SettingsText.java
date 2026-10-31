@@ -175,6 +175,14 @@ final class SettingsText {
         ENGLISH.put("local_search_nothing", "This phone has no saved text for this chat. Scroll up in the chat to load older messages, then search again.");
         ENGLISH.put("local_search_failed", "Couldn't read the saved messages. Try again in a moment.");
         ENGLISH.put("local_search_open_failed", "Couldn't open that message");
+        ENGLISH.put("call_recording_unsupported", "This needs Android 10 or newer. Your choice is saved.");
+        ENGLISH.put("call_recording_start", "Record");
+        ENGLISH.put("call_recording_stop_pill", "Recording, tap to stop");
+        ENGLISH.put("call_recording_on", "Recording this call");
+        ENGLISH.put("call_recording_stop", "Stop");
+        ENGLISH.put("call_recording_channel", "Call recording");
+        ENGLISH.put("call_recording_saved", "Call saved to %1$s");
+        ENGLISH.put("call_recording_failed", "Couldn't record this call");
         ENGLISH.put("text_style_samsung", "Samsung phones hide them at first. To show them, select a word, tap the three dots, tap Manage apps and turn on Messenger's Bold and Italic.");
         ENGLISH.put("text_style_read_only","Bold and Italic only work on text you're typing.");
         ENGLISH.put("text_style_bold_none", "Bold works only on A to Z, accented letters and digits.");

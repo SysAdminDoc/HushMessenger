@@ -97,8 +97,10 @@ internal val PROFILE_347015062 = ControlProfile(
         "bubble_mode" to setOf("LX/2Vm;->A01(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "bubbles" to setOf("LX/2Vm;->A00()Z"),
         "business_suggestions" to setOf("LX/7Rz;->A05(LX/7Rz;)Z", "LX/7T5;->A04(LX/7T5;)Z", "LX/Kjw;->A02()Z"),
+        "call_recording" to setOf(
+            "LX/B64;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/B64;->setIsCallActive(Z)V",
+        ),
         "car_messages" to setOf("LX/0Qq;->AhZ(LX/0M6;)V"),
-        "local_chat_search" to setOf("LX/HjU;->Evp(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V", "LX/HjU;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "chat_animation" to setOf("Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;"),
         "chat_fragment" to setOf("LX/1k9;-><init>()V"),
         "chat_inbox" to setOf("LX/1ii;-><init>()V"),
@@ -154,6 +156,10 @@ internal val PROFILE_347015062 = ControlProfile(
         "inbox_promotions" to setOf("LX/25z;->A0J()Z", "LX/25z;->A0K()Z"),
         "instants_button" to setOf("LX/1mx;->A0D(LX/1mx;)V", "LX/ZnZ;->A0X(LX/ZnZ;)V"),
         "keep_unsent" to setOf("LX/MRd;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
+        "local_chat_search" to setOf(
+            "LX/HjU;->Evp(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
+            "LX/HjU;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
+        ),
         "mark_read_action" to setOf("LX/HYn;->A0V()Z", "LX/Jlk;->A0F()Z"),
         "mark_read_bar" to setOf(
             "LX/54Y;->A07(Landroid/content/Context;LX/0XX;Lcom/facebook/auth/usersession/FbUserSession;LX/4ym;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KOM;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5Nd;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/D52;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;",
@@ -327,8 +333,10 @@ internal val PROFILE_347014996 = ControlProfile(
         "bubble_mode" to setOf("LX/2Vm;->A01(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "bubbles" to setOf("LX/2Vm;->A00()Z"),
         "business_suggestions" to setOf("LX/7Rz;->A05(LX/7Rz;)Z", "LX/7T5;->A04(LX/7T5;)Z", "LX/Kjw;->A02()Z"),
+        "call_recording" to setOf(
+            "LX/B64;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/B64;->setIsCallActive(Z)V",
+        ),
         "car_messages" to setOf("LX/0Qq;->AhZ(LX/0M6;)V"),
-        "local_chat_search" to setOf("LX/HjU;->Evp(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V", "LX/HjU;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "chat_animation" to setOf("Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;"),
         "chat_fragment" to setOf("LX/1k9;-><init>()V"),
         "chat_inbox" to setOf("LX/1ii;-><init>()V"),
@@ -384,6 +392,10 @@ internal val PROFILE_347014996 = ControlProfile(
         "inbox_promotions" to setOf("LX/25z;->A0J()Z", "LX/25z;->A0K()Z"),
         "instants_button" to setOf("LX/1mx;->A0D(LX/1mx;)V", "LX/ZnZ;->A0X(LX/ZnZ;)V"),
         "keep_unsent" to setOf("LX/MRd;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
+        "local_chat_search" to setOf(
+            "LX/HjU;->Evp(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
+            "LX/HjU;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
+        ),
         "mark_read_action" to setOf("LX/HYn;->A0V()Z", "LX/Jlk;->A0F()Z"),
         "mark_read_bar" to setOf(
             "LX/54Y;->A07(Landroid/content/Context;LX/0XX;Lcom/facebook/auth/usersession/FbUserSession;LX/4ym;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KOM;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5Nd;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/D52;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;",
@@ -557,8 +569,10 @@ internal val PROFILE_347014974 = ControlProfile(
         "bubble_mode" to setOf("LX/2XG;->A01(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "bubbles" to setOf("LX/2XG;->A00()Z"),
         "business_suggestions" to setOf("LX/7VN;->A05(LX/7VN;)Z", "LX/7WT;->A04(LX/7WT;)Z", "LX/Kou;->A02()Z"),
+        "call_recording" to setOf(
+            "LX/BAb;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/BAb;->setIsCallActive(Z)V",
+        ),
         "car_messages" to setOf("LX/0Qx;->Ahe(LX/0MA;)V"),
-        "local_chat_search" to setOf("LX/HsY;->EwI(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V", "LX/HsY;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "chat_animation" to setOf("Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;"),
         "chat_fragment" to setOf("LX/1lQ;-><init>()V"),
         "chat_inbox" to setOf("LX/1jz;-><init>()V"),
@@ -614,6 +628,10 @@ internal val PROFILE_347014974 = ControlProfile(
         "inbox_promotions" to setOf("LX/27L;->A0J()Z", "LX/27L;->A0K()Z"),
         "instants_button" to setOf("LX/1oE;->A0D(LX/1oE;)V", "LX/ZiQ;->A0X(LX/ZiQ;)V"),
         "keep_unsent" to setOf("LX/MWa;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
+        "local_chat_search" to setOf(
+            "LX/HsY;->EwI(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
+            "LX/HsY;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
+        ),
         "mark_read_action" to setOf("LX/HiF;->A0V()Z", "LX/JrM;->A0F()Z"),
         "mark_read_bar" to setOf(
             "LX/57I;->A07(Landroid/content/Context;LX/0XX;Lcom/facebook/auth/usersession/FbUserSession;LX/51V;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KUB;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5QO;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/DAk;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;",
@@ -786,8 +804,10 @@ internal val PROFILE_347014990 = ControlProfile(
         "bubble_mode" to setOf("LX/2WC;->A01(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "bubbles" to setOf("LX/2WC;->A00()Z"),
         "business_suggestions" to setOf("LX/7Q1;->A05(LX/7Q1;)Z", "LX/7R7;->A04(LX/7R7;)Z", "LX/WAU;->A02()Z"),
+        "call_recording" to setOf(
+            "LX/B3a;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/B3a;->setIsCallActive(Z)V",
+        ),
         "car_messages" to setOf("LX/0Qr;->Ahg(LX/0M7;)V"),
-        "local_chat_search" to setOf("LX/KOS;->EwA(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V", "LX/KOS;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "chat_animation" to setOf("Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;"),
         "chat_fragment" to setOf("LX/1kZ;-><init>()V"),
         "chat_inbox" to setOf("LX/1j8;-><init>()V"),
@@ -843,6 +863,10 @@ internal val PROFILE_347014990 = ControlProfile(
         "inbox_promotions" to setOf("LX/26P;->A0J()Z", "LX/26P;->A0K()Z"),
         "instants_button" to setOf("LX/1nN;->A0D(LX/1nN;)V", "LX/HVr;->A0W(LX/HVr;)V"),
         "keep_unsent" to setOf("LX/Rpw;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
+        "local_chat_search" to setOf(
+            "LX/KOS;->EwA(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
+            "LX/KOS;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
+        ),
         "mark_read_action" to setOf("LX/Hbf;->A0V()Z", "LX/JQC;->A0F()Z"),
         "mark_read_bar" to setOf(
             "LX/53w;->A07(Landroid/content/Context;LX/0XU;Lcom/facebook/auth/usersession/FbUserSession;LX/4yA;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/Jx7;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5N1;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/D4Q;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;",
