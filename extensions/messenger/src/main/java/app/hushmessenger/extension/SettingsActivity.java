@@ -100,7 +100,7 @@ public final class SettingsActivity extends Activity {
     /** Between onStart and onStop. A Clear that finishes while settings are out of sight is final at once. */
     boolean started;
     static final int UNDO_MILLIS = 10_000;
-    static final int SAVE_CHOICES = 7101, READ_CHOICES = 7102, PICK_FONT = 7103, PICK_AUTO_REPLY_PICTURE = 7104;
+    static final int SAVE_CHOICES = 7101, READ_CHOICES = 7102, PICK_FONT = 7103, PICK_AUTO_REPLY_PICTURE = 7104, SAVE_MESSAGE_LOG = 7105;
     /**
      * The switch for each way back in (#22, HushFacebook#146), and the help and reason each was built with. Turning one
      * way off can change what the others say or whether they can turn off, so they're rebuilt when that changes.
@@ -761,7 +761,11 @@ public final class SettingsActivity extends Activity {
                 else if (QuietCalls.KEY.equals(spec[0])) addQuietCallChats(wrapper);
                 else if (OwnFont.KEY.equals(spec[0])) fontFile.addTo(wrapper);
                 else if (AutoReply.KEY.equals(spec[0])) autoReplies.addAutoReplyActions(wrapper);
-                else messageLog.addMessageLogActions(wrapper);
+                else {
+                    messageLog.addMessageLogActions(wrapper);
+                    if (Build.VERSION.SDK_INT >= 29) ui.add(wrapper, controlRow(MessageLog.SAVE_EXPIRING,
+                        text.format(MessageLog.SAVE_EXPIRING), text.format("message_log_save_expiring_help"), false), 8);
+                }
                 wrapper.setPadding(0, 0, 0, ui.dp(12));
                 row = wrapper;
             }
@@ -1279,6 +1283,10 @@ public final class SettingsActivity extends Activity {
 
     @Override protected void onActivityResult(int request, int result, Intent data) {
         super.onActivityResult(request, result, data);
+        if (request == SAVE_MESSAGE_LOG) {
+            messageLog.saveResult(result, data);
+            return;
+        }
         if (request == PICK_AUTO_REPLY_PICTURE) {
             autoReplies.pictureResult(result, data);
             return;
@@ -1455,6 +1463,7 @@ public final class SettingsActivity extends Activity {
                 inside = text.get(QuietCalls.CHOSEN_ONLY) + " " + text.get("quiet_calls_chosen_help");
                 for (String[] chat : QuietCalls.recent()) inside += " " + chat[1];
             }
+            if (MessageLog.KEY.equals(spec[0]) && Build.VERSION.SDK_INT >= 29) inside = text.get(MessageLog.SAVE_EXPIRING) + " " + text.get("message_log_save_expiring_help");
             boolean match = SettingsSearch.matches(terms, spec[1], spec[2],
                 SettingsText.english(spec[3]), text.display(text.control(spec, 1)), text.display(text.control(spec, 2)), text.get(spec[3]), inside);
             controlRows.get(i).setVisibility(match ? View.VISIBLE : View.GONE);

@@ -8,6 +8,7 @@
 - `Record calls` is a new switch under Conversations. During a call it puts a Record button over Messenger, and the call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first. It needs Android 10 or newer, it's experimental and it starts off. Refs #105.
 - `Hide call buttons` is a new switch under Conversations. It takes the audio and video call buttons out of a chat's top bar, so a tap meant for something else can't start an awkward call. Calls still ring, and you can still join one that's going. Refs #121.
 - `Save button for voice messages` is a new switch under Photos and videos. Hold a voice message, tap More, and Save voice message is at the top, for keeping just that one. It lands in the same folder as `Save voice messages you play`, which can stay off. Refs #123.
+- The message log got easier to get around in. There's a search box that looks through words and names and doesn't care about accents, and `Group by chat` lists your chats so you can open one. `Save as text` and `Save as CSV` write what's showing to a file you pick, and `Save messages before they're removed` adds each message to a text file in Download/Messenger just before the log drops it, one file a month. Saved files aren't encrypted, so that switch starts off, and it needs Android 10 or newer. Refs #127.
 
 ### Fixed
 
