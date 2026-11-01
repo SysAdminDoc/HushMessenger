@@ -230,6 +230,7 @@ public class CompatReport {
         PATCHES.put("Slide chats in and out", List.of("chat_animation", "chat_fragment", "chat_inbox", "chat_legacy"));
         PATCHES.put("Bold and italic text", List.of("text_style"));
         PATCHES.put("Open settings from menu", List.of("menu_settings"));
+        PATCHES.put("Keep chat pop-ups", List.of("chat_channel_keep", "chat_channel_raise"));
     }
 
     static final Set<String> ORIGINAL_PHOTO_HOOKS = Set.of(
@@ -2802,6 +2803,77 @@ public class CompatReport {
     static boolean invokes(Instruction i, String owner, List<String> params, String returns) {
         return i instanceof ReferenceInstruction r && r.getReference() instanceof MethodReference m &&
             (owner == null || owner.equals(m.getDefiningClass())) && returns.equals(m.getReturnType()) && refParams(m).equals(params);
+    }
+
+    /** chat_channel_keep's shape: static String recreate(channel, session, manager, key, importance, demoted). Mirrors ChatPopups.kt. */
+    static boolean channelRecreateShape(List<String> params) {
+        return params.size() == 6 && "Landroid/app/NotificationChannel;".equals(params.get(0)) &&
+            "Lcom/facebook/auth/usersession/FbUserSession;".equals(params.get(1)) && !"Ljava/lang/String;".equals(params.get(2)) &&
+            "Ljava/lang/String;".equals(params.get(3)) && "I".equals(params.get(4)) && "Z".equals(params.get(5));
+    }
+
+    /** chat_channel_keep: the channel manager's recreate, which logs its importance change. Mirrors ChatPopups.kt's findChatChannelKeep. */
+    static List<Method> chatChannelKeep(List<ClassDef> classes) {
+        var out = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            var params = new ArrayList<String>();
+            for (var p : method.getParameterTypes()) params.add(p.toString());
+            if (method.getImplementation() != null && AccessFlags.STATIC.isSet(method.getAccessFlags()) &&
+                "Ljava/lang/String;".equals(method.getReturnType()) && channelRecreateShape(params) &&
+                stringsOf(method).contains("recreateChannel for updating channel importance")) out.add(method);
+        }
+        return out;
+    }
+
+    /**
+     * chat_channel_raise: the run() that reports the Chats channel's banner state and calls the recreate once. Its bound
+     * check of importance 3 is followed by a write to the bound's register, no jump lands there, and the gates between
+     * that and the raise leave what the raise reads alone. Mirrors ChatPopups.kt's chatRaiseSite.
+     */
+    static List<Method> chatChannelRaise(List<ClassDef> classes) {
+        var out = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (!"run".equals(method.getName()) || method.getImplementation() == null ||
+                !stringsOf(method).contains("chats_channel_banner_state")) continue;
+            var code = instructions(method);
+            int recreate = -1, recreates = 0;
+            for (int at = 0; at < code.size(); at++) {
+                if (!(code.get(at) instanceof ReferenceInstruction r) || !(r.getReference() instanceof MethodReference m)) continue;
+                if ("Ljava/lang/String;".equals(m.getReturnType()) && channelRecreateShape(refParams(m))) { recreate = at; recreates++; }
+            }
+            if (recreates != 1) continue;
+            var args = callArgs(code.get(recreate));
+            if (args.isEmpty()) continue;
+            int channel = args.get(0), raise = -1;
+            for (int at = recreate; at >= 0 && raise < 0; at--) {
+                if (code.get(at) instanceof ReferenceInstruction r && r.getReference() instanceof MethodReference m &&
+                    "Landroid/app/NotificationChannel;".equals(m.getDefiningClass()) && "getImportance".equals(m.getName()) &&
+                    callArgs(code.get(at)).equals(List.of(channel))) raise = at;
+            }
+            if (raise < 0) continue;
+            int bound = -1, bounds = 0;
+            for (int at = 1; at < raise; at++) {
+                if (code.get(at).getOpcode() == Opcode.IF_LT && code.get(at - 1) instanceof NarrowLiteralInstruction n && n.getNarrowLiteral() == 3 &&
+                    code.get(at - 1) instanceof OneRegisterInstruction load && ((TwoRegisterInstruction) code.get(at)).getRegisterB() == load.getRegisterA()) {
+                    bound = at;
+                    bounds++;
+                }
+            }
+            if (bounds != 1) continue;
+            int gates = bound + 1, scratch = ((OneRegisterInstruction) code.get(bound - 1)).getRegisterA();
+            if (!chatChannelWrites(code.get(gates), scratch) || mediaTargets(method).contains(gates)) continue;
+            var carried = new ArrayList<Integer>(List.of(channel));
+            for (int at = raise; at < recreate; at++) if (code.get(at) instanceof TwoRegisterInstruction two) carried.add(two.getRegisterB());
+            boolean overwritten = false;
+            for (int at = gates; at < raise; at++) for (int register : carried) overwritten |= chatChannelWrites(code.get(at), register);
+            if (!overwritten) out.add(method);
+        }
+        return out;
+    }
+
+    private static boolean chatChannelWrites(Instruction i, int register) {
+        return i.getOpcode().setsRegister() && i instanceof OneRegisterInstruction one && (one.getRegisterA() == register ||
+            (i.getOpcode().setsWideRegister() && one.getRegisterA() + 1 == register));
     }
 
     /**
@@ -6973,6 +7045,8 @@ public class CompatReport {
         found.get("auto_reply").addAll(messageLogHooks(classes));
         found.get("unsent_recall").addAll(unsentRecall(classes));
         found.get("unsent_clear").addAll(unsentClear(classes));
+        found.get("chat_channel_keep").addAll(chatChannelKeep(classes));
+        found.get("chat_channel_raise").addAll(chatChannelRaise(classes));
         found.get("system_camera").addAll(systemCameraLaunches(classes));
         found.get("external_gallery").addAll(externalGalleryHooks(classes));
         found.get("gallery_temp_file").addAll(galleryTempFileHooks(classes));

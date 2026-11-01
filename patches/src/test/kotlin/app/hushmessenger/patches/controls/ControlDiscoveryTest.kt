@@ -38,6 +38,8 @@ class ControlDiscoveryTest {
                 if (key == "people_search") return@map peopleSearchMethod()
                 if (key == "people_story") return@map peopleStoryMethod()
                 if (key == INBOX_REFRESH_HOOK) return@map inboxItemsMethod()
+                if (key == CHAT_CHANNEL_KEEP) return@map chatRecreateMethod()
+                if (key == CHAT_CHANNEL_RAISE) return@map chatRaiseMethod()
                 if (key == "bubbles") return@map bubbleEligibilityMethod()
                 if (key == "bubble_mode") return@map nativeBubbleModeMethod()
                 if (id == STORY_PREVIEW_INIT) return@map fixtureMethod(id, STORY_PREVIEW_INIT_BODY, registers = 23)

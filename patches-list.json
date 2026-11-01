@@ -2359,6 +2359,50 @@
             "options": []
         },
         {
+            "name": "Keep chat pop-ups",
+            "description": "Messenger can turn off message pop-ups for good when it expects a chat head to show. This stops that and brings them back on a phone where it already happened, unless you lowered them yourself in Android's settings or picked Chat heads under Allow chat bubbles.",
+            "default": true,
+            "category": "Fixes",
+            "dependencies": [
+                {
+                    "type": "BytecodePatch",
+                    "name": null,
+                    "description": "Load HushMessenger runtime controls",
+                    "dependencies": [
+                        {
+                            "type": "ResourcePatch",
+                            "name": null,
+                            "description": "Install HushMessenger settings",
+                            "dependencies": []
+                        }
+                    ]
+                }
+            ],
+            "compatiblePackages": [
+                {
+                    "packageName": "com.facebook.orca",
+                    "name": "Messenger",
+                    "description": null,
+                    "apkFileType": "APK",
+                    "appIconColor": "#0084FF",
+                    "signatures": [
+                        "911d604446084ca7f4760b775bfc160fa8702441240a7258645d7a72c4312d27",
+                        "e3f9e1e0cf99d0e56a055ba65e241b3399f7cea524326b0cdd6ec1327ed0fdc1"
+                    ],
+                    "targets": [
+                        {
+                            "version": "585.0.0.53.94",
+                            "versionCodes": null,
+                            "isExperimental": false,
+                            "minSdk": 28,
+                            "description": "Stock builds 347014974, 347014990, 347014996, 347015062, 347015064, 347015065 and 347015067; checked again during patching"
+                        }
+                    ]
+                }
+            ],
+            "options": []
+        },
+        {
             "name": "Keep emoji search on emoji",
             "description": "Typing while the emoji keyboard is open no longer jumps to sticker search. The keyboard stays on emoji. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,

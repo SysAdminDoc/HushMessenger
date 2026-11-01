@@ -140,6 +140,8 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
         "LX/Jwp;->onClick(Landroid/view/View;)V",
     ),
     "chat_animation" to setOf(FRAGMENT_ANIMATION),
+    CHAT_CHANNEL_KEEP to setOf(SYNTHETIC_CHAT_RECREATE),
+    CHAT_CHANNEL_RAISE to setOf(SYNTHETIC_CHAT_RAISE),
     "chat_fragment" to setOf("LX/1hl;-><init>()V"),
     "chat_inbox" to setOf("LX/1fs;-><init>()V"),
     "chat_legacy" to setOf("LX/1hd;->onCreateAnimation(IZI)$ANIMATION"),

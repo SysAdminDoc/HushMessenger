@@ -412,6 +412,8 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(AUTO_REPLY).addAll(findMessageLogHook(classes))
     found.getValue(UNSENT_RECALL).addAll(findUnsentRecall(classes))
     found.getValue(UNSENT_CLEAR).addAll(findUnsentClear(classes))
+    found.getValue(CHAT_CHANNEL_KEEP).addAll(findChatChannelKeep(classes))
+    found.getValue(CHAT_CHANNEL_RAISE).addAll(findChatChannelRaise(classes))
     autoReplyPictureRecipe = resolveAutoReplyPictureRecipe(classes)
     messageLogContract = resolveMessageLogContract(classes)
     readReceiptThreadFields = resolveReadReceiptThreadFields(classes)

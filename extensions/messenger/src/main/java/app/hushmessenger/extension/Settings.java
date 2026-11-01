@@ -93,6 +93,14 @@ public final class Settings {
                 && !CrashGuard.isSafeMode() && prefs.getBoolean(key, false);
     }
 
+    /** Whether Hush is on at all: not paused, not in safe mode. For a fix that has no switch of its own. */
+    static boolean running() {
+        if (!HostScreens.started) HostScreens.initializeLate();
+        if (HostScreens.failed) return false;
+        SharedPreferences prefs = preferences;
+        return prefs != null && !prefs.getBoolean("paused", false) && !CrashGuard.isSafeMode();
+    }
+
     public static long lastActive(String key) {
         Long ts = activeAt.get(key);
         return ts != null ? ts : 0;
