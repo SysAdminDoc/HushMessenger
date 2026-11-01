@@ -49,7 +49,7 @@ final class GalleryPicker {
     private GalleryPicker() {}
 
     /**
-     * A file for Messenger's copy of a pick after folder refused it, in another of the places its file provider serves. Null
+     * A file for Messenger's copy of a pick after its folder refused one, in another of the places its file provider serves. Null
      * with the switch off, or when every place refuses too. Internal storage goes first since it's the one a picked item
      * can always be read back from, and cache first of those since Android can clear it.
      */
