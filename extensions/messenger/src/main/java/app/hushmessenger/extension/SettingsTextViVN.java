@@ -481,7 +481,7 @@ final class SettingsTextViVN {
         {"save_voice.title", "Lưu tin nhắn thoại bạn phát"},
         {"save_voice.description", "Mỗi tin nhắn thoại bạn phát cũng được lưu vào Recordings/Messenger trên điện thoại (Music/Messenger trên Android 10 và 11), để trình quản lý tệp hoặc trình phát khác có thể mở. Phát lại sẽ không lưu thêm bản sao."},
         {"save_voice_menu.title", "Nút lưu cho tin nhắn thoại"},
-        {"save_voice_menu.description", "Thêm mục Lưu tin nhắn thoại vào menu hiện ra khi bạn nhấn giữ một tin nhắn thoại, để chỉ lưu riêng tin đó. Tệp nằm cùng thư mục với Lưu tin nhắn thoại bạn phát, và công tắc đó có thể để tắt."},
+        {"save_voice_menu.description", "Nhấn giữ một tin nhắn thoại rồi chọn Thêm: Lưu tin nhắn thoại là mục trên cùng, để chỉ lưu riêng tin đó. Tệp nằm cùng thư mục với Lưu tin nhắn thoại bạn phát, và công tắc đó có thể để tắt."},
         {"share_story.title", "Ẩn tin của bạn khi chia sẻ"},
         {"share_story.description", "Khi chia sẻ ảnh, video hoặc liên kết từ các ứng dụng khác sang Messenger, danh sách 'Gửi tới' sẽ không còn hiển thị tin của bạn nữa, tránh việc vô tình nhấn 'Thêm' để đăng. Các phòng chat và nhóm của bạn vẫn sẽ hiển thị."},
         {"system_camera.title", "Sử dụng ứng dụng máy ảnh của điện thoại"},

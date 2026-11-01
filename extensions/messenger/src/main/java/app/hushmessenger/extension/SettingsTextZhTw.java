@@ -481,7 +481,7 @@ final class SettingsTextZhTw {
         {"save_voice.title", "儲存你播放的語音訊息"},
         {"save_voice.description", "你播放的每則語音訊息也會儲存到手機的 Recordings/Messenger（Android 10 和 11 為 Music/Messenger），讓檔案管理員或其他播放器可以開啟。再次播放不會另存一份。"},
         {"save_voice_menu.title", "語音訊息的儲存按鈕"},
-        {"save_voice_menu.description", "在按住語音訊息時出現的選單中加入「儲存語音訊息」，只儲存那一則。檔案會放在與「儲存你播放的語音訊息」相同的資料夾，那個開關可以保持關閉。"},
+        {"save_voice_menu.description", "按住語音訊息後點選「更多」，最上面一列就是「儲存語音訊息」，只儲存那一則。檔案會放在與「儲存你播放的語音訊息」相同的資料夾，那個開關可以保持關閉。"},
         {"share_story.title", "分享時隱藏你的限時動態"},
         {"share_story.description", "從其他應用程式將相片、影片或連結分享到 Messenger 時，「傳送給」清單不再顯示你的限時動態，避免誤按「新增」而發佈。你的聊天室和群組仍會顯示。"},
         {"system_camera.title", "使用手機相機應用程式"},
