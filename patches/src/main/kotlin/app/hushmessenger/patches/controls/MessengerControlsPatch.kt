@@ -103,6 +103,7 @@ internal val settingsExtension = bytecodePatch(description = "Load HushMessenger
         messageLogContract = null
         readReceiptThreadFields = emptyMap()
         markReadRecipe = null
+        saveVoiceMenuRecipe = null
         autoReplyPictureRecipe = null
         galleryRoute = null
         galleryChatRoute = null
@@ -162,6 +163,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         RECENT_MEDIA -> validateRecentMedia()
         INSTANTS_BUTTON -> validateInstantsButton()
         SAVE_VOICE -> validateSaveVoice()
+        SAVE_VOICE_MENU -> validateSaveVoiceMenu()
         HIDE_READ_RECEIPTS -> validateChatSeen()
         REPLY_READ -> validateReplyRead()
         MARK_READ_BAR, HIDE_CALL_BAR -> validateMarkReadBar()
@@ -256,6 +258,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             RECENT_MEDIA -> method.injectRecentMedia()
             INSTANTS_BUTTON -> method.injectInstantsButton()
             SAVE_VOICE -> method.injectSaveVoice()
+            SAVE_VOICE_MENU -> method.injectSaveVoiceMenu()
             ANALYTICS_UPLOADS -> method.injectAnalyticsUpload()
             ATTRIBUTION_UPLOADS -> method.injectAttributionUpload()
             AD_EVENTS -> method.injectAdEvent()
@@ -378,6 +381,17 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                     host.methods.add(new)
                     host.directMethods.add(new)
                 }
+            } else if (key == SAVE_VOICE_MENU) {
+                val recipe = saveVoiceMenuRecipe ?: throw PatchException("Messenger controls: the voice message Save row's recipe is missing")
+                val host = mutableClassDefBy(SAVE_VOICE_MENU_HOST)
+                // Built before the first edit, so a changed stub stops the patch with Messenger untouched.
+                val built = SAVE_VOICE_MENU_STUBS.map { id ->
+                    val stub = host.methods.singleOrNull { it.hookId() == id }
+                        ?: throw PatchException("Messenger controls: the voice message Save row's extension stub is missing")
+                    stub to saveVoiceMenuBuilder(stub, recipe)
+                }
+                injectControl(key, methods)
+                for ((old, new) in built) { host.methods.remove(old); host.directMethods.remove(old); host.methods.add(new); host.directMethods.add(new) }
             } else if (key == AUTO_REPLY) {
                 val recipe = autoReplyPictureRecipe
                 val host = mutableClassDefBy(SETTINGS)
@@ -504,6 +518,9 @@ val hideRecentMediaPatch = controlPatch("recent_media", "Hide the recent photo c
 @Suppress("unused")
 val saveVoicePatch = controlPatch("save_voice", "Save voice messages you play",
     "Each voice message you play is also saved to Recordings/Messenger (Music/Messenger on Android 10 and 11), so your file manager and other players can open it. Playing it again doesn't save another copy. Needs Android 10 or newer.", "Photos and videos")
+@Suppress("unused")
+val saveVoiceMenuPatch = controlPatch("save_voice_menu", "Save button for voice messages",
+    "Adds Save voice message to the menu you get by holding a voice message, for saving just that one. It goes in the same folder as Save voice messages you play, and that switch can stay off.", "Photos and videos")
 @Suppress("unused")
 val hideShareStoryPatch = controlPatch("share_story", "Hide Your story when sharing",
     "When you share a photo, video or link into Messenger from another app, the Send to list no longer offers Your story, so a tap on Add can't post it by mistake. Your chats and groups are still there.", "Photos and videos")

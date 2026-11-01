@@ -183,6 +183,9 @@ final class SettingsText {
         ENGLISH.put("call_recording_channel", "Call recording");
         ENGLISH.put("call_recording_saved", "Call saved to %1$s");
         ENGLISH.put("call_recording_failed", "Couldn't record this call");
+        ENGLISH.put("save_voice_menu_row", "Save voice message");
+        ENGLISH.put("save_voice_menu_saved", "Saved to %1$s");
+        ENGLISH.put("save_voice_menu_failed", "Couldn't save this voice message");
         ENGLISH.put("text_style_samsung", "Samsung phones hide them at first. To show them, select a word, tap the three dots, tap Manage apps and turn on Messenger's Bold and Italic.");
         ENGLISH.put("text_style_read_only","Bold and Italic only work on text you're typing.");
         ENGLISH.put("text_style_bold_none", "Bold works only on A to Z, accented letters and digits.");

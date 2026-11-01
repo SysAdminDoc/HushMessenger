@@ -30,7 +30,7 @@ public class ToastLengthTest {
         "camera_permission", "gallery_missing", "gallery_failed", "restart_save_failed", "restart_unavailable",
         "text_style_read_only", "text_style_bold_none", "text_style_italic_none", "mark_read_done", "mark_read_nothing",
         "settings_open_failed", "settings_open_instead", "message_log_restored", "message_log_restore_failed",
-        "import_same",
+        "import_same", "save_voice_menu_failed",
     };
 
     @Test public void everyToastFitsOnTwoLines() {
@@ -41,6 +41,7 @@ public class ToastLengthTest {
         check(cut, "font_file_too_large", words.get("font_file_too_large", FontFile.MAX_MEGABYTES));
         check(cut, "auto_reply_saved", words.get("auto_reply_saved", 12));
         check(cut, "call_recording_saved", words.get("call_recording_saved", "Recordings/" + CallRecording.FOLDER));
+        check(cut, "save_voice_menu_saved", words.get("save_voice_menu_saved", "Recordings/" + VoiceMessages.FOLDER));
         // A restored or lifted pause adds its own sentence to the restore toast.
         for (String paused : new String[] {" " + words.get("changes_paused") + ".", " " + words.get("changes_resumed") + "."}) {
             for (int count : new int[] {1, 12}) check(cut, "imported", words.count("imported", count) + paused);

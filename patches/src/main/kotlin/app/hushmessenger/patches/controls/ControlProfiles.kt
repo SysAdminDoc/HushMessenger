@@ -212,6 +212,10 @@ internal val PROFILE_347015062 = ControlProfile(
         "reply_read" to setOf("LX/AGG;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/59N;LX/4sm;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/D4w;LX/5Cs;LX/59M;LX/D2X;LX/5tJ;LX/5Vw;LX/5OP;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4su;Ljava/lang/String;)V"),
         "save_stories" to setOf("LX/V0s;->onClick(Landroid/view/View;)V"),
         "save_voice" to setOf("LX/W81;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/W81;LX/W85;)Landroid/net/Uri;"),
+        "save_voice_menu" to setOf(
+            "LX/9qR;->E0b(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
+            "Lcom/facebook/messaging/dialog/MenuDialogParams;-><init>(LX/Rpb;)V",
+        ),
         "screenshot_viewers" to setOf(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->A1J(Landroid/os/Bundle;)Landroid/app/Dialog;",
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",
@@ -452,6 +456,10 @@ internal val PROFILE_347014996 = ControlProfile(
         "reply_read" to setOf("LX/AGG;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/59N;LX/4sm;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/D4w;LX/5Cs;LX/59M;LX/D2X;LX/5tJ;LX/5Vw;LX/5OP;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4su;Ljava/lang/String;)V"),
         "save_stories" to setOf("LX/V0s;->onClick(Landroid/view/View;)V"),
         "save_voice" to setOf("LX/W81;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/W81;LX/W85;)Landroid/net/Uri;"),
+        "save_voice_menu" to setOf(
+            "LX/9qR;->E0b(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
+            "Lcom/facebook/messaging/dialog/MenuDialogParams;-><init>(LX/Rpb;)V",
+        ),
         "screenshot_viewers" to setOf(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->A1J(Landroid/os/Bundle;)Landroid/app/Dialog;",
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",
@@ -691,6 +699,10 @@ internal val PROFILE_347014974 = ControlProfile(
         "reply_read" to setOf("LX/AKh;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/5C7;LX/4vV;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/DAc;LX/5Fc;LX/5C6;LX/D8N;LX/5w6;LX/5Yh;LX/5RA;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4vd;Ljava/lang/String;)V"),
         "save_stories" to setOf("LX/SE4;->onClick(Landroid/view/View;)V"),
         "save_voice" to setOf("LX/NeI;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/NeI;LX/NeM;)Landroid/net/Uri;"),
+        "save_voice_menu" to setOf(
+            "LX/9uv;->E0r(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
+            "Lcom/facebook/messaging/dialog/MenuDialogParams;-><init>(LX/MOm;)V",
+        ),
         "screenshot_viewers" to setOf(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->A1J(Landroid/os/Bundle;)Landroid/app/Dialog;",
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",
@@ -930,6 +942,10 @@ internal val PROFILE_347014990 = ControlProfile(
         "reply_read" to setOf("LX/ADl;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/58l;LX/4sA;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/D4I;LX/5CG;LX/58k;LX/D1v;LX/5sg;LX/5VK;LX/5Nn;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4sI;Ljava/lang/String;)V"),
         "save_stories" to setOf("LX/MED;->onClick(Landroid/view/View;)V"),
         "save_voice" to setOf("LX/QGg;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/QGg;LX/QGj;)Landroid/net/Uri;"),
+        "save_voice_menu" to setOf(
+            "LX/MML;->E0m(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
+            "Lcom/facebook/messaging/dialog/MenuDialogParams;-><init>(LX/Lug;)V",
+        ),
         "screenshot_viewers" to setOf(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->A1H(Landroid/os/Bundle;)Landroid/app/Dialog;",
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",

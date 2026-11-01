@@ -199,6 +199,7 @@ public class CompatReport {
         PATCHES.put("Ignore the swipe up for disappearing messages", List.of("disappearing_swipe"));
         PATCHES.put("Hide the recent photo card", List.of("recent_media"));
         PATCHES.put("Save voice messages you play", List.of("save_voice"));
+        PATCHES.put("Save button for voice messages", List.of("save_voice_menu"));
         PATCHES.put("Hide the Instants button", List.of("instants_button"));
         PATCHES.put("Hide Your story when sharing", List.of("share_story"));
         PATCHES.put("Use the phone's camera app", List.of("system_camera"));
@@ -4591,6 +4592,308 @@ public class CompatReport {
         return found.size() == 1 ? found : new ArrayList<>();
     }
 
+    static final String MENU_PARAMS = "Lcom/facebook/messaging/dialog/MenuDialogParams;";
+    static final String MENU_ITEM = "Lcom/facebook/messaging/dialog/MenuDialogItem;";
+    static final String MENU_MESSAGE = "Lcom/facebook/messaging/model/messages/Message;";
+    static final String MENU_AUDIO_DATA = "Lcom/facebook/messaging/attachments/AudioAttachmentData;";
+    static final String MENU_SESSION = "Lcom/facebook/auth/usersession/FbUserSession;";
+    static final String MENU_COPY_OF = "Lcom/google/common/collect/ImmutableList;->copyOf(Ljava/util/Collection;)Lcom/google/common/collect/ImmutableList;";
+
+    static String menuString(Instruction i) {
+        return i instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference s ? s.getString() : null;
+    }
+
+    static FieldReference menuField(Instruction i) {
+        return i instanceof ReferenceInstruction ri && ri.getReference() instanceof FieldReference f ? f : null;
+    }
+
+    static MethodReference menuCall(Instruction i) {
+        return i instanceof ReferenceInstruction ri && ri.getReference() instanceof MethodReference m ? m : null;
+    }
+
+    static boolean menuOpenClass(Map<String, ClassDef> byType, String type) {
+        var cls = byType.get(type);
+        return cls != null && AccessFlags.PUBLIC.isSet(cls.getAccessFlags());
+    }
+
+    static boolean menuOpenField(Map<String, ClassDef> byType, FieldReference field, boolean write) {
+        if (!menuOpenClass(byType, field.getDefiningClass())) return false;
+        for (var f : byType.get(field.getDefiningClass()).getFields())
+            if (f.getName().equals(field.getName()) && f.getType().equals(field.getType()) && AccessFlags.PUBLIC.isSet(f.getAccessFlags()) &&
+                (!write || !AccessFlags.FINAL.isSet(f.getAccessFlags()))) return true;
+        return false;
+    }
+
+    static boolean menuOpenMethod(Map<String, ClassDef> byType, MethodReference call, boolean isStatic) {
+        if (!menuOpenClass(byType, call.getDefiningClass())) return false;
+        for (var m : byType.get(call.getDefiningClass()).getMethods())
+            if (m.getName().equals(call.getName()) && m.getReturnType().equals(call.getReturnType()) && params(m).equals(refParams(call)) &&
+                AccessFlags.PUBLIC.isSet(m.getAccessFlags()) && AccessFlags.STATIC.isSet(m.getAccessFlags()) == isStatic) return true;
+        return false;
+    }
+
+    static boolean menuOpenConstructor(Map<String, ClassDef> byType, String type, List<String> wanted) {
+        if (!menuOpenClass(byType, type)) return false;
+        for (var m : byType.get(type).getMethods())
+            if (m.getName().equals("<init>") && params(m).equals(wanted) && AccessFlags.PUBLIC.isSet(m.getAccessFlags())) return true;
+        return false;
+    }
+
+    /** MenuDialogParams' constructor from its builder, reading the row list straight into its one ImmutableList copy. */
+    static boolean menuRowsSite(Method method) {
+        var params = params(method);
+        if (!MENU_PARAMS.equals(method.getDefiningClass()) || !"<init>".equals(method.getName()) || params.size() != 1 || params.get(0).startsWith("Landroid")) return false;
+        var code = instructions(method);
+        int copy = -1;
+        for (int i = 0; i < code.size(); i++) if (MENU_COPY_OF.equals(ref(code.get(i)))) {
+            if (copy >= 0) return false;
+            copy = i;
+        }
+        if (copy <= 0 || copy + 1 >= code.size()) return false;
+        var read = code.get(copy - 1);
+        var rows = menuField(read);
+        if (rows == null || read.getOpcode() != Opcode.IGET_OBJECT || !rows.getDefiningClass().equals(params.get(0)) || !"Ljava/util/List;".equals(rows.getType())) return false;
+        int list = ((TwoRegisterInstruction) read).getRegisterA(), source = ((TwoRegisterInstruction) read).getRegisterB();
+        if (!callArgs(code.get(copy)).equals(List.of(list)) || code.get(copy + 1).getOpcode() != Opcode.MOVE_RESULT_OBJECT) return false;
+        int scratch = register(code.get(copy + 1));
+        if (scratch == list || scratch == source || scratch > 15) return false;
+        var extras = new HashSet<String>();
+        for (var i : code) {
+            var f = menuField(i);
+            if (f != null && i.getOpcode() == Opcode.IGET_OBJECT && f.getDefiningClass().equals(params.get(0)) && "Ljava/lang/Object;".equals(f.getType()) &&
+                ((TwoRegisterInstruction) i).getRegisterB() == source) extras.add(f.toString());
+        }
+        return extras.size() == 1;
+    }
+
+    /** The chat menu's tap method: returns the handler field and its type, or null for anything else. */
+    static String[] menuTapSite(Method method) {
+        if (!"Z".equals(method.getReturnType()) || AccessFlags.STATIC.isSet(method.getAccessFlags()) || !params(method).equals(List.of(MENU_ITEM, "Ljava/lang/Object;"))) return null;
+        var code = instructions(method);
+        int start = -1;
+        boolean row = false;
+        for (int i = 0; i < code.size(); i++) {
+            if ("ThreadItemContextMenuHandler".equals(menuString(code.get(i)))) {
+                if (start >= 0) return null;
+                start = i;
+            }
+            if ("rowMessage".equals(menuString(code.get(i)))) row = true;
+        }
+        if (start < 0 || !row) return null;
+        int scratch = register(code.get(start));
+        int first = method.getImplementation().getRegisterCount() - 3;
+        if (scratch < 0 || first < 0 || scratch >= first || scratch > 15) return null;
+        for (int i = 0; i < start; i++) {
+            int a = register(code.get(i));
+            if (code.get(i).getOpcode().setsRegister() && a >= first && a <= first + 2) return null;
+        }
+        for (int i = start; i < code.size(); i++) {
+            var f = menuField(code.get(i));
+            if (f == null || code.get(i).getOpcode() != Opcode.IGET_OBJECT || !f.getDefiningClass().equals(method.getDefiningClass()) || !"Ljava/lang/Object;".equals(f.getType())) continue;
+            if (i + 1 >= code.size()) return null;
+            var cast = code.get(i + 1);
+            if (cast.getOpcode() != Opcode.CHECK_CAST || register(cast) != ((TwoRegisterInstruction) code.get(i)).getRegisterA()) return null;
+            return new String[] {f.toString(), ref(cast)};
+        }
+        return null;
+    }
+
+    /** The fetcher's prefetch step: the lazy holder off this, the reader out of it, the voice data, then the data's Uri. */
+    static boolean menuAudioPrefetch(Method method) {
+        if (!"V".equals(method.getReturnType()) || !params(method).equals(List.of(MENU_SESSION, MENU_MESSAGE))) return false;
+        var code = instructions(method);
+        if (code.size() < 9) return false;
+        var wanted = List.of(Opcode.IGET_OBJECT, Opcode.INVOKE_STATIC, Opcode.MOVE_RESULT_OBJECT, Opcode.CHECK_CAST, Opcode.CONST_4, Opcode.INVOKE_VIRTUAL,
+            Opcode.MOVE_RESULT_OBJECT, Opcode.IF_EQZ, Opcode.IGET_OBJECT);
+        for (int i = 0; i < wanted.size(); i++) if (code.get(i).getOpcode() != wanted.get(i)) return false;
+        var holder = menuField(code.get(0));
+        var get = menuCall(code.get(1));
+        var read = menuCall(code.get(5));
+        var uri = menuField(code.get(8));
+        if (holder == null || get == null || read == null || uri == null) return false;
+        return get.getDefiningClass().equals(holder.getType()) && refParams(get).equals(List.of(holder.getType())) && "Ljava/lang/Object;".equals(get.getReturnType()) &&
+            read.getDefiningClass().equals(ref(code.get(3))) && MENU_AUDIO_DATA.equals(read.getReturnType()) && refParams(read).equals(List.of(MENU_SESSION, MENU_MESSAGE, "Ljava/lang/String;")) &&
+            MENU_AUDIO_DATA.equals(uri.getDefiningClass()) && "Landroid/net/Uri;".equals(uri.getType());
+    }
+
+    /**
+     * save_voice_menu: MenuDialogParams' constructor and the chat menu's tap method, taken only when every piece the
+     * extension's stubs are written from reads as expected and is public. Returns rows, tap. Mirrors SaveVoiceMenu.kt.
+     */
+    static List<Method> saveVoiceMenu(List<ClassDef> classes) {
+        var byType = new HashMap<String, ClassDef>();
+        for (var c : classes) byType.put(c.getType(), c);
+        var paramsClass = byType.get(MENU_PARAMS);
+        if (paramsClass == null) return List.of();
+        Method rows = null;
+        for (var m : paramsClass.getMethods()) if (menuRowsSite(m)) {
+            if (rows != null) return List.of();
+            rows = m;
+        }
+        if (rows == null) return List.of();
+        Method tap = null;
+        String[] tapSite = null;
+        for (var cls : classes) for (var m : cls.getMethods()) {
+            var site = menuTapSite(m);
+            if (site == null) continue;
+            if (tap != null) return List.of();
+            tap = m;
+            tapSite = site;
+        }
+        if (tap == null) return List.of();
+
+        // The handler keeps the account the tap's download runs for.
+        var handler = byType.get(tapSite[1]);
+        if (handler == null) return List.of();
+        Field session = null;
+        for (var f : handler.getFields()) if (!AccessFlags.STATIC.isSet(f.getAccessFlags()) && MENU_SESSION.equals(f.getType())) {
+            if (session != null) return List.of();
+            session = f;
+        }
+        if (session == null || !AccessFlags.PUBLIC.isSet(handler.getAccessFlags()) || !AccessFlags.PUBLIC.isSet(session.getAccessFlags()) || !menuOpenClass(byType, tap.getDefiningClass())) return List.of();
+        FieldReference tapField = null;
+        for (var i : instructions(tap)) {
+            var f = menuField(i);
+            if (f != null && f.toString().equals(tapSite[0])) { tapField = f; break; }
+        }
+        if (tapField == null || !menuOpenField(byType, tapField, false)) return List.of();
+
+        // MenuDialogItem's constructor reads its builder in a fixed order: title resource, id, icon, then two more ints.
+        var itemClass = byType.get(MENU_ITEM);
+        if (itemClass == null) return List.of();
+        Method item = null;
+        for (var m : itemClass.getMethods()) {
+            var p = params(m);
+            if ("<init>".equals(m.getName()) && p.size() == 1 && !p.get(0).startsWith("Landroid")) {
+                if (item != null) return List.of();
+                item = m;
+            }
+        }
+        if (item == null) return List.of();
+        var builder = params(item).get(0);
+        if (!AccessFlags.PUBLIC.isSet(item.getAccessFlags()) || !AccessFlags.PUBLIC.isSet(itemClass.getAccessFlags()) || !menuOpenConstructor(byType, builder, List.of())) return List.of();
+        var itemCode = instructions(item);
+        var ints = new ArrayList<Integer>();
+        FieldReference builderTitle = null, builderTag = null;
+        int titles = 0, tags = 0;
+        for (int i = 0; i < itemCode.size(); i++) {
+            var f = menuField(itemCode.get(i));
+            if (f == null || !f.getDefiningClass().equals(builder)) continue;
+            if (itemCode.get(i).getOpcode() == Opcode.IGET) ints.add(i);
+            if (itemCode.get(i).getOpcode() == Opcode.IGET_OBJECT && "Ljava/lang/CharSequence;".equals(f.getType())) { builderTitle = f; titles++; }
+            if (itemCode.get(i).getOpcode() == Opcode.IGET_OBJECT && "Ljava/lang/String;".equals(f.getType())) { builderTag = f; tags++; }
+        }
+        if (ints.size() != 5 || ints.get(1) + 1 >= itemCode.size()) return List.of();
+        var idStore = itemCode.get(ints.get(1) + 1);
+        var itemId = menuField(idStore);
+        if (itemId == null || idStore.getOpcode() != Opcode.IPUT || !MENU_ITEM.equals(itemId.getDefiningClass()) || !"I".equals(itemId.getType())) return List.of();
+        var builderId = menuField(itemCode.get(ints.get(1)));
+        var builderIcon = menuField(itemCode.get(ints.get(2)));
+        if (titles != 1 || tags != 1) return List.of();
+        for (var f : List.of(builderId, builderIcon, builderTitle, builderTag)) if (!menuOpenField(byType, f, true)) return List.of();
+        if (!menuOpenField(byType, itemId, false)) return List.of();
+
+        // The icon is the constant Save video's row stores in the builder's icon field.
+        Method saveRow = null;
+        for (var cls : classes) for (var m : cls.getMethods()) {
+            if (!MENU_ITEM.equals(m.getReturnType())) continue;
+            boolean names = false;
+            for (var i : instructions(m)) if ("save_video".equals(menuString(i))) names = true;
+            if (!names) continue;
+            if (saveRow != null) return List.of();
+            saveRow = m;
+        }
+        if (saveRow == null) return List.of();
+        var saveCode = instructions(saveRow);
+        int iconStore = -1;
+        for (int i = 0; i < saveCode.size(); i++) if (saveCode.get(i).getOpcode() == Opcode.IPUT && builderIcon.toString().equals(ref(saveCode.get(i)))) { iconStore = i; break; }
+        if (iconStore < 1) return List.of();
+        var iconLoad = saveCode.get(iconStore - 1);
+        if ((iconLoad.getOpcode() != Opcode.CONST && iconLoad.getOpcode() != Opcode.CONST_HIGH16) ||
+            register(iconLoad) != ((TwoRegisterInstruction) saveCode.get(iconStore)).getRegisterA()) return List.of();
+
+        // The download, the class that holds it, and the one field of that class whose type reads voice messages for the prefetch.
+        var downloads = voiceDownloads(classes);
+        if (downloads.size() != 1) return List.of();
+        var download = downloads.get(0);
+        var fetcher = byType.get(download.getDefiningClass());
+        if (fetcher == null) return List.of();
+        var request = params(download).get(2);
+        if (!menuOpenConstructor(byType, fetcher.getType(), List.of()) || !menuOpenConstructor(byType, request, List.of("Z", "Landroid/net/Uri;")) ||
+            !AccessFlags.PUBLIC.isSet(download.getAccessFlags()) || !AccessFlags.PUBLIC.isSet(fetcher.getAccessFlags())) return List.of();
+        Field prefetcherField = null;
+        Method prefetch = null;
+        for (var f : fetcher.getFields()) {
+            if (AccessFlags.STATIC.isSet(f.getAccessFlags()) || byType.get(f.getType()) == null) continue;
+            Method matched = null;
+            int matches = 0;
+            for (var m : byType.get(f.getType()).getMethods()) if (menuAudioPrefetch(m)) { matched = m; matches++; }
+            if (matches != 1) continue;
+            if (prefetcherField != null) return List.of();
+            prefetcherField = f;
+            prefetch = matched;
+        }
+        if (prefetcherField == null || !AccessFlags.PUBLIC.isSet(prefetcherField.getAccessFlags()) || !menuOpenClass(byType, prefetcherField.getType())) return List.of();
+        var prefetchCode = instructions(prefetch);
+        var holderField = menuField(prefetchCode.get(0));
+        var holderGet = menuCall(prefetchCode.get(1));
+        var reader = ref(prefetchCode.get(3));
+        var readAudio = menuCall(prefetchCode.get(5));
+        var audioUri = menuField(prefetchCode.get(8));
+        if (!menuOpenField(byType, holderField, false) || !menuOpenMethod(byType, holderGet, true) || !menuOpenMethod(byType, readAudio, false) ||
+            !menuOpenClass(byType, MENU_AUDIO_DATA) || !menuOpenField(byType, audioUri, false)) return List.of();
+
+        // The reader starts by asking its classifier the message's kind, and goes on only for the one kind that's audio.
+        if (byType.get(reader) == null) return List.of();
+        Method readMethod = null;
+        for (var m : byType.get(reader).getMethods()) if (m.getName().equals(readAudio.getName()) && params(m).equals(refParams(readAudio))) {
+            if (readMethod != null) return List.of();
+            readMethod = m;
+        }
+        if (readMethod == null) return List.of();
+        var readCode = instructions(readMethod);
+        FieldReference classifierField = null;
+        for (var i : readCode) {
+            var f = menuField(i);
+            if (f != null && i.getOpcode() == Opcode.IGET_OBJECT && f.getDefiningClass().equals(reader)) { classifierField = f; break; }
+        }
+        if (classifierField == null) return List.of();
+        int ask = -1;
+        for (int i = 0; i < readCode.size(); i++) {
+            var call = menuCall(readCode.get(i));
+            if (call != null && readCode.get(i).getOpcode() == Opcode.INVOKE_VIRTUAL && call.getDefiningClass().equals(classifierField.getType()) &&
+                refParams(call).equals(List.of(MENU_SESSION, MENU_MESSAGE))) { ask = i; break; }
+        }
+        if (ask < 0 || ask + 2 >= readCode.size()) return List.of();
+        var kind = menuCall(readCode.get(ask)).getReturnType();
+        if (readCode.get(ask + 1).getOpcode() != Opcode.MOVE_RESULT_OBJECT || readCode.get(ask + 2).getOpcode() != Opcode.SGET_OBJECT) return List.of();
+        var audioKind = menuField(readCode.get(ask + 2));
+        if (audioKind == null || !audioKind.getType().equals(kind)) return List.of();
+        // The classifier's session-free step, which its session-taking one calls. A row is added where no account is at hand.
+        var classifier = byType.get(classifierField.getType());
+        if (classifier == null) return List.of();
+        Method classify = null, asked = null;
+        for (var m : classifier.getMethods()) {
+            if (AccessFlags.STATIC.isSet(m.getAccessFlags()) && m.getReturnType().equals(kind) && params(m).equals(List.of(classifier.getType(), MENU_MESSAGE))) {
+                if (classify != null) return List.of();
+                classify = m;
+            }
+            if (m.getName().equals(menuCall(readCode.get(ask)).getName()) && params(m).equals(List.of(MENU_SESSION, MENU_MESSAGE))) {
+                if (asked != null) return List.of();
+                asked = m;
+            }
+        }
+        if (classify == null || asked == null) return List.of();
+        boolean calls = false;
+        for (var i : instructions(asked)) {
+            var call = menuCall(i);
+            if (call != null && i.getOpcode() == Opcode.INVOKE_STATIC && call.getName().equals(classify.getName()) && call.getDefiningClass().equals(classifier.getType())) calls = true;
+        }
+        if (!calls || !menuOpenField(byType, classifierField, false) || !AccessFlags.PUBLIC.isSet(classifier.getAccessFlags()) || !AccessFlags.PUBLIC.isSet(classify.getAccessFlags()) ||
+            !menuOpenField(byType, audioKind, false) || !menuOpenClass(byType, MENU_MESSAGE) || !menuOpenClass(byType, kind)) return List.of();
+        return List.of(rows, tap);
+    }
+
     static final String SEND_MESSAGE_EVENT = "Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;";
 
     /**
@@ -6440,6 +6743,7 @@ public class CompatReport {
         found.get("recent_media").addAll(recentMediaDetectors(classes));
         found.get("instants_button").addAll(instantsButtonAttaches(classes));
         found.get("save_voice").addAll(voiceDownloads(classes));
+        found.get("save_voice_menu").addAll(saveVoiceMenu(classes));
         found.get("hide_read_receipts").addAll(chatSeenBroadcasts(classes));
         found.get("reply_read").addAll(replyReadDispatches(classes));
         found.get("analytics_uploads").addAll(analyticsUploads(classes));

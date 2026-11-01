@@ -66,6 +66,7 @@ private fun mirrored(classes: Iterable<ClassDef>, skip: Set<String>, find: (List
             val savedLog = messageLogContract
             val savedThreads = readReceiptThreadFields
             val savedRecipe = markReadRecipe
+            val savedVoiceMenu = saveVoiceMenuRecipe
             val savedPicture = autoReplyPictureRecipe
             val savedGallery = galleryRoute
             val savedGalleryChat = galleryChatRoute
@@ -82,6 +83,7 @@ private fun mirrored(classes: Iterable<ClassDef>, skip: Set<String>, find: (List
                 messageLogContract = savedLog
                 readReceiptThreadFields = savedThreads
                 markReadRecipe = savedRecipe
+                saveVoiceMenuRecipe = savedVoiceMenu
                 autoReplyPictureRecipe = savedPicture
                 galleryRoute = savedGallery
                 galleryChatRoute = savedGalleryChat
@@ -104,7 +106,7 @@ private fun disagreements(classes: List<ClassDef>, found: Map<String, List<Metho
 }
 
 /** A copy of the method with only its parameters' registers left. */
-private fun Method.starved(): Method {
+internal fun Method.starved(): Method {
     val words = parameterTypes.sumOf { if (it.toString() == "J" || it.toString() == "D") 2 else 1 } + if (AccessFlags.STATIC.isSet(accessFlags)) 0 else 1
     val code = implementation!!
     return ImmutableMethod(definingClass, name, parameters, returnType, accessFlags, annotations, hiddenApiRestrictions,

@@ -513,7 +513,7 @@ internal fun MutableMethod.validateMarkReadStub(id: String) {
         throw PatchException("Messenger controls: the Mark as read button's extension stub changed")
 }
 
-private fun MutableMethod.emptyCopy(registers: Int) = MutableMethod(ImmutableMethod(definingClass, name, parameters, returnType, accessFlags,
+internal fun MutableMethod.emptyCopy(registers: Int) = MutableMethod(ImmutableMethod(definingClass, name, parameters, returnType, accessFlags,
     annotations, hiddenApiRestrictions, ImmutableMethodImplementation(registers, emptyList(), emptyList(), emptyList())))
 
 /** The build(socket) stub's replacement for the older bar: reads the chat, account and colors from the socket for button(). */

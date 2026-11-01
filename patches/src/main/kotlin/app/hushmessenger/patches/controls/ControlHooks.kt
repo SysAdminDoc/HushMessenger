@@ -388,6 +388,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(RECENT_MEDIA).addAll(findRecentMedia(classes))
     found.getValue(INSTANTS_BUTTON).addAll(findInstantsButton(classes))
     found.getValue(SAVE_VOICE).addAll(findSaveVoice(classes))
+    found.getValue(SAVE_VOICE_MENU).addAll(findSaveVoiceMenu(classes))
     found.getValue(ANALYTICS_UPLOADS).addAll(findAnalyticsUploads(classes) + findBoundUploadTasks(classes) +
         findXAnalyticsUploadTimers(classes) + findInProcessUploadStarts(classes))
     found.getValue(ATTRIBUTION_UPLOADS).addAll(findAttributionUploads(classes))

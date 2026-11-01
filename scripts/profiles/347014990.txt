@@ -186,6 +186,8 @@ hook reels_badge LX/4L4;->A09(LX/4L4;)Z
 hook reply_read LX/ADl;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/58l;LX/4sA;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/D4I;LX/5CG;LX/58k;LX/D1v;LX/5sg;LX/5VK;LX/5Nn;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4sI;Ljava/lang/String;)V
 hook save_stories LX/MED;->onClick(Landroid/view/View;)V
 hook save_voice LX/QGg;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/QGg;LX/QGj;)Landroid/net/Uri;
+hook save_voice_menu LX/MML;->E0m(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z
+hook save_voice_menu Lcom/facebook/messaging/dialog/MenuDialogParams;-><init>(LX/Lug;)V
 hook screenshot_viewers Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->A1H(Landroid/os/Bundle;)Landroid/app/Dialog;
 hook screenshot_viewers Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V
 hook screenshot_viewers Lcom/facebook/messaging/quicksnap/consumption/viewer/MsgrQuicksnapViewerFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;
