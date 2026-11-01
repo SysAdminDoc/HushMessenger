@@ -98,7 +98,7 @@ internal val PROFILE_347015062 = ControlProfile(
         "bubbles" to setOf("LX/2Vm;->A00()Z"),
         "business_suggestions" to setOf("LX/7Rz;->A05(LX/7Rz;)Z", "LX/7T5;->A04(LX/7T5;)Z", "LX/Kjw;->A02()Z"),
         "call_recording" to setOf(
-            "LX/B64;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/B64;->setIsCallActive(Z)V",
+            "LX/B5v;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/B5v;->setIsCallActive(Z)V",
         ),
         "car_messages" to setOf("LX/0Qq;->AhZ(LX/0M6;)V"),
         "chat_animation" to setOf("Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;"),
@@ -338,7 +338,7 @@ internal val PROFILE_347014996 = ControlProfile(
         "bubbles" to setOf("LX/2Vm;->A00()Z"),
         "business_suggestions" to setOf("LX/7Rz;->A05(LX/7Rz;)Z", "LX/7T5;->A04(LX/7T5;)Z", "LX/Kjw;->A02()Z"),
         "call_recording" to setOf(
-            "LX/B64;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/B64;->setIsCallActive(Z)V",
+            "LX/B5v;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/B5v;->setIsCallActive(Z)V",
         ),
         "car_messages" to setOf("LX/0Qq;->AhZ(LX/0M6;)V"),
         "chat_animation" to setOf("Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;"),
@@ -578,7 +578,7 @@ internal val PROFILE_347014974 = ControlProfile(
         "bubbles" to setOf("LX/2XG;->A00()Z"),
         "business_suggestions" to setOf("LX/7VN;->A05(LX/7VN;)Z", "LX/7WT;->A04(LX/7WT;)Z", "LX/Kou;->A02()Z"),
         "call_recording" to setOf(
-            "LX/BAb;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/BAb;->setIsCallActive(Z)V",
+            "LX/BAS;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/BAS;->setIsCallActive(Z)V",
         ),
         "car_messages" to setOf("LX/0Qx;->Ahe(LX/0MA;)V"),
         "chat_animation" to setOf("Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;"),
@@ -817,7 +817,7 @@ internal val PROFILE_347014990 = ControlProfile(
         "bubbles" to setOf("LX/2WC;->A00()Z"),
         "business_suggestions" to setOf("LX/7Q1;->A05(LX/7Q1;)Z", "LX/7R7;->A04(LX/7R7;)Z", "LX/WAU;->A02()Z"),
         "call_recording" to setOf(
-            "LX/B3a;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/B3a;->setIsCallActive(Z)V",
+            "LX/B3R;->setApi(Lcom/facebook/rsys/audio/gen/AudioApi;)V", "LX/B3R;->setIsCallActive(Z)V",
         ),
         "car_messages" to setOf("LX/0Qr;->Ahg(LX/0M7;)V"),
         "chat_animation" to setOf("Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;"),

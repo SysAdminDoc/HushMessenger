@@ -5742,7 +5742,7 @@ public class CompatReport {
     static final String AUDIO_PROXY = "Lcom/facebook/rsys/audio/gen/AudioProxy;";
     static final String AUDIO_API = "Lcom/facebook/rsys/audio/gen/AudioApi;";
 
-    /** call_recording: setApi and setIsCallActive of the one class under AudioProxy that really runs calls. Mirrors CallRecording.kt. */
+    /** call_recording: setApi and setIsCallActive of the proxy calls run on, whose setIsCallActive is empty. Mirrors CallRecording.kt. */
     static List<Method> callRecording(List<ClassDef> classes) {
         var parents = new HashMap<String, String>();
         for (var cls : classes) parents.put(cls.getType(), cls.getSuperclass());
@@ -5760,7 +5760,7 @@ public class CompatReport {
             for (var method : cls.getMethods()) {
                 if (!"V".equals(method.getReturnType()) || method.getImplementation() == null) continue;
                 if ("setApi".equals(method.getName()) && params(method).equals(List.of(AUDIO_API))) api.add(method);
-                if ("setIsCallActive".equals(method.getName()) && params(method).equals(List.of("Z")) && instructions(method).size() > 1) active.add(method);
+                if ("setIsCallActive".equals(method.getName()) && params(method).equals(List.of("Z")) && instructions(method).size() == 1) active.add(method);
             }
             if (api.size() == 1 && active.size() == 1) proxies.add(List.of(api.get(0), active.get(0)));
         }

@@ -22,11 +22,14 @@ private const val AUDIO_API = "Lcom/facebook/rsys/audio/gen/AudioApi;"
 internal fun Method.isCallAudioApi(): Boolean = name == "setApi" && returnType == "V" &&
     parameterTypes.map { it.toString() } == listOf(AUDIO_API) && implementation != null
 
-/** The proxy's method that says whether a call is running. Messenger's do-nothing proxy has an empty one. */
+/** The proxy's method that says whether a call is running. */
 internal fun Method.isCallActiveSetter(): Boolean = name == "setIsCallActive" && returnType == "V" &&
-    parameterTypes.map { it.toString() } == listOf("Z") && (implementation?.instructions?.count() ?: 0) > 1
+    parameterTypes.map { it.toString() } == listOf("Z") && implementation != null
 
-/** Both methods of the one audio proxy that really runs calls. */
+/**
+ * Both methods of the proxy Messenger's calls run on. It only keeps the API, so its setIsCallActive is empty. The proxy with
+ * a real one looks more like the answer, but only Meta AI's voice sessions build it, and a call never reaches it.
+ */
 internal fun findCallRecording(classes: Iterable<ClassDef>): List<Method> {
     val parents = classes.associate { it.type to it.superclass }
     fun isProxy(type: String): Boolean {
@@ -41,6 +44,7 @@ internal fun findCallRecording(classes: Iterable<ClassDef>): List<Method> {
     val proxies = classes.filter { isProxy(it.type) }.mapNotNull { proxy ->
         val api = proxy.methods.singleOrNull { it.isCallAudioApi() } ?: return@mapNotNull null
         val active = proxy.methods.singleOrNull { it.isCallActiveSetter() } ?: return@mapNotNull null
+        if (active.implementation!!.instructions.count() != 1) return@mapNotNull null
         listOf(api, active)
     }
     return proxies.singleOrNull() ?: emptyList()
