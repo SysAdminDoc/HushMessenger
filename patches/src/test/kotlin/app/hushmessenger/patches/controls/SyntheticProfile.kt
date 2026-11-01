@@ -96,7 +96,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     MARK_READ_BAR to setOf(SYNTHETIC_MARK_READ_BAR, SYNTHETIC_MARK_READ_FACTORY),
     HIDE_CALL_BAR to setOf(SYNTHETIC_MARK_READ_BAR, SYNTHETIC_MARK_READ_FACTORY),
     MARK_READ_CLICK to setOf(SYNTHETIC_MARK_READ_CLICK),
-    TEXT_STYLE to setOf(SYNTHETIC_TEXT_FIELD_FOCUS),
+    TEXT_STYLE to setOf(SYNTHETIC_TEXT_FIELD_SELECTION),
     MESSAGE_LOG to setOf(newMessageNotificationCtor("LX/5qJ;", "LX/5Yc;")),
     AUTO_REPLY to setOf(newMessageNotificationCtor("LX/5qJ;", "LX/5Yc;")),
     UNSENT_RECALL to setOf("LX/98W;->A00(Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z"),

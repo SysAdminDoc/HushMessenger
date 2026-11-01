@@ -160,7 +160,6 @@ final class SettingsText {
         ENGLISH.put("unavailable", "Not available on this version of Android. Your choice is saved.");
         ENGLISH.put("camera_unsupported", "This install has no screen for opening the phone's camera app, so the chat camera stays Messenger's own. Root Mount installs can't add one. Your choice is saved.");
         ENGLISH.put("gallery_unsupported", "No app on this phone can pick a photo for Messenger, so the chat gallery stays Messenger's own. Your choice is saved.");
-        ENGLISH.put("text_style_unsupported", "This install has no Bold and Italic entries for the text menu. Root Mount installs can't add them. Your choice is saved.");
         ENGLISH.put("local_search_unsupported", "This install has no search screen. Root Mount installs can't add one. Your choice is saved.");
         ENGLISH.put("local_search_open", "Search messages saved on this phone");
         ENGLISH.put("local_search_title", "Saved messages");
@@ -186,7 +185,8 @@ final class SettingsText {
         ENGLISH.put("save_voice_menu_row", "Save voice message");
         ENGLISH.put("save_voice_menu_saved", "Saved to %1$s");
         ENGLISH.put("save_voice_menu_failed", "Couldn't save this voice message");
-        ENGLISH.put("text_style_samsung", "Samsung phones hide them at first. To show them, select a word, tap the three dots, tap Manage apps and turn on Messenger's Bold and Italic.");
+        ENGLISH.put("text_style_bold", "Bold");
+        ENGLISH.put("text_style_italic", "Italic");
         ENGLISH.put("text_style_read_only","Bold and Italic only work on text you're typing.");
         ENGLISH.put("text_style_bold_none", "Bold works only on A to Z, accented letters and digits.");
         ENGLISH.put("text_style_italic_none", "Italic works only on A to Z and accented letters.");

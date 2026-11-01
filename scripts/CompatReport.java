@@ -5380,14 +5380,14 @@ public class CompatReport {
         return List.of(publish.get(0), keepalive.get(0));
     }
 
-    /** The focus change's one invoke-super of Android's onFocusChanged, made on this. */
-    static boolean hasFocusSuperCall(Method method) {
+    /** The selection change's one invoke-super of Android's onSelectionChanged, made on this. */
+    static boolean hasSelectionSuperCall(Method method) {
         if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || method.getImplementation() == null ||
-            !"onFocusChanged".equals(method.getName()) || !"V".equals(method.getReturnType())) return false;
+            !"onSelectionChanged".equals(method.getName()) || !"V".equals(method.getReturnType())) return false;
         var params = new ArrayList<String>();
         for (var t : method.getParameterTypes()) params.add(t.toString());
-        if (!params.equals(List.of("Z", "I", "Landroid/graphics/Rect;"))) return false;
-        int self = method.getImplementation().getRegisterCount() - 4;
+        if (!params.equals(List.of("I", "I"))) return false;
+        int self = method.getImplementation().getRegisterCount() - 3;
         int calls = 0;
         for (var i : instructions(method)) {
             if (i.getOpcode() != Opcode.INVOKE_SUPER && i.getOpcode() != Opcode.INVOKE_SUPER_RANGE) continue;
@@ -5396,7 +5396,7 @@ public class CompatReport {
             var types = new ArrayList<String>();
             for (var t : call.getParameterTypes()) types.add(t.toString());
             if (Set.of("Landroid/widget/TextView;", "Landroid/widget/EditText;").contains(call.getDefiningClass()) &&
-                "onFocusChanged".equals(call.getName()) && "V".equals(call.getReturnType()) && types.equals(params) &&
+                "onSelectionChanged".equals(call.getName()) && "V".equals(call.getReturnType()) && types.equals(params) &&
                 receiver == self) calls++;
         }
         return calls == 1;
@@ -5405,7 +5405,7 @@ public class CompatReport {
     /**
      * text_style: the one method of an EditText subclass that names updateState:TextInputComponent.remeasureForUpdatedText
      * has to be its instance onTextChanged(CharSequence, III)V, and the hook is the same class's
-     * onFocusChanged(ZILandroid/graphics/Rect;)V that calls Android's own on this. Mirrors TextStyle.kt.
+     * onSelectionChanged(II)V that calls Android's own on this. Mirrors TextStyle.kt.
      */
     static List<Method> textStyleField(List<ClassDef> classes) {
         ClassDef field = null;
@@ -5422,9 +5422,9 @@ public class CompatReport {
         }
         if (anchors != 1 || AccessFlags.STATIC.isSet(anchor.getAccessFlags()) ||
             !hookId(anchor).endsWith(";->onTextChanged(Ljava/lang/CharSequence;III)V")) return List.of();
-        var focus = new ArrayList<Method>();
-        for (var method : field.getMethods()) if (hasFocusSuperCall(method)) focus.add(method);
-        return focus.size() == 1 ? focus : List.of();
+        var selection = new ArrayList<Method>();
+        for (var method : field.getMethods()) if (hasSelectionSuperCall(method)) selection.add(method);
+        return selection.size() == 1 ? selection : List.of();
     }
 
     static final long PINNED_CHAT_LIMIT_CONFIG = 0x8205ad0002101eL;

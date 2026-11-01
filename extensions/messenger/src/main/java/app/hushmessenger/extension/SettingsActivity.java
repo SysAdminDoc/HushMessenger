@@ -878,12 +878,10 @@ public final class SettingsActivity extends Activity {
         boolean available = Settings.available(key);
         if (!available) description += " " + text.format(CameraActivity.KEY.equals(key) ? "camera_unsupported"
             : GalleryPicker.KEY.equals(key) ? "gallery_unsupported"
-            : TextStyleActivity.KEY.equals(key) ? "text_style_unsupported"
             : LocalChatSearch.KEY.equals(key) ? "local_search_unsupported"
             : CallRecording.KEY.equals(key) ? "call_recording_unsupported"
             : WAYS_IN.contains(key) ? wayReason(key)
             : "bubbles".equals(key) && Build.VERSION.SDK_INT >= 30 ? "bubble_unsupported" : "unavailable");
-        else if (TextStyleActivity.KEY.equals(key) && TextStyleActivity.hiddenByPhone()) description += " " + text.get("text_style_samsung");
         LinearLayout row = ui.row();
         LinearLayout labels = ui.column();
         labels.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);

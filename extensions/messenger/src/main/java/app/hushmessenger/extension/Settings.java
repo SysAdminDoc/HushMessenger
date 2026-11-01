@@ -1066,10 +1066,6 @@ public final class Settings {
             Context context = appContext;
             return context == null || GalleryPicker.screenIntent(context) != null;
         }
-        if (TextStyleActivity.KEY.equals(key)) {
-            Context context = appContext;
-            return context == null || TextStyleActivity.present(context);
-        }
         // A Root Mount install keeps the stock manifest, with no search screen.
         if (LocalChatSearch.KEY.equals(key)) {
             Context context = appContext;

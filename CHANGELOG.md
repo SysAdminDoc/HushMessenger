@@ -14,6 +14,7 @@
 - `Mark as read button` now shows up in chats whose top bar was full with no chat details button to replace, like a chat with an Add friend button. It takes the place of a button that isn't for calls there, so the call buttons still stay put. Refs #122.
 - Android Auto's launcher opens Messenger again instead of showing the HushMessenger settings entry in its place. The drawer entry now sorts after Messenger's own, so anything that launches Messenger by package name (Android Auto, the Facebook app's Messenger button, a Manager's Open button) lands in Messenger. The `Android Auto messages` text now says Unknown sources is only enough on a desktop head unit, since a real car can still leave Messenger out. Refs #75.
 - With `Open your gallery app`, a photo or video from Google Photos no longer crashes Messenger when the folder it copies your pick into won't take the file. The copy moves to another of Messenger's own folders and the send carries on, and **Report a problem** says which folder refused and why. Refs #124.
+- `Bold and italic text` now puts Bold and Italic straight into the chat box's text menu, by name, with nothing to tick first on a Samsung phone. On some Samsung phones those two rows showed up as Messenger and Messenger, and they brought Dictionary, Translate and other apps' rows into the chat box along with them. Those rows are gone from the chat box again. Refs #125.
 
 ## 0.28.0 (2026-10-31)
 

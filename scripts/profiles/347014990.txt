@@ -215,7 +215,7 @@ hook tab_badges LX/1lN;->A00(Ljava/lang/String;)LX/37r;
 hook tab_config LX/1mq;->A02(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)LX/1nL;
 hook tab_notifications LX/1lJ;->A09(LX/1lJ;)Z
 hook tab_people LX/1lJ;->A0E(LX/1lJ;)Z
-hook text_style LX/A2H;->onFocusChanged(ZILandroid/graphics/Rect;)V
+hook text_style LX/A2H;->onSelectionChanged(II)V
 hook typing LX/BCh;->run()V
 hook typing_mailbox LX/8m9;->A0M(Ljava/lang/String;Z)LX/32L;
 hook unsent_clear Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0G(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V
