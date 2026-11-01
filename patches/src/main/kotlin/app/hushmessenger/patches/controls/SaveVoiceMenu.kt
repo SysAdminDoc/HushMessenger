@@ -22,9 +22,10 @@ import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
 
 /**
- * A Save row in the menu you get by holding a voice message (#123). Every route to that menu builds its MenuDialogParams,
- * so the row goes in there and works on any of them. Tapping it runs Messenger's own voice download and keeps the file
- * where Save voice messages you play keeps its copies.
+ * A Save row in the menu you get by holding a voice message (#123). In current chats that hold goes to a bar of a few rows
+ * and a More sheet, and the row goes in the sheet as it's made, since the row model that sheet holds says what the message
+ * is. Older screens still build a MenuDialogParams from a list with the message in a Bundle, so the row goes in there too.
+ * Tapping it runs Messenger's own voice download and keeps the file where Save voice messages you play keeps its copies.
  */
 internal const val SAVE_VOICE_MENU = "save_voice_menu"
 internal const val SAVE_VOICE_MENU_HOST = "Lapp/hushmessenger/extension/SaveVoiceMenu;"
@@ -35,7 +36,15 @@ internal const val SAVE_VOICE_MENU_ROW_ID = "$SAVE_VOICE_MENU_HOST->rowId(Ljava/
 internal const val SAVE_VOICE_MENU_IS_VOICE = "$SAVE_VOICE_MENU_HOST->isVoice(Ljava/lang/Object;)Z"
 internal const val SAVE_VOICE_MENU_SESSION = "$SAVE_VOICE_MENU_HOST->session(Ljava/lang/Object;)Ljava/lang/Object;"
 internal const val SAVE_VOICE_MENU_FETCH = "$SAVE_VOICE_MENU_HOST->fetch(Ljava/lang/Object;Ljava/lang/Object;)Landroid/net/Uri;"
-internal val SAVE_VOICE_MENU_STUBS = listOf(SAVE_VOICE_MENU_ROW, SAVE_VOICE_MENU_ROW_ID, SAVE_VOICE_MENU_IS_VOICE, SAVE_VOICE_MENU_SESSION, SAVE_VOICE_MENU_FETCH)
+internal const val SAVE_VOICE_MENU_SHEET_ROW = "$SAVE_VOICE_MENU_HOST->sheetRow(Ljava/lang/Object;Ljava/lang/Object;)V"
+internal const val SAVE_VOICE_MENU_SHEET_CLICKED = "$SAVE_VOICE_MENU_HOST->sheetClicked(Ljava/lang/Object;Ljava/lang/Object;)Z"
+internal const val SAVE_VOICE_MENU_ADD_ROW = "$SAVE_VOICE_MENU_HOST->addRow(Ljava/lang/Object;Ljava/lang/Object;)Z"
+internal const val SAVE_VOICE_MENU_HELD = "$SAVE_VOICE_MENU_HOST->held(Ljava/lang/Object;)Ljava/lang/Object;"
+internal const val SAVE_VOICE_MENU_SHEET_SESSION = "$SAVE_VOICE_MENU_HOST->sheetSession(Ljava/lang/Object;)Ljava/lang/Object;"
+internal const val SAVE_VOICE_MENU_VOICE_URI = "$SAVE_VOICE_MENU_HOST->voiceUri(Ljava/lang/Object;)Landroid/net/Uri;"
+internal const val SAVE_VOICE_MENU_FETCH_URI = "$SAVE_VOICE_MENU_HOST->fetchUri(Ljava/lang/Object;Landroid/net/Uri;)Landroid/net/Uri;"
+internal val SAVE_VOICE_MENU_STUBS = listOf(SAVE_VOICE_MENU_ROW, SAVE_VOICE_MENU_ROW_ID, SAVE_VOICE_MENU_IS_VOICE, SAVE_VOICE_MENU_SESSION, SAVE_VOICE_MENU_FETCH,
+    SAVE_VOICE_MENU_ADD_ROW, SAVE_VOICE_MENU_HELD, SAVE_VOICE_MENU_SHEET_SESSION, SAVE_VOICE_MENU_VOICE_URI, SAVE_VOICE_MENU_FETCH_URI)
 
 internal const val MENU_PARAMS = "Lcom/facebook/messaging/dialog/MenuDialogParams;"
 internal const val MENU_ITEM = "Lcom/facebook/messaging/dialog/MenuDialogItem;"
@@ -50,6 +59,11 @@ internal const val MENU_TAP_NAME = "ThreadItemContextMenuHandler"
 internal const val MENU_ROW_MESSAGE = "rowMessage"
 /** The tag of Messenger's own Save video row, whose icon and tag this row borrows. */
 internal const val MENU_SAVE_VIDEO = "save_video"
+internal const val MENU_FRAGMENT = "Lcom/facebook/messaging/dialog/MenuDialogFragment;"
+/** The dialog tag only the held message's More sheet uses. */
+internal const val MORE_SHEET_TAG = "MORE_ACTION_DRAWER_MENU_DIALOG_TAG"
+/** Kotlin's cast message where Messenger takes a held message as a voice message, naming the class R8 renamed. */
+internal const val AUDIO_MESSAGE_CAST = "null cannot be cast to non-null type com.facebook.xapp.messaging.threadview.model.audio.AudioMessage"
 
 /** Everything this build calls the pieces the extension's stubs are written from. References are smali, ready to use. */
 internal class SaveVoiceMenuRecipe(
@@ -77,6 +91,19 @@ internal class SaveVoiceMenuRecipe(
     val audioUri: String,
     val request: String,
     val download: String,
+    val sheet: Method,
+    val sheetTap: Method,
+    val sheetBuilder: String,
+    val addRow: String,
+    val sheetTapClass: String,
+    val sheetField: String,
+    val heldField: String,
+    val sheetClass: String,
+    val sheetSession: String,
+    val holdClass: String,
+    val rowModel: String,
+    val audioMessage: String,
+    val audioMessageUri: String,
 )
 
 internal var saveVoiceMenuRecipe: SaveVoiceMenuRecipe? = null
@@ -143,6 +170,51 @@ private fun Method.menuTapSite(): MenuTapSite? {
     val cast = code.getOrNull(read + 1) ?: return null
     if (cast.opcode != Opcode.CHECK_CAST || (cast as OneRegisterInstruction).registerA != (code[read] as TwoRegisterInstruction).registerA) return null
     return MenuTapSite(start, scratch, first, code[read].menuRef().toString(), cast.menuRef().toString())
+}
+
+private class MoreSheetSite(val at: Int, val builder: Int, val hold: Int, val builderType: String)
+
+/**
+ * The held message's More sheet: an instance method of four parameters that names [MORE_SHEET_TAG] and makes the one builder
+ * it hands to MenuDialogParams. Just after the builder's constructor the sheet is still empty. The last parameter, what's
+ * being held, was copied to a low register before then, and that copy must still hold it there.
+ */
+private fun Method.moreSheetSite(): MoreSheetSite? {
+    if (returnType != "V" || AccessFlags.STATIC.isSet(accessFlags) || parameterTypes.size != 4) return null
+    val code = menuCode()
+    if (code.none { it.menuString() == MORE_SHEET_TAG }) return null
+    val params = code.filter { it.opcode == Opcode.INVOKE_DIRECT && it.menuCall()?.definingClass == MENU_PARAMS && it.menuCall()?.name == "<init>" }
+        .singleOrNull()?.menuCall() ?: return null
+    val builderType = params.menuParams().singleOrNull() ?: return null
+    val made = code.indices.singleOrNull { code[it].opcode == Opcode.NEW_INSTANCE && code[it].menuRef()?.toString() == builderType } ?: return null
+    if (made + 2 >= code.size) return null
+    val builder = (code[made] as OneRegisterInstruction).registerA
+    val start = code[made + 1]
+    if (start.opcode != Opcode.INVOKE_DIRECT || start.menuRef()?.toString() != "$builderType-><init>()V" || start.menuArgs() != listOf(builder)) return null
+    val last = implementation!!.registerCount - 1
+    val copy = code.indices.firstOrNull { code[it].opcode == Opcode.MOVE_OBJECT_FROM16 && (code[it] as TwoRegisterInstruction).registerB == last } ?: return null
+    if (copy >= made) return null
+    val hold = (code[copy] as TwoRegisterInstruction).registerA
+    if (hold == builder || hold > 15 || builder > 15) return null
+    val overwritten = code.subList(copy + 1, made).any {
+        it is OneRegisterInstruction && (it.opcode.setsRegister() && it.registerA == hold || it.opcode.setsWideRegister() && it.registerA + 1 == hold)
+    }
+    if (overwritten) return null
+    return MoreSheetSite(made + 2, builder, hold, builderType)
+}
+
+/**
+ * A More sheet's tap method: an instance (item, extra) method that reads the row's id and hands the tap on to a listener of
+ * four parameters. It has a local to spare for the answer, and the local holds nothing at the method's start.
+ */
+private fun Method.sheetTapFirstParameter(): Int? {
+    if (returnType != "Z" || AccessFlags.STATIC.isSet(accessFlags) || menuParams() != listOf(MENU_ITEM, OBJECT)) return null
+    val first = (implementation?.registerCount ?: return null) - 3
+    if (first < 1) return null
+    val code = menuCode()
+    val readsId = code.any { it.opcode == Opcode.IGET && it.menuField()?.definingClass == MENU_ITEM && it.menuField()?.type == "I" }
+    val handsOn = code.any { it.opcode == Opcode.INVOKE_INTERFACE && it.menuCall()?.returnType == "V" && it.menuCall()?.parameterTypes?.size == 4 }
+    return first.takeIf { readsId && handsOn }
 }
 
 /**
@@ -238,6 +310,44 @@ internal fun resolveSaveVoiceMenu(classes: Iterable<ClassDef>): SaveVoiceMenuRec
     if (!openField(classifierField) || !isPublic(classifier.accessFlags) || !isPublic(classify.accessFlags) || !openField(audioKind)) return null
     if (!openClass(MESSAGE) || !openClass(kind)) return null
 
+    // The More sheet, the builder it adds rows to, and the account it was given.
+    val sheet = classes.flatMap { cls -> cls.methods.filter { it.moreSheetSite() != null } }.singleOrNull() ?: return null
+    val sheetSite = sheet.moreSheetSite()!!
+    val sheetClass = byType[sheet.definingClass] ?: return null
+    val sheetSession = sheetClass.fields.singleOrNull { !AccessFlags.STATIC.isSet(it.accessFlags) && it.type == FB_USER_SESSION } ?: return null
+    val addRow = byType[sheetSite.builderType]?.methods?.singleOrNull {
+        !AccessFlags.STATIC.isSet(it.accessFlags) && isPublic(it.accessFlags) && it.returnType == "V" && it.menuParams() == listOf(MENU_ITEM)
+    } ?: return null
+    if (!isPublic(sheetClass.accessFlags) || !isPublic(sheetSession.accessFlags) || !openClass(sheetSite.builderType)) return null
+
+    // The sheet's tap is the object it stores on the dialog, whose (item, extra) method reads the sheet and the hold back.
+    val sheetCode = sheet.menuCode()
+    val tapTypes = sheetCode.indices.filter { sheetCode[it].opcode == Opcode.IPUT_OBJECT && sheetCode[it].menuField()?.definingClass == MENU_FRAGMENT }.mapNotNull { at ->
+        val register = (sheetCode[at] as TwoRegisterInstruction).registerA
+        sheetCode.subList(0, at).lastOrNull { it.opcode == Opcode.NEW_INSTANCE && (it as OneRegisterInstruction).registerA == register }?.menuRef()?.toString()
+    }
+    fun sheetTaps(type: String) = byType[type]?.methods?.filter { it.returnType == "Z" && !AccessFlags.STATIC.isSet(it.accessFlags) && it.menuParams() == listOf(MENU_ITEM, OBJECT) }.orEmpty()
+    val sheetTapClass = tapTypes.distinct().singleOrNull { sheetTaps(it).isNotEmpty() } ?: return null
+    val sheetTap = sheetTaps(sheetTapClass).singleOrNull()?.takeIf { it.sheetTapFirstParameter() != null } ?: return null
+    if (!openClass(sheetTapClass)) return null
+    val tapCode = sheetTap.menuCode()
+    fun tapFieldCastTo(type: String) = tapCode.indices.filter {
+        tapCode[it].opcode == Opcode.IGET_OBJECT && tapCode[it].menuField()?.definingClass == sheetTapClass && tapCode.getOrNull(it + 1)?.opcode == Opcode.CHECK_CAST &&
+            tapCode[it + 1].menuRef()?.toString() == type && (tapCode[it + 1] as OneRegisterInstruction).registerA == (tapCode[it] as TwoRegisterInstruction).registerA
+    }.map { tapCode[it].menuField()!! }.distinctBy { it.toString() }.singleOrNull()
+    val sheetField = tapFieldCastTo(sheet.definingClass) ?: return null
+    val heldField = tapFieldCastTo(sheet.menuParams()[3]) ?: return null
+    if (!openField(sheetField) || !openField(heldField)) return null
+
+    // The one place that takes a held message as a voice message says which row model that is, and the model's Uri is the sound.
+    val caster = classes.flatMap { cls -> cls.methods.filter { m -> m.returnType == "V" && m.menuCode().any { it.menuString() == AUDIO_MESSAGE_CAST } } }.singleOrNull()?.menuCode() ?: return null
+    val named = caster.indexOfFirst { it.menuString() == AUDIO_MESSAGE_CAST }
+    val rowModel = caster.getOrNull(named - 1)?.takeIf { it.opcode == Opcode.IGET_OBJECT }?.menuField() ?: return null
+    if (sheetCode.none { it.opcode == Opcode.IGET_OBJECT && it.menuRef()?.toString() == rowModel.toString() }) return null
+    val audioMessage = caster.drop(named + 1).take(4).firstOrNull { it.opcode == Opcode.CHECK_CAST }?.menuRef()?.toString() ?: return null
+    val audioMessageUri = byType[audioMessage]?.fields?.singleOrNull { !AccessFlags.STATIC.isSet(it.accessFlags) && it.type == MENU_URI } ?: return null
+    if (!openField(rowModel) || !openClass(audioMessage) || !isPublic(audioMessageUri.accessFlags)) return null
+
     return SaveVoiceMenuRecipe(
         rows = rows, tap = tap,
         builder = builder, builderId = builderId.toString(), builderTitle = builderTitle.toString(), builderIcon = builderIcon.toString(),
@@ -247,6 +357,10 @@ internal fun resolveSaveVoiceMenu(classes: Iterable<ClassDef>): SaveVoiceMenuRec
         holder = holderField.toString(), holderGet = holderGet.toString(), reader = reader, classifier = classifierField.toString(),
         classify = "${classifier.type}->${classify.name}(${classifier.type}$MESSAGE)$kind", audioKind = audioKind.toString(),
         readAudio = readAudio.toString(), audioUri = audioUri.toString(), request = request, download = download.hookId(),
+        sheet = sheet, sheetTap = sheetTap, sheetBuilder = sheetSite.builderType, addRow = addRow.hookId(), sheetTapClass = sheetTapClass,
+        sheetField = sheetField.toString(), heldField = heldField.toString(), sheetClass = sheetClass.type,
+        sheetSession = "${sheetClass.type}->${sheetSession.name}:$FB_USER_SESSION", holdClass = rowModel.definingClass, rowModel = rowModel.toString(),
+        audioMessage = audioMessage, audioMessageUri = "$audioMessage->${audioMessageUri.name}:$MENU_URI",
     )
 }
 
@@ -270,19 +384,28 @@ private fun Method.isAudioPrefetch(): Boolean {
         code[8].menuField()?.definingClass == MENU_AUDIO_DATA && code[8].menuField()?.type == MENU_URI
 }
 
-/** The menu's constructor and the tap method, or none when any piece of the recipe doesn't resolve. */
+/** The older menu's constructor and tap, then the More sheet and its tap, or none when any piece of the recipe doesn't resolve. */
 internal fun findSaveVoiceMenu(classes: Iterable<ClassDef>): List<Method> {
     saveVoiceMenuRecipe = resolveSaveVoiceMenu(classes)
-    return saveVoiceMenuRecipe?.let { listOf(it.rows, it.tap) } ?: emptyList()
+    return saveVoiceMenuRecipe?.let { listOf(it.rows, it.tap, it.sheet, it.sheetTap) } ?: emptyList()
 }
 
 internal fun MutableMethod.validateSaveVoiceMenu() {
-    if (menuRowsSite() == null && menuTapSite() == null) throw PatchException("Messenger controls: ${hookId()} isn't the chat menu's constructor or tap")
+    if (menuRowsSite() == null && menuTapSite() == null && moreSheetSite() == null && sheetTapFirstParameter() == null)
+        throw PatchException("Messenger controls: ${hookId()} isn't the chat menu's constructor or tap, or the More sheet or its tap")
 }
 
-/** Hands each new menu's rows to the extension on their way into the menu, and asks it first about each tap. */
+/**
+ * Hands each new menu's rows to the extension on their way into the menu, tells it about each new More sheet while it's
+ * empty, and asks it first about each tap.
+ */
 internal fun MutableMethod.injectSaveVoiceMenu() {
     validateSaveVoiceMenu()
+    val sheet = moreSheetSite()
+    if (sheet != null) {
+        addInstructions(sheet.at, "invoke-static {v${sheet.builder}, v${sheet.hold}}, $SAVE_VOICE_MENU_SHEET_ROW")
+        return
+    }
     val rows = menuRowsSite()
     if (rows != null) {
         addInstructions(rows.copy, """
@@ -292,7 +415,18 @@ internal fun MutableMethod.injectSaveVoiceMenu() {
         """.trimIndent())
         return
     }
-    val tap = menuTapSite()!!
+    val tap = menuTapSite()
+    if (tap == null) {
+        val first = sheetTapFirstParameter()!!
+        addInstructionsWithLabels(0, """
+            invoke-static/range {v$first .. v${first + 1}}, $SAVE_VOICE_MENU_SHEET_CLICKED
+            move-result v0
+            if-eqz v0, :stock_tap
+            const/4 v0, 0x1
+            return v0
+        """.trimIndent(), ExternalLabel("stock_tap", getInstruction(0)))
+        return
+    }
     addInstructionsWithLabels(tap.start, """
         invoke-static/range {v${tap.first} .. v${tap.first + 2}}, $SAVE_VOICE_MENU_CLICKED
         move-result v${tap.scratch}
@@ -385,6 +519,50 @@ internal fun saveVoiceMenuBuilder(stub: MutableMethod, recipe: SaveVoiceMenuReci
             return-object v0
             :none
             const/4 v0, 0x0
+            return-object v0
+        """
+        SAVE_VOICE_MENU_ADD_ROW -> 3 to """
+            check-cast p0, ${recipe.sheetBuilder}
+            check-cast p1, $MENU_ITEM
+            invoke-virtual {p0, p1}, ${recipe.addRow}
+            const/4 v0, 0x1
+            return v0
+        """
+        SAVE_VOICE_MENU_HELD -> 2 to """
+            check-cast p0, ${recipe.sheetTapClass}
+            iget-object v0, p0, ${recipe.heldField}
+            return-object v0
+        """
+        SAVE_VOICE_MENU_SHEET_SESSION -> 2 to """
+            check-cast p0, ${recipe.sheetTapClass}
+            iget-object v0, p0, ${recipe.sheetField}
+            check-cast v0, ${recipe.sheetClass}
+            iget-object v0, v0, ${recipe.sheetSession}
+            return-object v0
+        """
+        SAVE_VOICE_MENU_VOICE_URI -> 3 to """
+            instance-of v0, p0, ${recipe.holdClass}
+            if-eqz v0, :none
+            check-cast p0, ${recipe.holdClass}
+            iget-object v0, p0, ${recipe.rowModel}
+            instance-of v1, v0, ${recipe.audioMessage}
+            if-eqz v1, :none
+            check-cast v0, ${recipe.audioMessage}
+            iget-object v0, v0, ${recipe.audioMessageUri}
+            return-object v0
+            :none
+            const/4 v0, 0x0
+            return-object v0
+        """
+        SAVE_VOICE_MENU_FETCH_URI -> 5 to """
+            new-instance v0, ${recipe.fetcher}
+            invoke-direct {v0}, ${recipe.fetcher}-><init>()V
+            check-cast p0, $FB_USER_SESSION
+            new-instance v1, ${recipe.request}
+            const/4 v2, 0x0
+            invoke-direct {v1, v2, p1}, ${recipe.request}-><init>(Z$MENU_URI)V
+            invoke-static {p0, v0, v1}, ${recipe.download}
+            move-result-object v0
             return-object v0
         """
         else -> throw PatchException("Messenger controls: the voice message Save row has no stub $id")

@@ -4633,6 +4633,9 @@ public class CompatReport {
     static final String MENU_AUDIO_DATA = "Lcom/facebook/messaging/attachments/AudioAttachmentData;";
     static final String MENU_SESSION = "Lcom/facebook/auth/usersession/FbUserSession;";
     static final String MENU_COPY_OF = "Lcom/google/common/collect/ImmutableList;->copyOf(Ljava/util/Collection;)Lcom/google/common/collect/ImmutableList;";
+    static final String MENU_FRAGMENT = "Lcom/facebook/messaging/dialog/MenuDialogFragment;";
+    static final String MORE_SHEET_TAG = "MORE_ACTION_DRAWER_MENU_DIALOG_TAG";
+    static final String AUDIO_MESSAGE_CAST = "null cannot be cast to non-null type com.facebook.xapp.messaging.threadview.model.audio.AudioMessage";
 
     static String menuString(Instruction i) {
         return i instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference s ? s.getString() : null;
@@ -4751,9 +4754,164 @@ public class CompatReport {
             MENU_AUDIO_DATA.equals(uri.getDefiningClass()) && "Landroid/net/Uri;".equals(uri.getType());
     }
 
+    /** The held message's More sheet, with the held row's copy still in its register after the builder's made: returns the builder's type, or null. */
+    static String moreSheetBuilder(Method method) {
+        if (!"V".equals(method.getReturnType()) || AccessFlags.STATIC.isSet(method.getAccessFlags()) || params(method).size() != 4) return null;
+        var code = instructions(method);
+        boolean tagged = false;
+        MethodReference made = null;
+        for (var i : code) {
+            if (MORE_SHEET_TAG.equals(menuString(i))) tagged = true;
+            var call = menuCall(i);
+            if (call != null && i.getOpcode() == Opcode.INVOKE_DIRECT && MENU_PARAMS.equals(call.getDefiningClass()) && "<init>".equals(call.getName())) {
+                if (made != null) return null;
+                made = call;
+            }
+        }
+        if (!tagged || made == null || refParams(made).size() != 1) return null;
+        String builderType = refParams(made).get(0);
+        int at = -1;
+        for (int i = 0; i < code.size(); i++) if (code.get(i).getOpcode() == Opcode.NEW_INSTANCE && builderType.equals(ref(code.get(i)))) {
+            if (at >= 0) return null;
+            at = i;
+        }
+        if (at < 0 || at + 2 >= code.size()) return null;
+        int builder = register(code.get(at));
+        var start = code.get(at + 1);
+        if (start.getOpcode() != Opcode.INVOKE_DIRECT || !(builderType + "-><init>()V").equals(ref(start)) || !callArgs(start).equals(List.of(builder))) return null;
+        int last = method.getImplementation().getRegisterCount() - 1, copy = -1;
+        for (int i = 0; i < code.size() && copy < 0; i++)
+            if (code.get(i).getOpcode() == Opcode.MOVE_OBJECT_FROM16 && ((TwoRegisterInstruction) code.get(i)).getRegisterB() == last) copy = i;
+        if (copy < 0 || copy >= at) return null;
+        int hold = register(code.get(copy));
+        if (hold == builder || hold > 15 || builder > 15) return null;
+        for (int i = copy + 1; i < at; i++) {
+            int a = register(code.get(i));
+            var op = code.get(i).getOpcode();
+            if (a >= 0 && (op.setsRegister() && a == hold || op.setsWideRegister() && a + 1 == hold)) return null;
+        }
+        return builderType;
+    }
+
+    /** A More sheet's tap: reads the row's id, hands the tap to a listener of four parameters, and has a local to spare. */
+    static boolean menuSheetTap(Method method) {
+        if (!"Z".equals(method.getReturnType()) || AccessFlags.STATIC.isSet(method.getAccessFlags()) || !params(method).equals(List.of(MENU_ITEM, "Ljava/lang/Object;")) ||
+            method.getImplementation() == null || method.getImplementation().getRegisterCount() - 3 < 1) return false;
+        boolean readsId = false, handsOn = false;
+        for (var i : instructions(method)) {
+            var f = menuField(i);
+            if (i.getOpcode() == Opcode.IGET && f != null && MENU_ITEM.equals(f.getDefiningClass()) && "I".equals(f.getType())) readsId = true;
+            var call = menuCall(i);
+            if (i.getOpcode() == Opcode.INVOKE_INTERFACE && call != null && "V".equals(call.getReturnType()) && refParams(call).size() == 4) handsOn = true;
+        }
+        return readsId && handsOn;
+    }
+
+    /** The one field of the tap's class it reads straight into a cast to this type, or null. */
+    static FieldReference menuTapFieldCastTo(List<Instruction> code, String owner, String type) {
+        FieldReference found = null;
+        for (int i = 0; i + 1 < code.size(); i++) {
+            var f = menuField(code.get(i));
+            var cast = code.get(i + 1);
+            if (f == null || code.get(i).getOpcode() != Opcode.IGET_OBJECT || !owner.equals(f.getDefiningClass()) || cast.getOpcode() != Opcode.CHECK_CAST ||
+                !type.equals(ref(cast)) || register(cast) != register(code.get(i))) continue;
+            if (found != null && !found.toString().equals(f.toString())) return null;
+            found = f;
+        }
+        return found;
+    }
+
+    /** The sheet and its tap, taken only when every piece their stubs are written from reads as expected and is public. */
+    static List<Method> saveVoiceSheet(List<ClassDef> classes, Map<String, ClassDef> byType) {
+        Method sheet = null;
+        String builderType = null;
+        for (var c : classes) for (var m : c.getMethods()) {
+            String built = moreSheetBuilder(m);
+            if (built == null) continue;
+            if (sheet != null) return List.of();
+            sheet = m;
+            builderType = built;
+        }
+        if (sheet == null) return List.of();
+        var sheetClass = byType.get(sheet.getDefiningClass());
+        var builderClass = byType.get(builderType);
+        if (sheetClass == null || builderClass == null) return List.of();
+        int sessions = 0;
+        boolean openSession = false;
+        for (var f : sheetClass.getFields()) if (!AccessFlags.STATIC.isSet(f.getAccessFlags()) && MENU_SESSION.equals(f.getType())) {
+            sessions++;
+            openSession = AccessFlags.PUBLIC.isSet(f.getAccessFlags());
+        }
+        int adds = 0;
+        for (var m : builderClass.getMethods())
+            if (!AccessFlags.STATIC.isSet(m.getAccessFlags()) && AccessFlags.PUBLIC.isSet(m.getAccessFlags()) && "V".equals(m.getReturnType()) && params(m).equals(List.of(MENU_ITEM))) adds++;
+        if (sessions != 1 || !openSession || adds != 1 || !AccessFlags.PUBLIC.isSet(sheetClass.getAccessFlags()) || !menuOpenClass(byType, builderType)) return List.of();
+
+        var sheetCode = instructions(sheet);
+        var tapTypes = new LinkedHashSet<String>();
+        for (int at = 0; at < sheetCode.size(); at++) {
+            var f = menuField(sheetCode.get(at));
+            if (sheetCode.get(at).getOpcode() != Opcode.IPUT_OBJECT || f == null || !MENU_FRAGMENT.equals(f.getDefiningClass())) continue;
+            for (int i = at - 1; i >= 0; i--) if (sheetCode.get(i).getOpcode() == Opcode.NEW_INSTANCE && register(sheetCode.get(i)) == register(sheetCode.get(at))) {
+                tapTypes.add(ref(sheetCode.get(i)));
+                break;
+            }
+        }
+        String tapClass = null;
+        Method tap = null;
+        for (var type : tapTypes) {
+            var owner = byType.get(type);
+            if (owner == null) continue;
+            var taps = new ArrayList<Method>();
+            for (var m : owner.getMethods())
+                if ("Z".equals(m.getReturnType()) && !AccessFlags.STATIC.isSet(m.getAccessFlags()) && params(m).equals(List.of(MENU_ITEM, "Ljava/lang/Object;"))) taps.add(m);
+            if (taps.isEmpty()) continue;
+            if (tapClass != null || taps.size() != 1) return List.of();
+            tapClass = type;
+            tap = taps.get(0);
+        }
+        if (tap == null || !menuSheetTap(tap) || !menuOpenClass(byType, tapClass)) return List.of();
+        var tapCode = instructions(tap);
+        var sheetField = menuTapFieldCastTo(tapCode, tapClass, sheet.getDefiningClass());
+        var heldField = menuTapFieldCastTo(tapCode, tapClass, params(sheet).get(3));
+        if (sheetField == null || heldField == null || !menuOpenField(byType, sheetField, false) || !menuOpenField(byType, heldField, false)) return List.of();
+
+        List<Instruction> caster = null;
+        for (var c : classes) for (var m : c.getMethods()) {
+            if (!"V".equals(m.getReturnType())) continue;
+            var code = instructions(m);
+            boolean names = false;
+            for (var i : code) if (AUDIO_MESSAGE_CAST.equals(menuString(i))) names = true;
+            if (!names) continue;
+            if (caster != null) return List.of();
+            caster = code;
+        }
+        if (caster == null) return List.of();
+        int named = 0;
+        while (!AUDIO_MESSAGE_CAST.equals(menuString(caster.get(named)))) named++;
+        if (named < 1 || caster.get(named - 1).getOpcode() != Opcode.IGET_OBJECT) return List.of();
+        var rowModel = menuField(caster.get(named - 1));
+        if (rowModel == null) return List.of();
+        boolean sheetReads = false;
+        for (var i : sheetCode) if (i.getOpcode() == Opcode.IGET_OBJECT && rowModel.toString().equals(ref(i))) sheetReads = true;
+        if (!sheetReads) return List.of();
+        String audioMessage = null;
+        for (int i = named + 1; i < Math.min(named + 5, caster.size()) && audioMessage == null; i++)
+            if (caster.get(i).getOpcode() == Opcode.CHECK_CAST) audioMessage = ref(caster.get(i));
+        if (audioMessage == null || !byType.containsKey(audioMessage)) return List.of();
+        int uris = 0;
+        boolean openUri = false;
+        for (var f : byType.get(audioMessage).getFields()) if (!AccessFlags.STATIC.isSet(f.getAccessFlags()) && "Landroid/net/Uri;".equals(f.getType())) {
+            uris++;
+            openUri = AccessFlags.PUBLIC.isSet(f.getAccessFlags());
+        }
+        if (uris != 1 || !openUri || !menuOpenField(byType, rowModel, false) || !menuOpenClass(byType, audioMessage)) return List.of();
+        return List.of(sheet, tap);
+    }
+
     /**
-     * save_voice_menu: MenuDialogParams' constructor and the chat menu's tap method, taken only when every piece the
-     * extension's stubs are written from reads as expected and is public. Returns rows, tap. Mirrors SaveVoiceMenu.kt.
+     * save_voice_menu: MenuDialogParams' constructor, the chat menu's tap method, the More sheet and its tap, taken only when
+     * every piece the extension's stubs are written from reads as expected and is public. Mirrors SaveVoiceMenu.kt.
      */
     static List<Method> saveVoiceMenu(List<ClassDef> classes) {
         var byType = new HashMap<String, ClassDef>();
@@ -4926,7 +5084,8 @@ public class CompatReport {
         }
         if (!calls || !menuOpenField(byType, classifierField, false) || !AccessFlags.PUBLIC.isSet(classifier.getAccessFlags()) || !AccessFlags.PUBLIC.isSet(classify.getAccessFlags()) ||
             !menuOpenField(byType, audioKind, false) || !menuOpenClass(byType, MENU_MESSAGE) || !menuOpenClass(byType, kind)) return List.of();
-        return List.of(rows, tap);
+        var sheet = saveVoiceSheet(classes, byType);
+        return sheet.isEmpty() ? List.of() : List.of(rows, tap, sheet.get(0), sheet.get(1));
     }
 
     static final String SEND_MESSAGE_EVENT = "Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;";
@@ -6816,6 +6975,7 @@ public class CompatReport {
         found.get("unsent_clear").addAll(unsentClear(classes));
         found.get("system_camera").addAll(systemCameraLaunches(classes));
         found.get("external_gallery").addAll(externalGalleryHooks(classes));
+        found.get("gallery_temp_file").addAll(galleryTempFileHooks(classes));
         found.get("gallery_to_chat").addAll(galleryToChatHooks(classes));
         customFontHooks(classes).forEach((key, methods) -> found.get(key).addAll(methods));
         // Every viewer method with an entry point's name is checked, whatever its signature, and one that doesn't match
@@ -6975,7 +7135,6 @@ public class CompatReport {
                 // Plugin gates
                 if ("Z".equals(method.getReturnType()) &&
                     (paramTypes.isEmpty() ||
-        found.get("gallery_temp_file").addAll(galleryTempFileHooks(classes));
                      (isStatic && paramTypes.equals(List.of(cls.getType()))))) {
                     var anchors = new HashSet<>(strings);
                     anchors.addAll(tableStrings(instructions, stringTables));

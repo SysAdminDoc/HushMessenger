@@ -214,6 +214,8 @@ internal val PROFILE_347015062 = ControlProfile(
         "save_stories" to setOf("LX/V0s;->onClick(Landroid/view/View;)V"),
         "save_voice" to setOf("LX/W81;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/W81;LX/W85;)Landroid/net/Uri;"),
         "save_voice_menu" to setOf(
+            "LX/619;->E0d(LX/1RI;LX/5Fw;LX/DFd;LX/ANe;)V",
+            "LX/6UH;->E0b(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
             "LX/9qR;->E0b(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
             "Lcom/facebook/messaging/dialog/MenuDialogParams;-><init>(LX/Rpb;)V",
         ),
@@ -390,9 +392,9 @@ internal val PROFILE_347014996 = ControlProfile(
         "font_repository" to setOf("LX/7Xy;->A00(LX/7Xv;LX/7Xy;LX/5mu;I)Landroid/graphics/Typeface;"),
         "font_roboto" to setOf("LX/25j;->A00(Landroid/content/Context;Ljava/lang/Integer;)Landroid/graphics/Typeface;"),
         "friend_requests" to setOf("LX/1r8;->A08()Z", "LX/2Oq;->A04()Z"),
+        "gallery_temp_file" to setOf("LX/0PA;->A01()Ljava/io/File;", "LX/0PD;->A09()V"),
         "gallery_to_chat" to setOf(
             "LX/6Ik;->A00(Landroidx/fragment/app/Fragment;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/xapp/messaging/composer/activity/event/ActivityResultEvent;LX/5Vw;)V",
-        "gallery_temp_file" to setOf("LX/0PA;->A01()Ljava/io/File;", "LX/0PD;->A09()V"),
             "LX/AEa;->A1J()Z", "LX/NFg;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;",
         ),
         "growth" to setOf("LX/1r8;->A09()Z"),
@@ -459,6 +461,8 @@ internal val PROFILE_347014996 = ControlProfile(
         "save_stories" to setOf("LX/V0s;->onClick(Landroid/view/View;)V"),
         "save_voice" to setOf("LX/W81;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/W81;LX/W85;)Landroid/net/Uri;"),
         "save_voice_menu" to setOf(
+            "LX/619;->E0d(LX/1RI;LX/5Fw;LX/DFd;LX/ANe;)V",
+            "LX/6UH;->E0b(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
             "LX/9qR;->E0b(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
             "Lcom/facebook/messaging/dialog/MenuDialogParams;-><init>(LX/Rpb;)V",
         ),
@@ -635,11 +639,11 @@ internal val PROFILE_347014974 = ControlProfile(
         "font_repository" to setOf("LX/7bP;->A00(LX/7bM;LX/7bP;LX/5ph;I)Landroid/graphics/Typeface;"),
         "font_roboto" to setOf("LX/275;->A00(Landroid/content/Context;Ljava/lang/Integer;)Landroid/graphics/Typeface;"),
         "friend_requests" to setOf("LX/1sP;->A08()Z", "LX/2QK;->A04()Z"),
+        "gallery_temp_file" to setOf("LX/0PH;->A01()Ljava/io/File;", "LX/0PK;->A09()V"),
         "gallery_to_chat" to setOf(
             "LX/6Lb;->A00(Landroidx/fragment/app/Fragment;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/xapp/messaging/composer/activity/event/ActivityResultEvent;LX/5Yh;)V",
             "LX/AJ1;->A1J()Z", "LX/NOw;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;",
         ),
-        "gallery_temp_file" to setOf("LX/0PH;->A01()Ljava/io/File;", "LX/0PK;->A09()V"),
         "growth" to setOf("LX/1sP;->A09()Z"),
         "growth_notes" to setOf("Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->A01(Landroidx/fragment/app/Fragment;LX/Or6;Ljava/util/List;LX/5WB;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;"),
         "growth_story_card" to setOf("Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->A15(Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;)Z"),
@@ -703,6 +707,8 @@ internal val PROFILE_347014974 = ControlProfile(
         "save_stories" to setOf("LX/SE4;->onClick(Landroid/view/View;)V"),
         "save_voice" to setOf("LX/NeI;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/NeI;LX/NeM;)Landroid/net/Uri;"),
         "save_voice_menu" to setOf(
+            "LX/64F;->E0t(LX/1SB;LX/5Ih;LX/DLj;LX/AS5;)V",
+            "LX/6XN;->E0r(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
             "LX/9uv;->E0r(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
             "Lcom/facebook/messaging/dialog/MenuDialogParams;-><init>(LX/MOm;)V",
         ),
@@ -879,13 +885,13 @@ internal val PROFILE_347014990 = ControlProfile(
         "font_repository" to setOf("LX/7W0;->A00(LX/7Vx;LX/7W0;LX/5mI;I)Landroid/graphics/Typeface;"),
         "font_roboto" to setOf("LX/269;->A00(Landroid/content/Context;Ljava/lang/Integer;)Landroid/graphics/Typeface;"),
         "friend_requests" to setOf("LX/1rY;->A08()Z", "LX/2PG;->A04()Z"),
+        "gallery_temp_file" to setOf("LX/0PB;->A01()Ljava/io/File;", "LX/0PE;->A09()V"),
         "gallery_to_chat" to setOf(
             "LX/6HJ;->A00(Landroidx/fragment/app/Fragment;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/xapp/messaging/composer/activity/event/ActivityResultEvent;LX/5VK;)V",
             "LX/AC5;->A1J()Z", "LX/Mpl;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;",
         ),
         "growth" to setOf("LX/1rY;->A09()Z"),
         "growth_notes" to setOf("Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->A01(Landroidx/fragment/app/Fragment;LX/Od5;Ljava/util/List;LX/5So;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;"),
-        "gallery_temp_file" to setOf("LX/0PB;->A01()Ljava/io/File;", "LX/0PE;->A09()V"),
         "growth_story_card" to setOf("Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->A13(Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;)Z"),
         "hide_call_bar" to setOf(
             "LX/53w;->A07(Landroid/content/Context;LX/0XU;Lcom/facebook/auth/usersession/FbUserSession;LX/4yA;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/Jx7;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5N1;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/D4Q;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;",
@@ -947,6 +953,8 @@ internal val PROFILE_347014990 = ControlProfile(
         "save_stories" to setOf("LX/MED;->onClick(Landroid/view/View;)V"),
         "save_voice" to setOf("LX/QGg;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/QGg;LX/QGj;)Landroid/net/Uri;"),
         "save_voice_menu" to setOf(
+            "LX/60u;->E0o(LX/1Ri;LX/5FK;LX/DFG;LX/AL9;)V",
+            "LX/6So;->E0m(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
             "LX/MML;->E0m(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z",
             "Lcom/facebook/messaging/dialog/MenuDialogParams;-><init>(LX/Lug;)V",
         ),

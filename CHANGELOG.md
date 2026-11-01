@@ -7,7 +7,7 @@
 - `Search saved messages` is a new switch under Conversations, for old chats Messenger's own search finds nothing in. It adds a button to a chat's search results that looks through the messages this phone has saved for that chat, and tapping a result opens the chat there. It works in chats that aren't end-to-end encrypted. It can only find what the phone has loaded, so the screen says how far back it got, and scrolling up in the chat loads more. It reads Messenger's data without changing it, and it starts off. Refs #92.
 - `Record calls` is a new switch under Conversations. During a call it puts a Record button over Messenger, and the call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first. It needs Android 10 or newer, it's experimental and it starts off. Refs #105.
 - `Hide call buttons` is a new switch under Conversations. It takes the audio and video call buttons out of a chat's top bar, so a tap meant for something else can't start an awkward call. Calls still ring, and you can still join one that's going. Refs #121.
-- `Save button for voice messages` is a new switch under Photos and videos. Hold a voice message and the menu offers Save voice message, for keeping just that one. It lands in the same folder as `Save voice messages you play`, which can stay off. Refs #123.
+- `Save button for voice messages` is a new switch under Photos and videos. Hold a voice message, tap More, and Save voice message is at the top, for keeping just that one. It lands in the same folder as `Save voice messages you play`, which can stay off. Refs #123.
 
 ### Fixed
 

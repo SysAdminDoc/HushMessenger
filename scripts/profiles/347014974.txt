@@ -188,6 +188,8 @@ hook reels_badge LX/4OB;->A09(LX/4OB;)Z
 hook reply_read LX/AKh;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/5C7;LX/4vV;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/DAc;LX/5Fc;LX/5C6;LX/D8N;LX/5w6;LX/5Yh;LX/5RA;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4vd;Ljava/lang/String;)V
 hook save_stories LX/SE4;->onClick(Landroid/view/View;)V
 hook save_voice LX/NeI;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/NeI;LX/NeM;)Landroid/net/Uri;
+hook save_voice_menu LX/64F;->E0t(LX/1SB;LX/5Ih;LX/DLj;LX/AS5;)V
+hook save_voice_menu LX/6XN;->E0r(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z
 hook save_voice_menu LX/9uv;->E0r(Lcom/facebook/messaging/dialog/MenuDialogItem;Ljava/lang/Object;)Z
 hook save_voice_menu Lcom/facebook/messaging/dialog/MenuDialogParams;-><init>(LX/MOm;)V
 hook screenshot_viewers Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->A1J(Landroid/os/Bundle;)Landroid/app/Dialog;

@@ -44,6 +44,9 @@ public class SaveVoiceMenuTest {
     final Object tap = new Object();
     final Object session = new Object();
     final Uri message = Uri.parse("content://message/1");
+    final Object sheet = new Object();
+    final Object hold = new Object();
+    final Uri remote = Uri.parse("https://example.com/voice.m4a");
 
     /** The stand-in for Messenger's classes. */
     final class FakeMenu implements SaveVoiceMenu.Menu {
@@ -53,6 +56,11 @@ public class SaveVoiceMenuTest {
         CharSequence title;
         int id, fetches;
         Object fetchedSession, fetchedMessage;
+        Uri heldVoice = remote, fetchedVoice;
+        boolean voiceUriFails;
+        Object heldMessage = hold;
+        final List<Object> sheetRows = new ArrayList<>();
+        Object sheetBuilder;
 
         @Override public Object row(CharSequence title, int id) {
             if (rowFails) throw new IllegalStateException("no row");
@@ -79,6 +87,33 @@ public class SaveVoiceMenuTest {
             fetches++;
             fetchedSession = session;
             fetchedMessage = message;
+            if (fetchFails) throw new IllegalStateException("no download");
+            return audio;
+        }
+
+        @Override public boolean addRow(Object builder, Object row) {
+            sheetBuilder = builder;
+            sheetRows.add(row);
+            return true;
+        }
+
+        @Override public Object held(Object tap) {
+            return heldMessage;
+        }
+
+        @Override public Object sheetSession(Object tap) {
+            return givenSession;
+        }
+
+        @Override public Uri voiceUri(Object given) {
+            if (voiceUriFails) throw new IllegalStateException("no row model");
+            return given == hold ? heldVoice : null;
+        }
+
+        @Override public Uri fetchUri(Object session, Uri voice) {
+            fetches++;
+            fetchedSession = session;
+            fetchedVoice = voice;
             if (fetchFails) throw new IllegalStateException("no download");
             return audio;
         }
@@ -175,6 +210,13 @@ public class SaveVoiceMenuTest {
         assertEquals("Save voice message", fake.title.toString());
         assertEquals(SaveVoiceMenu.ROW_ID, fake.id);
         assertEquals("The builder's own list stays as it was", rows(5), rows);
+    }
+
+    /** Messenger splits a long menu in two and builds the More part as a second menu with the same message. */
+    @Test public void theMorePartOfASplitMenuKeepsOneRow() {
+        turnOn();
+        List<Object> more = new ArrayList<>(Arrays.asList(ourRow, otherRow));
+        assertSame(more, SaveVoiceMenu.rows(more, extra()));
     }
 
     @Test public void aShortMenuGetsTheRowAtItsEnd() {
@@ -318,12 +360,142 @@ public class SaveVoiceMenuTest {
         assertEquals(1, added.size());
     }
 
+    @Test public void aVoiceMessagesSheetGetsTheRow() {
+        turnOn();
+        SaveVoiceMenu.sheetRow(sheet, hold);
+        assertSame(sheet, fake.sheetBuilder);
+        assertEquals(Collections.singletonList(ourRow), fake.sheetRows);
+        assertEquals("Save voice message", fake.title.toString());
+        assertEquals(SaveVoiceMenu.ROW_ID, fake.id);
+    }
+
+    @Test public void anotherMessagesSheetGetsNoRow() {
+        turnOn();
+        fake.heldVoice = null;
+        SaveVoiceMenu.sheetRow(sheet, hold);
+        SaveVoiceMenu.sheetRow(sheet, new Object());
+        SaveVoiceMenu.sheetRow(sheet, null);
+        assertTrue(fake.sheetRows.isEmpty());
+        assertNull(fake.title);
+    }
+
+    @Test public void withTheSwitchOffTheSheetGetsNoRow() {
+        SaveVoiceMenu.sheetRow(sheet, hold);
+        assertTrue(fake.sheetRows.isEmpty());
+    }
+
+    @Config(sdk = 28)
+    @Test public void androidNinesSheetGetsNoRow() {
+        turnOn();
+        SaveVoiceMenu.sheetRow(sheet, hold);
+        assertTrue(fake.sheetRows.isEmpty());
+    }
+
+    @Test public void aSheetThatFailsKeepsItsOwnRowsAndIsRecorded() {
+        turnOn();
+        fake.voiceUriFails = true;
+        SaveVoiceMenu.sheetRow(sheet, hold);
+        assertTrue(fake.sheetRows.isEmpty());
+        assertTrue(Settings.hookErrors.get(SaveVoiceMenu.KEY).startsWith("java.lang.IllegalStateException"));
+        fake.voiceUriFails = false;
+        fake.row = null;
+        SaveVoiceMenu.sheetRow(sheet, hold);
+        assertTrue("Stubs that were never written make no row", fake.sheetRows.isEmpty());
+    }
+
+    @Test public void theSheetsOwnRowsGoBackToMessenger() {
+        assertFalse(SaveVoiceMenu.sheetClicked(tap, otherRow));
+        assertFalse(SaveVoiceMenu.sheetClicked(tap, null));
+        assertEquals(0, fake.fetches);
+        assertNull(ShadowToast.getTextOfLatestToast());
+    }
+
+    @Test public void aSheetRowItCantReadGoesBackToMessenger() {
+        fake.rowIdFails = true;
+        assertFalse(SaveVoiceMenu.sheetClicked(tap, ourRow));
+        assertEquals(0, fake.fetches);
+        assertTrue(Settings.hookErrors.containsKey(SaveVoiceMenu.KEY));
+    }
+
+    @Test public void tappingTheSheetRowDownloadsThatVoiceMessageAndKeepsIt() throws IOException {
+        fake.audio = cached();
+        assertTrue(SaveVoiceMenu.sheetClicked(tap, ourRow));
+        assertEquals(1, fake.fetches);
+        assertSame(session, fake.fetchedSession);
+        assertEquals(remote, fake.fetchedVoice);
+        assertEquals(1, added.size());
+        assertTrue(added.get(0), added.get(0).endsWith(".m4a|audio/mp4"));
+        assertEquals("Saved to Recordings/Messenger", toast());
+    }
+
+    @Test public void aVoiceMessageOnThePhoneNeedsNoDownload() throws IOException {
+        fake.heldVoice = cached();
+        assertTrue(SaveVoiceMenu.sheetClicked(tap, ourRow));
+        assertEquals(0, fake.fetches);
+        assertEquals(1, added.size());
+        assertEquals("Saved to Recordings/Messenger", toast());
+    }
+
+    @Test public void aSheetDownloadThatFailsSaysSo() {
+        assertTrue("The download gave nothing back", SaveVoiceMenu.sheetClicked(tap, ourRow));
+        assertEquals("Couldn't save this voice message", toast());
+        ShadowToast.reset();
+        fake.audio = remote;
+        assertTrue("The download gave back a link", SaveVoiceMenu.sheetClicked(tap, ourRow));
+        assertEquals("Couldn't save this voice message", toast());
+        ShadowToast.reset();
+        fake.fetchFails = true;
+        assertTrue(SaveVoiceMenu.sheetClicked(tap, ourRow));
+        assertEquals("Couldn't save this voice message", toast());
+        assertTrue(Settings.hookErrors.containsKey(SaveVoiceMenu.KEY));
+        assertTrue(added.isEmpty());
+    }
+
+    @Test public void aSheetTapWithNoVoiceMessageOrAccountSaysSo() throws IOException {
+        fake.audio = cached();
+        fake.heldMessage = new Object();
+        assertTrue(SaveVoiceMenu.sheetClicked(tap, ourRow));
+        assertEquals("Couldn't save this voice message", toast());
+        ShadowToast.reset();
+        fake.heldMessage = hold;
+        fake.givenSession = null;
+        assertTrue(SaveVoiceMenu.sheetClicked(tap, ourRow));
+        assertEquals("Couldn't save this voice message", toast());
+        assertEquals(0, fake.fetches);
+    }
+
+    @Test public void aFullQueueSaysSoOnTheSheetToo() throws IOException {
+        fake.audio = cached();
+        VoiceMessages.copies = work -> { throw new RejectedExecutionException(); };
+        assertTrue(SaveVoiceMenu.sheetClicked(tap, ourRow));
+        assertEquals(0, fake.fetches);
+        assertEquals("Couldn't save this voice message", toast());
+    }
+
+    @Test public void theSheetsSaveRunsOnTheWorkerNotOnTheTap() throws IOException {
+        fake.audio = cached();
+        List<Runnable> queued = new ArrayList<>();
+        VoiceMessages.copies = queued::add;
+        assertTrue(SaveVoiceMenu.sheetClicked(tap, ourRow));
+        assertEquals("Nothing is read on the main thread", 0, fake.fetches);
+        queued.get(0).run();
+        assertEquals(1, fake.fetches);
+        assertEquals(1, added.size());
+    }
+
     @Test public void theStubsAsShippedChangeNothing() {
         SaveVoiceMenu.menu = STUBS;
         turnOn();
         List<Object> rows = rows(4);
         assertSame(rows, SaveVoiceMenu.rows(rows, extra()));
         assertFalse(SaveVoiceMenu.clicked(tap, ourRow, extra()));
+        SaveVoiceMenu.sheetRow(sheet, hold);
+        assertFalse(SaveVoiceMenu.sheetClicked(tap, ourRow));
+        assertFalse(SaveVoiceMenu.addRow(sheet, ourRow));
+        assertNull(SaveVoiceMenu.held(tap));
+        assertNull(SaveVoiceMenu.sheetSession(tap));
+        assertNull(SaveVoiceMenu.voiceUri(hold));
+        assertNull(SaveVoiceMenu.fetchUri(session, remote));
         assertNull(SaveVoiceMenu.row("title", 1));
         assertEquals(0, SaveVoiceMenu.rowId(ourRow));
         assertFalse(SaveVoiceMenu.isVoice(message));
