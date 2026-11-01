@@ -193,6 +193,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         ORIGINAL_VIDEO -> validateOriginalVideo()
         SYSTEM_CAMERA -> validateSystemCamera()
         EXTERNAL_GALLERY -> validateExternalGallery()
+        GALLERY_TEMP_FILE -> validateGalleryTempFile()
         GALLERY_TO_CHAT -> validateGalleryToChat()
         in CUSTOM_FONT_HOOKS -> validateCustomFont(hook)
         "avatar_tabs" -> validateKeyboardTabsInline()
@@ -285,6 +286,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             ORIGINAL_VIDEO -> method.injectOriginalVideo()
             SYSTEM_CAMERA -> method.injectSystemCamera()
             EXTERNAL_GALLERY -> method.injectExternalGallery()
+            GALLERY_TEMP_FILE -> method.injectGalleryTempFile()
             GALLERY_TO_CHAT -> method.injectGalleryToChat()
             in CUSTOM_FONT_HOOKS -> method.injectCustomFont(hook)
             "avatar_tabs" -> method.injectKeyboardTabsInline()
@@ -555,7 +557,7 @@ val systemCameraPatch = controlPatch("system_camera", "Use the phone's camera ap
 @Suppress("unused")
 val externalGalleryPatch = controlPatch("external_gallery", "Open your gallery app",
     "The gallery button in a chat opens your phone's own gallery app. One photo or video opens in Messenger's editor for that chat, ready to send. Pick several and Messenger's Send to sheet opens with all of them and that chat at the top.", "Photos and videos",
-    manifest = { addExternalGallery() })
+    "external_gallery", GALLERY_TEMP_FILE, manifest = { addExternalGallery() })
 @Suppress("unused")
 val galleryToChatPatch = controlPatch("gallery_to_chat", "Put gallery picks in the chat",
     "With Open your gallery app on, what you pick goes into the chat's message box the way Messenger's own gallery puts it there, instead of the editor or the Send to sheet. Nothing goes out until you tap Send.", "Photos and videos")

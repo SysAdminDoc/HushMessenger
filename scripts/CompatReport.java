@@ -203,7 +203,7 @@ public class CompatReport {
         PATCHES.put("Hide the Instants button", List.of("instants_button"));
         PATCHES.put("Hide Your story when sharing", List.of("share_story"));
         PATCHES.put("Use the phone's camera app", List.of("system_camera"));
-        PATCHES.put("Open your gallery app", List.of("external_gallery"));
+        PATCHES.put("Open your gallery app", List.of("external_gallery", "gallery_temp_file"));
         PATCHES.put("Put gallery picks in the chat", List.of("gallery_to_chat"));
         PATCHES.put("Stop analytics uploads", List.of("analytics_uploads"));
         PATCHES.put("Stop ad attribution uploads", List.of("attribution_uploads"));
@@ -3728,6 +3728,41 @@ public class CompatReport {
     }
 
     /**
+     * gallery_temp_file: Messenger's copy of an item it's handed, an instance method with no parameters that names one temp
+     * file "inbound" through a plain call and opens it for writing, and its check of a temp folder. Both or neither. Mirrors
+     * findGalleryTempFile in ExternalGallery.kt.
+     */
+    static List<Method> galleryTempFileHooks(List<ClassDef> classes) {
+        var copies = new ArrayList<Method>();
+        var checks = new ArrayList<Method>();
+        for (var c : classes) for (var m : c.getMethods()) {
+            if (m.getImplementation() == null) continue;
+            if (isTempFolderCheck(m)) checks.add(m);
+            if (AccessFlags.STATIC.isSet(m.getAccessFlags()) || !m.getParameterTypes().isEmpty() || !"V".equals(m.getReturnType())) continue;
+            var code = instructions(m);
+            if (code.stream().noneMatch(i -> i instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference s && "inbound".equals(s.getString()))) continue;
+            if (code.stream().noneMatch(i -> i.getOpcode() == Opcode.INVOKE_DIRECT && "Ljava/io/FileOutputStream;-><init>(Ljava/io/File;)V".equals(ref(i)))) continue;
+            var calls = code.stream().filter(i -> "Ljava/io/File;->createTempFile(Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)Ljava/io/File;".equals(ref(i))).toList();
+            if (calls.size() == 1 && calls.get(0).getOpcode() == Opcode.INVOKE_STATIC) copies.add(m);
+        }
+        return copies.size() == 1 && checks.size() == 1 ? List.of(checks.get(0), copies.get(0)) : List.of();
+    }
+
+    /** Messenger's check of a temp folder, which throws on one that's there but can't be used. Mirrors tempFolderCheck in ExternalGallery.kt. */
+    static boolean isTempFolderCheck(Method m) {
+        if (AccessFlags.STATIC.isSet(m.getAccessFlags()) || !m.getParameterTypes().isEmpty() || !"Ljava/io/File;".equals(m.getReturnType())) return false;
+        if (!stringsOf(m).containsAll(List.of("No write permissions for temporary directory ", " is not a directory."))) return false;
+        var code = instructions(m);
+        if (code.size() < 3 || code.get(0).getOpcode() != Opcode.IGET_OBJECT || code.get(1).getOpcode() != Opcode.INVOKE_VIRTUAL ||
+            code.get(2).getOpcode() != Opcode.MOVE_RESULT) return false;
+        if (!(((ReferenceInstruction) code.get(0)).getReference() instanceof FieldReference field) || !field.getDefiningClass().equals(m.getDefiningClass()) ||
+            !"Ljava/io/File;".equals(field.getType())) return false;
+        int folder = ((TwoRegisterInstruction) code.get(0)).getRegisterA();
+        return "Ljava/io/File;->exists()Z".equals(ref(code.get(1))) && ((FiveRegisterInstruction) code.get(1)).getRegisterC() == folder && folder <= 15 &&
+            ((OneRegisterInstruction) code.get(2)).getRegisterA() != folder;
+    }
+
+    /**
      * gallery_to_chat: Open your gallery app's handler for a photo from another app and the one coroutine it starts, while
      * the handler has four locals and its event below v16, the event's intent field is public and writable, the coroutine
      * has the editor site, and the chat type it casts to has one public dispatcher, plus the composer's tray gate. Mirrors
@@ -6940,6 +6975,7 @@ public class CompatReport {
                 // Plugin gates
                 if ("Z".equals(method.getReturnType()) &&
                     (paramTypes.isEmpty() ||
+        found.get("gallery_temp_file").addAll(galleryTempFileHooks(classes));
                      (isStatic && paramTypes.equals(List.of(cls.getType()))))) {
                     var anchors = new HashSet<>(strings);
                     anchors.addAll(tableStrings(instructions, stringTables));

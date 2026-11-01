@@ -126,6 +126,8 @@ hook font_repository LX/7W0;->A00(LX/7Vx;LX/7W0;LX/5mI;I)Landroid/graphics/Typef
 hook font_roboto LX/269;->A00(Landroid/content/Context;Ljava/lang/Integer;)Landroid/graphics/Typeface;
 hook friend_requests LX/1rY;->A08()Z
 hook friend_requests LX/2PG;->A04()Z
+hook gallery_temp_file LX/0PB;->A01()Ljava/io/File;
+hook gallery_temp_file LX/0PE;->A09()V
 hook gallery_to_chat LX/6HJ;->A00(Landroidx/fragment/app/Fragment;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/xapp/messaging/composer/activity/event/ActivityResultEvent;LX/5VK;)V
 hook gallery_to_chat LX/AC5;->A1J()Z
 hook gallery_to_chat LX/Mpl;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;

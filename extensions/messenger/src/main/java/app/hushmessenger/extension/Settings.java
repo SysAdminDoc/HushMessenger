@@ -910,6 +910,30 @@ public final class Settings {
             return null;
         }
     }
+
+    /**
+     * Messenger's copy of an item it's handed asks here for its file. Messenger picks the folder from where the item sits
+     * and dies if it can't make a file there (#124), so with Open your gallery app on the copy goes to another of its
+     * folders. A folder that works gets the plain call.
+     */
+    public static java.io.File inboundTempFile(String prefix, String suffix, java.io.File folder) throws java.io.IOException {
+        try {
+            return java.io.File.createTempFile(prefix, suffix, folder);
+        } catch (java.io.IOException refused) {
+            java.io.File spare = GalleryPicker.spareTempFile(appContext, prefix, suffix, folder, refused);
+            if (spare == null) throw refused;
+            return spare;
+        }
+    }
+    /**
+     * Messenger's check of a temp folder asks here first. It throws on a folder that's there but can't be used, before the
+     * copy gets as far as {@link #inboundTempFile}, and takes a folder it couldn't make without complaint. Answering true
+     * treats this one the same way, so the copy can move and the provider's walk over its folders stays alive.
+     */
+    public static boolean inboundFolderRefused(java.io.File folder) {
+        return folder.exists() && !(folder.isDirectory() && folder.canRead() && folder.canWrite()) && enabled(GalleryPicker.KEY);
+    }
+
     /**
      * The chat hands every result here before it reads one. A photo from another app comes back under 1112, and the chat
      * takes its type from the result and sends one without a type as a plain file. Gallery apps often hand back only the
