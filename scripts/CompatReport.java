@@ -171,7 +171,7 @@ public class CompatReport {
         PATCHES.put("Hide stories and notes", List.of("stories", "story_ring"));
         PATCHES.put("Hide inbox tabs", List.of("subtabs"));
         PATCHES.put("Hide Mark as read", List.of("mark_read_action"));
-        PATCHES.put("Pin more chats", List.of("pinned_chats"));
+        PATCHES.put("Pin more chats", List.of("pinned_chats", "pin_rows", "pin_ask", "pin_drop", "pin_full", "pin_list"));
         PATCHES.put("Hide Facebook shortcuts", List.of("facebook", "facebook_profile", "facebook_profile_header"));
         PATCHES.put("Hide Meta AI", List.of("ai_menu", "ai_fab", "ai_toolbar", "ai_tab", "ai_muse_tab", "ai_search", "ai_search_chip", "ai_mentions", "ai_commands", "ai_search_hint", "ai_search_screen_hint", "ai_mention_rows", "tab_config"));
         PATCHES.put("Hide Chat Moments", List.of("moments"));
@@ -5506,7 +5506,7 @@ public class CompatReport {
      * loads the id once, hands that register pair straight to a static (Object, J)I config read and takes its answer
      * with the next instruction. Counted only when every reader looks like that. Mirrors PinnedChats.kt.
      */
-    static List<Method> pinnedChatLimit(List<ClassDef> classes) {
+    static List<Method> pinLimitReaders(List<ClassDef> classes) {
         var found = new ArrayList<Method>();
         for (var cls : classes) for (var method : cls.getMethods()) {
             if (method.getImplementation() == null) continue;
@@ -5525,6 +5525,157 @@ public class CompatReport {
             found.add(method);
         }
         return found;
+    }
+
+    static final String PIN_MENU_ITEM = "Lcom/facebook/messaging/threadlist/threaditemmenu/plugins/core/pinmenuitem/PinMenuItemImplementation;";
+    static final String UNPIN_MENU_ITEM = "Lcom/facebook/messaging/threadlist/threaditemmenu/plugins/core/unpinmenuitem/UnpinMenuItemImplementation;";
+
+    /** Every hook of Pin more chats but the chat list read. Mirrors findPinnedChats in PinnedChats.kt. */
+    static Map<String, List<Method>> pinnedChats(List<ClassDef> classes) {
+        var readers = pinLimitReaders(classes);
+        var asks = readers.stream().filter(m -> params(m).contains(THREAD_KEY)).toList();
+        Method ask = asks.size() == 1 ? asks.get(0) : null;
+        var hooks = new HashMap<String, List<Method>>();
+        hooks.put("pinned_chats", readers.stream().filter(m -> !params(m).contains(THREAD_KEY)).toList());
+        hooks.put("pin_ask", ask != null && pinStepKey(ask) >= 0 ? List.of(ask) : List.of());
+        hooks.put("pin_drop", List.of());
+        hooks.put("pin_full", List.of());
+        if (ask != null) {
+            var owner = pinClass(classes, ask.getDefiningClass());
+            if (owner != null) {
+                var drops = new ArrayList<Method>();
+                for (var m : owner.getMethods()) if (isPinDrop(m)) drops.add(m);
+                if (drops.size() == 1 && pinStepKey(drops.get(0)) >= 0) hooks.put("pin_drop", drops);
+            }
+            var built = instructions(ask).stream().filter(i -> i.getOpcode() == Opcode.NEW_INSTANCE).findFirst();
+            var lambda = built.isEmpty() ? null : pinClass(classes, ((TypeReference) ((ReferenceInstruction) built.get()).getReference()).getType());
+            if (lambda != null) {
+                var sites = new ArrayList<Method>();
+                for (var m : lambda.getMethods()) if (ask.getDefiningClass().equals(pinFullOwner(m))) sites.add(m);
+                if (sites.size() == 1) hooks.put("pin_full", sites);
+            }
+        }
+        var rows = new ArrayList<Method>();
+        for (var type : List.of(PIN_MENU_ITEM, UNPIN_MENU_ITEM)) {
+            var cls = pinClass(classes, type);
+            if (cls == null) continue;
+            var checks = new ArrayList<Method>();
+            for (var m : cls.getMethods()) if (isPinRow(m)) checks.add(m);
+            if (checks.size() == 1 && pinRowProved(checks.get(0))) rows.add(checks.get(0));
+        }
+        hooks.put("pin_rows", rows.size() == 2 ? rows : List.of());
+        return hooks;
+    }
+
+    static ClassDef pinClass(List<ClassDef> classes, String type) {
+        for (var cls : classes) if (cls.getType().equals(type)) return cls;
+        return null;
+    }
+
+    static int pinWords(List<String> types) {
+        int words = 0;
+        for (var type : types) words += type.equals("J") || type.equals("D") ? 2 : 1;
+        return words;
+    }
+
+    /** The ThreadKey's register in the pin or unpin call, or -1 without a scratch local or with a jump to its start. */
+    static int pinStepKey(Method m) {
+        var impl = m.getImplementation();
+        if (impl == null || !AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"V".equals(m.getReturnType())) return -1;
+        var types = params(m);
+        int index = types.indexOf(THREAD_KEY), words = pinWords(types);
+        if (impl.getRegisterCount() <= words || mediaTargets(m).contains(0) || index < 0) return -1;
+        return impl.getRegisterCount() - words + pinWords(types.subList(0, index));
+    }
+
+    static boolean isPinDrop(Method m) {
+        var types = params(m);
+        return AccessFlags.STATIC.isSet(m.getAccessFlags()) && "V".equals(m.getReturnType()) && types.size() == 5 && types.get(0).equals(THREAD_KEY) &&
+            types.get(1).equals(m.getDefiningClass()) && types.get(3).equals("Ljava/lang/Long;") && types.get(4).equals("Z");
+    }
+
+    static boolean isPinRow(Method m) {
+        var types = params(m);
+        return AccessFlags.STATIC.isSet(m.getAccessFlags()) && "Z".equals(m.getReturnType()) && types.size() == 3 && types.get(0).equals(BUBBLE_SESSION) &&
+            types.get(1).equals(THREAD_SUMMARY_TYPE) && pinWords(types.subList(2, 3)) == 1;
+    }
+
+    /** A row's check reads the chat key and both pinned flags, and its summary and answers fit a plain call at each return. */
+    static boolean pinRowProved(Method m) {
+        var impl = m.getImplementation();
+        if (impl == null) return false;
+        var code = instructions(m);
+        var flags = new HashSet<String>();
+        boolean key = false;
+        for (var i : code) {
+            if (!(i instanceof ReferenceInstruction ri) || !(ri.getReference() instanceof FieldReference f) || !THREAD_SUMMARY_TYPE.equals(f.getDefiningClass())) continue;
+            if (i.getOpcode() == Opcode.IGET_OBJECT && THREAD_KEY.equals(f.getType())) key = true;
+            if (i.getOpcode() == Opcode.IGET_BOOLEAN) flags.add(f.toString());
+        }
+        int summary = impl.getRegisterCount() - 2;
+        if (!key || flags.size() < 2 || summary < 0 || summary > 15) return false;
+        boolean returned = false;
+        for (var i : code) {
+            if (writes(i, summary)) return false;
+            if (i.getOpcode() != Opcode.RETURN) continue;
+            if (register(i) > 15) return false;
+            returned = true;
+        }
+        return returned;
+    }
+
+    /** The controller the pin count's answer belongs to, in the lambda the controller's pin builds, or null. */
+    static String pinFullOwner(Method m) {
+        if (m.getImplementation() == null || AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"invoke".equals(m.getName()) ||
+            !"Ljava/lang/Object;".equals(m.getReturnType()) || !params(m).equals(List.of("Ljava/lang/Object;"))) return null;
+        var code = instructions(m);
+        String owner = null;
+        for (int at = 0; at < code.size(); at++) {
+            var here = pinFullOwnerAt(code, at);
+            if (here == null) continue;
+            if (owner != null) return null;
+            owner = here;
+        }
+        return owner;
+    }
+
+    static String pinFullOwnerAt(List<Instruction> code, int at) {
+        if (at + 5 >= code.size() || !(code.get(at) instanceof FiveRegisterInstruction ask) || ask.getOpcode() != Opcode.INVOKE_STATIC ||
+            !(((ReferenceInstruction) ask).getReference() instanceof MethodReference asked) || !"Z".equals(asked.getReturnType()) ||
+            !inboxParams(asked).equals(List.of("Ljava/lang/Object;"))) return null;
+        var taken = code.get(at + 1); var controller = code.get(at + 2); var cast = code.get(at + 3); var branch = code.get(at + 4); var first = code.get(at + 5);
+        if (taken.getOpcode() != Opcode.MOVE_RESULT || controller.getOpcode() != Opcode.IGET_OBJECT || cast.getOpcode() != Opcode.CHECK_CAST ||
+            branch.getOpcode() != Opcode.IF_EQZ || register(branch) != register(taken) || first.getOpcode() != Opcode.IGET_OBJECT) return null;
+        int self = ((TwoRegisterInstruction) first).getRegisterB();
+        if (register(first) == self || ((TwoRegisterInstruction) controller).getRegisterB() != self) return null;
+        var owner = ((TypeReference) ((ReferenceInstruction) cast).getReference()).getType();
+        boolean key = false;
+        for (int i = at + 5; i < Math.min(at + 40, code.size() - 1); i++) {
+            var step = code.get(i);
+            if (!key && step.getOpcode() == Opcode.CHECK_CAST && THREAD_KEY.equals(((TypeReference) ((ReferenceInstruction) step).getReference()).getType()) &&
+                code.get(i - 1).getOpcode() == Opcode.IGET_OBJECT) key = true;
+            if (!(step instanceof ReferenceInstruction ri) || !(ri.getReference() instanceof MethodReference dialog)) continue;
+            if ((step.getOpcode() != Opcode.INVOKE_STATIC && step.getOpcode() != Opcode.INVOKE_STATIC_RANGE) || !owner.equals(dialog.getDefiningClass()) ||
+                !"V".equals(dialog.getReturnType()) || !inboxParams(dialog).equals(List.of("Landroid/app/Activity;", "Landroid/content/Context;",
+                    "Landroid/content/DialogInterface$OnClickListener;", owner, "I", "I"))) continue;
+            if (code.get(i + 1).getOpcode() != Opcode.IF_EQZ) return null;
+            int done = mediaTarget(code, i + 1);
+            if (done < 0 || done + 1 >= code.size() || code.get(done).getOpcode() != Opcode.SGET_OBJECT ||
+                code.get(done + 1).getOpcode() != Opcode.RETURN_OBJECT || register(code.get(done)) != register(code.get(done + 1))) return null;
+            return key ? owner : null;
+        }
+        return null;
+    }
+
+    /** The items read can take a call right after its trace and reads the supplier's own list of rows. */
+    static boolean pinListSite(Method items) {
+        var code = instructions(items);
+        var targets = mediaTargets(items);
+        if (code.size() < 2 || targets.contains(0) || targets.contains(1)) return false;
+        for (var i : code)
+            if (i.getOpcode() == Opcode.IGET_OBJECT && ((ReferenceInstruction) i).getReference() instanceof FieldReference f &&
+                INBOX_SUPPLIER.equals(f.getDefiningClass()) && IMMUTABLE_LIST.equals(f.getType())) return true;
+        return false;
     }
 
     static boolean calls(Method method, String owner) {
@@ -7019,7 +7170,7 @@ public class CompatReport {
         found.get("attribution_uploads").addAll(attributionUploads(classes));
         found.get("ad_events").addAll(adEvents(classes));
         found.get("mqtt_telemetry").addAll(mqttTelemetry(classes));
-        found.get("pinned_chats").addAll(pinnedChatLimit(classes));
+        pinnedChats(classes).forEach((hook, methods) -> found.get(hook).addAll(methods));
         found.get("nearby_scans").addAll(nearbyScans(classes));
         found.get("wifi_identity").addAll(wifiIdentityReads(classes));
         found.get("phone_id_sync").addAll(phoneIdSync(classes));
@@ -7486,6 +7637,7 @@ public class CompatReport {
                 if (INBOX_SUPPLIER.equals(cls.getType()) && !isStatic && IMMUTABLE_LIST.equals(method.getReturnType()) &&
                     paramTypes.isEmpty() && strings.contains(INBOX_ITEMS_TRACE) && inboxRefreshRoute(inboxTypes, method) != null) {
                     found.get("people_inbox_refresh").add(method);
+                    if (pinListSite(method)) found.get("pin_list").add(method);
                 }
 
                 // avatar_tabs: the sticker keyboard's tab list, filled inline in a composer factory method that

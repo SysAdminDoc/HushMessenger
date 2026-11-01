@@ -185,6 +185,8 @@ final class SettingsText {
         ENGLISH.put("save_voice_menu_row", "Save voice message");
         ENGLISH.put("save_voice_menu_saved", "Saved to %1$s");
         ENGLISH.put("save_voice_menu_failed", "Couldn't save this voice message");
+        ENGLISH.put("local_pin_kept", "Pinned on this phone");
+        ENGLISH.put("local_pin_removed", "Unpinned");
         ENGLISH.put("text_style_bold", "Bold");
         ENGLISH.put("text_style_italic", "Italic");
         ENGLISH.put("text_style_read_only","Bold and Italic only work on text you're typing.");

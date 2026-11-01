@@ -134,6 +134,11 @@ public final class HostScreens {
         return "";
     }
 
+    /** Rewritten with the fields Local pins reads and writes and the chat list's refresh once the patch proves them. */
+    static String pinnedChatRoute() {
+        return "";
+    }
+
     /** Rewritten with Messenger's own Log out, "Lowner;->name(Landroid/content/Context;)V", once the patch proves it (#88). */
     static String logoutRoute() {
         return "";

@@ -123,7 +123,7 @@ private fun proves(hook: String, method: Method, classes: List<ClassDef>): Boole
     // Some fixtures hand over plain dexlib2 methods. validateHook edits nothing, so a wrapper reads the same.
     (method as? MutableMethod ?: MutableMethod(method)).validateHook(hook)
     when (hook) {
-        INBOX_REFRESH_HOOK -> resolveInboxRefresh(method, classOf)
+        INBOX_REFRESH_HOOK, PIN_LIST -> resolveInboxRefresh(method, classOf)
         "emoji_typeface" -> method.emojiFontHolder(classOf)
     }
 }.isSuccess
