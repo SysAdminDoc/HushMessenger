@@ -482,7 +482,7 @@ final class SettingsTextViVN {
         {"local_chat_search.title", "Tìm tin nhắn đã lưu"},
         {"local_chat_search.description", "Thêm một nút vào kết quả tìm kiếm trong đoạn chat để tìm trong các tin nhắn đã lưu trên điện thoại này. Tính năng này hữu ích với các đoạn chat cũ mà tìm kiếm của Messenger không tìm thấy gì. Tính năng hoạt động trong các đoạn chat không được mã hóa đầu cuối và chỉ tìm được những gì điện thoại đã tải, vì vậy hãy cuộn lên trong đoạn chat trước."},
         {"call_recording.title", "Ghi âm cuộc gọi"},
-        {"call_recording.description", "Thêm nút Ghi âm trên Messenger trong khi gọi. Cuộc gọi được lưu thành một tệp âm thanh trong Recordings/Messenger Calls trên điện thoại (Music/Messenger Calls trên Android 10 và 11). Messenger không báo cho những người khác, và luật về ghi âm khác nhau tùy nơi, vì vậy hãy hỏi ý kiến mọi người trước."},
+        {"call_recording.description", "Thêm nút Ghi âm trên Messenger trong khi gọi. Cuộc gọi được lưu thành một tệp âm thanh trong Recordings/Messenger Calls trên điện thoại (Music/Messenger Calls trên Android 10 và 11). Khi bật, cuộc gọi dùng đường âm thanh thông thường của Android thay vì của Messenger, và cần khởi động lại Messenger sau khi thay đổi. Messenger không báo cho những người khác, và luật về ghi âm khác nhau tùy nơi, vì vậy hãy hỏi ý kiến mọi người trước."},
         {"hide_call_buttons.title", "Ẩn nút gọi"},
         {"hide_call_buttons.description", "Bỏ nút gọi thoại và gọi video khỏi thanh trên cùng của đoạn chat để bạn không bấm nhầm. Cuộc gọi đến vẫn đổ chuông, và bạn vẫn có thể tham gia cuộc gọi đang diễn ra."},
         {"original_photo.title", "Gửi ảnh với chất lượng gốc"},

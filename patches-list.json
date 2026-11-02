@@ -2974,7 +2974,7 @@
         },
         {
             "name": "Record calls",
-            "description": "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it. Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Conversations",
             "dependencies": [

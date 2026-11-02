@@ -561,7 +561,7 @@ val localChatSearchPatch = controlPatch("local_chat_search", "Search saved messa
     manifest = { addLocalSearch() })
 @Suppress("unused")
 val callRecordingPatch = controlPatch("call_recording", "Record calls",
-    "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first.", "Conversations")
+    "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it. Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first.", "Conversations")
 @Suppress("unused")
 val hideCallButtonsPatch = controlPatch("hide_call_buttons", "Hide call buttons",
     "Takes the audio and video call buttons out of a chat's top bar, so you can't tap one by accident. Calls still ring, and you can still join one that's going.", "Conversations", HIDE_CALL_BAR)

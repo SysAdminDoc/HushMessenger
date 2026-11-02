@@ -6459,32 +6459,80 @@ public class CompatReport {
         return search.size() == 1 && view.size() == 1 ? List.of(search.get(0), view.get(0)) : List.of();
     }
 
-    static final String AUDIO_PROXY = "Lcom/facebook/rsys/audio/gen/AudioProxy;";
-    static final String AUDIO_API = "Lcom/facebook/rsys/audio/gen/AudioApi;";
+    static final String OVERLAY_CONFIG_HOLDER = "Lcom/facebook/rsys/overlayconfigmanager/OverlayConfigManagerHolder;";
+    static final String WEBRTC_AUDIO_TRACK = "Lorg/webrtc/voiceengine/WebRtcAudioTrack;";
+    static final String WEBRTC_AUDIO_RECORD = "Lorg/webrtc/voiceengine/WebRtcAudioRecord;";
 
-    /** call_recording: setApi and setIsCallActive of the proxy calls run on, whose setIsCallActive is empty. Mirrors CallRecording.kt. */
-    static List<Method> callRecording(List<ClassDef> classes) {
-        var parents = new HashMap<String, String>();
-        for (var cls : classes) parents.put(cls.getType(), cls.getSuperclass());
-        var proxies = new ArrayList<List<Method>>();
-        for (var cls : classes) {
-            boolean proxy = false;
-            String parent = parents.get(cls.getType());
-            for (int hops = 0; parent != null && hops < 8 && !proxy; hops++) {
-                proxy = AUDIO_PROXY.equals(parent);
-                parent = parents.get(parent);
+    static boolean isThreadRun(Method method) {
+        return "run".equals(method.getName()) && "V".equals(method.getReturnType()) && params(method).isEmpty() && method.getImplementation() != null;
+    }
+
+    static String calledName(Instruction instruction) {
+        return instruction instanceof ReferenceInstruction ri ? ri.getReference().toString() : null;
+    }
+
+    /** Where the playout thread hands a frame to the speaker, or -1. Mirrors playoutWriteAt in CallRecording.kt. */
+    static int playoutWriteAt(Method method) {
+        if (!isThreadRun(method)) return -1;
+        var code = instructions(method);
+        boolean reads = false;
+        int at = -1, writes = 0;
+        for (int i = 0; i < code.size(); i++) {
+            String call = calledName(code.get(i));
+            if (call == null) continue;
+            if (call.startsWith(WEBRTC_AUDIO_TRACK + "->") && call.contains("nativeGetPlayoutData")) reads = true;
+            if (code.get(i).getOpcode() == Opcode.INVOKE_VIRTUAL && "Landroid/media/AudioTrack;->write(Ljava/nio/ByteBuffer;II)I".equals(call)) {
+                at = i;
+                writes++;
             }
-            if (!proxy) continue;
-            var api = new ArrayList<Method>();
-            var active = new ArrayList<Method>();
-            for (var method : cls.getMethods()) {
-                if (!"V".equals(method.getReturnType()) || method.getImplementation() == null) continue;
-                if ("setApi".equals(method.getName()) && params(method).equals(List.of(AUDIO_API))) api.add(method);
-                if ("setIsCallActive".equals(method.getName()) && params(method).equals(List.of("Z")) && instructions(method).size() == 1) active.add(method);
-            }
-            if (api.size() == 1 && active.size() == 1) proxies.add(List.of(api.get(0), active.get(0)));
         }
-        return proxies.size() == 1 ? proxies.get(0) : List.of();
+        return reads && writes == 1 && !mediaTargets(method).contains(at) ? at : -1;
+    }
+
+    /** Where the record thread reads native's handle to hand a frame over, or -1. Mirrors recordHandoverAt in CallRecording.kt. */
+    static int recordHandoverAt(Method method) {
+        if (!isThreadRun(method)) return -1;
+        var code = instructions(method);
+        boolean reads = false;
+        int hand = -1, hands = 0;
+        for (int i = 0; i < code.size(); i++) {
+            String call = calledName(code.get(i));
+            if (call == null) continue;
+            if ("Landroid/media/AudioRecord;->read(Ljava/nio/ByteBuffer;I)I".equals(call)) reads = true;
+            if (call.startsWith(WEBRTC_AUDIO_RECORD + "->") && call.contains("nativeDataIsRecorded")) {
+                hand = i;
+                hands++;
+            }
+        }
+        if (!reads || hands != 1 || hand == 0) return -1;
+        var before = code.get(hand - 1);
+        if (before.getOpcode() != Opcode.IGET_WIDE || !(WEBRTC_AUDIO_RECORD + "->nativeAudioRecord:J").equals(calledName(before))) return -1;
+        int handle = ((TwoRegisterInstruction) before).getRegisterA();
+        if (!(code.get(hand) instanceof FiveRegisterInstruction args) || args.getRegisterCount() != 4 || args.getRegisterE() != handle ||
+            args.getRegisterF() != handle + 1 || handle + 1 > 15) return -1;
+        return mediaTargets(method).contains(hand - 1) ? -1 : hand - 1;
+    }
+
+    /** call_recording: where Java hands native its config layers, playout's two switches and the two audio threads. Mirrors CallRecording.kt. */
+    static List<Method> callRecording(List<ClassDef> classes) {
+        var holders = new ArrayList<Method>();
+        var starts = new ArrayList<Method>();
+        var stops = new ArrayList<Method>();
+        var playouts = new ArrayList<Method>();
+        var records = new ArrayList<Method>();
+        for (var cls : classes) {
+            for (var method : cls.getMethods()) {
+                if (method.getImplementation() == null) continue;
+                boolean plain = params(method).isEmpty() && "Z".equals(method.getReturnType());
+                if (OVERLAY_CONFIG_HOLDER.equals(method.getDefiningClass()) && "<init>".equals(method.getName()) && params(method).equals(List.of("Ljava/util/ArrayList;"))) holders.add(method);
+                if (plain && WEBRTC_AUDIO_TRACK.equals(method.getDefiningClass()) && "startPlayout".equals(method.getName())) starts.add(method);
+                if (plain && WEBRTC_AUDIO_TRACK.equals(method.getDefiningClass()) && "stopPlayout".equals(method.getName())) stops.add(method);
+                if (playoutWriteAt(method) >= 0) playouts.add(method);
+                if (recordHandoverAt(method) >= 0) records.add(method);
+            }
+        }
+        if (holders.size() != 1 || starts.size() != 1 || stops.size() != 1 || playouts.size() != 1 || records.size() != 1) return List.of();
+        return List.of(holders.get(0), starts.get(0), stops.get(0), playouts.get(0), records.get(0));
     }
 
     static final String PHONE_ID_PROVIDER = ".provider.phoneid";
@@ -7755,7 +7803,7 @@ public class CompatReport {
      * check of its own. The control tests' zero-local check (MirroredFinders.kt) fails when this set and the patches part.
      */
     static final Set<String> NEEDS_A_LOCAL = Set.of("ad_events", "ai_commands", "ai_fab", "ai_mention_rows", "ai_menu", "ai_search",
-        "ai_search_chip", "allow_screenshot", "analytics_uploads", "app_icons", "attribution_uploads", "bubbles", "delta_unsent",
+        "ai_search_chip", "allow_screenshot", "analytics_uploads", "app_icons", "attribution_uploads", "bubbles", "call_recording", "delta_unsent",
         "disappearing_swipe", "external_gallery", "facebook", "facebook_profile", "font_by_name", "font_repository", "growth_notes", "growth_story_card", "instants_button", "keep_unsent",
         "mqtt_telemetry", "nearby_scans", "original_photo", "people_story", "phone_id_sync", "people_tab", "recent_media", "stories", "system_camera",
         "tab_badges", "typing", "unsent_indicator", "unsent_recall");

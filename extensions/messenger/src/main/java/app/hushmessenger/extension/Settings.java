@@ -440,7 +440,7 @@ public final class Settings {
             return shape < 0 || shape == now ? null : now == AVATAR_CIRCLE;
         }
         Boolean held = "meta_ai".equals(key) ? metaAiTab : "emoji_drawer".equals(key) ? oldEmojiDrawer
-            : OwnFont.KEY.equals(key) ? customFont : bottomTabs.get(key);
+            : OwnFont.KEY.equals(key) ? customFont : CallRecording.KEY.equals(key) ? CallRecording.heldPlayout() : bottomTabs.get(key);
         return held == null || held == wouldUse(key) ? null : held;
     }
 
