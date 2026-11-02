@@ -150,6 +150,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     CHAT_CHANNEL_KEEP to setOf(SYNTHETIC_CHAT_RECREATE),
     CHAT_CHANNEL_RAISE to setOf(SYNTHETIC_CHAT_RAISE),
     "chat_fragment" to setOf("LX/1hl;-><init>()V"),
+    CHAT_JUMP to setOf(SYNTHETIC_CHAT_JUMP),
     "chat_inbox" to setOf("LX/1fs;-><init>()V"),
     "chat_legacy" to setOf("LX/1hd;->onCreateAnimation(IZI)$ANIMATION"),
     "people" to setOf("LX/1pm;->A0C()Z", "LX/2Wl;->A04()Z"),

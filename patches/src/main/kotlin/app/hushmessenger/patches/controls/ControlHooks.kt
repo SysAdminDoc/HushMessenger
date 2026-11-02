@@ -337,9 +337,10 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
             // The chat and the inbox under it inherit that answer. androidx needs each fragment's no-argument
             // constructor, so it names the class the animation hook tells apart.
             if (method.name == "<init>" && method.parameterTypes.isEmpty()) {
-                if (original == "MsysThreadViewFragment") add("chat_fragment")
+                if (original == CHAT_FRAGMENT_NAME) add("chat_fragment")
                 if (original == "M4TabNavigationFragment") add("chat_inbox")
             }
+            if (original == CHAT_FRAGMENT_NAME && method.isChatJumpView()) add(CHAT_JUMP)
             // Chats on Messenger's older route open in this fragment, which loads its own animation.
             if (original == "ThreadViewFragment" && method.name == "onCreateAnimation" &&
                 method.hookId() == "${cls.type}->onCreateAnimation(IZI)$ANIMATION") add("chat_legacy")

@@ -221,8 +221,10 @@ public class CompatReport {
         PATCHES.put("Quiet incoming calls", List.of("quiet_call_ring", "quiet_call_notification"));
         PATCHES.put("Android Auto messages", List.of("car_messages"));
         PATCHES.put("Search saved messages", List.of("local_chat_search"));
+        PATCHES.put("Jump to the first message or a date", List.of("chat_jump"));
         PATCHES.put("Record calls", List.of("call_recording"));
         PATCHES.put("Hide call buttons", List.of("hide_call_bar"));
+        PATCHES.put("Ask before a call", List.of("hide_call_bar"));
         PATCHES.put("Allow screenshots", List.of("allow_screenshot", "screenshot_viewers"));
         PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read"));
         PATCHES.put("Mark as read button", List.of("mark_read_bar", "mark_read_click"));
@@ -7716,6 +7718,13 @@ public class CompatReport {
                 if ("<init>".equals(method.getName()) && paramTypes.isEmpty()) {
                     if ("MsysThreadViewFragment".equals(original)) found.get("chat_fragment").add(method);
                     if ("M4TabNavigationFragment".equals(original)) found.get("chat_inbox").add(method);
+                }
+
+                // chat_jump: the chat fragment's own onViewCreated, where the chat first has a view. Mirrors ChatJump.kt.
+                if ("MsysThreadViewFragment".equals(original) && !isStatic && "onViewCreated".equals(method.getName()) &&
+                    "V".equals(method.getReturnType()) && paramTypes.equals(List.of("Landroid/view/View;", "Landroid/os/Bundle;")) &&
+                    method.getImplementation() != null) {
+                    found.get("chat_jump").add(method);
                 }
 
                 // chat_legacy: the chat fragment on Messenger's older route, which loads its own animation

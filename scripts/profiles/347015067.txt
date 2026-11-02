@@ -77,6 +77,7 @@ hook chat_channel_keep LX/1yZ;->A09(Landroid/app/NotificationChannel;Lcom/facebo
 hook chat_channel_raise LX/7uR;->run()V
 hook chat_fragment LX/1k9;-><init>()V
 hook chat_inbox LX/1ii;-><init>()V
+hook chat_jump LX/1k9;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook chat_legacy LX/1k8;->onCreateAnimation(IZI)Landroid/view/animation/Animation;
 hook chat_promotions LX/HWk;->A0E()Z
 hook chat_promotions LX/HWk;->A0F()Z

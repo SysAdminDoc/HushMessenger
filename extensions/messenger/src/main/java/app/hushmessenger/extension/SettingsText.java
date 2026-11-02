@@ -90,6 +90,7 @@ final class SettingsText {
         ENGLISH.put("navigation", "Navigation");
         ENGLISH.put("stickers", "Stickers");
         ENGLISH.put("conversations", "Conversations");
+        ENGLISH.put("calls", "Calls");
         ENGLISH.put("photos_videos", "Photos and videos");
         ENGLISH.put("links_bubbles", "Links and bubbles");
         ENGLISH.put("privacy", "Privacy");
@@ -513,6 +514,23 @@ final class SettingsText {
         ENGLISH.put("mark_read", "Mark as read");
         ENGLISH.put("mark_read_done", "Marked as read");
         ENGLISH.put("mark_read_nothing", "Nothing new to mark as read");
+        ENGLISH.put("call_confirm_audio", "Start a voice call?");
+        ENGLISH.put("call_confirm_video", "Start a video call?");
+        ENGLISH.put("call_confirm_call", "Call");
+        ENGLISH.put("call_confirm_cancel", "Cancel");
+        ENGLISH.put("chat_jump_title", "Jump to");
+        ENGLISH.put("chat_jump_first", "The first message");
+        ENGLISH.put("chat_jump_date", "A date");
+        ENGLISH.put("chat_jump_loading", "Loading older messages (%1$d so far)");
+        ENGLISH.put("chat_jump_loading_plain", "Loading older messages");
+        ENGLISH.put("chat_jump_seeking", "Finding that day");
+        ENGLISH.put("chat_jump_cancel", "Cancel");
+        ENGLISH.put("chat_jump_start", "This is the start of the chat");
+        ENGLISH.put("chat_jump_found", "Here's the first message from that day");
+        ENGLISH.put("chat_jump_next", "Nothing that day, so here's the next message");
+        ENGLISH.put("chat_jump_none", "No messages on or after that day");
+        ENGLISH.put("chat_jump_no_dates", "Can't read the dates in this chat");
+        ENGLISH.put("chat_jump_no_list", "Can't find this chat's messages");
     }
 
     static String english(String id) {
