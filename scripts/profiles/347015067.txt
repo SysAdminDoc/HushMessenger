@@ -142,6 +142,7 @@ hook growth_story_card Lcom/facebook/messaging/montage/viewer/MontageViewerFragm
 hook hide_call_bar LX/54Y;->A07(Landroid/content/Context;LX/0XX;Lcom/facebook/auth/usersession/FbUserSession;LX/4ym;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KOM;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5Nd;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/D52;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;
 hook hide_call_bar LX/7PI;->Exj(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/77J;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V
 hook hide_read_receipts LX/4mA;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4mA;Ljava/lang/String;)V
+hook home_header LX/2a9;->render(LX/2ED;)LX/1IG;
 hook inbox_promotions LX/25z;->A0J()Z
 hook inbox_promotions LX/25z;->A0K()Z
 hook inbox_search_bar LX/1mQ;->A02(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)LX/1mv;

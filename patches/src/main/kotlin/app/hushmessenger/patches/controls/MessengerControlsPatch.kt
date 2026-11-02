@@ -191,6 +191,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         CAR_MESSAGES -> validateCarMessages()
         LOCAL_CHAT_SEARCH -> validateLocalChatSearch()
         CALL_RECORDING -> validateCallRecording()
+        HOME_HEADER -> validateHomeHeader()
         TEXT_STYLE -> validateTextStyleField()
         MESSAGE_LOG, AUTO_REPLY -> validateMessageLog()
         UNSENT_RECALL -> validateUnsentRecall()
@@ -289,6 +290,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             CAR_MESSAGES -> method.injectCarMessages()
             LOCAL_CHAT_SEARCH -> method.injectLocalChatSearch()
             CALL_RECORDING -> method.injectCallRecording()
+            HOME_HEADER -> method.injectHomeHeader()
             TEXT_STYLE -> method.injectTextStyleField()
             MESSAGE_LOG -> method.injectMessageLog()
             UNSENT_RECALL -> method.injectUnsentRecall()
@@ -626,6 +628,10 @@ val unlockAppIconsPatch = controlPatch("app_icons", "Unlock app icons", "Lets yo
 val avatarShapePatch = controlPatch("avatar_shape", "Square profile pictures",
     "Shows profile pictures as squares instead of circles, or as rounded squares with Round the corners on. Restart Messenger after changing it.", "Theme",
     AVATAR_SHAPE, STORY_RING)
+@Suppress("unused")
+val homeHeaderPatch = controlPatch("home_header", "Your own home header",
+    "Puts words or a picture of your own at the top of the chat list in place of Messenger's wordmark. Type the words or pick the picture in HushMessenger settings. With neither, the wordmark stays.",
+    "Theme", HOME_HEADER)
 @Suppress("unused")
 val customFontPatch = controlPatch("custom_font", "Use your own font",
     "Shows Messenger's text in your phone's font instead of Meta's, or in a .ttf or .otf file you pick in HushMessenger settings. Emoji don't change. Restart Messenger after changing it.",

@@ -62,6 +62,7 @@ public final class SettingsActivity extends Activity {
     private final ThemeColors themeColors = new ThemeColors(this);
     private final ChoicesBackup backup = new ChoicesBackup(this);
     private final FontFileRow fontFile = new FontFileRow(this);
+    private final HomeHeaderRow homeHeader = new HomeHeaderRow(this);
     private final SharedPreferences.OnSharedPreferenceChangeListener preferenceListener = (preferences, key) -> {
         if (key == null || "paused".equals(key) || Settings.SUB_SWITCHES.containsKey(key) || Settings.installed.contains(key))
             backup.choicesChanged();
@@ -100,7 +101,8 @@ public final class SettingsActivity extends Activity {
     /** Between onStart and onStop. A Clear that finishes while settings are out of sight is final at once. */
     boolean started;
     static final int UNDO_MILLIS = 10_000;
-    static final int SAVE_CHOICES = 7101, READ_CHOICES = 7102, PICK_FONT = 7103, PICK_AUTO_REPLY_PICTURE = 7104, SAVE_MESSAGE_LOG = 7105;
+    static final int SAVE_CHOICES = 7101, READ_CHOICES = 7102, PICK_FONT = 7103, PICK_AUTO_REPLY_PICTURE = 7104, SAVE_MESSAGE_LOG = 7105,
+        PICK_HOME_HEADER = 7106;
     /**
      * The switch for each way back in (#22, HushFacebook#146), and the help and reason each was built with. Turning one
      * way off can change what the others say or whether they can turn off, so they're rebuilt when that changes.
@@ -190,6 +192,7 @@ public final class SettingsActivity extends Activity {
         {"material_you", "Material You theme", "Colors Messenger's dark mode with your wallpaper colors on Android 12 and newer, and a fixed blue on Android 11. Turn on dark mode in Messenger first.", "theme"},
         {"app_icons", "Unlock app icons", "Lets you pick any icon in Messenger's App icon setting without a subscription. Messenger decides whether that setting shows for you. Turning this off can bring the default icon back.", "theme"},
         {"avatar_shape", "Square profile pictures", "Shows people's profile pictures as squares instead of circles. Turn on Round the corners below for rounded squares. Restart Messenger to see the change.", "theme"},
+        {"home_header", "Your own home header", "Puts words or a picture of your own at the top of the chat list in place of Messenger's wordmark. Type the words or choose the picture below. With neither, the wordmark stays. Restart Messenger to see a change.", "theme"},
         {"custom_font", "Use your own font", "Shows Messenger's text in your phone's font instead of Meta's, or in a .ttf or .otf font file you choose below, which you can also make larger or smaller and move up or down. Emoji don't change. Restart Messenger to see a change.", "theme"},
     };
 
@@ -628,6 +631,8 @@ public final class SettingsActivity extends Activity {
             values.put(OwnFont.SCALE_KEY, OwnFont.scale(prefs));
             values.put(OwnFont.SHIFT_KEY, OwnFont.shift(prefs));
         }
+        // The header is drawn once as the chat list opens, so new words or a new picture wait for a restart.
+        if (Settings.installed.contains(HomeHeader.KEY)) values.put(HomeHeader.KEY, HomeHeader.inUse(this));
         return values;
     }
 
@@ -747,7 +752,7 @@ public final class SettingsActivity extends Activity {
             LinearLayout row = controlRow(spec[0], text.control(spec, 1), text.control(spec, 2), true);
             if ("bubbles".equals(spec[0]) || "facebook".equals(spec[0]) || Settings.TAB_BADGES.equals(spec[0]) || OwnFont.KEY.equals(spec[0])
                     || MessageLog.KEY.equals(spec[0]) || AutoReply.KEY.equals(spec[0]) || Settings.AVATAR_SHAPE.equals(spec[0])
-                    || QuietCalls.KEY.equals(spec[0])) {
+                    || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0])) {
                 // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
                 ui.add(wrapper, row, 0);
@@ -761,6 +766,7 @@ public final class SettingsActivity extends Activity {
                 }
                 else if (QuietCalls.KEY.equals(spec[0])) addQuietCallChats(wrapper);
                 else if (OwnFont.KEY.equals(spec[0])) fontFile.addTo(wrapper);
+                else if (HomeHeader.KEY.equals(spec[0])) homeHeader.addTo(wrapper);
                 else if (AutoReply.KEY.equals(spec[0])) autoReplies.addAutoReplyActions(wrapper);
                 else {
                     messageLog.addMessageLogActions(wrapper);
@@ -1312,6 +1318,10 @@ public final class SettingsActivity extends Activity {
             autoReplies.pictureResult(result, data);
             return;
         }
+        if (request == PICK_HOME_HEADER) {
+            homeHeader.pictureResult(result, data);
+            return;
+        }
         if (request == PICK_FONT) {
             // Cancelled: nothing to do and nothing to say.
             if (result != RESULT_OK || data == null || data.getData() == null) return;
@@ -1480,6 +1490,8 @@ public final class SettingsActivity extends Activity {
             String inside = "facebook".equals(spec[0]) ? text.get("facebook_keep_profile") + " " + text.get("facebook_keep_profile_help") : "";
             if (Settings.TAB_BADGES.equals(spec[0])) for (String keep : Settings.KEEP_BADGES.values()) inside += " " + text.get(keep);
             if (Settings.AVATAR_SHAPE.equals(spec[0])) inside = text.get(Settings.AVATAR_ROUNDED) + " " + text.get("avatar_shape_rounded_help");
+            if (HomeHeader.KEY.equals(spec[0])) inside = text.get("home_header_words") + " " + text.get("home_header_choose") + " "
+                + text.get("home_header_help", HomeHeaderPicture.MAX_MEGABYTES);
             if (QuietCalls.KEY.equals(spec[0])) {
                 inside = text.get(QuietCalls.CHOSEN_ONLY) + " " + text.get("quiet_calls_chosen_help");
                 for (String[] chat : QuietCalls.recent()) inside += " " + chat[1];

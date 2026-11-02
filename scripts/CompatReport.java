@@ -229,6 +229,7 @@ public class CompatReport {
         PATCHES.put("Keep unsent messages", List.of("keep_unsent", "unsent_indicator", "delta_unsent", "unsent_recall", "unsent_clear"));
         PATCHES.put("Unlock app icons", List.of("app_icons"));
         PATCHES.put("Square profile pictures", List.of("avatar_shape", "story_ring"));
+        PATCHES.put("Your own home header", List.of("home_header"));
         PATCHES.put("Use your own font", List.of("font_layout", "font_repository", "font_roboto", "font_by_name", "font_input"));
         PATCHES.put("View stories anonymously", List.of("anonymous_stories"));
         PATCHES.put("Save any story", List.of("save_stories"));
@@ -6563,6 +6564,51 @@ public class CompatReport {
         return List.of(holders.get(0), starts.get(0), stops.get(0), playouts.get(0), records.get(0));
     }
 
+    static final String HEADER_DRAWABLE = "Landroid/graphics/drawable/Drawable;";
+    static final String HEADER_SCALE = "Landroid/widget/ImageView$ScaleType;";
+
+    /** The memoed Drawable cast in the chat list wordmark's render, or -1: invoke-static (scope, Function0, Object[]) Object, move-result, check-cast. */
+    static int homeHeaderCast(Method method) {
+        if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || params(method).size() != 1) return -1;
+        var code = instructions(method);
+        var refs = new HashSet<String>();
+        boolean colors = false, image = false;
+        for (var i : code) {
+            String ref = ref(i);
+            if (ref == null) continue;
+            refs.add(ref);
+            if (i.getOpcode() == Opcode.INVOKE_INTERFACE && ref.startsWith("Lcom/facebook/mig/scheme/interfaces/MigColorScheme;->")) colors = true;
+            if (i.getOpcode() == Opcode.INVOKE_STATIC && ((ReferenceInstruction) i).getReference() instanceof MethodReference call) {
+                var types = new ArrayList<String>();
+                for (var t : call.getParameterTypes()) types.add(t.toString());
+                if (types.size() == 4 && HEADER_DRAWABLE.equals(types.get(0)) && HEADER_SCALE.equals(types.get(1)) && "Z".equals(types.get(3))) image = true;
+            }
+        }
+        if (!refs.contains(HEADER_SCALE + "->FIT_START:" + HEADER_SCALE) || !refs.contains(HEADER_SCALE + "->FIT_END:" + HEADER_SCALE) || !colors || !image) return -1;
+        int found = -1;
+        for (int at = 2; at < code.size(); at++) {
+            var cast = code.get(at);
+            if (cast.getOpcode() != Opcode.CHECK_CAST || !HEADER_DRAWABLE.equals(ref(cast))) continue;
+            var moved = code.get(at - 1);
+            var memo = code.get(at - 2);
+            if (moved.getOpcode() != Opcode.MOVE_RESULT_OBJECT || register(moved) != register(cast) || memo.getOpcode() != Opcode.INVOKE_STATIC
+                || !(((ReferenceInstruction) memo).getReference() instanceof MethodReference call) || !"Ljava/lang/Object;".equals(call.getReturnType())) continue;
+            var types = new ArrayList<String>();
+            for (var t : call.getParameterTypes()) types.add(t.toString());
+            if (types.size() != 3 || !"Lkotlin/jvm/functions/Function0;".equals(types.get(1)) || !"[Ljava/lang/Object;".equals(types.get(2))) continue;
+            if (found >= 0) return -1;
+            found = at;
+        }
+        return found < 0 || mediaTargets(method).contains(found + 1) ? -1 : found;
+    }
+
+    /** home_header: the chat list wordmark's render, the only method with its shape. Mirrors HomeHeader.kt. */
+    static List<Method> homeHeader(List<ClassDef> classes) {
+        var renders = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) if (homeHeaderCast(method) >= 0) renders.add(method);
+        return renders.size() == 1 ? List.of(renders.get(0)) : List.of();
+    }
+
     static final String PHONE_ID_PROVIDER = ".provider.phoneid";
     static final String GET_PHONE_ID = "com.facebook.GET_PHONE_ID";
     static final String INSTALLED_PACKAGES = "Landroid/content/pm/PackageManager;->getInstalledPackages(I)Ljava/util/List;";
@@ -7260,6 +7306,7 @@ public class CompatReport {
         found.get("car_messages").addAll(carMessages(classes));
         found.get("local_chat_search").addAll(localChatSearch(classes));
         found.get("call_recording").addAll(callRecording(classes));
+        found.get("home_header").addAll(homeHeader(classes));
         var markRead = markReadButton(classes);
         if (!markRead.isEmpty()) {
             found.get("mark_read_bar").add(markRead.get(0));
