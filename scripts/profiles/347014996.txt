@@ -144,6 +144,11 @@ hook hide_call_bar LX/7PI;->Exj(Lcom/facebook/messaging/model/threadkey/ThreadKe
 hook hide_read_receipts LX/4mA;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4mA;Ljava/lang/String;)V
 hook inbox_promotions LX/25z;->A0J()Z
 hook inbox_promotions LX/25z;->A0K()Z
+hook inbox_search_bar LX/1mQ;->A02(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)LX/1mv;
+hook inbox_search_bar LX/1mx;->A0A(Landroid/view/ViewGroup;)V
+hook inbox_search_bar LX/27v;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
+hook inbox_search_bar LX/2SA;->A02(LX/0XX;LX/5o2;LX/1EW;LX/5eu;LX/4DB;LX/5RM;LX/4DA;LX/2ej;LX/5rl;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/2dx;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Ljava/util/Map;Ljava/util/concurrent/atomic/AtomicReference;ZZ)LX/1IG;
+hook inbox_search_bar LX/2Yd;->A0I()Z
 hook instants_button LX/1mx;->A0D(LX/1mx;)V
 hook instants_button LX/ZnZ;->A0X(LX/ZnZ;)V
 hook keep_unsent LX/MRd;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V

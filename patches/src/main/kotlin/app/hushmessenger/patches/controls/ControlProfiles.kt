@@ -164,6 +164,12 @@ internal val PROFILE_347015062 = ControlProfile(
         ),
         "hide_read_receipts" to setOf("LX/4mA;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4mA;Ljava/lang/String;)V"),
         "inbox_promotions" to setOf("LX/25z;->A0J()Z", "LX/25z;->A0K()Z"),
+        "inbox_search_bar" to setOf(
+            "LX/1mQ;->A02(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)LX/1mv;",
+            "LX/1mx;->A0A(Landroid/view/ViewGroup;)V", "LX/27v;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+            "LX/2SA;->A02(LX/0XX;LX/5o2;LX/1EW;LX/5eu;LX/4DB;LX/5RM;LX/4DA;LX/2ej;LX/5rl;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/2dx;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Ljava/util/Map;Ljava/util/concurrent/atomic/AtomicReference;ZZ)LX/1IG;",
+            "LX/2Yd;->A0I()Z",
+        ),
         "instants_button" to setOf("LX/1mx;->A0D(LX/1mx;)V", "LX/ZnZ;->A0X(LX/ZnZ;)V"),
         "keep_unsent" to setOf("LX/MRd;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
         "local_chat_search" to setOf(
@@ -422,6 +428,12 @@ internal val PROFILE_347014996 = ControlProfile(
         ),
         "hide_read_receipts" to setOf("LX/4mA;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4mA;Ljava/lang/String;)V"),
         "inbox_promotions" to setOf("LX/25z;->A0J()Z", "LX/25z;->A0K()Z"),
+        "inbox_search_bar" to setOf(
+            "LX/1mQ;->A02(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)LX/1mv;",
+            "LX/1mx;->A0A(Landroid/view/ViewGroup;)V", "LX/27v;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+            "LX/2SA;->A02(LX/0XX;LX/5o2;LX/1EW;LX/5eu;LX/4DB;LX/5RM;LX/4DA;LX/2ej;LX/5rl;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/2dx;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Ljava/util/Map;Ljava/util/concurrent/atomic/AtomicReference;ZZ)LX/1IG;",
+            "LX/2Yd;->A0I()Z",
+        ),
         "instants_button" to setOf("LX/1mx;->A0D(LX/1mx;)V", "LX/ZnZ;->A0X(LX/ZnZ;)V"),
         "keep_unsent" to setOf("LX/MRd;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
         "local_chat_search" to setOf(
@@ -680,6 +692,12 @@ internal val PROFILE_347014974 = ControlProfile(
         ),
         "hide_read_receipts" to setOf("LX/4ot;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4ot;Ljava/lang/String;)V"),
         "inbox_promotions" to setOf("LX/27L;->A0J()Z", "LX/27L;->A0K()Z"),
+        "inbox_search_bar" to setOf(
+            "LX/1nh;->A02(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)LX/1oC;",
+            "LX/1oE;->A0A(Landroid/view/ViewGroup;)V", "LX/29H;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+            "LX/2Te;->A05(LX/0XX;LX/5qp;LX/1FH;LX/5hf;LX/4FV;LX/5U7;LX/4FU;LX/2gF;LX/5uY;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/2fT;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Ljava/util/Map;Ljava/util/concurrent/atomic/AtomicReference;ZZ)LX/1J8;",
+            "LX/2a8;->A0I()Z",
+        ),
         "instants_button" to setOf("LX/1oE;->A0D(LX/1oE;)V", "LX/ZiQ;->A0X(LX/ZiQ;)V"),
         "keep_unsent" to setOf("LX/MWa;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
         "local_chat_search" to setOf(
@@ -938,6 +956,12 @@ internal val PROFILE_347014990 = ControlProfile(
         ),
         "hide_read_receipts" to setOf("LX/4lY;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4lY;Ljava/lang/String;)V"),
         "inbox_promotions" to setOf("LX/26P;->A0J()Z", "LX/26P;->A0K()Z"),
+        "inbox_search_bar" to setOf(
+            "LX/1mq;->A02(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)LX/1nL;",
+            "LX/1nN;->A0A(Landroid/view/ViewGroup;)V", "LX/28L;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+            "LX/2Sa;->A05(LX/0XU;LX/5nQ;LX/1Ew;LX/5eI;LX/4CW;LX/5Qk;LX/4CV;LX/2f9;LX/5r9;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/2eN;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Ljava/util/Map;Ljava/util/concurrent/atomic/AtomicReference;ZZ)LX/1Ig;",
+            "LX/2Z3;->A0I()Z",
+        ),
         "instants_button" to setOf("LX/1nN;->A0D(LX/1nN;)V", "LX/HVr;->A0W(LX/HVr;)V"),
         "keep_unsent" to setOf("LX/Rpw;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
         "local_chat_search" to setOf(

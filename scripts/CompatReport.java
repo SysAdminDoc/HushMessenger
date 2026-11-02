@@ -90,8 +90,12 @@ public class CompatReport {
     static final long EMOJI_DRAWER_FLAG = 36320528377659062L;
     // The drawer renderer throws this when the redesign can't draw, which ties the flag to the emoji drawer
     static final String EMOJI_DRAWER_ANCHOR = "Cannot render redesigned drawer with search icon ";
+    // The server test that swaps the chat list's search bar for a top bar icon, as 585 numbers it. Meta renumbers it with each release.
+    static final long SEARCH_ICON_FLAG = 0x810b24000045b3L;
+    // Only the method that builds the top bar's search icon names this class, which ties the flag to the search bar
+    static final String SEARCH_ICON_ANCHOR = "com.facebook.messaging.search.plugins.toolbarbutton.searchbutton.InboxSearchToolbarButtonImplementation";
     // Controls whose hook count follows how Redex inlined one flag read, so it differs between releases
-    static final Set<String> RELEASE_HOOK_COUNTS = Set.of("emoji_drawer", "pinned_chats");
+    static final Set<String> RELEASE_HOOK_COUNTS = Set.of("emoji_drawer", "inbox_search_bar", "pinned_chats");
 
     // Material You theme finds its targets by shape when it patches (MaterialYouPatch.kt), so no profile records them
     static final String DARK_SCHEME = "Lcom/facebook/mig/scheme/schemes/DarkColorScheme;";
@@ -170,6 +174,7 @@ public class CompatReport {
         PATCHES.put("Hide inbox promotions", List.of("inbox_promotions"));
         PATCHES.put("Hide stories and notes", List.of("stories", "story_ring"));
         PATCHES.put("Hide inbox tabs", List.of("subtabs"));
+        PATCHES.put("Keep the search bar", List.of("inbox_search_bar"));
         PATCHES.put("Hide Mark as read", List.of("mark_read_action"));
         PATCHES.put("Pin more chats", List.of("pinned_chats", "pin_rows", "pin_ask", "pin_drop", "pin_full", "pin_list"));
         PATCHES.put("Hide Facebook shortcuts", List.of("facebook", "facebook_profile", "facebook_profile_header"));
@@ -2654,6 +2659,29 @@ public class CompatReport {
         boolean linked = readers.stream().anyMatch(reader -> hookId(reader).equals(anchor)) || instructions(anchors.get(0)).stream().anyMatch(i ->
             i.getOpcode() == Opcode.INVOKE_STATIC && getters.contains(((ReferenceInstruction) i).getReference().toString()));
         return linked ? readers : List.of();
+    }
+
+    /**
+     * Every method that loads the search icon flag, but only when the one method that builds the top bar's search icon
+     * loads it too. Mirrors SearchBar.kt's connectSearchBar.
+     */
+    static List<Method> searchIconReaders(List<ClassDef> classes) {
+        var readers = new ArrayList<Method>();
+        var anchors = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (method.getImplementation() == null) continue;
+            boolean reads = false, anchor = false;
+            for (var i : method.getImplementation().getInstructions()) {
+                if (i.getOpcode() == Opcode.CONST_WIDE && ((WideLiteralInstruction) i).getWideLiteral() == SEARCH_ICON_FLAG) reads = true;
+                if (i instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference sr &&
+                    SEARCH_ICON_ANCHOR.equals(sr.getString())) anchor = true;
+            }
+            if (reads) readers.add(method);
+            if (anchor) anchors.add(method);
+        }
+        if (anchors.size() != 1) return List.of();
+        var anchor = hookId(anchors.get(0));
+        return readers.stream().anyMatch(reader -> hookId(reader).equals(anchor)) ? readers : List.of();
     }
 
     // The analytics logger's upload components and the entry points Android starts them through. Mirrors AnalyticsUploads.kt.
@@ -7192,6 +7220,7 @@ public class CompatReport {
         var community = communityInbox(classes);
         if (community != null) found.get("community_inbox").add(community.render());
         found.get("emoji_drawer").addAll(emojiDrawerReaders(classes));
+        found.get("inbox_search_bar").addAll(searchIconReaders(classes));
         found.get("emoji_search").addAll(emojiSearchWatchers(classes));
         found.get("tab_badges").addAll(tabBadgeDispatchers(classes));
         found.get("facebook_badge").addAll(facebookBadgeChecks(classes));
