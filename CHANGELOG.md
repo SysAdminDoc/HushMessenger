@@ -11,6 +11,7 @@
 - `Save button for voice messages` is a new switch under Photos and videos. Hold a voice message, tap More, and Save voice message is at the top, for keeping just that one. It lands in the same folder as `Save voice messages you play`, which can stay off. Refs #123.
 - The message log got easier to get around in. There's a search box that looks through words and names and doesn't care about accents, and `Group by chat` lists your chats so you can open one. `Save as text` and `Save as CSV` write what's showing to a file you pick, and `Save messages before they're removed` adds each message to a text file in Download/Messenger just before the log drops it, one file a month. Saved files aren't encrypted, so that switch starts off, and it needs Android 10 or newer. Refs #127.
 - `Keep the search bar` is a new switch under Inbox. Some accounts lost the search bar above their chats when Messenger moved search behind an icon, and this brings the bar back and drops the icon. Messenger needs a restart after you change it. Accounts that never got the icon see no change. It's experimental and it starts off. Refs #128.
+- `Report a problem` now also says whether Messenger's notifications can pop up on your phone. It fills in Android's notification switch for Messenger, your chat bubbles choice, whether Messenger may draw over other apps and show calls full screen, and which notification channels sit below the level that pops up. Channels go in by Messenger's own id for them, never a chat's name. Refs #126.
 
 ### Fixed
 

@@ -1210,7 +1210,27 @@ public final class SettingsActivity extends Activity {
         return new ProblemReport.Facts(BuildConfig.VERSION_NAME, messenger, code,
             ProblemReport.patchedFrom(HostScreens.originalBuild(), Settings.preview), Build.MANUFACTURER, Build.MODEL,
             Build.VERSION.RELEASE, Build.VERSION.SDK_INT, Settings.preferences.getBoolean("paused", false), CrashGuard.isSafeMode(), on,
-            GalleryPicker.reportLine(), LastCrash.read(getFilesDir(), System.currentTimeMillis()));
+            GalleryPicker.reportLine(), LastCrash.read(getFilesDir(), System.currentTimeMillis()), reportNotifications());
+    }
+
+    /** Whether Messenger's notifications can pop up, for the report: Android's switches and each channel's importance. */
+    private String reportNotifications() {
+        try {
+            android.app.NotificationManager manager = getSystemService(android.app.NotificationManager.class);
+            if (manager == null) return "";
+            List<String[]> channels = new ArrayList<>();
+            for (android.app.NotificationChannel channel : manager.getNotificationChannels()) {
+                // A conversation's own channel carries its chat in the id, so it never goes in.
+                String id = Build.VERSION.SDK_INT >= 30 && channel.getConversationId() != null ? "" : channel.getId();
+                channels.add(new String[] {id, Integer.toString(channel.getImportance())});
+            }
+            return ProblemReport.notificationsLine(manager.areNotificationsEnabled(), Settings.selectedBubbleMode(),
+                android.provider.Settings.canDrawOverlays(this), Build.VERSION.SDK_INT >= 34 ? manager.canUseFullScreenIntent() : null,
+                channels);
+        } catch (RuntimeException error) {
+            Settings.hookFailedPrivately("report_problem", "Couldn't read the notification settings for the report", error);
+            return "";
+        }
     }
 
     /**
