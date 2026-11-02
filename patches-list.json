@@ -353,6 +353,15 @@
                     "values": {}
                 },
                 {
+                    "key": "cloneFacebookPackage",
+                    "title": "Facebook package to open",
+                    "description": "Which Facebook app Messenger opens profiles and other links in. Leave com.facebook.katana for the regular app, or use a Facebook clone's ID, like com.facebook.katana.morphe. Sign-in and account sharing keep using the regular app.",
+                    "required": true,
+                    "type": "kotlin.String",
+                    "default": "com.facebook.katana",
+                    "values": {}
+                },
+                {
                     "key": "clonePackageName",
                     "title": "Package name",
                     "description": "The copy's unique app ID, like com.facebook.orca.hush. Use words joined by dots, each starting with a letter. It can't match Messenger or another Meta app.",
