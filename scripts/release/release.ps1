@@ -320,9 +320,8 @@ switch ($Stage) {
         }
         Save-Stage 'prepare' @{ base = (Get-Head); sha256 = $digest }
         Write-Step "bundle SHA-256 $digest"
-        Write-Host 'Next: update the README intro and counts, its Morphe Manager and Desktop minimums when the patcher moved (check_release.PATCHER_CLIENTS),'
-        Write-Host 'and the index description''s summary above its ### groups by hand, review the diff,'
-        Write-Host "commit it as 'chore: release $tag', then run -Stage preflight."
+        Write-Host 'Next: update the README intro and counts, its Manager and Desktop minimums when the patcher moved (check_release.PATCHER_CLIENTS), the index summary above its ### groups,'
+        Write-Host "and the README captures when settings changed (SettingsScreenshotTest with HUSH_SCREENSHOTS, then scripts/readme_captures.py --export), review the diff, commit it as 'chore: release $tag', then run -Stage preflight."
     }
 
     'preflight' {
