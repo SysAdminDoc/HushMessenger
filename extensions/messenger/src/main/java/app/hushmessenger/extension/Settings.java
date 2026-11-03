@@ -975,7 +975,7 @@ public final class Settings {
      * treats this one the same way, so the copy can move and the provider's walk over its folders stays alive.
      */
     public static boolean inboundFolderRefused(java.io.File folder) {
-        return folder.exists() && !(folder.isDirectory() && folder.canRead() && folder.canWrite()) && enabled(GalleryPicker.KEY);
+        return folder != null && folder.exists() && !(folder.isDirectory() && folder.canRead() && folder.canWrite()) && enabled(GalleryPicker.KEY);
     }
 
     /**
