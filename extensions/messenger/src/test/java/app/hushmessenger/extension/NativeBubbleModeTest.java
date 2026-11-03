@@ -206,7 +206,7 @@ public class NativeBubbleModeTest {
                 View root = layout(screen.get().getWindow().getDecorView());
                 ((EditText) root.findViewWithTag("find_control")).setText("bubble");
                 layout(root);
-                for (String tag : new String[] {"bubble_stock", "bubble_chat_heads", "bubble_native", "bubble_notifications", "bubble_conversations"}) {
+                for (String tag : new String[] {"bubble_stock", "bubble_chat_heads", "bubble_native", "bubble_battery", "bubble_notifications", "bubble_conversations"}) {
                     View target = root.findViewWithTag(tag);
                     if (target == null) continue;
                     target.requestRectangleOnScreen(new Rect(0, 0, target.getWidth(), target.getHeight()), true);
@@ -258,6 +258,43 @@ public class NativeBubbleModeTest {
                 assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK, started.getFlags());
                 assertEquals(before, Settings.preferences.getAll());
             }
+        }
+    }
+
+    @Test public void batteryLinkAsksForUnrestrictedThenOpensAppInfoAndShowsTheChoice() {
+        var app = RuntimeEnvironment.getApplication();
+        String ask = android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
+        String info = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
+        Shadows.shadowOf(app).grantPermissions(android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+        var power = Shadows.shadowOf(app.getSystemService(android.os.PowerManager.class));
+        power.setIgnoringBatteryOptimizations(app.getPackageName(), false);
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            TextView link = screen.get().getWindow().getDecorView().findViewWithTag("bubble_battery");
+            assertEquals("Allow unrestricted battery use", link.getText().toString());
+            Map<String, ?> before = Settings.preferences.getAll();
+            link.performClick();
+            assertNull(Shadows.shadowOf(screen.get()).getNextStartedActivity());
+            assertTrue(ShadowToast.getTextOfLatestToast().contains("then Battery"));
+            var manager = Shadows.shadowOf(screen.get().getPackageManager());
+            for (String action : new String[] {ask, info}) {
+                ResolveInfo route = new ResolveInfo();
+                route.activityInfo = new ActivityInfo();
+                route.activityInfo.name = action;
+                route.activityInfo.packageName = "com.android.settings";
+                manager.addResolveInfoForIntent(new Intent(action, android.net.Uri.parse("package:" + app.getPackageName())), java.util.List.of(route));
+            }
+            link.performClick();
+            Intent started = Shadows.shadowOf(screen.get()).getNextStartedActivity();
+            assertEquals(ask, started.getAction());
+            assertEquals("package:" + app.getPackageName(), started.getDataString());
+            assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK, started.getFlags());
+            // Android's prompt was answered with Allow.
+            power.setIgnoringBatteryOptimizations(app.getPackageName(), true);
+            screen.pause().resume();
+            assertEquals("Battery use: Unrestricted", link.getText().toString());
+            link.performClick();
+            assertEquals(info, Shadows.shadowOf(screen.get()).getNextStartedActivity().getAction());
+            assertEquals(before, Settings.preferences.getAll());
         }
     }
 

@@ -173,7 +173,7 @@ Messenger and Android handle this without a switch. In Messenger's app info, set
 
 ### Chat heads and bubbles
 
-**Allow chat bubbles** offers three modes. **Stock** leaves Messenger alone. **Chat heads** uses Messenger's own overlay, so turn on Messenger's **Settings > Chat heads** and grant **Appear on top**. On a Samsung phone, chat heads needed **Unrestricted** battery use to arrive in the background. **Android bubbles** uses Android's own bubbles on Android 11 and newer, and the **Android bubble settings** link under the mode buttons takes you to the switch Android needs. Restart Messenger after changing modes.
+**Allow chat bubbles** offers three modes. **Stock** leaves Messenger alone. **Chat heads** uses Messenger's own overlay, so turn on Messenger's **Settings > Chat heads** and grant **Appear on top**. Chat heads also need **Unrestricted** battery use. On Optimized, Android only lets a chat head show if Messenger was closed when the message came in, so tap **Allow unrestricted battery use** under the mode buttons. Once it's on, the button reads **Battery use: Unrestricted** and opens app info if you want to change it back. **Android bubbles** uses Android's own bubbles on Android 11 and newer, and the **Android bubble settings** link under the mode buttons takes you to the switch Android needs. Restart Messenger after changing modes.
 
 ### Read receipts
 

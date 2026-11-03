@@ -89,7 +89,7 @@ public final class SettingsActivity extends Activity {
     private final Set<String> searchClosed = new java.util.HashSet<>();
     private TextView searchStatus, enabledCount, setupNote;
     private Button safeModeAction, clearQuery;
-    private Button drawerSearchLink;
+    private Button drawerSearchLink, batteryUse;
     private LinearLayout emptyState;
     /** Shown above both pages while a change waits for Messenger to restart. */
     private LinearLayout restartRow;
@@ -477,6 +477,11 @@ public final class SettingsActivity extends Activity {
             }
             for (RadioButton mode : bubbleModes) mode.setChecked(mode.getTag().equals("bubble_" + Settings.selectedBubbleMode()));
         } finally { binding = false; }
+        // Coming back from Android's battery prompt or app info shows what was chosen there.
+        if (batteryUse != null) {
+            String label = batteryLabel();
+            if (!label.contentEquals(batteryUse.getText())) batteryUse.setText(label);
+        }
         fontFile.refreshFontFile();
         updateSetup();
     }
@@ -861,6 +866,10 @@ public final class SettingsActivity extends Activity {
         ui.add(content, modes, 8);
         // An unavailable bundle already says so in the row's description.
         if (Settings.available("bubbles")) ui.add(content, ui.text(text.get("bubble_help"), 13, ui.muted, false), 8);
+        batteryUse = ui.button(batteryLabel());
+        batteryUse.setTag("bubble_battery");
+        batteryUse.setOnClickListener(view -> openBatterySettings());
+        ui.add(content, batteryUse, 8);
         if (Build.VERSION.SDK_INT >= 30) {
             Button permissions = ui.button(text.get("bubble_permissions"));
             permissions.setTag("bubble_permissions");
@@ -892,6 +901,38 @@ public final class SettingsActivity extends Activity {
         } catch (RuntimeException unavailable) {
             feedback(text.get("bubble_settings_missing"), Toast.LENGTH_LONG);
         }
+    }
+
+    private boolean unrestrictedBattery() {
+        android.os.PowerManager power = getSystemService(android.os.PowerManager.class);
+        return power != null && power.isIgnoringBatteryOptimizations(getPackageName());
+    }
+
+    private String batteryLabel() {
+        return text.get(unrestrictedBattery() ? "bubble_battery_on" : "bubble_battery_off");
+    }
+
+    private void openBatterySettings() {
+        // On Optimized battery Android refuses the chat head service whenever a message arrives while Messenger is
+        // running in the background. Messenger holds the permission to ask for Unrestricted, and app info is where
+        // someone turns it back.
+        boolean ask = !unrestrictedBattery() && checkSelfPermission(
+            android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) == PackageManager.PERMISSION_GRANTED;
+        String[] actions = ask
+            ? new String[] {android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS}
+            : new String[] {android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS};
+        for (String action : actions) {
+            Intent intent = new Intent(action, android.net.Uri.parse("package:" + getPackageName()));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            try {
+                if (getPackageManager().resolveActivity(intent, 0) == null) continue;
+                startActivity(intent);
+                return;
+            } catch (RuntimeException unavailable) {
+                // The next route, or the note below.
+            }
+        }
+        feedback(text.get("bubble_battery_missing"), Toast.LENGTH_LONG);
     }
 
     @SuppressWarnings("deprecation")

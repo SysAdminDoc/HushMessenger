@@ -197,8 +197,11 @@ final class SettingsText {
         ENGLISH.put("bubble_chat_heads", "Chat heads");
         ENGLISH.put("bubble_native", "Android bubbles");
         ENGLISH.put("bubble_changed", "%s selected. Restart Messenger to apply.");
-        ENGLISH.put("bubble_help", "Stock lets Messenger decide. Chat heads also needs Messenger's own Chat heads switch and permission to draw over other apps. For Android bubbles, allow Messenger's bubbles in the Android settings below. Accounts that don't support bubbles keep Messenger's normal behavior. Pause all changes puts everything back to Messenger's own choice.");
+        ENGLISH.put("bubble_help", "Stock lets Messenger decide. Chat heads also needs Messenger's own Chat heads switch and permission to draw over other apps. Without unrestricted battery use, a chat head only shows if Messenger was closed when the message came in, so turn that on below too. For Android bubbles, allow Messenger's bubbles in the Android settings below. Accounts that don't support bubbles keep Messenger's normal behavior. Pause all changes puts everything back to Messenger's own choice.");
         ENGLISH.put("bubble_unsupported", "Android bubbles aren't available in this patch bundle, so Messenger works as usual. Your choice is saved.");
+        ENGLISH.put("bubble_battery_off", "Allow unrestricted battery use");
+        ENGLISH.put("bubble_battery_on", "Battery use: Unrestricted");
+        ENGLISH.put("bubble_battery_missing", "Screen not found. Open app info, then Battery.");
         ENGLISH.put("bubble_permissions", "Android bubble settings");
         ENGLISH.put("bubble_notifications", "Messenger notification settings");
         ENGLISH.put("bubble_conversations", "Android conversation settings");
