@@ -48,7 +48,7 @@ internal const val PINNED_CHAT_ROUTE = "$HOST_SCREENS->pinnedChatRoute()Ljava/la
  * wherever the pinned count is compared with it: the Pin row's check before a pin, the recount after one, the chat
  * list's fetch of pinned chats and the thread details' Pin state.
  */
-internal const val PINNED_CHAT_LIMIT_CONFIG = 0x8205ad0002101eL
+internal const val PINNED_CHAT_LIMIT_CONFIG = 0x82059c00020fdeL
 
 internal const val PINNED_CHAT_LIMIT_GATE = "$SETTINGS->pinnedChatLimit(I)I"
 
