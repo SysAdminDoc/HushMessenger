@@ -196,7 +196,8 @@ final class MessageLogSheet {
 
     void showMessageLog() {
         if (page.isFinishing() || page.isDestroyed() || messageLogDialog != null) return;
-        SettingsDialog sheet = new SettingsDialog(page, page.ui, page.text, page.text.get("message_log_title"), page.text.get("message_log_hint"));
+        SettingsDialog sheet = new SettingsDialog(page, page.ui, page.text, page.text.get("message_log_title"),
+            page.text.get(messageLogByChat ? "message_log_hint_by_chat" : "message_log_hint"));
         Dialog dialog = sheet.dialog;
         messageLogDialog = dialog;
         hideFromRecents(dialog);
@@ -371,6 +372,9 @@ final class MessageLogSheet {
             messageLogByChat = !messageLogByChat;
             messageLogThread = null;
             byChat.setText(text.get(messageLogByChat ? "message_log_by_date" : "message_log_by_chat"));
+            // The hint is the line that says what order the list is in.
+            View hint = byChat.getRootView().findViewWithTag("dialog_hint");
+            if (hint instanceof TextView) ((TextView) hint).setText(text.get(messageLogByChat ? "message_log_hint_by_chat" : "message_log_hint"));
             showMessageLogResults();
         });
         views.addView(byChat, new LinearLayout.LayoutParams(0, -2, 1));
@@ -594,7 +598,11 @@ final class MessageLogSheet {
             LinearLayout.LayoutParams pictureParams = new LinearLayout.LayoutParams(-2, -2);
             pictureParams.topMargin = ui.dp(8);
             card.addView(picture, pictureParams);
-            showMessageLogPicture(picture, entry.media);
+            TextView missing = ui.text(text.get("message_log_photo_missing"), 13, ui.muted, false);
+            missing.setTag("message_log_photo_missing");
+            missing.setVisibility(View.GONE);
+            ui.add(card, missing, 8);
+            showMessageLogPicture(picture, missing, entry.media);
         }
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
         params.topMargin = ui.dp(8);
@@ -620,8 +628,8 @@ final class MessageLogSheet {
         return chat.isEmpty() ? entry.sender : text.get("message_log_in_group", entry.sender, chat);
     }
 
-    /** Opens the picture off the main thread and shows it once it's ready. One that can't be opened stays hidden. */
-    private void showMessageLogPicture(ImageView view, String name) {
+    /** Opens the picture off the main thread and shows it once it's ready. One that can't be opened says so in its place. */
+    private void showMessageLogPicture(ImageView view, TextView missing, String name) {
         Context context = page.getApplicationContext();
         int width = page.getResources().getDisplayMetrics().widthPixels;
         LinearLayout results = messageLogResults;
@@ -633,9 +641,12 @@ final class MessageLogSheet {
                 Settings.hookFailedPrivately(MessageLog.KEY, "Can't open a photo in the message log", unreadable);
             }
             android.graphics.Bitmap shown = picture;
-            if (shown == null) return;
             page.runOnUiThread(() -> {
                 if (messageLogResults != results || page.isFinishing() || page.isDestroyed()) return;
+                if (shown == null) {
+                    missing.setVisibility(View.VISIBLE);
+                    return;
+                }
                 view.setImageBitmap(shown);
                 view.setVisibility(View.VISIBLE);
             });

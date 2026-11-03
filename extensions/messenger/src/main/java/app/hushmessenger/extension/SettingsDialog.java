@@ -39,7 +39,9 @@ final class SettingsDialog extends LinearLayout {
         heading.setTag("dialog_title");
         heading.setAccessibilityHeading(true);
         header.addView(heading);
-        ui.add(header, ui.text(hint, 14, ui.muted, false), 8);
+        TextView hintLine = ui.text(hint, 14, ui.muted, false);
+        hintLine.setTag("dialog_hint");
+        ui.add(header, hintLine, 8);
         header.setPadding(0, 0, 0, ui.dp(16));
         body = ui.column();
         body.setPadding(0, 0, 0, ui.dp(12));

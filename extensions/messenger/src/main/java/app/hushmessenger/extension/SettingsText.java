@@ -417,6 +417,7 @@ final class SettingsText {
         ENGLISH.put("message_log_close", "Close");
         ENGLISH.put("message_log_title", "Message log");
         ENGLISH.put("message_log_hint", "Saved only on this phone. Newest first.");
+        ENGLISH.put("message_log_hint_by_chat", "Saved only on this phone. Chats with the latest message first.");
         ENGLISH.put("message_log_retention", "Turning the log off stops new entries. Saved messages stay until you clear them or they pass the time you picked. The log keeps up to 5,000.");
         ENGLISH.put("message_log_loading", "Loading...");
         ENGLISH.put("message_log_empty", "No messages kept yet.");
@@ -473,6 +474,7 @@ final class SettingsText {
         ENGLISH.put("message_log_rename_failed", "Couldn't save the name. Try again.");
         ENGLISH.put("message_log_attachment", "Photo or attachment");
         ENGLISH.put("message_log_photo", "Photo");
+        ENGLISH.put("message_log_photo_missing", "This photo couldn't be shown.");
         ENGLISH.put("message_log_button", "Button at the top of Chats");
         ENGLISH.put("message_log_button_help", "Puts a clock next to the new message button. Tap it to open the log.");
         ENGLISH.put("auto_reply_edit", "Edit replies");
