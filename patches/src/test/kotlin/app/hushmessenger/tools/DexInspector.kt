@@ -72,14 +72,19 @@ object DexInspector {
         }
     }
 
-    private fun splitMember(spec: String): Pair<String, String> {
-        val (cls, member) = spec.split("->", limit = 2)
-        return cls to member
+    private fun splitMember(spec: String): Pair<String, String>? {
+        val parts = spec.split("->", limit = 2)
+        return if (parts.size == 2) parts[0] to parts[1] else null
     }
 
     private fun query(classes: List<ClassDef>, byType: Map<String, ClassDef>, q: String) {
-        val (kind, arg) = q.split(":", limit = 2)
         println("\n==== $q ====")
+        // A malformed line says so and the batch goes on to the next query.
+        val parts = q.split(":", limit = 2)
+        if (parts.size < 2) return println("  expected kind:argument")
+        val (kind, arg) = parts
+        if (kind in setOf("method", "callers", "reads", "writes") && splitMember(arg) == null)
+            return println("  expected Lclass;->member")
         // Every kind says when nothing matched, so a mistyped name never reads as "no callers".
         var found = 0
         fun show(line: String) { found++; println("  $line") }
@@ -98,12 +103,12 @@ object DexInspector {
                 cls.methods.forEach { println("  method ${it.id()} [${it.implementation?.instructions?.count() ?: 0}]") }
             }
             "method" -> {
-                val (cls, name) = splitMember(arg)
+                val (cls, name) = splitMember(arg)!!
                 val c = byType[cls] ?: return println("  not found")
                 c.methods.filter { it.name == name || it.id() == arg }.forEach { found++; dumpMethod(it) }
             }
             "callers" -> {
-                val (cls, name) = splitMember(arg)
+                val (cls, name) = splitMember(arg)!!
                 for (c in classes) for (m in c.methods) {
                     val hit = m.implementation?.instructions?.any { insn ->
                         val r = (insn as? ReferenceInstruction)?.reference as? MethodReference
@@ -119,7 +124,7 @@ object DexInspector {
                 if (hits.isNotEmpty()) show("${m.id()}  redex=${c.redexName()}  ${hits.distinct()}")
             }
             "reads", "writes" -> {
-                val (cls, name) = splitMember(arg)
+                val (cls, name) = splitMember(arg)!!
                 for (c in classes) for (m in c.methods) {
                     val hit = m.implementation?.instructions?.any { insn ->
                         val r = (insn as? ReferenceInstruction)?.reference as? FieldReference

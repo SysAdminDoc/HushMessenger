@@ -19,7 +19,7 @@ object DexScanner {
         ?.initialValue?.let { (it as? StringEncodedValue)?.value }
 
     // Redex renames most classes to LX/...; the original name it keeps usually has no package.
-    private fun ClassDef.originalSimpleName(): String? = redexName()?.substringAfterLast('.')?.substringAfterLast('/')
+    private fun ClassDef.originalSimpleName(): String? = redexName()?.removeSuffix(";")?.substringAfterLast('.')?.substringAfterLast('/')
 
     private fun simpleName(type: String) = type.removeSuffix(";").substringAfterLast('/')
 
