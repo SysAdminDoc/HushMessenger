@@ -220,6 +220,7 @@ class SaveStoriesTest {
         rejects(body.replace("iget-object v1, v6, $FRAGMENT->A0R", ":others\niget-object v1, v6, $FRAGMENT->A0R")
             .replace("goto :handler\n", "goto :others\n"))
         rejects(body.replace("if-eqz v3, :own_rest", "if-eqz v4, :own_rest"))
+        rejects(body.replace("move-result-object v2\ninstance-of v1, v2, LX/HBq;", "move-result-object v2\nconst/4 v1, 0x0\ninstance-of v1, v2, LX/HBq;"))
         rejects(body.replace("instance-of v1, v2, LX/IVH;", "instance-of v1, v7, LX/IVH;"))
         rejects(body.replace("if-nez v1, :save\ninstance-of v1, v2, LX/IVG;", "if-nez v1, :own_rest\ninstance-of v1, v2, LX/IVG;"))
         rejects(body.replace("const v1, 0x7f142dff\ninvoke-static {v6, v1}", "const v1, 0x7f142dff\ninvoke-static {v7, v1}"))

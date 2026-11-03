@@ -2684,9 +2684,16 @@ public class CompatReport {
         if (at < 0) return false;
         int pair = ((OneRegisterInstruction) code.get(at)).getRegisterA();
         if (at + 1 >= code.size() || code.get(at + 1).getOpcode() != Opcode.CHECK_CAST) return false;
+        int cast = ((OneRegisterInstruction) code.get(at + 1)).getRegisterA();
         int call = at + 2;
         if (call + 3 != code.size() || !(code.get(call) instanceof FiveRegisterInstruction invoke) || invoke.getRegisterCount() != 3 ||
-            invoke.getRegisterD() != pair || invoke.getRegisterE() != pair + 1 || invoke.getOpcode() != Opcode.INVOKE_INTERFACE) return false;
+            invoke.getRegisterD() != pair || invoke.getRegisterE() != pair + 1 || invoke.getOpcode() != Opcode.INVOKE_INTERFACE ||
+            invoke.getRegisterC() != cast || cast == pair || cast == pair + 1) return false;
+        // The config is cast to the interface that declares the check, and the check takes the flag and answers a boolean.
+        var check = (MethodReference) ((ReferenceInstruction) invoke).getReference();
+        if (!((ReferenceInstruction) code.get(at + 1)).getReference().toString().equals(check.getDefiningClass()) ||
+            !"Z".equals(check.getReturnType()) ||
+            !check.getParameterTypes().stream().map(CharSequence::toString).toList().equals(List.of("J"))) return false;
         var result = code.get(call + 1);
         var back = code.get(call + 2);
         return result.getOpcode() == Opcode.MOVE_RESULT && back.getOpcode() == Opcode.RETURN &&
@@ -3078,10 +3085,6 @@ public class CompatReport {
     }
 
     /**
-     * OriginalVideo.kt's videoPassthroughSite: the one size check against the bitrate limit plus Messenger's configured
-     * margin, with the limit arithmetic, the metadata reads and the registers the hook needs all where 583 has them.
-     */
-    /**
      * XheAudio.kt's source checks for xhe_transcode: the worker's source path (its first String parameter, the fourth
      * register from the top) is read before anything overwrites it, and it or a plain copy of it reaches a static
      * (String)Uri call, Messenger parsing the source it's about to read.
@@ -3123,6 +3126,10 @@ public class CompatReport {
         return false;
     }
 
+    /**
+     * OriginalVideo.kt's videoPassthroughSite: the one size check against the bitrate limit plus Messenger's configured
+     * margin, with the limit arithmetic, the metadata reads and the registers the hook needs all where 583 has them.
+     */
     static boolean videoPassthroughSite(Method method) {
         var code = instructions(method);
         var sites = new ArrayList<Integer>();

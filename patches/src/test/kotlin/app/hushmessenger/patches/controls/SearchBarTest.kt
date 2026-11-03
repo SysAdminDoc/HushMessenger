@@ -149,6 +149,24 @@ class SearchBarTest {
         assertTrue(found(searchIconFixture(padded)).isEmpty())
     }
 
+    @Test fun aGetterWhoseReadThePatchRefusesIsntResolvedByCompatReportEither() {
+        val flag = "const-wide v0, ${SEARCH_ICON_FLAG}L"
+        val cast = "check-cast v2, $CONFIG"
+        val shapes = mapOf(
+            "a cast to another type" to "$flag\ncheck-cast v2, LX/5dt;\ninvoke-interface {v2, v0, v1}, $CHECK",
+            "the check asked on another register" to "$flag\n$cast\ninvoke-interface {v3, v0, v1}, $CHECK",
+            "an answer that isn't a boolean" to "$flag\n$cast\ninvoke-interface {v2, v0, v1}, $CONFIG->B1R(J)I",
+            "a check of a double" to "$flag\n$cast\ninvoke-interface {v2, v0, v1}, $CONFIG->B1R(D)Z",
+        )
+        fun getter(read: String) = fixtureMethod(SEARCH_ICON_GETTER, "$read\nmove-result v0\nreturn v0", 5, STATIC)
+        assertEquals(setOf(SEARCH_ICON_GETTER), found(searchIconFixture(getter("$flag\n$cast\ninvoke-interface {v2, v0, v1}, $CHECK"))))
+        for ((case, read) in shapes) {
+            val getter = getter(read)
+            // mirroredControls fails the case when CompatReport resolves the getter the patch's finder skips.
+            assertTrue(found(searchIconFixture(getter)).isEmpty(), case)
+        }
+    }
+
     @Test fun theFlagCountsOnlyWhenTheOneSearchIconBuilderAsksTheGetter() {
         val getter = listOf(fixtureClass("LX/Sg1;", listOf(searchGetter())))
         // A builder that reads the flag itself, with no getter between, isn't the shape the switch was tested on.
