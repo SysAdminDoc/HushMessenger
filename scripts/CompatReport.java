@@ -4890,7 +4890,7 @@ public class CompatReport {
         var uri = menuField(code.get(8));
         if (holder == null || get == null || read == null || uri == null) return false;
         return get.getDefiningClass().equals(holder.getType()) && refParams(get).equals(List.of(holder.getType())) && "Ljava/lang/Object;".equals(get.getReturnType()) &&
-            read.getDefiningClass().equals(ref(code.get(3))) && MENU_AUDIO_DATA.equals(read.getReturnType()) && refParams(read).equals(List.of(MENU_SESSION, MENU_MESSAGE, "Ljava/lang/String;")) &&
+            read.getDefiningClass().equals(ref(code.get(3))) && MENU_AUDIO_DATA.equals(read.getReturnType()) && refParams(read).equals(List.of(MENU_MESSAGE, "Ljava/lang/String;")) &&
             MENU_AUDIO_DATA.equals(uri.getDefiningClass()) && "Landroid/net/Uri;".equals(uri.getType());
     }
 
@@ -5191,38 +5191,28 @@ public class CompatReport {
             if (f != null && i.getOpcode() == Opcode.IGET_OBJECT && f.getDefiningClass().equals(reader)) { classifierField = f; break; }
         }
         if (classifierField == null) return List.of();
+        // 586's reader asks the classifier's session-free static step itself, the step a row added with no account at hand asks too.
+        var classifier = byType.get(classifierField.getType());
+        if (classifier == null) return List.of();
         int ask = -1;
         for (int i = 0; i < readCode.size(); i++) {
             var call = menuCall(readCode.get(i));
-            if (call != null && readCode.get(i).getOpcode() == Opcode.INVOKE_VIRTUAL && call.getDefiningClass().equals(classifierField.getType()) &&
-                refParams(call).equals(List.of(MENU_SESSION, MENU_MESSAGE))) { ask = i; break; }
+            if (call != null && readCode.get(i).getOpcode() == Opcode.INVOKE_STATIC && call.getDefiningClass().equals(classifier.getType()) &&
+                refParams(call).equals(List.of(classifier.getType(), MENU_MESSAGE))) { ask = i; break; }
         }
         if (ask < 0 || ask + 2 >= readCode.size()) return List.of();
-        var kind = menuCall(readCode.get(ask)).getReturnType();
+        var asked = menuCall(readCode.get(ask));
+        var kind = asked.getReturnType();
         if (readCode.get(ask + 1).getOpcode() != Opcode.MOVE_RESULT_OBJECT || readCode.get(ask + 2).getOpcode() != Opcode.SGET_OBJECT) return List.of();
         var audioKind = menuField(readCode.get(ask + 2));
         if (audioKind == null || !audioKind.getType().equals(kind)) return List.of();
-        // The classifier's session-free step, which its session-taking one calls. A row is added where no account is at hand.
-        var classifier = byType.get(classifierField.getType());
-        if (classifier == null) return List.of();
-        Method classify = null, asked = null;
-        for (var m : classifier.getMethods()) {
+        Method classify = null;
+        for (var m : classifier.getMethods())
             if (AccessFlags.STATIC.isSet(m.getAccessFlags()) && m.getReturnType().equals(kind) && params(m).equals(List.of(classifier.getType(), MENU_MESSAGE))) {
                 if (classify != null) return List.of();
                 classify = m;
             }
-            if (m.getName().equals(menuCall(readCode.get(ask)).getName()) && params(m).equals(List.of(MENU_SESSION, MENU_MESSAGE))) {
-                if (asked != null) return List.of();
-                asked = m;
-            }
-        }
-        if (classify == null || asked == null) return List.of();
-        boolean calls = false;
-        for (var i : instructions(asked)) {
-            var call = menuCall(i);
-            if (call != null && i.getOpcode() == Opcode.INVOKE_STATIC && call.getName().equals(classify.getName()) && call.getDefiningClass().equals(classifier.getType())) calls = true;
-        }
-        if (!calls || !menuOpenField(byType, classifierField, false) || !AccessFlags.PUBLIC.isSet(classifier.getAccessFlags()) || !AccessFlags.PUBLIC.isSet(classify.getAccessFlags()) ||
+        if (classify == null || !classify.getName().equals(asked.getName()) || !menuOpenField(byType, classifierField, false) || !AccessFlags.PUBLIC.isSet(classifier.getAccessFlags()) || !AccessFlags.PUBLIC.isSet(classify.getAccessFlags()) ||
             !menuOpenField(byType, audioKind, false) || !menuOpenClass(byType, MENU_MESSAGE) || !menuOpenClass(byType, kind)) return List.of();
         var sheet = saveVoiceSheet(classes, byType);
         return sheet.isEmpty() ? List.of() : List.of(rows, tap, sheet.get(0), sheet.get(1));
