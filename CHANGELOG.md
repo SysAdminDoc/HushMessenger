@@ -19,7 +19,9 @@
 - `Report a problem` now also says whether Messenger's notifications can pop up on your phone. It fills in Android's notification switch for Messenger, your chat bubbles choice, whether Messenger may draw over other apps and show calls full screen, and which notification channels sit below the level that pops up. Channels go in by Messenger's own id for them, never a chat's name. Refs #126.
 - `Your own home header` is a new switch under Theme. Type a few words or pick a picture and it shows at the top of the chat list in place of Messenger's wordmark. Words use the wordmark's own colors, gradient and all, and a picture keeps its colors and wins when both are set. With neither, the wordmark stays. Refs #129.
 
-### Fixed
+### Changed and fixed
+
+- HushMessenger now targets Messenger 586.0.0.55.92. APKMirror lists one build of it, 347215348 for arm64 phones, and that's the one it takes. 585.0.0.53.94 is no longer supported, so update Messenger before you patch. Meta didn't put out an armv7 build of 586, so 32-bit phones can keep using v0.28.0 with Messenger 585. The build was checked patch by patch, and Morphe Desktop applied and rebuilt it.
 
 - Chat heads show up for messages that arrive while Messenger is still running in the background, once you allow it unrestricted battery use. On Optimized battery Android blocks the chat head in that case, so one only appeared if Messenger had been closed. `Allow chat bubbles` now has an `Allow unrestricted battery use` button under its modes that asks Android for it, and its help text says why.
 

@@ -20,8 +20,8 @@ import java.security.MessageDigest
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import kotlin.test.*
 
-/** Emoji drawer flag reads in 585, one in each of its six drawer hooks. */
-private const val EMOJI_DRAWER_READS = 6
+/** Emoji drawer flag reads in 586, one in each of its seven drawer hooks. 585 had six. */
+private const val EMOJI_DRAWER_READS = 7
 
 /** [resumeTail] pads onResume after the guarded part: 22 instructions in 585. An older release's two more are refused. */
 internal fun screenshotViewerFixture(
@@ -526,9 +526,9 @@ class NativeMediaControlsTest {
             val grid = method.validateAiStickerGrid()
             assertEquals(4, grid.flag)
             assertEquals("Ljava/util/Iterator;->hasNext()Z", (code[grid.skip] as ReferenceInstruction).reference.toString())
-            val menu = aiCells.single { it.render == activeProfile.hooks.getValue("ai_sticker_cell").single() }.menu
-            // 585 dropped the Generate AI item from the grid; a build that still lists it gets that branch skipped too.
-            assertEquals(listOf(menu) + listOfNotNull(GENERATE_AI_LABEL.takeIf { ai }),
+            val cell = aiCells.single { it.render == activeProfile.hooks.getValue("ai_sticker_cell").single() }
+            // 585 dropped the Generate AI item from the grid; a build that still lists it under its own label gets that branch skipped too.
+            assertEquals(listOf(cell.menu) + listOfNotNull(cell.label.takeIf { ai }),
                 grid.sites.map { (code[it] as NarrowLiteralInstruction).narrowLiteral })
             assertGridInjected(method, "fixture", if (ai) 2 else 1)
         }

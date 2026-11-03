@@ -184,26 +184,18 @@ With **Hide read receipts** on, a chat you open stays unread on your phone, beca
 | Field | Value |
 | --- | --- |
 | Package | `com.facebook.orca` |
-| Version | `585.0.0.53.94` |
-| Version codes, arm64-v8a | `347014996`, `347015062`, `347015064`, `347015065`, `347015067` |
-| Version codes, armeabi-v7a | `347014974`, `347014990` |
-| Icons for every screen density | `347015062` |
-| Icons for one screen density | 240 dpi `347015064`. 320 dpi `347015065`. 480 dpi `347014996` and both armeabi-v7a builds. 640 dpi `347015067` |
+| Version | `586.0.0.55.92` |
+| Version code, arm64-v8a | `347215348` |
+| Screen density | 560-640 dpi on APKMirror |
 | Minimum Android version | Android 9 (API 28) |
-| APKMirror download | [585.0.0.53.94](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-585-0-0-53-94-release/) |
+| APKMirror download | [586.0.0.55.92](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-586-0-0-55-92-release/) |
 
-HushMessenger takes all 7 builds APKMirror lists for 585.0.0.53.94. The patch checks the version code before it changes anything and stops on a build that isn't listed. Older Messenger versions aren't supported by current bundles. v0.27.0 still takes 584.1.0.61.98, v0.26.0 takes 584.0.0.49.98, v0.25.0 takes 583.0.0.29.95 and v0.23.0 takes 582.0.0.61.92.
+APKMirror lists one build for 586.0.0.55.92, for arm64 phones, and HushMessenger takes it. There's no armeabi-v7a build of 586. The patch checks the version code before it changes anything and stops on a build that isn't listed. Older Messenger versions aren't supported by current bundles. v0.28.0 still takes 585.0.0.53.94 (armv7 too), v0.27.0 takes 584.1.0.61.98, v0.26.0 takes 584.0.0.49.98, v0.25.0 takes 583.0.0.29.95 and v0.23.0 takes 582.0.0.61.92.
 
-SHA-256 of the stock APKs the checks ran against:
+SHA-256 of the stock APK the checks ran against:
 
 ```text
-347014974  5f012086183db46c6ad378e28086da1e5e16e99ff9b77aa6c7689aaaebdba2d8
-347014990  64459c2a982ef14d7aae71d49f342fb0d7d5e99912a722d04fd6152adcffa652
-347014996  b2c15b18456f23016688f0616466f23789b1da2e35f34dea23fcf46cf749f245
-347015062  a2b052a5d245e86c3c1545957dbd866b0987e0bcac8ddd03bdb8c400bb3f576b
-347015064  e89f0d76a5186916d7ff28ea7a503feee75afce4a781fd4aa8622a938bf1460a
-347015065  a2ff26d061d067959bec55c7f336415fe70b726ba8c4638db1bc25e5312fda99
-347015067  a80797f05b60a57f5e852ecce00b081000b95bf03b92e27ba3784d72139e0125
+347215348  ee4bee15fe07eecc933aacfb7ec8d8d3f8ace8f4d7ccf517c6bd1ff0b63aae7e
 ```
 
 On Windows, compare your file with `Get-FileHash -Algorithm SHA256 .\messenger.apk`. Meta sometimes publishes different APKs under one version name.
@@ -247,11 +239,11 @@ $env:GITHUB_TOKEN = gh auth token
 python -m unittest discover -s scripts/tests -v
 ```
 
-The bundle lands in `patches/build/libs/`, and clean builds from the same source give the same checksum. `:patches:check` wants the exact stock APK of every supported build in a folder named by `HUSH_NATIVE_FIXTURES`, each file named with its version code after the last dash, like `messenger-585.0-347015062.apk`. `:patches:test` runs without them and skips the tests that replay on those APKs.
+The bundle lands in `patches/build/libs/`, and clean builds from the same source give the same checksum. `:patches:check` wants the exact stock APK of every supported build in a folder named by `HUSH_NATIVE_FIXTURES`, each file named with its version code after the last dash, like `messenger-586.0-347215348.apk`. `:patches:test` runs without them and skips the tests that replay on those APKs.
 
 The development bundle names its discovery stages in the patch log and reports their elapsed time. To compare Wi-Fi finder time, allocation and heap peaks against the previous implementation on one stock APK, run `:patches:benchmarkWifiIdentity -PapkPath=<apk>`.
 
-To exercise Messenger itself, use ARM64 Android or an emulator image with ARM translation. The Android 12L Google APIs x86_64 image with `libndk_translation.so` runs the arm64 builds. Keep separate emulator data directories for Meta-signed stock and re-signed builds. Android users and work profiles share the installed APK and its signing key. The armv7 builds have passed the compatibility checks and a full Desktop rebuild, but haven't been walked on an armv7 phone yet.
+To exercise Messenger itself, use ARM64 Android or an emulator image with ARM translation. The Android 12L Google APIs x86_64 image with `libndk_translation.so` runs the arm64 build. Keep separate emulator data directories for Meta-signed stock and re-signed builds. Android users and work profiles share the installed APK and its signing key.
 
 For a low-RAM check, verify `ActivityManager.isLowRamDevice()` inside the app. A userdebug image can apply `debug.force_low_ram` temporarily after a framework restart. Reducing the emulator's RAM alone doesn't establish that classification. Restore the property and verify the original result afterward.
 

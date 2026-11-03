@@ -67,7 +67,7 @@ private val STOCK = """
       <uses-permission android:name="com.facebook.orca.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/>
       <uses-permission android:name="com.facebook.katana.provider.ACCESS"/>
       <uses-permission android:name="app.hushfacebook.permission.prod.FB_APP_COMMUNICATION"/>
-      <queries><provider android:authorities="androidx.car.app.connection"/><package android:name="com.facebook.katana"/></queries>
+      <queries><provider android:authorities="androidx.car.app.connection"/><package android:name="com.facebook.katana"/><package android:name="com.facebook.orca"/></queries>
       <application android:label="@string/app_name">
         <meta-data android:name="android.telephony.PROPERTY_SATELLITE_DATA_OPTIMIZED" android:value="com.facebook.orca"/>
         <activity android:name="com.facebook.messenger.neue.MainActivity" android:taskAffinity="com.facebook.orca.Main">
@@ -318,6 +318,9 @@ class CloneInstallPatchTest {
             TAM_AUTHORITY to "$COPY$TAM_SUFFIX", "com.facebook.orca.hush.settings" to "$COPY.hush.settings"), result.authorities)
         assertEquals("androidx.car.app.connection", manifest.elements("queries").single().getElementsByTagName("provider")
             .let { (it.item(0) as Element).getAttribute("android:authorities") })
+        // 586 asks to see Messenger itself, which for the copy is the copy. Other apps it asks for stay.
+        assertEquals(listOf("com.facebook.katana", COPY), manifest.elements("queries").single().getElementsByTagName("package")
+            .let { nodes -> (0 until nodes.length).map { (nodes.item(it) as Element).getAttribute("android:name") } })
 
         assertEquals("$COPY.Main", manifest.named("activity", "com.facebook.messenger.neue.MainActivity").getAttribute("android:taskAffinity"))
         assertEquals("$COPY.com.facebook.bugreporter",
@@ -590,15 +593,13 @@ class CloneInstallPatchTest {
 
     @Test fun eachBuildFamilyHasItsOwnPinnedSites() {
         val families = MessengerTarget.VERSION_CODES.map { expectedCloneSitesFor(it.toString()) }.toSet()
-        assertEquals(3, families.size)
+        assertEquals(1, families.size)
         assertTrue(families.all { it.size == 7 && it.count { id -> '@' in id } == 5 })
-        assertEquals(setOf("LX/OnZ;-><init>()V", "LX/4ae;->A00(Ljava/lang/String;)Z",
-            "LX/KeQ;->A00(Landroid/content/Intent;Landroid/content/Context;)V@1",
-            "LX/8cK;->A04(Landroid/os/Bundle;)LX/9be;@225", "LX/8cK;->A04(Landroid/os/Bundle;)LX/9be;@318",
-            "LX/CVD;->onClick(Landroid/view/View;)V@81", "LX/Jig;->onClick(Landroid/view/View;)V@174"), expectedCloneSitesFor("347015064"))
-        // The second arm64 profile differs only in controls; its clone sites are the base's.
-        assertEquals(expectedCloneSitesFor("347015062"), expectedCloneSitesFor("347014996"))
-        assertEquals(expectedCloneSitesFor("347015062"), expectedCloneSitesFor("347015067"))
+        assertEquals(setOf("LX/Y7a;-><init>()V", "LX/4NY;->A00(Ljava/lang/String;)Z",
+            "LX/391;->A00(Landroid/content/Intent;Landroid/content/Context;)V@1",
+            "LX/93D;->A04(Landroid/os/Bundle;)LX/9Xq;@228", "LX/93D;->A04(Landroid/os/Bundle;)LX/9Xq;@323",
+            "LX/Cg3;->onClick(Landroid/view/View;)V@83", "LX/Jm8;->onClick(Landroid/view/View;)V@155"), expectedCloneSitesFor("347215348"))
+        assertFailsWith<PatchException> { expectedCloneSitesFor("347015062") }
         assertFailsWith<PatchException> { expectedCloneSitesFor("346611999") }
     }
 

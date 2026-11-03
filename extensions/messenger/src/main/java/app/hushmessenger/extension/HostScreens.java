@@ -117,7 +117,7 @@ public final class HostScreens {
     }
 
     /**
-     * The Messenger build the patch started from, "585.0.0.53.94|347015062|base": version name, version code and the
+     * The Messenger build the patch started from, "586.0.0.55.92|347215348|base": version name, version code and the
      * mapping its hooks came from. The patch rewrites this, so it holds on Root Mount installs and under Spoof package
      * version, where Android's version code says something else. The extension alone has none.
      */

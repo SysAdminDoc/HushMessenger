@@ -11,8 +11,8 @@ internal object ExpectedTotals {
     const val DIRECTED_CONTROLS = 71
     /** Controls declared through controlPatch, whose injection HookInjectionReplayTest replays on the real builds. */
     const val REPLAYED_CONTROLS = 67
-    /** Hook methods per 585 build. Six of them read the emoji drawer flag and five the search icon flag. */
-    const val HOOKS_585 = 248
+    /** Hook methods per 586 build. Seven of them read the emoji drawer flag and one the search icon flag (585: six and five). */
+    const val HOOKS_586 = 245
     /** The complete synthetic discovery fixture, one method per expected hook. */
     const val DISCOVERY_FIXTURE_HOOKS = 235
 }

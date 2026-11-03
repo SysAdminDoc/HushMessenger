@@ -7,9 +7,6 @@ package app.hushmessenger.patches.coexist
 
 import app.hushmessenger.patches.MessengerTarget
 import app.hushmessenger.patches.controls.BASE_PROFILE
-import app.hushmessenger.patches.controls.PROFILE_347014974
-import app.hushmessenger.patches.controls.PROFILE_347014990
-import app.hushmessenger.patches.controls.PROFILE_347014996
 import app.hushmessenger.patches.controls.SHORTCUTS_DIRECTORIES
 import app.hushmessenger.patches.controls.controlProfileFor
 import app.hushmessenger.patches.controls.hookId
@@ -174,6 +171,10 @@ internal fun Document.renameForClone(newPackage: String, label: String): CloneMa
         }
     }
     for (metadata in all("meta-data")) if (metadata.getAttribute("android:value") == ORIGINAL) metadata.setAttribute("android:value", newPackage)
+    // 586 lists Messenger itself among the apps it asks to see. The copy asks to see itself, not Messenger.
+    for (queries in all("queries")) for (query in queries.children("package")) {
+        if (query.getAttribute("android:name") == ORIGINAL) query.setAttribute("android:name", newPackage)
+    }
 
     var labels = 0
     application.setAttribute("android:label", label)
@@ -303,24 +304,18 @@ internal fun findCloneSites(classes: Iterable<ClassDef>, pools: Set<String> = ow
 private const val ATTACHMENT_CHECK = "->A00(Ljava/lang/String;)Z"
 private const val BROADCAST = "->A00(Landroid/content/Intent;Landroid/content/Context;)V"
 private const val NOTIFICATION = "->A04(Landroid/os/Bundle;)"
-private const val ARMV7_NOTIFICATION = "->A05(Landroid/os/Bundle;)"
 private const val CLICK = "->onClick(Landroid/view/View;)V"
 
 /**
  * Each build family's backup lookup and attachment check, then every setPackage call that sends Messenger to itself:
  * the in-app broadcast sender, the push notification's click and link intents, the bulk delete link in the inbox and
- * the story link button. Every arm64 build of 585 has the same ones, and each armv7 build its own. The native test
- * checks them on every supported build.
+ * the story link button. 586 has one arm64 build. The native test checks them on every supported build.
  */
 internal fun expectedCloneSitesFor(versionCode: String): Set<String> {
     validateVersionCode(versionCode)
     return when (controlProfileFor(versionCode)) {
-        BASE_PROFILE, PROFILE_347014996 -> setOf("LX/OnZ;-><init>()V", "LX/4ae;$ATTACHMENT_CHECK", "LX/KeQ;$BROADCAST@1",
-            "LX/8cK;${NOTIFICATION}LX/9be;@225", "LX/8cK;${NOTIFICATION}LX/9be;@318", "LX/CVD;$CLICK@81", "LX/Jig;$CLICK@174")
-        PROFILE_347014974 -> setOf("LX/Rwh;-><init>()V", "LX/4dC;$ATTACHMENT_CHECK", "LX/3A4;$BROADCAST@1",
-            "LX/8gl;${ARMV7_NOTIFICATION}LX/9fV;@185", "LX/8gl;${ARMV7_NOTIFICATION}LX/9fV;@282", "LX/Ekg;$CLICK@83", "LX/Joj;$CLICK@174")
-        PROFILE_347014990 -> setOf("LX/J6k;-><init>()V", "LX/4a2;$ATTACHMENT_CHECK", "LX/38w;$BROADCAST@1",
-            "LX/8aO;${ARMV7_NOTIFICATION}LX/9ZI;@184", "LX/8aO;${ARMV7_NOTIFICATION}LX/9ZI;@281", "LX/CTz;$CLICK@81", "LX/MEB;$CLICK@166")
+        BASE_PROFILE -> setOf("LX/Y7a;-><init>()V", "LX/4NY;$ATTACHMENT_CHECK", "LX/391;$BROADCAST@1",
+            "LX/93D;${NOTIFICATION}LX/9Xq;@228", "LX/93D;${NOTIFICATION}LX/9Xq;@323", "LX/Cg3;$CLICK@83", "LX/Jm8;$CLICK@155")
         else -> fail("version code $versionCode has no checked clone sites")
     }
 }

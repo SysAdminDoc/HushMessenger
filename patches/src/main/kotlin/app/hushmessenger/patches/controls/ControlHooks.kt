@@ -1711,7 +1711,7 @@ internal fun MutableMethod.validateStorySave(): StorySave {
     var canSave: String? = null
     var add = entry + 4
     if (op(add) == Opcode.INSTANCE_OF) {
-        // 585's 347014990 lists the card types: a match jumps to the item, the last miss skips it.
+        // 586 (and 585's 347014990) list the card types: a match jumps to the item, the last miss skips it.
         while (op(add) == Opcode.INSTANCE_OF) {
             val test = code[add] as TwoRegisterInstruction
             if (test.registerB != card || reg(add + 1) != test.registerA) fail("Save item's card test no longer matches the tested build")

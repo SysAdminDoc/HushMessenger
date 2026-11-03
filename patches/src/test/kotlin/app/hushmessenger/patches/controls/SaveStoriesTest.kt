@@ -322,9 +322,8 @@ class SaveStoriesTest {
                 val builder = MutableMethod(original)
                 val save = builder.validateStorySave()
                 classes.single { it.type == save.handler }.validateStoryMenuHandler(save)
-                // 347014990 still lists the card types. The arm64 builds and 347014974 ask the card's controller.
-                if (code == "347014990") assertTrue(save.canSave == null && save.saveable.isNotEmpty(), code)
-                else assertTrue(save.canSave != null && save.saveable.isEmpty(), code)
+                // 586's arm64 build lists the card types again, as 585's 347014990 did, instead of asking the card's controller.
+                assertTrue(save.canSave == null && save.saveable.isNotEmpty(), code)
                 storySaveHelper(original.definingClass, save)
                 val before = builder.implementation!!.instructions.toList()
                 builder.injectStorySave(save)

@@ -130,10 +130,7 @@ class ShareStoryTest {
 
     @Test fun eachFamilyMapsItsOwnSection() {
         val hoisted = "$HOISTED_SHARE_LOADER->A01()V"
-        assertEquals(setOf("LX/Jlh;->A8X()V", hoisted), PROFILE_347015062.hooks.getValue(SHARE_STORY))
-        assertEquals(setOf("LX/Jlh;->A8X()V", hoisted), PROFILE_347014996.hooks.getValue(SHARE_STORY))
-        assertEquals(setOf("LX/JrJ;->A8X()V", hoisted), PROFILE_347014974.hooks.getValue(SHARE_STORY))
-        assertEquals(setOf("LX/MHR;->A8Y()V", hoisted), PROFILE_347014990.hooks.getValue(SHARE_STORY))
+        assertEquals(setOf("LX/PQ0;->A8Y()V", hoisted), BASE_PROFILE.hooks.getValue(SHARE_STORY))
     }
 
     // The switch promises that only Your story leaves the list. A row we can't tie to the story, or a gate that could
