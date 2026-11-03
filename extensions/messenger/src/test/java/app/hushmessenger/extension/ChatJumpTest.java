@@ -443,6 +443,28 @@ public class ChatJumpTest {
         assertNull(ChatJump.running);
     }
 
+    @Test public void aBarThatCantShowLeavesNothingRunningAndTheNextJumpWorks() {
+        on(true);
+        openChat();
+        list.older = 1000;
+        hold(name);
+        // The bar reads the Light theme switch, so with no preferences its show() throws.
+        android.content.SharedPreferences prefs = Settings.preferences;
+        Settings.preferences = null;
+        try {
+            asked.get(0).jump(0);
+            fail("the bar showed without preferences");
+        } catch (NullPointerException expected) {
+        } finally {
+            Settings.preferences = prefs;
+        }
+        assertNull(ChatJump.running);
+        assertEquals(1, ((ViewGroup) activity.findViewById(android.R.id.content)).getChildCount());
+        asked.get(0).jump(0);
+        assertNotNull(ChatJump.running);
+        assertNotNull(ChatJump.running.bar.bar);
+    }
+
     @Test public void theDaysFirstMessageLandsBelowCardsLaidOverTheChat() {
         controller = Robolectric.buildActivity(Activity.class).setup();
         activity = controller.get();

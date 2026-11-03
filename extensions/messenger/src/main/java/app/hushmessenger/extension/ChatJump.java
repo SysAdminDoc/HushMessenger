@@ -261,8 +261,15 @@ public final class ChatJump {
             Toast.makeText(chat.getContext(), new SettingsText(chat.getContext()).get("chat_jump_no_list"), Toast.LENGTH_SHORT).show();
             return;
         }
-        running = new Jump(chat, new Loader(new ListSource(list), day));
-        running.start();
+        Jump jump = new Jump(chat, new Loader(new ListSource(list), day));
+        running = jump;
+        try {
+            jump.start();
+        } catch (RuntimeException | Error error) {
+            // A bar that never showed would stay running, holding the chat and its screen until the next jump.
+            jump.stop(Outcome.LOST);
+            throw error;
+        }
     }
 
     /** Asks where to go, then for the day when it's a date. */
