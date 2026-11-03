@@ -58,6 +58,20 @@ public class SettingsDialogTest {
         return dialog;
     }
 
+    @Test @SuppressWarnings("deprecation") public void theSheetsBarIconsFollowThePalettesThemeNotItsColor() throws Exception {
+        android.app.Activity owner = Robolectric.buildActivity(android.app.Activity.class).setup().get();
+        SettingsUi dark = new SettingsUi(owner, false), light = new SettingsUi(owner, true);
+        // A dark palette that isn't pure black, the kind a softer dark mode would bring.
+        java.lang.reflect.Field background = SettingsUi.class.getDeclaredField("background");
+        background.setAccessible(true);
+        background.setInt(dark, 0xff10151d);
+        int bars = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+        SettingsDialog sheet = new SettingsDialog(owner, dark, new SettingsText(owner), "Title", "Hint");
+        assertEquals(0, sheet.dialog.getWindow().getDecorView().getSystemUiVisibility() & bars);
+        sheet = new SettingsDialog(owner, light, new SettingsText(owner), "Title", "Hint");
+        assertEquals(bars, sheet.dialog.getWindow().getDecorView().getSystemUiVisibility() & bars);
+    }
+
     @Test public void anIncompleteRuleStaysOpenUntilItsReplyIsWritten() {
         try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
             Dialog dialog = open(screen.get());
