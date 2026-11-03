@@ -502,8 +502,8 @@ public final class ChatJump {
 
     /**
      * The views drawn on top of [view] in each of its parents. A parent draws its children by Z, then in order, so a
-     * sibling counts when it's raised higher or level and later. 585 adds the reminder card ahead of the list's frame and
-     * lifts it with elevation.
+     * sibling counts when it's raised higher or level and later. A card added ahead of the list's frame, such as the
+     * reminder card, can be lifted over it with elevation.
      */
     private static List<View> above(View view) {
         List<View> above = new ArrayList<>();

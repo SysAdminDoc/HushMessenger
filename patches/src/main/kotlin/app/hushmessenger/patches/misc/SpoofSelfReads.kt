@@ -31,7 +31,7 @@ private val PACKAGE_LOOKUPS = setOf(
 )
 
 /**
- * Messenger's reads of its own version code in the arm64 builds, 17 in 585 and 586: AppComponentManager's check (which logs
+ * Messenger's reads of its own version code, 17 in 586: AppComponentManager's check (which logs
  * a mismatch with the APK's own code), its service, ACRA's crash-time data, Profilo's trace end, the int helper, Mapbox's
  * two identifiers, the Hatch bug report's app_version, ML Kit's Clearcut logger, Play Billing's proxy activity and its
  * request params, and six more. A different count means the build changed, and nothing is rewritten.
