@@ -972,6 +972,8 @@ public final class SettingsActivity extends Activity {
         LinearLayout.LayoutParams titleSpace = new LinearLayout.LayoutParams(-1, -2);
         // A margin, since relative padding set before the row is attached stays on the right in a mirrored layout.
         if (overlay) titleSpace.setMarginEnd(ui.dp(60));
+        // As tall as the switch track beside it, so the description starts under the track.
+        if (overlay) titleLine.setMinimumHeight(ui.dp(24));
         if (ui.largeText) titleLine.setOrientation(LinearLayout.VERTICAL);
         titleLine.addView(ui.text(text.display(title), appRow ? 14 : 15, ui.text, false), new LinearLayout.LayoutParams(-2, -2));
         if (EXPERIMENTAL.contains(key)) {

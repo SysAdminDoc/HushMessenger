@@ -35,10 +35,10 @@ final class ShimmerTitle implements Runnable, View.OnAttachStateChangeListener, 
     /** How often a title that isn't showing checks whether it is again. */
     private static final long HIDDEN_CHECK_MS = 500;
     /**
-     * Messenger's gradient, blue (#0866FF, the launcher icon's) through purple and pink to orange, each stop lightened
-     * just enough to read at 7:1 on the dark page (black) and its panels (#10151D).
+     * Messenger's chat gradient, blue through purple and pink to coral, each stop lightened to read on the black page,
+     * cards and dialogs: 8.8, 7.2, 8.5 and 9.2 to 1.
      */
-    static final int[] DARK = {0xFF69A2FF, 0xFFC686FF, 0xFFFF7499, 0xFFFF7A6C};
+    static final int[] DARK = {0xFF00B2FF, 0xFFB57BFF, 0xFFFF7A9C, 0xFFFF8A7D};
     /** The same hues darkened to read at 7:1 on the light page (#F0F2F5) and its white panels. */
     static final int[] LIGHT = {0xFF0047BA, 0xFF7000D1, 0xFFA4002C, 0xFFA20F00};
     private static final int[] SHEEN = {0x00FFFFFF, 0xB3FFFFFF, 0x00FFFFFF};

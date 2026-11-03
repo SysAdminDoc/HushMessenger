@@ -315,7 +315,7 @@ final class MessageLogSheet {
                         empty.setPadding(ui.dp(20), ui.dp(20), ui.dp(20), ui.dp(20));
                         empty.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
                         View accent = new View(page);
-                        accent.setBackground(ui.shape(ui.accent, 0, 2));
+                        accent.setBackground(ui.shape(ui.accent, 0, 0));
                         empty.addView(accent, new LinearLayout.LayoutParams(ui.dp(36), ui.dp(4)));
                         TextView emptyLog = ui.title(text.get("message_log_empty"), 18);
                         emptyLog.setTag("message_log_empty_title");

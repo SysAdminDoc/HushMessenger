@@ -85,7 +85,7 @@ final class ThemeColors {
         themeClear.setVisibility(theme == null ? View.GONE : View.VISIBLE);
         for (int i = 0; i < ACCENTS.length; i++) {
             boolean picked = theme != null && theme.accent != null && theme.accent == ACCENTS[i];
-            GradientDrawable dot = ui.shape(ACCENTS[i], 0, 18);
+            GradientDrawable dot = ui.shape(ACCENTS[i], 0, 10);
             dot.setStroke(ui.dp(picked ? 3 : 1), picked ? ui.text : ui.line);
             swatches[i].setBackground(new InsetDrawable(dot, ui.dp(DOT_INSET)));
             swatches[i].setSelected(picked);
