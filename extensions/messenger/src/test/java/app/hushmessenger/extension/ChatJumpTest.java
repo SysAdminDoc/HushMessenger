@@ -411,6 +411,29 @@ public class ChatJumpTest {
         assertEquals("This is the start of the chat", ShadowToast.getTextOfLatestToast());
     }
 
+    /** Whether the menu's title is drawn in a dark color, as it is on a light sheet. */
+    private static boolean darkTitle(AlertDialog menu) {
+        int id = menu.getContext().getResources().getIdentifier("alertTitle", "id", "android");
+        int color = ((android.widget.TextView) menu.findViewById(id)).getCurrentTextColor();
+        return android.graphics.Color.red(color) + android.graphics.Color.green(color) + android.graphics.Color.blue(color) < 384;
+    }
+
+    @Test public void theMenuIsLightOrDarkWithTheChat() {
+        on(true);
+        openChat();
+        ChatJump.chooser = shown;
+        MaterialYouTheme.darkModeAnswer(false);
+        hold(name);
+        AlertDialog light = ShadowAlertDialog.getLatestAlertDialog();
+        assertTrue("a light chat gets a light menu", darkTitle(light));
+        light.dismiss();
+        MaterialYouTheme.darkModeAnswer(true);
+        hold(name);
+        AlertDialog dark = ShadowAlertDialog.getLatestAlertDialog();
+        assertNotSame(light, dark);
+        assertFalse("a dark chat gets a dark menu", darkTitle(dark));
+    }
+
     @Test public void cancelStopsTheJumpWhereItIs() {
         on(true);
         openChat();

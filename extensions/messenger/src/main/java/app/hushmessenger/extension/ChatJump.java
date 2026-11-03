@@ -275,7 +275,7 @@ public final class ChatJump {
     /** Asks where to go, then for the day when it's a date. */
     private static void choose(Context context, Target target) {
         SettingsText text = new SettingsText(context);
-        new AlertDialog.Builder(context, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+        new AlertDialog.Builder(context, MaterialYouTheme.chatDialogTheme())
             .setTitle(text.get("chat_jump_title"))
             .setItems(new CharSequence[]{text.get("chat_jump_first"), text.get("chat_jump_date")}, (dialog, which) -> {
                 try {
@@ -290,7 +290,7 @@ public final class ChatJump {
 
     private static void pickDay(Context context, Target target) {
         Calendar today = Calendar.getInstance();
-        DatePickerDialog picker = new DatePickerDialog(context, android.R.style.Theme_DeviceDefault_Dialog_Alert,
+        DatePickerDialog picker = new DatePickerDialog(context, MaterialYouTheme.chatDialogTheme(),
             (view, year, month, day) -> {
                 try {
                     target.jump(midnight(year, month, day));

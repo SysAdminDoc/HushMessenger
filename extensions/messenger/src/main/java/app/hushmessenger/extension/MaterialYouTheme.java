@@ -66,6 +66,14 @@ public final class MaterialYouTheme {
         return answered ? !DARK.get() : Settings.preferences.getBoolean("light", false);
     }
 
+    /**
+     * The theme for a question Hush asks over a chat, light or dark with the chat like its bars. One UI's DeviceDefault
+     * alert stays dark in a light chat and draws its title dark on that dark sheet.
+     */
+    static int chatDialogTheme() {
+        return chatIsLight() ? android.R.style.Theme_Material_Light_Dialog_Alert : android.R.style.Theme_Material_Dialog_Alert;
+    }
+
     // --- Dark surfaces ---
 
     /**
