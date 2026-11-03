@@ -35,6 +35,10 @@
 - `Check for updates` can't close Messenger anymore when the check breaks in a way it didn't plan for. It says it couldn't check, the same as when you're offline, and **Report a problem** picks up what went wrong.
 - Saving your choices to a file now says "Couldn't save your choices to the file" when that fails. It used to show the clipboard's message. A restore that only gets some of them back reads like "Restored 3 of 5 choices." now.
 
+### Checks
+
+- `scripts/walk-app.ps1` no longer taps anything on Messenger's chat restore prompt, as its own notes always said. When the prompt turns up in front of a later screen, the walk opens the chat link to get past it and then opens that screen again, the way it already did for the chat list. `-Thread` has to be a chat's numeric user id now, and a walk given `-Serial` without `-OutDir` keeps its steps and receipt in a folder for that phone, so walks on two phones at once don't clear each other's.
+
 ## 0.28.0 (2026-10-31)
 
 ### New
