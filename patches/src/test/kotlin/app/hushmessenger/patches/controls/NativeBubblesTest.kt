@@ -92,10 +92,12 @@ class NativeBubblesTest {
         assertTrue(found(nativeBubbleModeMethod().apply {
             replaceInstruction(19, "const-wide v0, ${BUBBLE_ROLLOUT + 1}L")
         }).getValue("bubble_mode").isEmpty())
-        // 582's number for the same read is refused, even with every other instruction in place.
-        val old = nativeBubbleModeMethod().apply { replaceInstruction(19, "const-wide v0, 36312020047499274L") }
-        assertTrue(found(old).getValue("bubble_mode").isEmpty())
-        assertFailsWith<PatchException> { old.validateNativeBubbleMode() }
+        // 585's and 582's numbers for the same read are refused, even with every other instruction in place.
+        for (number in listOf(36312002867630111L, 36312020047499274L)) {
+            val old = nativeBubbleModeMethod().apply { replaceInstruction(19, "const-wide v0, ${number}L") }
+            assertTrue(found(old).getValue("bubble_mode").isEmpty(), "$number")
+            assertFailsWith<PatchException>("$number") { old.validateNativeBubbleMode() }
+        }
         // DEX class definitions deduplicate identical signatures, so ambiguity needs a distinct method.
         val duplicate = MutableMethod(ImmutableMethod(mode.definingClass, "anotherBubbleMode", mode.parameters,
             mode.returnType, mode.accessFlags, null, null, mode.implementation))
