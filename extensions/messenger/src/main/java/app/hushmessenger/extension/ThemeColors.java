@@ -50,10 +50,8 @@ final class ThemeColors {
             swatch.setTag(String.format("theme_accent_%06X", color & 0xFFFFFF));
             swatch.setContentDescription(text.get("theme_accent_" + ACCENT_NAMES[i]));
             swatch.setOnClickListener(view -> pickAccent(color));
-            // A 48 dp target around the 36 dp dot. The margins keep each dot where it sat, 10 dp apart and under the label.
-            LinearLayout.LayoutParams size = new LinearLayout.LayoutParams(ui.dp(36 + 2 * DOT_INSET), ui.dp(36 + 2 * DOT_INSET));
-            if (i > 0) size.setMarginStart(ui.dp(10 - 2 * DOT_INSET));
-            row.addView(swatch, size);
+            // A 48 dp target around the 36 dp dot. The targets sit side by side, so the dots are 12 dp apart and none takes another's tap.
+            row.addView(swatch, new LinearLayout.LayoutParams(ui.dp(36 + 2 * DOT_INSET), ui.dp(36 + 2 * DOT_INSET)));
             swatches[i] = swatch;
         }
         HorizontalScrollView scroll = new HorizontalScrollView(page);

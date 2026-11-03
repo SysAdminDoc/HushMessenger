@@ -277,11 +277,14 @@ public class ThemeFileTest {
             for (int accent : ThemeColors.ACCENTS) {
                 View swatch = root.findViewWithTag(String.format("theme_accent_%06X", accent & 0xFFFFFF));
                 assertTrue(swatch.getWidth() + " x " + swatch.getHeight(), swatch.getWidth() >= 48 * dp && swatch.getHeight() >= 48 * dp);
-                // The dot itself stays 36 dp, and 10 dp from the one before it.
+                // The dot itself stays 36 dp. No target overlaps the one before it, which would take part of its tap.
                 Rect inset = new Rect();
                 assertTrue(swatch.getBackground() instanceof InsetDrawable && swatch.getBackground().getPadding(inset));
                 assertEquals(36 * dp, swatch.getWidth() - inset.left - inset.right, 0.5f);
-                if (last != null) assertEquals(10 * dp, swatch.getLeft() + inset.left - (last.getRight() - inset.right), 0.5f);
+                if (last != null) {
+                    assertTrue(last.getRight() + " > " + swatch.getLeft(), swatch.getLeft() >= last.getRight());
+                    assertEquals(12 * dp, swatch.getLeft() + inset.left - (last.getRight() - inset.right), 0.5f);
+                }
                 last = swatch;
             }
         }
