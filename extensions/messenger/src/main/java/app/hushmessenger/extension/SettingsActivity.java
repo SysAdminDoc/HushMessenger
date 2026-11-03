@@ -1441,6 +1441,8 @@ public final class SettingsActivity extends Activity {
         TextView chevron = ui.text(String.valueOf((char) 0x203a), 20, ui.muted, true);
         chevron.setGravity(android.view.Gravity.CENTER);
         chevron.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        // The glyph mirrors in a right-to-left paragraph, and the quarter turn would then point it up while shut.
+        chevron.setTextDirection(View.TEXT_DIRECTION_LTR);
         // Square and as big as the glyph, which grows with the text size: it turns a quarter round as the section opens.
         int side = Math.max(ui.dp(24), (int) Math.ceil(Math.max(chevron.getPaint().getFontSpacing(),
             chevron.getPaint().measureText(chevron.getText().toString()))));
