@@ -169,16 +169,18 @@ internal fun Method.markReadSite(list: Int, socket: Int, socketType: String): In
 /**
  * Messenger's top bar keeps the first [MARK_READ_MOST_BUTTONS] buttons: its one subList end is moved from a register
  * whose one reaching definition is that constant. 585's armv7 bar reuses the register for other values before it sets
- * the cap, so it's the definition that reaches the cut, not the only write.
+ * the cap, so it's the definition that reaches the cut, not the only write. 586 hands the cap register to the cut
+ * directly, with no move before it.
  */
 internal fun Method.markReadCapMatches(): Boolean {
     val code = markCode()
     val cut = code.indices.singleOrNull { code[it].markRef()?.toString() == SUB_LIST } ?: return false
     val end = code[cut].markArgs().getOrNull(2) ?: return false
-    val move = code.getOrNull(cut - 1) as? TwoRegisterInstruction ?: return false
-    val cap = if (move.registerA == end && (move as Instruction).opcode in setOf(Opcode.MOVE, Opcode.MOVE_FROM16, Opcode.MOVE_16)) move.registerB else return false
+    val move = code.getOrNull(cut - 1) as? TwoRegisterInstruction
+    val moved = move != null && move.registerA == end && (move as Instruction).opcode in setOf(Opcode.MOVE, Opcode.MOVE_FROM16, Opcode.MOVE_16)
     val flow = try { ReadFlow(this) } catch (_: PatchException) { return false }
-    return flow.narrowConstantAt(cut - 1, cap, depth = 0) == MARK_READ_MOST_BUTTONS
+    return if (moved) flow.narrowConstantAt(cut - 1, move!!.registerB, depth = 0) == MARK_READ_MOST_BUTTONS
+    else flow.narrowConstantAt(cut, end, depth = 0) == MARK_READ_MOST_BUTTONS
 }
 
 /**

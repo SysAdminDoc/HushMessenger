@@ -6863,9 +6863,12 @@ public class CompatReport {
         }
         if (cut < 1) return false;
         var args = callArgs(code.get(cut));
-        if (args.size() != 3 || !(code.get(cut - 1) instanceof TwoRegisterInstruction move) || move.getRegisterA() != args.get(2) ||
-            !Set.of(Opcode.MOVE, Opcode.MOVE_FROM16, Opcode.MOVE_16).contains(code.get(cut - 1).getOpcode())) return false;
-        Integer cap = narrowConstantAt(bar, code, cut - 1, move.getRegisterB(), 0);
+        if (args.size() != 3) return false;
+        // 586 hands the cap register to the cut directly, with no move before it.
+        boolean moved = code.get(cut - 1) instanceof TwoRegisterInstruction move && move.getRegisterA() == args.get(2) &&
+            Set.of(Opcode.MOVE, Opcode.MOVE_FROM16, Opcode.MOVE_16).contains(code.get(cut - 1).getOpcode());
+        Integer cap = moved ? narrowConstantAt(bar, code, cut - 1, ((TwoRegisterInstruction) code.get(cut - 1)).getRegisterB(), 0)
+            : narrowConstantAt(bar, code, cut, args.get(2), 0);
         return cap != null && cap == TOP_BAR_BUTTONS;
     }
 

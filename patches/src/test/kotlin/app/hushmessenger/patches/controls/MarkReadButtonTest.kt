@@ -273,6 +273,15 @@ class MarkReadButtonTest {
         assertEquals(DETAILS_BUILD, recipe.details)
     }
 
+    // 586's bar hands the cap register straight to subList, with no move down from a higher register before the cut.
+    @Test fun aBarThatHoldsItsCapInTheCutsOwnRegisterIsStillFound() {
+        val direct = BAR_BODY.replace("    move v5, v9\n", "    const/4 v5, 0x3\n")
+        assertTrue(direct != BAR_BODY)
+        assertEquals(listOf(SYNTHETIC_MARK_READ_BAR, SYNTHETIC_MARK_READ_FACTORY, SYNTHETIC_MARK_READ_CLICK), found(markReadFixture(bar(direct))))
+        val four = direct.replace("const/4 v5, 0x3", "const/4 v5, 0x4")
+        assertTrue(found(markReadFixture(bar(four))).isEmpty())
+    }
+
     // 585's factory is an instance method whose early returns hand back other lists, and builds the button list through a
     // static helper that only builds and null-checks it. The site is the one return the details button reaches.
     @Test fun anInstanceFactoryReturnsTheListTheDetailsButtonReachesThroughItsBuildHelper() {
