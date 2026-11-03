@@ -554,6 +554,23 @@ class CloneInstallPatchTest {
         }
     }
 
+    @Test fun aRefusedFacebookHandOffStopsThePatchBeforeTheCloneSitesChange() {
+        val katanaClone = "com.facebook.katana.morphe"
+        // No hand-off left to move, or a clone that takes the Facebook clone's own name.
+        for ((newPackage, handOffs) in listOf(COPY to emptyList<Pair<MutableMethod, Int>>(), katanaClone to listOf(broadcastSender() to 0))) {
+            val lookup = backupLookup()
+            val check = attachmentCheck()
+            val sender = broadcastSender()
+            val before = listOf(lookup, check, sender).map { it.code() }
+            assertFailsWith<PatchException> {
+                applyCloneCode(lookup, check, newPackage, listOf(sender to 1), emptySet(), emptyList(), katanaClone) { handOffs }
+            }
+            assertEquals(before, listOf(lookup, check, sender).map { it.code() }, newPackage)
+        }
+        // The regular Facebook app keeps its name everywhere, so its hand-offs aren't even looked for.
+        applyCloneCode(backupLookup(), attachmentCheck(), COPY, emptyList(), emptySet(), emptyList(), FACEBOOK_PACKAGE) { error("looked for hand-offs") }
+    }
+
     @Test fun eachBuildFamilyHasItsOwnPinnedSites() {
         val families = MessengerTarget.VERSION_CODES.map { expectedCloneSitesFor(it.toString()) }.toSet()
         assertEquals(3, families.size)

@@ -483,6 +483,28 @@ internal fun applyCloneSites(
     }
 }
 
+/**
+ * The clone sites, then the Facebook hand-offs when [facebook] isn't the regular app. The hand-off refusals come before
+ * the first edit, so a refused run doesn't leave the clone sites changed in a dex the patcher still writes.
+ */
+internal fun applyCloneCode(
+    lookup: MutableMethod,
+    check: MutableMethod,
+    newPackage: String,
+    selfIntents: List<Pair<MutableMethod, Int>>,
+    pools: Set<String>,
+    dedup: List<Pair<MutableMethod, Int>>,
+    facebook: String,
+    handOffs: () -> List<Pair<MutableMethod, Int>>,
+) {
+    val sites = if (facebook == FACEBOOK_PACKAGE) emptyList() else {
+        if (facebook == newPackage) fail("the Messenger clone and the Facebook app can't share the name $facebook")
+        handOffs().ifEmpty { fail("Messenger no longer opens the Facebook app by its name") }
+    }
+    applyCloneSites(lookup, check, newPackage, selfIntents, pools, dedup)
+    if (sites.isNotEmpty()) applyFacebookHandOffs(sites, facebook)
+}
+
 private class CloneRequest(val packageName: String, val label: String)
 
 private var cloneRequest: CloneRequest? = null
@@ -560,17 +582,13 @@ val cloneInstallPatch = bytecodePatch(
             mutableClassDefBy(id.substringBefore("->")).methods.single { it.hookId() == id } to site.substringAfter('@').toInt()
         }
         if (dedup.isEmpty()) fail("Messenger no longer names its push dedup provider")
-        applyCloneSites(methods.getValue(checks.single { it.endsWith("-><init>()V") }), methods.getValue(checks.single { it.endsWith(ATTACHMENT_CHECK) }),
-            target, calls.map { methods.getValue(it.substringBefore('@')) to it.substringAfter('@').toInt() }, pools, dedup)
         val facebook = facebookPackage?.takeIf(::isFacebookPackage) ?: fail("$facebookPackage can't be used as the Facebook app's name")
-        if (facebook != FACEBOOK_PACKAGE) {
-            if (facebook == target) fail("the Messenger clone and the Facebook app can't share the name $facebook")
-            val handOffs = findFacebookHandOffs(classes).map { site ->
+        applyCloneCode(methods.getValue(checks.single { it.endsWith("-><init>()V") }), methods.getValue(checks.single { it.endsWith(ATTACHMENT_CHECK) }),
+            target, calls.map { methods.getValue(it.substringBefore('@')) to it.substringAfter('@').toInt() }, pools, dedup, facebook) {
+            findFacebookHandOffs(classes).map { site ->
                 val id = site.substringBefore('@')
                 mutableClassDefBy(id.substringBefore("->")).methods.single { it.hookId() == id } to site.substringAfter('@').toInt()
             }
-            if (handOffs.isEmpty()) fail("Messenger no longer opens the Facebook app by its name")
-            applyFacebookHandOffs(handOffs, facebook)
         }
         requestClone(target, label)
     }
