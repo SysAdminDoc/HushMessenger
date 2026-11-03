@@ -462,7 +462,17 @@ internal fun applyCloneSites(
     selfIntents: List<Pair<MutableMethod, Int>> = emptyList(),
     pools: Set<String> = emptySet(),
     dedup: List<Pair<MutableMethod, Int>> = emptyList(),
-) {
+) = cloneSiteEdits(lookup, check, newPackage, selfIntents, pools, dedup)()
+
+/** Checks every clone site, then hands back the edits, so a caller can check its own sites before the first change. */
+private fun cloneSiteEdits(
+    lookup: MutableMethod,
+    check: MutableMethod,
+    newPackage: String,
+    selfIntents: List<Pair<MutableMethod, Int>>,
+    pools: Set<String>,
+    dedup: List<Pair<MutableMethod, Int>>,
+): () -> Unit {
     if (!isClonePackage(newPackage)) fail("$newPackage can't be used as a package name")
     if (selfIntents.map { (method, call) -> method.hookId() to call }.toSet().size != selfIntents.size) fail("an intent site is listed twice")
     // Every site passes before any changes.
@@ -470,22 +480,25 @@ internal fun applyCloneSites(
     val (checkAt, checkRegister) = check.attachmentSite()
     val loads = selfIntents.map { (method, call) -> method to method.selfIntentSite(call, pools) }
     val dedupLoads = if (dedup.isEmpty()) emptyList() else dedup.map { it.first }.zip(dedupLoads(dedup))
-    lookup.addInstruction(lookupAt, "const-string/jumbo v$lookupRegister, \"$ORIGINAL\"")
-    check.replaceInstruction(checkAt, "const-string/jumbo v$checkRegister, \"$newPackage$TAM_SUFFIX\"")
-    // In place of the constant, or of the pool lookup's result, so labels stay put. Last first, as a longer instruction
-    // can move the padding before a switch table.
-    for ((method, site) in loads.sortedByDescending { it.second.first }) {
-        method.replaceInstruction(site.first, "const-string/jumbo v${site.second}, \"$newPackage\"")
-    }
-    val cloneAuthority = cloneName(DEDUP_AUTHORITY, newPackage)!!
-    for ((method, site) in dedupLoads.sortedByDescending { it.second.first }) {
-        method.replaceInstruction(site.first, "const-string/jumbo v${site.second}, \"${site.third.replace(DEDUP_AUTHORITY, cloneAuthority)}\"")
+    return {
+        lookup.addInstruction(lookupAt, "const-string/jumbo v$lookupRegister, \"$ORIGINAL\"")
+        check.replaceInstruction(checkAt, "const-string/jumbo v$checkRegister, \"$newPackage$TAM_SUFFIX\"")
+        // In place of the constant, or of the pool lookup's result, so labels stay put. Last first, as a longer instruction
+        // can move the padding before a switch table.
+        for ((method, site) in loads.sortedByDescending { it.second.first }) {
+            method.replaceInstruction(site.first, "const-string/jumbo v${site.second}, \"$newPackage\"")
+        }
+        val cloneAuthority = cloneName(DEDUP_AUTHORITY, newPackage)!!
+        for ((method, site) in dedupLoads.sortedByDescending { it.second.first }) {
+            method.replaceInstruction(site.first, "const-string/jumbo v${site.second}, \"${site.third.replace(DEDUP_AUTHORITY, cloneAuthority)}\"")
+        }
     }
 }
 
 /**
- * The clone sites, then the Facebook hand-offs when [facebook] isn't the regular app. The hand-off refusals come before
- * the first edit, so a refused run doesn't leave the clone sites changed in a dex the patcher still writes.
+ * The clone sites, and the Facebook hand-offs when [facebook] isn't the regular app. Every site is checked before the
+ * first edit, so a refused run doesn't leave the clone sites changed in a dex the patcher still writes. The hand-offs
+ * change first, as the lookup's added instruction would move any hand-off after it in the same method.
  */
 internal fun applyCloneCode(
     lookup: MutableMethod,
@@ -501,8 +514,9 @@ internal fun applyCloneCode(
         if (facebook == newPackage) fail("the Messenger clone and the Facebook app can't share the name $facebook")
         handOffs().ifEmpty { fail("Messenger no longer opens the Facebook app by its name") }
     }
-    applyCloneSites(lookup, check, newPackage, selfIntents, pools, dedup)
+    val edits = cloneSiteEdits(lookup, check, newPackage, selfIntents, pools, dedup)
     if (sites.isNotEmpty()) applyFacebookHandOffs(sites, facebook)
+    edits()
 }
 
 private class CloneRequest(val packageName: String, val label: String)

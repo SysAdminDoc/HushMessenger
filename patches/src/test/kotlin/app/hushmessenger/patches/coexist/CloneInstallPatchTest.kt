@@ -48,6 +48,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -569,6 +570,22 @@ class CloneInstallPatchTest {
         }
         // The regular Facebook app keeps its name everywhere, so its hand-offs aren't even looked for.
         applyCloneCode(backupLookup(), attachmentCheck(), COPY, emptyList(), emptySet(), emptyList(), FACEBOOK_PACKAGE) { error("looked for hand-offs") }
+    }
+
+    @Test fun aHandOffAfterTheLookupSiteMovesWhereItWasFound() {
+        val katanaClone = "com.facebook.katana.morphe"
+        // A hand-off in the lookup's own method, after the instruction the clone lookup adds.
+        val body = LOOKUP_BODY.replace("return-void", "const-string v2, \"$FACEBOOK_PACKAGE\"\ninvoke-virtual {v4, v2}, $SET_PACKAGE\nreturn-void")
+        assertNotEquals(LOOKUP_BODY, body)
+        val lookup = backupLookup(body)
+        val handOff = lookup.code().indexOfFirst { (it as? ReferenceInstruction)?.reference.let { ref -> ref is StringReference && ref.string == FACEBOOK_PACKAGE } }
+        val size = lookup.code().size
+        applyCloneCode(lookup, attachmentCheck(), COPY, emptyList(), emptySet(), emptyList(), katanaClone) { listOf(lookup to handOff) }
+        val strings = lookup.code().mapNotNull { ((it as? ReferenceInstruction)?.reference as? StringReference)?.string }
+        assertEquals(size + 1, lookup.code().size)
+        assertEquals(1, strings.count { it == katanaClone })
+        assertFalse(FACEBOOK_PACKAGE in strings)
+        assertEquals(2 to katanaClone, lookup.loads(handOff + 1))
     }
 
     @Test fun eachBuildFamilyHasItsOwnPinnedSites() {
