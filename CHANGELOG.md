@@ -32,6 +32,7 @@
 - Android Auto's launcher opens Messenger again instead of showing the HushMessenger settings entry in its place. The drawer entry now sorts after Messenger's own, so anything that launches Messenger by package name (Android Auto, the Facebook app's Messenger button, a Manager's Open button) lands in Messenger. The `Android Auto messages` text now says Unknown sources is only enough on a desktop head unit, since a real car can still leave Messenger out, and that playing a message aloud marks the chat read and shows Seen, even with `Hide read receipts` on. Refs #75.
 - With `Open your gallery app`, a photo or video from Google Photos no longer crashes Messenger when the folder it copies your pick into won't take the file. The copy moves to another of Messenger's own folders and the send carries on, and **Report a problem** says which folder refused and why. Refs #124.
 - `Bold and italic text` now puts Bold and Italic straight into the chat box's text menu, by name, with nothing to tick first on a Samsung phone. On some Samsung phones those two rows showed up as Messenger and Messenger, and they brought Dictionary, Translate and other apps' rows into the chat box along with them. Those rows are gone from the chat box again. Refs #125.
+- `Check for updates` can't close Messenger anymore when the check breaks in a way it didn't plan for. It says it couldn't check, the same as when you're offline, and **Report a problem** picks up what went wrong.
 
 ## 0.28.0 (2026-10-31)
 

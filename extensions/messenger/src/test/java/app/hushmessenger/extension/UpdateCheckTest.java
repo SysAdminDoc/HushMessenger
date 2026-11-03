@@ -131,6 +131,14 @@ public class UpdateCheckTest {
         assertEquals("Couldn't check for updates. Check your connection and try again.", awaitStatus(openWithCheckOn()).getText().toString());
     }
 
+    @Test public void aFailureOutsideTheExpectedOnesShowsTheErrorAndIsLogged() throws Exception {
+        // A file address opens a connection that isn't HTTP, so the cast throws ClassCastException on the worker thread.
+        UpdateCheck.releasesUrl = new java.io.File(RuntimeEnvironment.getApplication().getCacheDir(), "release.json").toURI().toString();
+        Settings.hookErrors.remove("check_updates");
+        assertEquals("Couldn't check for updates. Check your connection and try again.", awaitStatus(openWithCheckOn()).getText().toString());
+        assertTrue(Settings.hookErrors.get("check_updates").startsWith(ClassCastException.class.getName()));
+    }
+
     @Test public void aServerThatNeverAnswersTimesOut() throws Exception {
         // Hold the connection open past awaitStatus's window, so only the read timeout can end the wait.
         reply = out -> {

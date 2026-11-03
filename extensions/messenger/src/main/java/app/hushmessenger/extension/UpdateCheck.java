@@ -150,6 +150,14 @@ final class UpdateCheck {
         });
     }
 
+    private void showError(long generation) {
+        page.runOnUiThread(() -> {
+            if (!currentUpdate(generation)) return;
+            updateStatus.setText(page.text.get("update_error"));
+            updateStatus.setVisibility(View.VISIBLE);
+        });
+    }
+
     private void checkForUpdates() {
         cancelUpdateCheck();
         if (!Settings.preferences.getBoolean("check_updates", false) || page.isDestroyed()) return;
@@ -217,11 +225,11 @@ final class UpdateCheck {
                 showRelease(generation, release);
             } catch (java.io.IOException | IllegalArgumentException | IllegalStateException | SecurityException error) {
                 if (generation == updateGeneration) android.util.Log.e("HushMessenger", "Update check failed", error);
-                page.runOnUiThread(() -> {
-                    if (!currentUpdate(generation)) return;
-                    updateStatus.setText(page.text.get("update_error"));
-                    updateStatus.setVisibility(View.VISIBLE);
-                });
+                showError(generation);
+            } catch (RuntimeException error) {
+                // Anything else left this thread uncaught and ended Messenger with it.
+                if (generation == updateGeneration) Settings.hookFailedPrivately("check_updates", "Update check failed", error);
+                showError(generation);
             } finally {
                 if (conn != null) conn.disconnect();
                 synchronized (this) { if (updateConnection == conn) updateConnection = null; }
