@@ -360,6 +360,13 @@ public final class SettingsActivity extends Activity {
         updates.syncUpdateChoice(false);
     }
 
+    @Override protected void onPause() {
+        // Coming back from an Android screen measures the list again, and a focused search then pulls it back up to its
+        // cursor. One scrolled out of sight lets go, so the list stays where it was.
+        if (search != null && search.hasFocus() && !inList(search)) search.clearFocus();
+        super.onPause();
+    }
+
     @Override protected void onStop() {
         // Leaving settings makes a Quick setup or a Clear final, one still running included.
         started = false;
@@ -657,6 +664,16 @@ public final class SettingsActivity extends Activity {
             String line = text.count("restart_waiting", waiting);
             if (!line.contentEquals(restartWaiting.getText())) restartWaiting.setText(line);
         }
+    }
+
+    /** Whether some of a view in the controls list shows in the list's window. */
+    private boolean inList(View view) {
+        if (controlsScroll == null || !view.isShown()) return false;
+        Rect spot = new Rect();
+        view.getDrawingRect(spot);
+        controlsScroll.offsetDescendantRectToMyCoords(view, spot);
+        int top = controlsScroll.getScrollY();
+        return spot.bottom > top && spot.top < top + controlsScroll.getHeight();
     }
 
     private ScrollView scrollPage(LinearLayout parent) {
