@@ -344,13 +344,18 @@ class NativeMediaControlsTest {
             // "Generate custom stickers" in the menu label's place: the custom sticker cell isn't the AI menu.
             assertTrue(findAiStickerCells(aiStickerCellFixture(cell.render, menu = 0x7f14128f)).isEmpty())
         }
-        // Every 585 cell offers its AI label from four renders and its Generate menu label from one.
+        // Every 585 and 586 cell offers its AI label from four renders and its Generate menu label from one.
         assertEquals(listOf(
             listOf(GENERATE_AI_LABEL, 4, 109, GENERATE_MENU_LABEL, 1),
             listOf(GENERATE_AI_LABEL, 4, 109, GENERATE_MENU_LABEL, 1),
             listOf(GENERATE_AI_LABEL, 4, 109, GENERATE_MENU_LABEL_ARMV7, 1),
             listOf(GENERATE_AI_LABEL, 4, 113, GENERATE_MENU_LABEL_ARMV7, 1),
+            listOf(GENERATE_AI_LABEL_586, 4, 113, GENERATE_MENU_LABEL_586, 1),
         ), aiCells.map { listOf(it.label, it.sources, it.size, it.menu, it.menuSources) })
+        // A 586 cell offering 585's labels is not the 586 cell.
+        val cell586 = aiCells.last()
+        assertTrue(findAiStickerCells(aiStickerCellFixture(cell586.render, label = GENERATE_AI_LABEL)).isEmpty())
+        assertTrue(findAiStickerCells(aiStickerCellFixture(cell586.render, menu = GENERATE_MENU_LABEL)).isEmpty())
     }
 
     @Test fun aMenuLabelThatBranchesBeforeTheCellIsNotASource() {

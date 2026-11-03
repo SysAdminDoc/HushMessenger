@@ -1825,6 +1825,8 @@ public class CompatReport {
     static final int GENERATE_MENU_LABEL = 0x7f141c2d;
     // The same menu label in the 585 armv7 builds, two resources later
     static final int GENERATE_MENU_LABEL_ARMV7 = 0x7f141c2f;
+    // 586 arm64 renumbers both labels, as in NativeMediaControls.kt
+    static final int GENERATE_AI_LABEL_586 = 0x7f14055d, GENERATE_MENU_LABEL_586 = 0x7f141c4e;
     // The viewer's onCreateDialog override: A1J in 585 arm64 and the 347014974 armv7 family, A1H in the 347014990 one
     static final String EPHEMERAL_DIALOG = "A1J";
     static final java.util.Set<String> EPHEMERAL_DIALOGS = Set.of(EPHEMERAL_DIALOG, "A1H");
@@ -1938,7 +1940,8 @@ public class CompatReport {
         new AiCell("LX/R3i;", "LX/1No;", "LX/2ED;", "LX/1IG;", GENERATE_AI_LABEL, 4, 109, GENERATE_MENU_LABEL, 1),
         new AiCell("LX/R3h;", "LX/1No;", "LX/2ED;", "LX/1IG;", GENERATE_AI_LABEL, 4, 109, GENERATE_MENU_LABEL, 1),
         new AiCell("LX/OXo;", "LX/1Og;", "LX/2Fc;", "LX/1J8;", GENERATE_AI_LABEL, 4, 109, GENERATE_MENU_LABEL_ARMV7, 1),
-        new AiCell("LX/OGf;", "LX/1OE;", "LX/2Ed;", "LX/1Ig;", GENERATE_AI_LABEL, 4, 113, GENERATE_MENU_LABEL_ARMV7, 1));
+        new AiCell("LX/OGf;", "LX/1OE;", "LX/2Ed;", "LX/1Ig;", GENERATE_AI_LABEL, 4, 113, GENERATE_MENU_LABEL_ARMV7, 1),
+        new AiCell("LX/REu;", "LX/1JA;", "LX/2Ca;", "LX/1Gk;", GENERATE_AI_LABEL_586, 4, 113, GENERATE_MENU_LABEL_586, 1));
     static List<Method> findAiStickerCells(List<ClassDef> classes) {
         var result = new ArrayList<Method>();
         for (var shape : AI_CELLS) {

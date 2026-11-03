@@ -24,6 +24,9 @@ internal const val GENERATE_AI_LABEL = 0x7f140560
 internal const val GENERATE_MENU_LABEL = 0x7f141c2d
 /** "Generate" in 585's armv7 string pack, two resources past arm64's. */
 internal const val GENERATE_MENU_LABEL_ARMV7 = 0x7f141c2f
+/** 586 arm64 renumbers both: the AI label the same four renders offer, and the menu label the grid's Generate branch shows. */
+internal const val GENERATE_AI_LABEL_586 = 0x7f14055d
+internal const val GENERATE_MENU_LABEL_586 = 0x7f141c4e
 /** The viewer's onCreateDialog override: A1J in 585 arm64 and the 347014974 armv7 family, A1H in the 347014990 one. */
 internal const val EPHEMERAL_DIALOG = "A1J"
 internal val EPHEMERAL_DIALOGS = setOf(EPHEMERAL_DIALOG, "A1H")
@@ -146,6 +149,8 @@ internal val aiCells = listOf(
     AiCell("LX/R3h;", "LX/1No;", "LX/2ED;", "LX/1IG;"),
     AiCell("LX/OXo;", "LX/1Og;", "LX/2Fc;", "LX/1J8;", menu = GENERATE_MENU_LABEL_ARMV7),
     AiCell("LX/OGf;", "LX/1OE;", "LX/2Ed;", "LX/1Ig;", menu = GENERATE_MENU_LABEL_ARMV7, size = 113),
+    // 586 arm64: the cell's render grew to 113 instructions and both labels moved.
+    AiCell("LX/REu;", "LX/1JA;", "LX/2Ca;", "LX/1Gk;", label = GENERATE_AI_LABEL_586, size = 113, menu = GENERATE_MENU_LABEL_586),
 )
 internal const val AI_CELL_SIZE = 109
 internal const val AI_CELL_REGISTERS = 24
