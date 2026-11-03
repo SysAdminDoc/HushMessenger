@@ -4574,11 +4574,11 @@ public class CompatReport {
                 refParams(target).equals(List.of("Landroid/content/res/Resources;", "I")));
     }
 
-    /** 584's numbering of the @ list row flags. Meta renumbers them with each release. Mirrors AiMentionRows.kt. */
+    /** 586's numbering of the @ list row flags. Meta renumbers them with each release. Mirrors AiMentionRows.kt. */
     record AiRowFlags(Set<Long> row, Set<Long> chat, long shared, long encrypted, long imagine, long imagineYourself) {}
     static final AiRowFlags AI_ROW_FLAGS =
-        new AiRowFlags(Set.of(0x810620011b2d61L, 0x81062001042d5aL), Set.of(0x810620011b2d61L, 0x81062000042d17L),
-            0x810620011b2d61L, 0x81062000052d18L, 0x81062000402d28L, 0x81062000f92d56L);
+        new AiRowFlags(Set.of(0x81060e011b2d7fL, 0x81060e01042d78L), Set.of(0x81060e011b2d7fL, 0x81060e00042d35L),
+            0x81060e011b2d7fL, 0x81060e00052d36L, 0x81060e00402d46L, 0x81060e00f92d74L);
     static final String CAPABILITIES = "Lcom/facebook/xapp/messaging/capability/vector/Capabilities;";
     static final String FB_SESSION_TYPE = "Lcom/facebook/auth/usersession/FbUserSession;";
 
