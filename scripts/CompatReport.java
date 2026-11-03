@@ -5307,23 +5307,24 @@ public class CompatReport {
 
     /**
      * Where ReadReceipts.kt's REPLY_READ_SHAPE puts the pieces: composer copy, account copy, the thread's null default,
-     * the null path's copy, the dispatch, the composer copy's register and how far before the dispatch v12 is staged.
+     * the null path's copy, the dispatch, the composer copy's register, how far before the dispatch v12 is staged, the
+     * frame size and the register the dispatch's first String comes to v15 from.
      */
-    static final int[] REPLY_READ_SHAPE = {10, 20, 26, 71, 233, 19, 4};
+    static final int[] REPLY_READ_SHAPE = {10, 20, 26, 71, 236, 20, 4, 36, 18};
 
-    /** Its body sizes: 397 instructions on arm64, 393 on the 32-bit builds, the seam at the same indices in both. */
-    static final Set<Integer> REPLY_READ_SIZES = Set.of(393, 397);
+    /** Its body size: 397 instructions on 586 arm64. */
+    static final Set<Integer> REPLY_READ_SIZES = Set.of(397);
 
     /**
      * reply_read injects at fixed indices, so ReadReceipts.kt's validateReplyRead pins the method's shape. The same
-     * outline is checked here, so a changed body shows up as unresolved instead of passing until patch time: 35
-     * registers, 585's 397 or 393 instructions, the typed ThreadKey getter on p7's type two after the null default with its
+     * outline is checked here, so a changed body shows up as unresolved instead of passing until patch time: 586's 36
+     * registers and 397 instructions, the typed ThreadKey getter on p7's type two after the null default with its
      * result in v12, v12 taking v10 four before the dispatch, and the five-argument dispatch on p4's type that starts
      * with the FbUserSession and ends with two Strings. The dataflow proof stays in the patch.
      */
     static boolean replyReadShape(Method method) {
         var impl = method.getImplementation();
-        if (impl == null || impl.getRegisterCount() != 35) return false;
+        if (impl == null || impl.getRegisterCount() != REPLY_READ_SHAPE[7]) return false;
         var code = new ArrayList<Instruction>();
         impl.getInstructions().forEach(code::add);
         int[] shape = REPLY_READ_SHAPE;
@@ -5354,8 +5355,9 @@ public class CompatReport {
         if (!moves(code.get(4), Opcode.MOVE_OBJECT_FROM16, 7, p[11]) || !moves(code.get(composer), Opcode.MOVE_OBJECT_FROM16, cr, p[4]) ||
             !moves(code.get(session), Opcode.MOVE_OBJECT_FROM16, 10, p[0]) || !moves(code.get(s - 1), Opcode.MOVE_OBJECT_FROM16, 11, cr) ||
             !moves(code.get(absent), Opcode.MOVE_OBJECT, 12, 5)) return false;
-        int stringMoves = 0;
-        for (int at = s + 1; at < d; at++) if (moves(code.get(at), Opcode.MOVE_OBJECT, 15, 0)) stringMoves++;
+        int stringMoves = 0, from = shape[8];
+        var stringMove = from < 16 ? Opcode.MOVE_OBJECT : Opcode.MOVE_OBJECT_FROM16;
+        for (int at = s + 1; at < d; at++) if (moves(code.get(at), stringMove, 15, from)) stringMoves++;
         if (stringMoves != 1) return false;
         if (code.get(n).getOpcode() != Opcode.CONST_4 || ((OneRegisterInstruction) code.get(n)).getRegisterA() != 5 ||
             ((NarrowLiteralInstruction) code.get(n)).getNarrowLiteral() != 0 || code.get(n + 1).getOpcode() != Opcode.IF_EQZ ||
