@@ -37,6 +37,7 @@
 - `Bold and italic text` now puts Bold and Italic straight into the chat box's text menu, by name, with nothing to tick first on a Samsung phone. On some Samsung phones those two rows showed up as Messenger and Messenger, and they brought Dictionary, Translate and other apps' rows into the chat box along with them. Those rows are gone from the chat box again. Refs #125.
 - `Check for updates` can't close Messenger anymore when the check breaks in a way it didn't plan for. It says it couldn't check, the same as when you're offline, and **Report a problem** picks up what went wrong.
 - Saving your choices to a file now says "Couldn't save your choices to the file" when that fails. It used to show the clipboard's message. A restore that only gets some of them back reads like "Restored 3 of 5 choices." now.
+- A switch that stopped with an error doesn't keep saying so after you repatch. That error came from the older patch, so the line under the switch and `Copy setup` now leave it out until the new one hits a problem of its own. A part that keeps failing also logs once a minute instead of every time the screen redraws.
 
 ### Checks
 

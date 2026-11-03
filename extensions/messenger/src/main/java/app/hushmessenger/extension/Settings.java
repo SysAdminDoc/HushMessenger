@@ -62,6 +62,8 @@ public final class Settings {
         preview = previewNow;
         bubbleRoutes = bubbleRoutesNow;
         installed = Collections.unmodifiableSet(features);
+        // A fresh start logs each failure's stack again.
+        hookErrorLogged.clear();
         // Set last: a hook that sees preferences also sees the installed controls.
         preferences = appContext.getSharedPreferences("hushmessenger", Context.MODE_PRIVATE);
         // Only the main process writes the log; its lock doesn't reach other processes.
@@ -118,15 +120,29 @@ public final class Settings {
      */
     static final ConcurrentHashMap<String, String> hookErrors = new ConcurrentHashMap<>();
     private static final String HOOK_ERROR = "hook_error_";
+    /** The patched build that saved the failures. Outside HOOK_ERROR, so it never reads as a control's failure. */
+    static final String HOOK_ERRORS_BUILD = "failed_hooks_build";
+    /** When each control's failure, by kind, last went to the log. */
+    static final ConcurrentHashMap<String, Long> hookErrorLogged = new ConcurrentHashMap<>();
 
     static void hookFailed(String key, String what, Throwable error) {
-        android.util.Log.e("HushMessenger", what, error);
-        recordHookError(key, error);
+        String failure = recordHookError(key, error);
+        if (logDue(key, failure)) android.util.Log.e("HushMessenger", what, error);
     }
 
     /** For hooks that handle file paths or chat content: logs only the error's type and where it happened. */
     static void hookFailedPrivately(String key, String what, Throwable error) {
-        android.util.Log.e("HushMessenger", what + ": " + recordHookError(key, error));
+        String failure = recordHookError(key, error);
+        if (logDue(key, failure)) android.util.Log.e("HushMessenger", what + ": " + failure);
+    }
+
+    /** A hook can fail on every screen draw, so each kind of failure goes to the log once a minute. */
+    private static synchronized boolean logDue(String key, String failure) {
+        long now = System.currentTimeMillis();
+        Long last = hookErrorLogged.get(key + "|" + failure);
+        if (last != null && now - last < 60_000 && now >= last) return false;
+        hookErrorLogged.put(key + "|" + failure, now);
+        return true;
     }
 
     private static synchronized String recordHookError(String key, Throwable error) {
@@ -141,14 +157,34 @@ public final class Settings {
         long now = System.currentTimeMillis();
         hookErrors.put(key, failure + "|" + now);
         SharedPreferences prefs = preferences;
-        // A hook can fail on every screen draw, so the saved copy changes only for a new failure or once a minute.
         if (prefs != null) {
-            String previous = prefs.getString(HOOK_ERROR + key, null);
-            if (previous == null || !previous.startsWith(failure + "|") || now - hookErrorTime(previous) >= 60_000
-                    || now < hookErrorTime(previous))
-                prefs.edit().putString(HOOK_ERROR + key, failure + "|" + now).apply();
+            String build = patchedBuild(appContext);
+            boolean olderBuild = build != null && !build.equals(prefs.getString(HOOK_ERRORS_BUILD, null));
+            // A hook can fail on every screen draw, and two failures can take turns, so the saved copy changes at most
+            // once a minute.
+            String previous = olderBuild ? null : prefs.getString(HOOK_ERROR + key, null);
+            if (previous == null || now - hookErrorTime(previous) >= 60_000 || now < hookErrorTime(previous)) {
+                SharedPreferences.Editor edit = prefs.edit();
+                // Failures an older build saved went with the update, so this build's first one starts the list again.
+                if (olderBuild) {
+                    for (String saved : prefs.getAll().keySet()) if (saved.startsWith(HOOK_ERROR)) edit.remove(saved);
+                    edit.putString(HOOK_ERRORS_BUILD, build);
+                }
+                edit.putString(HOOK_ERROR + key, failure + "|" + now).apply();
+            }
         }
         return failure;
+    }
+
+    /** The control's failure an earlier run saved, unless an older build saved it. */
+    private static String savedHookError(SharedPreferences prefs, String key) {
+        return savedHookErrorsCurrent(prefs) ? prefs.getString(HOOK_ERROR + key, null) : null;
+    }
+
+    /** Whether this patched build saved the failures. When the build can't be told, they're kept. */
+    private static boolean savedHookErrorsCurrent(SharedPreferences prefs) {
+        String build = patchedBuild(appContext);
+        return build == null || build.equals(prefs.getString(HOOK_ERRORS_BUILD, null));
     }
 
     static long hookErrorTime(String record) {
@@ -163,7 +199,7 @@ public final class Settings {
     static long hookErrorAt(String key) {
         String record = hookErrors.get(key);
         SharedPreferences prefs = preferences;
-        if (record == null && prefs != null) record = prefs.getString(HOOK_ERROR + key, null);
+        if (record == null && prefs != null) record = savedHookError(prefs, key);
         return record == null ? 0 : hookErrorTime(record);
     }
 
@@ -171,7 +207,7 @@ public final class Settings {
     static Map<String, String> lastHookErrors() {
         Map<String, String> errors = new java.util.TreeMap<>();
         SharedPreferences prefs = preferences;
-        if (prefs != null) for (Map.Entry<String, ?> saved : prefs.getAll().entrySet()) {
+        if (prefs != null && savedHookErrorsCurrent(prefs)) for (Map.Entry<String, ?> saved : prefs.getAll().entrySet()) {
             if (saved.getKey().startsWith(HOOK_ERROR) && saved.getValue() instanceof String)
                 errors.put(saved.getKey().substring(HOOK_ERROR.length()), (String) saved.getValue());
         }
