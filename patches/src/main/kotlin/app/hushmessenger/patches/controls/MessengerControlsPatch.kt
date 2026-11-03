@@ -445,7 +445,9 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 val stub = host.methods.singleOrNull { it.hookId() == SEARCH_ICON_STUB }
                     ?: throw PatchException("Messenger controls: the inbox search bar's extension stub is missing")
                 // Built before the first edit, so a changed stub or check stops the patch with Messenger untouched.
-                val built = searchIconReader(stub, searchIconCheck(discoveredControls.getValue(INBOX_SEARCH_BAR)) { classDefByOrNull(it) })
+                val readers = discoveredControls.getValue(INBOX_SEARCH_BAR)
+                val check = searchIconCheck(readers) { classDefByOrNull(it) }
+                val built = searchIconReader(stub, check, readers.any { r -> r.searchIconSites().any { it.viaInterface } })
                 injectControl(key, methods)
                 // MutableMethod.implementation has no setter. Keep both method indexes in sync when replacing it.
                 host.methods.remove(stub)

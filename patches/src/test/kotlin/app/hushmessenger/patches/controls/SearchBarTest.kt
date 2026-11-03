@@ -25,6 +25,7 @@ import kotlin.test.assertTrue
 
 /** 585's check of a server flag: a public static (Object, long) boolean on a public class. */
 private const val CHECK = "LX/17P;->A1Y(Ljava/lang/Object;J)Z"
+private const val CONFIG = "Lcom/facebook/mobileconfig/factory/MobileConfigUnsafeContext;"
 internal const val SEARCH_ICON_BUTTON = "LX/Sb1;->A0A(Landroid/view/ViewGroup;)V"
 internal const val SEARCH_ICON_LIST = "LX/Sb2;->A02(Landroid/content/Context;)LX/Sb4;"
 private val STATIC = AccessFlags.PUBLIC.value or AccessFlags.STATIC.value
@@ -107,6 +108,66 @@ class SearchBarTest {
     @Test fun theBarIsFoundWhereTheTopBarsSearchIconReadsTheFlag() {
         assertEquals(setOf(SEARCH_ICON_BUTTON, SEARCH_ICON_LIST), found(searchIconFixture()))
         validateControls(mirroredControls(searchIconFixture()), setOf(INBOX_SEARCH_BAR))
+    }
+
+    /** 586: the top bar builder asks a shared static getter, and the getter alone reads the flag through the config's interface. */
+    private fun interfaceGetter(flag: Long = SEARCH_ICON_FLAG, body: String? = null) = fixtureMethod("LX/Sg1;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z", body ?: """
+        const/4 v0, 0x0
+        invoke-static {}, LX/1Aa;->A08()LX/5dt;
+        move-result-object v2
+        const-wide v0, ${flag}L
+        check-cast v2, $CONFIG
+        invoke-interface {v2, v0, v1}, $CONFIG->B1R(J)Z
+        move-result v0
+        return v0
+    """.trimIndent(), 3, STATIC)
+
+    private fun interfaceBuilder() = fixtureMethod(SEARCH_ICON_BUTTON, """
+        invoke-static {v6}, LX/Sg1;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z
+        move-result v0
+        const-string v1, "$SEARCH_ICON_ANCHOR"
+        return-void
+    """.trimIndent())
+
+    private fun interfaceFixture(getter: MutableMethod = interfaceGetter()) =
+        listOf(fixtureClass("LX/Sb1;", listOf(interfaceBuilder())), fixtureClass("LX/Sg1;", listOf(getter)))
+
+    @Test fun theSharedGetterThe586BuilderAsksIsFoundAndItsInterfaceCheckSwapped() {
+        assertEquals(setOf("LX/Sg1;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z"), found(interfaceFixture()))
+        validateControls(mirroredControls(interfaceFixture()), setOf(INBOX_SEARCH_BAR))
+        val getter = interfaceGetter()
+        val before = getter.code()
+        val site = getter.searchIconSites().single()
+        assertTrue(site.viaInterface)
+        getter.injectSearchBar()
+        val after = getter.code()
+        assertEquals(before.size, after.size)
+        assertEquals(Opcode.INVOKE_STATIC, after[site.call].opcode)
+        assertEquals(SEARCH_ICON_HELPER, (after[site.call] as ReferenceInstruction).reference.toString())
+        assertEquals(before[site.call].registers(), after[site.call].registers())
+        // The stub asks the interface the way the getter does, after a cast of its Object config.
+        val config = fixtureClass(CONFIG, listOf(fixtureMethod("$CONFIG->B1R(J)Z", "const/4 v0, 0x0\nreturn v0", 4,
+            AccessFlags.PUBLIC.value or AccessFlags.ABSTRACT.value)), flags = AccessFlags.PUBLIC.value or AccessFlags.INTERFACE.value or AccessFlags.ABSTRACT.value)
+        val check = searchIconCheck(listOf(interfaceGetter()), lookup(config))
+        val built = searchIconReader(searchIconStub(), check, viaInterface = true)
+        assertEquals(listOf(Opcode.CHECK_CAST, Opcode.INVOKE_INTERFACE, Opcode.MOVE_RESULT, Opcode.RETURN), built.code().map { it.opcode })
+        assertFailsWith<PatchException> { searchIconCheck(listOf(interfaceGetter()), lookup(fixtureClass(CONFIG))) }
+    }
+
+    @Test fun aGetterThatDoesMoreThanReadTheFlagIsNotTrusted() {
+        val padded = interfaceGetter(body = """
+            invoke-static {}, LX/1Aa;->A08()LX/5dt;
+            move-result-object v2
+            const-wide v0, ${SEARCH_ICON_FLAG}L
+            check-cast v2, $CONFIG
+            invoke-interface {v2, v0, v1}, $CONFIG->B1R(J)Z
+            move-result v0
+            if-eqz v0, :no
+            const/4 v0, 0x1
+            :no
+            return v0
+        """.trimIndent())
+        assertTrue(found(interfaceFixture(padded)).isEmpty())
     }
 
     @Test fun theFlagCountsOnlyWhenTheOneSearchIconBuilderReadsIt() {
@@ -231,7 +292,11 @@ class SearchBarTest {
             // The chat list's builder is also where Hide joined community chats edits, by instruction index.
             val contract = assertNotNull(findCommunityInbox(classes), code)
             val render = contract.render.hookId()
-            assertTrue(render in sites, code)
+            // 586 asks a shared getter, so the builder carries no flag read of its own and the two edits never meet.
+            if (render !in sites) {
+                assertEquals(60, MutableMethod(contract.render).communityReadSite(contract.capturedScope), code)
+                continue
+            }
             val searchFirst = MutableMethod(contract.render).apply { injectSearchBar() }
             assertEquals(63, searchFirst.communityReadSite(contract.capturedScope), code)
             injectCommunityInbox(contract, searchFirst, communityStub(JOINED_COMMUNITY_ROW), communityStub(MAIN_INBOX_SCOPE))

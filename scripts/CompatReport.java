@@ -90,8 +90,8 @@ public class CompatReport {
     static final long EMOJI_DRAWER_FLAG = 36320528377659062L;
     // The drawer renderer throws this when the redesign can't draw, which ties the flag to the emoji drawer
     static final String EMOJI_DRAWER_ANCHOR = "Cannot render redesigned drawer with search icon ";
-    // The server test that swaps the chat list's search bar for a top bar icon, as 585 numbers it. Meta renumbers it with each release.
-    static final long SEARCH_ICON_FLAG = 0x810b24000045b3L;
+    // The server test that swaps the chat list's search bar for a top bar icon, as 586 numbers it. Meta renumbers it with each release.
+    static final long SEARCH_ICON_FLAG = 0x810b0200004674L;
     // Only the method that builds the top bar's search icon names this class, which ties the flag to the search bar
     static final String SEARCH_ICON_ANCHOR = "com.facebook.messaging.search.plugins.toolbarbutton.searchbutton.InboxSearchToolbarButtonImplementation";
     // Controls whose hook count follows how Redex inlined one flag read, so it differs between releases
@@ -2687,7 +2687,38 @@ public class CompatReport {
         }
         if (anchors.size() != 1) return List.of();
         var anchor = hookId(anchors.get(0));
-        return readers.stream().anyMatch(reader -> hookId(reader).equals(anchor)) ? readers : List.of();
+        var getters = readers.stream().filter(CompatReport::searchIconGetter).map(CompatReport::hookId).collect(Collectors.toSet());
+        boolean linked = readers.stream().anyMatch(reader -> hookId(reader).equals(anchor)) || instructions(anchors.get(0)).stream().anyMatch(i ->
+            i.getOpcode() == Opcode.INVOKE_STATIC && getters.contains(((ReferenceInstruction) i).getReference().toString()));
+        return linked ? readers : List.of();
+    }
+
+    /**
+     * A static boolean method whose one flag read is its whole answer, as 586's shared getter is: the flag, an optional
+     * cast of the config, the check call, and its answer returned. Mirrors SearchBar.kt's isSearchIconGetter.
+     */
+    static boolean searchIconGetter(Method method) {
+        if ((method.getAccessFlags() & AccessFlags.STATIC.getValue()) == 0 || !"Z".equals(method.getReturnType())) return false;
+        var code = instructions(method);
+        int at = -1;
+        for (int i = 0; i < code.size(); i++) {
+            if (code.get(i).getOpcode() == Opcode.CONST_WIDE && ((WideLiteralInstruction) code.get(i)).getWideLiteral() == SEARCH_ICON_FLAG) {
+                if (at >= 0) return false;
+                at = i;
+            }
+        }
+        if (at < 0) return false;
+        int pair = ((OneRegisterInstruction) code.get(at)).getRegisterA();
+        boolean cast = at + 1 < code.size() && code.get(at + 1).getOpcode() == Opcode.CHECK_CAST;
+        int call = at + (cast ? 2 : 1);
+        if (call + 3 != code.size() || !(code.get(call) instanceof FiveRegisterInstruction invoke) || invoke.getRegisterCount() != 3 ||
+            invoke.getRegisterD() != pair || invoke.getRegisterE() != pair + 1 ||
+            (invoke.getOpcode() != Opcode.INVOKE_STATIC && invoke.getOpcode() != Opcode.INVOKE_INTERFACE) ||
+            (invoke.getOpcode() == Opcode.INVOKE_INTERFACE && !cast)) return false;
+        var result = code.get(call + 1);
+        var back = code.get(call + 2);
+        return result.getOpcode() == Opcode.MOVE_RESULT && back.getOpcode() == Opcode.RETURN &&
+            ((OneRegisterInstruction) back).getRegisterA() == ((OneRegisterInstruction) result).getRegisterA();
     }
 
     // The analytics logger's upload components and the entry points Android starts them through. Mirrors AnalyticsUploads.kt.
