@@ -125,15 +125,18 @@ public final class Settings {
     /** When each control's failure, by kind, last went to the log. */
     static final ConcurrentHashMap<String, Long> hookErrorLogged = new ConcurrentHashMap<>();
 
+    // Logged before it's recorded, so the log still has it if saving the record fails.
     static void hookFailed(String key, String what, Throwable error) {
-        String failure = recordHookError(key, error);
+        String failure = describeHookError(error);
         if (logDue(key, failure)) android.util.Log.e("HushMessenger", what, error);
+        recordHookError(key, failure);
     }
 
     /** For hooks that handle file paths or chat content: logs only the error's type and where it happened. */
     static void hookFailedPrivately(String key, String what, Throwable error) {
-        String failure = recordHookError(key, error);
+        String failure = describeHookError(error);
         if (logDue(key, failure)) android.util.Log.e("HushMessenger", what + ": " + failure);
+        recordHookError(key, failure);
     }
 
     /** A hook can fail on every screen draw, so each kind of failure goes to the log once a minute. */
@@ -145,7 +148,8 @@ public final class Settings {
         return true;
     }
 
-    private static synchronized String recordHookError(String key, Throwable error) {
+    /** "<exception class> at <first HushMessenger frame>", with no message. */
+    private static String describeHookError(Throwable error) {
         StackTraceElement[] stack = error.getStackTrace();
         StackTraceElement frame = stack.length == 0 ? null : stack[0];
         for (StackTraceElement element : stack) {
@@ -153,7 +157,10 @@ public final class Settings {
         }
         String where = frame == null ? "unknown" : frame.getClassName().substring(frame.getClassName().lastIndexOf('.') + 1)
             + "." + frame.getMethodName() + (frame.getLineNumber() >= 0 ? ":" + frame.getLineNumber() : "");
-        String failure = error.getClass().getName() + " at " + where;
+        return error.getClass().getName() + " at " + where;
+    }
+
+    private static synchronized void recordHookError(String key, String failure) {
         long now = System.currentTimeMillis();
         hookErrors.put(key, failure + "|" + now);
         SharedPreferences prefs = preferences;
@@ -173,7 +180,6 @@ public final class Settings {
                 edit.putString(HOOK_ERROR + key, failure + "|" + now).apply();
             }
         }
-        return failure;
     }
 
     /** The control's failure an earlier run saved, unless an older build saved it. */
