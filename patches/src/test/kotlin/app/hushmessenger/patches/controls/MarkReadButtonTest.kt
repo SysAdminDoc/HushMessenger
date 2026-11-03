@@ -275,7 +275,7 @@ class MarkReadButtonTest {
 
     // 586's bar hands the cap register straight to subList, with no move down from a higher register before the cut.
     @Test fun aBarThatHoldsItsCapInTheCutsOwnRegisterIsStillFound() {
-        val direct = BAR_BODY.replace("    move v5, v9\n", "    const/4 v5, 0x3\n")
+        val direct = BAR_BODY.replace("move v5, v9", "const/4 v5, 0x3")
         assertTrue(direct != BAR_BODY)
         assertEquals(listOf(SYNTHETIC_MARK_READ_BAR, SYNTHETIC_MARK_READ_FACTORY, SYNTHETIC_MARK_READ_CLICK), found(markReadFixture(bar(direct))))
         val four = direct.replace("const/4 v5, 0x3", "const/4 v5, 0x4")

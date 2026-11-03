@@ -134,8 +134,8 @@ class SearchBarTest {
 
     @Test fun theSharedGetterThe586BuilderAsksIsFoundAndItsInterfaceCheckSwapped() {
         assertEquals(setOf("LX/Sg1;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z"), found(interfaceFixture()))
-        validateControls(mirroredControls(interfaceFixture()), setOf(INBOX_SEARCH_BAR))
         val getter = interfaceGetter()
+        getter.validateSearchBar()
         val before = getter.code()
         val site = getter.searchIconSites().single()
         assertTrue(site.viaInterface)
