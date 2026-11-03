@@ -322,13 +322,14 @@ final class SettingsText {
         ENGLISH.put("export", "Copy choices");
         ENGLISH.put("export_help", "Copies your choices as text. To bring them back on another install, copy that text there, then tap Paste choices.");
         ENGLISH.put("exported", "Choices copied");
-        ENGLISH.put("export_failed", "Couldn't back up your choices. Try again.");
+        ENGLISH.put("export_failed", "Couldn't copy your choices. Try again.");
+        ENGLISH.put("choices_file_save_failed", "Couldn't save your choices to the file. Try again.");
         ENGLISH.put("import_choices", "Paste choices");
         ENGLISH.put("import_help", "Restores choices from text you copied with Copy choices. Copy it first, then tap here.");
         ENGLISH.put("imported_one", "Restored %d choice.");
         ENGLISH.put("imported_many", "Restored %d choices.");
         // Only some of the backup's choices differed from this phone's; always two or more in all, so plural.
-        ENGLISH.put("imported_partial", "Changed %1$d of %2$d choices.");
+        ENGLISH.put("imported_partial", "Restored %1$d of %2$d choices.");
         ENGLISH.put("import_same", "Your choices already match that backup.");
         // Nothing changed, but the backup had more in it than this phone took, so it doesn't match.
         ENGLISH.put("import_none_changed", "None of your choices changed.");

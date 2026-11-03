@@ -33,6 +33,7 @@
 - With `Open your gallery app`, a photo or video from Google Photos no longer crashes Messenger when the folder it copies your pick into won't take the file. The copy moves to another of Messenger's own folders and the send carries on, and **Report a problem** says which folder refused and why. Refs #124.
 - `Bold and italic text` now puts Bold and Italic straight into the chat box's text menu, by name, with nothing to tick first on a Samsung phone. On some Samsung phones those two rows showed up as Messenger and Messenger, and they brought Dictionary, Translate and other apps' rows into the chat box along with them. Those rows are gone from the chat box again. Refs #125.
 - `Check for updates` can't close Messenger anymore when the check breaks in a way it didn't plan for. It says it couldn't check, the same as when you're offline, and **Report a problem** picks up what went wrong.
+- Saving your choices to a file now says "Couldn't save your choices to the file" when that fails. It used to show the clipboard's message. A restore that only gets some of them back reads like "Restored 3 of 5 choices." now.
 
 ## 0.28.0 (2026-10-31)
 
