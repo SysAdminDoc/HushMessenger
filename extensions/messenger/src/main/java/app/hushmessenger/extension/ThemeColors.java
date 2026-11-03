@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +22,8 @@ final class ThemeColors {
     /** The accents a tap saves (#132), each with its name for screen readers. Messenger's own blue first. */
     static final int[] ACCENTS = {ThemeFile.MESSENGER_BLUE, 0xFF7B61FF, 0xFFE1306C, 0xFFE53935, 0xFFF57C00, 0xFF2E7D32, 0xFF00897B};
     static final String[] ACCENT_NAMES = {"blue", "purple", "pink", "red", "orange", "green", "teal"};
+    /** The space around each dot that still takes its tap, so a swatch is a 48 dp target. */
+    static final int DOT_INSET = 6;
 
     private final SettingsActivity page;
     /** The Material You theme line, and the button that drops a pasted theme (#115). */
@@ -47,19 +50,21 @@ final class ThemeColors {
             swatch.setTag(String.format("theme_accent_%06X", color & 0xFFFFFF));
             swatch.setContentDescription(text.get("theme_accent_" + ACCENT_NAMES[i]));
             swatch.setOnClickListener(view -> pickAccent(color));
-            LinearLayout.LayoutParams size = new LinearLayout.LayoutParams(ui.dp(36), ui.dp(36));
-            if (i > 0) size.setMarginStart(ui.dp(10));
+            // A 48 dp target around the 36 dp dot. The margins keep each dot where it sat, 10 dp apart and under the label.
+            LinearLayout.LayoutParams size = new LinearLayout.LayoutParams(ui.dp(36 + 2 * DOT_INSET), ui.dp(36 + 2 * DOT_INSET));
+            if (i > 0) size.setMarginStart(ui.dp(10 - 2 * DOT_INSET));
             row.addView(swatch, size);
             swatches[i] = swatch;
         }
         HorizontalScrollView scroll = new HorizontalScrollView(page);
         scroll.setHorizontalScrollBarEnabled(false);
         scroll.addView(row);
-        ui.add(appearance, scroll, 8);
+        ui.add(appearance, scroll, 2);
+        ((LinearLayout.LayoutParams) scroll.getLayoutParams()).setMarginStart(-ui.dp(DOT_INSET));
         Button paste = ui.button(text.get("theme_paste"));
         paste.setTag("theme_paste");
         paste.setOnClickListener(view -> pasteTheme());
-        ui.add(appearance, paste, 8);
+        ui.add(appearance, paste, 2);
         Button copy = ui.button(text.get("theme_copy"));
         copy.setTag("theme_copy");
         copy.setOnClickListener(view -> copyTheme());
@@ -84,7 +89,7 @@ final class ThemeColors {
             boolean picked = theme != null && theme.accent != null && theme.accent == ACCENTS[i];
             GradientDrawable dot = ui.shape(ACCENTS[i], 0, 18);
             dot.setStroke(ui.dp(picked ? 3 : 1), picked ? ui.text : ui.line);
-            swatches[i].setBackground(dot);
+            swatches[i].setBackground(new InsetDrawable(dot, ui.dp(DOT_INSET)));
             swatches[i].setSelected(picked);
         }
     }

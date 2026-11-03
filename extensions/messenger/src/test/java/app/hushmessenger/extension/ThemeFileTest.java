@@ -2,6 +2,8 @@ package app.hushmessenger.extension;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.graphics.Rect;
+import android.graphics.drawable.InsetDrawable;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -259,6 +261,29 @@ public class ThemeFileTest {
 
             root.findViewWithTag("theme_clear").performClick();
             assertFalse(green.isSelected());
+        }
+    }
+
+    @Test public void eachAccentSwatchIsAFullSizeTargetAroundTheSameDot() {
+        MaterialYouTheme.bind();
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            View root = screen.get().getWindow().getDecorView();
+            float dp = root.getResources().getDisplayMetrics().density;
+            // Laid out the way its scroll view lays it out, as wide as the swatches want.
+            View row = (View) root.findViewWithTag("theme_accent_E1306C").getParent();
+            row.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            row.layout(0, 0, row.getMeasuredWidth(), row.getMeasuredHeight());
+            View last = null;
+            for (int accent : ThemeColors.ACCENTS) {
+                View swatch = root.findViewWithTag(String.format("theme_accent_%06X", accent & 0xFFFFFF));
+                assertTrue(swatch.getWidth() + " x " + swatch.getHeight(), swatch.getWidth() >= 48 * dp && swatch.getHeight() >= 48 * dp);
+                // The dot itself stays 36 dp, and 10 dp from the one before it.
+                Rect inset = new Rect();
+                assertTrue(swatch.getBackground() instanceof InsetDrawable && swatch.getBackground().getPadding(inset));
+                assertEquals(36 * dp, swatch.getWidth() - inset.left - inset.right, 0.5f);
+                if (last != null) assertEquals(10 * dp, swatch.getLeft() + inset.left - (last.getRight() - inset.right), 0.5f);
+                last = swatch;
+            }
         }
     }
 }
