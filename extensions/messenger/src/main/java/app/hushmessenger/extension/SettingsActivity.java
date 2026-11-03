@@ -1002,7 +1002,6 @@ public final class SettingsActivity extends Activity {
             refreshChoices();
             feedback("paused".equals(key) ? text.get(checked ? "changes_paused" : "changes_resumed")
                 : text.get(checked ? "choice_on" : "choice_off", title), Toast.LENGTH_SHORT);
-            if ("light".equals(key)) refreshChoices();
             if ("hide_drawer_icon".equals(key)) applyDrawerIcon(this, checked);
             // The icon shortcuts follow their switch now, and stand in when another way in goes while they're hidden.
             if (Settings.HIDE_ICON_SHORTCUTS.equals(key) || (Settings.HIDE_LOGO_PRESS.equals(key) || "hide_drawer_icon".equals(key))
