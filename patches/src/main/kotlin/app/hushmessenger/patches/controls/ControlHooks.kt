@@ -226,6 +226,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
             }
             if (gate && "com.facebook.messaging.friendsinboxunit.plugins.inboxunit.FriendsInboxUnitKillSwitch" in strings) add("stories")
             if (cls.type in appIconManagers && method.isAppIconGate()) add(APP_ICONS)
+            if (method.isAppThemeGate()) add(APP_THEMES)
             if (gate) {
                 val shortcuts = instructions.filter { it.opcode == Opcode.NEW_INSTANCE }
                     .mapNotNull { ((it as? ReferenceInstruction)?.reference as? TypeReference)?.type }
@@ -428,6 +429,10 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(MARK_READ_BAR).addAll(markReadBar)
     found.getValue(HIDE_CALL_BAR).addAll(markReadBar)
     found.getValue(MARK_READ_CLICK).addAll(markReadClick)
+    val (logBar, logClick) = findMessageLogButton(classes)
+    found.getValue(MESSAGE_LOG_BUTTON).addAll(logBar)
+    found.getValue(MESSAGE_LOG_CLICK).addAll(logClick)
+    found.getValue(APP_THEME_PICK).addAll(findAppThemePick(classes))
     found.getValue(SYSTEM_CAMERA).addAll(findSystemCamera(classes))
     found.getValue(EXTERNAL_GALLERY).addAll(findExternalGallery(classes))
     found.getValue(GALLERY_TEMP_FILE).addAll(findGalleryTempFile(classes))

@@ -51,6 +51,8 @@ hook anonymous_stories LX/SNL;->DTb(Lcom/facebook/messaging/montage/model/Montag
 hook anonymous_stories Lcom/facebook/messaging/montage/model/MontageBucketPreview;-><init>(Lcom/facebook/messaging/montage/model/MontageBucketKey;Lcom/facebook/messaging/montage/model/MontageBucketLooperLoggingItem;Lcom/facebook/messaging/montage/model/MontageCard;Lcom/facebook/user/model/UserKey;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZ)V
 hook app_icons LX/7q1;->A02(Lcom/facebook/auth/usersession/FbUserSession;)Z
 hook app_icons LX/7q1;->A03(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)Z
+hook app_theme_pick LX/HdJ;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
+hook app_themes LX/Haj;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z
 hook attribution_uploads LX/7nN;->A02(Landroid/content/Context;LX/7nO;Lcom/facebook/auth/usersession/FbUserSession;IJZ)V
 hook auto_reply Lcom/facebook/messaging/notify/type/NewMessageNotification;-><init>(Lcom/facebook/messaging/accountswitch/model/MessengerAccountType;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/9r3;LX/5i7;Lcom/facebook/messaging/push/flags/ServerMessageAlertFlags;Lcom/facebook/push/constants/PushProperty;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ZZZZZZZ)V
 hook avatar_shape LX/2mn;->A09(Landroid/content/Context;Landroid/graphics/Path;Landroid/graphics/drawable/Drawable;Lcom/facebook/auth/usersession/FbUserSession;LX/2lC;LX/2mw;LX/2nP;FIIZZ)V
@@ -167,6 +169,8 @@ hook menu_settings LX/Hg1;->onClick(Landroid/view/View;)V
 hook menu_settings LX/QZm;->Ddd(LX/4u7;I)V
 hook menu_settings LX/QZy;->A0I(Ljava/util/List;)V
 hook message_log Lcom/facebook/messaging/notify/type/NewMessageNotification;-><init>(Lcom/facebook/messaging/accountswitch/model/MessengerAccountType;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/9r3;LX/5i7;Lcom/facebook/messaging/push/flags/ServerMessageAlertFlags;Lcom/facebook/push/constants/PushProperty;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ZZZZZZZ)V
+hook message_log_button LX/2a8;->Cds()Ljava/util/List;
+hook message_log_click LX/2a8;->Dgh(Landroid/view/View;Ljava/lang/String;Ljava/lang/String;I)V
 hook moments LX/Hf7;->A05()Z
 hook moments LX/Jqy;->A05()Z
 hook mqtt_telemetry LX/0ko;->A0N(Ljava/lang/String;)V

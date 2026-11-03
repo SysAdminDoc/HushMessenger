@@ -191,8 +191,9 @@ public final class SettingsActivity extends Activity {
         {"keep_unsent", "Keep unsent messages", "Keeps messages on screen after someone unsends them, in chats where it works. In encrypted chats the message stays in its notification instead. Group chats aren't tested. Your own unsends may be limited.", "privacy"},
         {"anonymous_stories", "View stories anonymously", "Opens other people's stories without adding you to their viewer list. Messenger still marks them as seen on your side.", "privacy"},
         {"save_stories", "Save any story", "Adds Save to the More options menu on other people's stories, so you can keep the photo or video on your phone.", "privacy"},
-        {"material_you", "Material You theme", "Colors Messenger's dark mode with your wallpaper colors on Android 12 and newer, and a fixed blue on Android 11. Turn on dark mode in Messenger first.", "theme"},
+        {"material_you", "Material You theme", "Colors Messenger's dark mode with your wallpaper colors on Android 12 and newer, and a fixed blue on Android 11. Turn on dark mode in Messenger first. Light mode keeps its colors unless you turn on Light mode accent.", "theme"},
         {"app_icons", "Unlock app icons", "Lets you pick any icon in Messenger's App icon setting without a subscription. Messenger decides whether that setting shows for you. Turning this off can bring the default icon back.", "theme"},
+        {"app_themes", "Unlock app themes", "Lets you pick any theme in Messenger's Theme setting without a subscription, so light mode can get a color too. Messenger still decides which themes it offers your account.", "theme"},
         {"avatar_shape", "Square profile pictures", "Shows people's profile pictures as squares instead of circles. Turn on Round the corners below for rounded squares. Restart Messenger to see the change.", "theme"},
         {"home_header", "Your own home header", "Puts words or a picture of your own at the top of the chat list in place of Messenger's wordmark. Type the words or choose the picture below. With neither, the wordmark stays. Restart Messenger to see a change.", "theme"},
         {"custom_font", "Use your own font", "Shows Messenger's text in your phone's font instead of Meta's, or in a .ttf or .otf font file you choose below, which you can also make larger or smaller and move up or down. Emoji don't change. Restart Messenger to see a change.", "theme"},
@@ -341,6 +342,8 @@ public final class SettingsActivity extends Activity {
             else if (state.getBoolean("message_log_open")) root.post(messageLog::showMessageLog);
         }
         messageLog.adopt(getLastNonConfigurationInstance(), root);
+        // The top bar's message log button opens straight into the log. Coming back from a rotation or a restart keeps whatever was showing.
+        if (state == null && getIntent().getBooleanExtra(MessageLogSheet.OPEN_EXTRA, false)) root.post(messageLog::showMessageLog);
     }
 
     @Override public Object onRetainNonConfigurationInstance() { return messageLog.retained(); }
@@ -772,6 +775,7 @@ public final class SettingsActivity extends Activity {
                 else if (AutoReply.KEY.equals(spec[0])) autoReplies.addAutoReplyActions(wrapper);
                 else {
                     messageLog.addMessageLogActions(wrapper);
+                    ui.add(wrapper, controlRow(MessageLogButton.KEY, text.format(MessageLogButton.KEY), text.format("message_log_button_help"), false), 8);
                     if (Build.VERSION.SDK_INT >= 29) ui.add(wrapper, controlRow(MessageLog.SAVE_EXPIRING,
                         text.format(MessageLog.SAVE_EXPIRING), text.format("message_log_save_expiring_help"), false), 8);
                 }
@@ -821,22 +825,28 @@ public final class SettingsActivity extends Activity {
         for (String[] chat : chats) ui.add(content, controlRow(QuietCalls.CHAT_PREFIX + chat[0], chat[1], "", false), 8);
     }
 
+    /** One choice of a RadioGroup, in the page's colors. */
+    RadioButton radio(String tag, String label) {
+        RadioButton choice = new RadioButton(this);
+        choice.setId(View.generateViewId());
+        choice.setTag(tag);
+        choice.setText(label);
+        choice.setTextColor(new android.content.res.ColorStateList(
+            new int[][] {{-android.R.attr.state_enabled}, {}}, new int[] {ui.muted, ui.text}));
+        choice.setTextSize(16);
+        choice.setMinHeight(ui.dp(48));
+        choice.setPadding(ui.dp(8), ui.dp(8), ui.dp(8), ui.dp(8));
+        choice.setButtonTintList(new android.content.res.ColorStateList(
+            new int[][] {{-android.R.attr.state_enabled}, {android.R.attr.state_checked}, {}}, new int[] {ui.outline, ui.accent, ui.muted}));
+        choice.setBackground(ui.interactive(0, 0, 8));
+        return choice;
+    }
+
     private void addBubbleModes(LinearLayout content) {
         RadioGroup modes = new RadioGroup(this);
         modes.setOrientation(LinearLayout.VERTICAL);
         for (String mode : new String[] {"stock", "chat_heads", "native"}) {
-            RadioButton choice = new RadioButton(this);
-            choice.setId(View.generateViewId());
-            choice.setTag("bubble_" + mode);
-            choice.setText(text.get("bubble_" + mode));
-            choice.setTextColor(new android.content.res.ColorStateList(
-                new int[][] {{-android.R.attr.state_enabled}, {}}, new int[] {ui.muted, ui.text}));
-            choice.setTextSize(16);
-            choice.setMinHeight(ui.dp(48));
-            choice.setPadding(ui.dp(8), ui.dp(8), ui.dp(8), ui.dp(8));
-            choice.setButtonTintList(new android.content.res.ColorStateList(
-                new int[][] {{-android.R.attr.state_enabled}, {android.R.attr.state_checked}, {}}, new int[] {ui.outline, ui.accent, ui.muted}));
-            choice.setBackground(ui.interactive(0, 0, 8));
+            RadioButton choice = radio("bubble_" + mode, text.get("bubble_" + mode));
             choice.setChecked(mode.equals(Settings.selectedBubbleMode()));
             choice.setEnabled(Settings.available("bubbles") || "stock".equals(mode));
             choice.setOnClickListener(view -> {
@@ -1099,6 +1109,8 @@ public final class SettingsActivity extends Activity {
         if (Settings.installed.contains("material_you")) {
             ui.rule(appearance, 10);
             ui.add(appearance, controlRow("material_you_black", text.format("material_you_black"), text.format("material_you_black_help"), false), 12);
+            ui.rule(appearance, 10);
+            ui.add(appearance, controlRow(MaterialYouTheme.LIGHT_KEY, text.format(MaterialYouTheme.LIGHT_KEY), text.format("material_you_light_help"), false), 12);
             ui.rule(appearance, 10);
             themeColors.addTo(appearance);
         }
@@ -1498,7 +1510,12 @@ public final class SettingsActivity extends Activity {
                 inside = text.get(QuietCalls.CHOSEN_ONLY) + " " + text.get("quiet_calls_chosen_help");
                 for (String[] chat : QuietCalls.recent()) inside += " " + chat[1];
             }
-            if (MessageLog.KEY.equals(spec[0]) && Build.VERSION.SDK_INT >= 29) inside = text.get(MessageLog.SAVE_EXPIRING) + " " + text.get("message_log_save_expiring_help");
+            if (MessageLog.KEY.equals(spec[0])) {
+                inside = text.get("message_log_keep");
+                for (int days : MessageLog.KEEP_CHOICES) inside += " " + text.get("message_log_keep_" + days);
+                inside += " " + text.get(MessageLogButton.KEY) + " " + text.get("message_log_button_help");
+                if (Build.VERSION.SDK_INT >= 29) inside += " " + text.get(MessageLog.SAVE_EXPIRING) + " " + text.get("message_log_save_expiring_help");
+            }
             boolean match = SettingsSearch.matches(terms, spec[1], spec[2],
                 SettingsText.english(spec[3]), text.display(text.control(spec, 1)), text.display(text.control(spec, 2)), text.get(spec[3]), inside);
             controlRows.get(i).setVisibility(match ? View.VISIBLE : View.GONE);

@@ -53,6 +53,8 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     "keep_unsent" to setOf("LX/SH3;->A01(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
     "anonymous_stories" to setOf("LX/HNV;->C1V(${MONTAGE_CARD}Z)V", STORY_PREVIEW_INIT),
     APP_ICONS to setOf("LX/7Ya;->A02($FB_USER_SESSION)Z", "LX/7Ya;->A03(Landroid/content/Context;$FB_USER_SESSION)Z"),
+    APP_THEMES to setOf("LX/HQz;->A00($FB_USER_SESSION)Z"),
+    APP_THEME_PICK to setOf(THEME_TAP),
     "save_stories" to setOf("LX/JgG;->onClick(Landroid/view/View;)V"),
     "growth_notes" to setOf("Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->" +
         "A01(Landroidx/fragment/app/Fragment;LX/Ocr;Ljava/util/List;LX/5MS;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;"),
@@ -104,6 +106,8 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     MARK_READ_CLICK to setOf(SYNTHETIC_MARK_READ_CLICK),
     TEXT_STYLE to setOf(SYNTHETIC_TEXT_FIELD_SELECTION),
     MESSAGE_LOG to setOf(newMessageNotificationCtor("LX/5qJ;", "LX/5Yc;")),
+    MESSAGE_LOG_BUTTON to setOf(SYNTHETIC_LOG_BAR),
+    MESSAGE_LOG_CLICK to setOf(SYNTHETIC_LOG_CLICK),
     AUTO_REPLY to setOf(newMessageNotificationCtor("LX/5qJ;", "LX/5Yc;")),
     UNSENT_RECALL to setOf("LX/98W;->A00(Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z"),
     UNSENT_CLEAR to setOf(SYNTHETIC_UNSENT_CLEAR),
