@@ -1,5 +1,7 @@
 package app.hushmessenger.extension;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
@@ -13,6 +15,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -317,8 +320,12 @@ public final class CallRecording {
         }
     }
 
+    // Lint reads the extension's own manifest; the notification posts from Messenger's process, checked just below.
+    @SuppressLint("NotificationPermission")
     private static void showNotification(Context context) {
         try {
+            // Android 13 drops a notification posted without the grant, so skip it and leave the pill to say it's recording.
+            if (Build.VERSION.SDK_INT >= 33 && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return;
             NotificationManager manager = context.getSystemService(NotificationManager.class);
             if (manager == null) return;
             SettingsText text = new SettingsText(context);

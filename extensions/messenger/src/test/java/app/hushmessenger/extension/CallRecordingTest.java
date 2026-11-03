@@ -1,5 +1,6 @@
 package app.hushmessenger.extension;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -77,7 +78,8 @@ public class CallRecordingTest {
         file = File.createTempFile("call", ".wav");
         store = new FileStore();
         CallRecording.store = store;
-        speaker = new AudioTrack(AudioManager.STREAM_VOICE_CALL, 16000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, 640, AudioTrack.MODE_STREAM);
+        shadowOf(RuntimeEnvironment.getApplication()).grantPermissions(Manifest.permission.POST_NOTIFICATIONS);
+        speaker =new AudioTrack(AudioManager.STREAM_VOICE_CALL, 16000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, 640, AudioTrack.MODE_STREAM);
         microphone = new AudioRecord(MediaRecorder.AudioSource.VOICE_COMMUNICATION, 16000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, 640);
         CallRecording.register(RuntimeEnvironment.getApplication());
     }
@@ -238,6 +240,24 @@ public class CallRecordingTest {
             if (all.getShort(CallMix.HEADER_BYTES + i * 2) == 1500) mixed++;
         }
         assertEquals(160, mixed);
+    }
+
+    @Test public void withoutTheNotificationGrantItStillRecordsAndSaves() throws Exception {
+        shadowOf(RuntimeEnvironment.getApplication()).denyPermissions(Manifest.permission.POST_NOTIFICATIONS);
+        on();
+        open();
+        callStarts();
+        recording();
+        idle();
+        assertEquals("Recording, tap to stop", pill().getText().toString());
+        assertEquals(0, active());
+
+        ShadowSystemClock.advanceBy(Duration.ofSeconds(1));
+        CallRecording.heard(speaker, frame((short) 500), 320);
+        pill().performClick();
+        finished();
+        assertTrue(store.kept);
+        assertEquals("Call saved to Recordings/" + CallRecording.FOLDER, ShadowToast.getTextOfLatestToast());
     }
 
     @Test public void aCallThatNeverHandsOverSoundSaysSoAndKeepsNoFile() throws Exception {
