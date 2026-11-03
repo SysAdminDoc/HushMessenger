@@ -49,8 +49,11 @@ final class MessageLogRenderProbe {
         try {
             return measure("small", 10, 120) + "\n" + measure("limit", MessageLog.MAX_ENTRIES, 4_000);
         } finally {
-            MessageLog.clear();
-            Settings.preferences.edit().putBoolean(MessageLog.KEY, wasOn).putBoolean("paused", wasPaused).commit();
+            try {
+                MessageLog.clear();
+            } finally {
+                Settings.preferences.edit().putBoolean(MessageLog.KEY, wasOn).putBoolean("paused", wasPaused).commit();
+            }
         }
     }
 
