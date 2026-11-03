@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -140,7 +139,8 @@ public final class LocalSearchActivity extends Activity {
             LocalSearchStore.Result result = null;
             try {
                 result = read(folder, words, stop);
-            } catch (SQLiteException | IllegalStateException error) {
+            } catch (RuntimeException error) {
+                // Anything left uncaught here ends the search process, and the screen closes without a word.
                 Settings.hookFailedPrivately(LocalChatSearch.KEY, "Couldn't read the saved messages", error);
             }
             LocalSearchStore.Result finished = result;

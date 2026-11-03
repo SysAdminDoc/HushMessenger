@@ -182,6 +182,44 @@ public class LocalChatSearchTest {
         assertEquals(1, content.getChildCount());
     }
 
+    private static boolean shows(View view, String words) {
+        if (view instanceof android.widget.TextView && words.contentEquals(((android.widget.TextView) view).getText())) return true;
+        if (!(view instanceof ViewGroup)) return false;
+        ViewGroup group = (ViewGroup) view;
+        for (int i = 0; i < group.getChildCount(); i++) if (shows(group.getChildAt(i), words)) return true;
+        return false;
+    }
+
+    @Test public void aSearchThatBreaksSaysSoAndKeepsTheScreen() throws Exception {
+        Settings.preferences.edit().putBoolean(LocalChatSearch.KEY, true).commit();
+        File databases = RuntimeEnvironment.getApplication().getDatabasePath("x").getParentFile();
+        databases.mkdirs();
+        // A full page that ends on a message with no id: the next page's query can't bind it and throws
+        // IllegalArgumentException, which isn't an SQLite failure.
+        try (SQLiteDatabase odd = SQLiteDatabase.openOrCreateDatabase(new File(databases, "msys_database_42"), null)) {
+            odd.execSQL("CREATE TABLE messages(thread_key LONG_INT, timestamp_ms LONG_INT, message_id TEXT, text TEXT,"
+                + " sender_id LONG_INT, is_admin_message BOOL DEFAULT 0, is_unsent BOOL DEFAULT 0)");
+            odd.beginTransaction();
+            for (int i = 0; i < LocalSearchStore.PAGE; i++) {
+                odd.execSQL("INSERT INTO messages(thread_key, timestamp_ms, message_id, text, sender_id) VALUES (?, 5000, ?, 'lunch', 7)",
+                    new Object[] {CHAT, i == 0 ? null : String.format("m%05d", i)});
+            }
+            odd.setTransactionSuccessful();
+            odd.endTransaction();
+        }
+        Intent intent = new Intent(RuntimeEnvironment.getApplication(), LocalSearchActivity.class)
+            .putExtra(LocalSearchActivity.EXTRA_CHAT_KEY, "ONE_TO_ONE:" + CHAT + ":42").putExtra(LocalSearchActivity.EXTRA_WORDS, "dinner");
+        Activity activity = Robolectric.buildActivity(LocalSearchActivity.class, intent).setup().get();
+        String failed = new SettingsText(activity).get("local_search_failed");
+        View screen = activity.getWindow().getDecorView();
+        for (long end = System.currentTimeMillis() + 10_000; !shows(screen, failed) && System.currentTimeMillis() < end; ) {
+            Thread.sleep(20);
+            org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle();
+        }
+        assertTrue(shows(screen, failed));
+        assertFalse(activity.isFinishing());
+    }
+
     @Test public void theSettingsRowIsListedAndOffByDefault() {
         boolean listed = false;
         for (String[] control : SettingsActivity.CONTROLS) listed |= LocalChatSearch.KEY.equals(control[0]);
