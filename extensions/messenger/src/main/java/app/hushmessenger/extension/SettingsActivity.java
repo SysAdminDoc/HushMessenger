@@ -363,6 +363,7 @@ public final class SettingsActivity extends Activity {
     @Override protected void onStop() {
         // Leaving settings makes a Quick setup or a Clear final, one still running included.
         started = false;
+        homeHeader.saveWords();
         messageLog.stop();
         endUndo();
         Settings.preferences.unregisterOnSharedPreferenceChangeListener(preferenceListener);

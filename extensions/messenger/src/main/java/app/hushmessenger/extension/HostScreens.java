@@ -466,6 +466,8 @@ public final class HostScreens {
         // A native crash in the loader only counts from Android 11, where the exit history records it.
         if (started && !failed && Settings.installed.contains(OwnFont.KEY)
                 && context.getPackageName().equals(Application.getProcessName())) OwnFont.warmUp();
+        if (started && !failed && Settings.installed.contains(HomeHeader.KEY)
+                && context.getPackageName().equals(Application.getProcessName())) HomeHeader.warmUp();
         // After CrashGuard too: Bold and Italic sit in every text field's menu, so safe mode has to take them out.
         if (started && !failed && Settings.installed.contains(TextStyleActivity.KEY)
                 && context.getPackageName().equals(Application.getProcessName())) TextStyleActivity.watch();
