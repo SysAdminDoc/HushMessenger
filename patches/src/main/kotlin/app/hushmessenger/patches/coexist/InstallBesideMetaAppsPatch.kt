@@ -219,16 +219,22 @@ private fun Method.hasSharedName(): Boolean =
 private fun Method.siteId(index: Int): String =
     "$definingClass->$name(${parameterTypes.joinToString("")})$returnType@$index"
 
+/** Checks the loads against the tested build, and each site's register in [registers] too, before any site is renamed. */
 internal fun validateDexSites(
     sites: List<Pair<String, String>>,
     expected: Map<String, String> = expectedDexSites,
     versions: Map<String, List<Int>> = MessengerTarget.VERSIONS,
+    registers: Map<String, Int> = emptyMap(),
 ) {
     if (sites.size != expected.size) {
         throw unsupportedApk("expected ${expected.size} permission loads, found ${sites.size}", versions)
     }
     if (sites.toMap() != expected) {
         throw unsupportedApk("permission instruction sites differ from the tested build", versions)
+    }
+    // const-string/jumbo only reaches v0 to v255.
+    registers.entries.firstOrNull { it.value > 255 }?.let { (site, register) ->
+        throw unsupportedApk("$site uses v$register for a permission", versions)
     }
 }
 
@@ -237,9 +243,6 @@ private fun MutableMethod.renameSharedNames(): Int {
         .mapNotNull { (index, instruction) -> instruction.sharedName()?.let { index to it } }
     for ((index, oldName) in sites.asReversed()) {
         val register = getInstruction<OneRegisterInstruction>(index).registerA
-        if (register > 255) {
-            throw unsupportedApk("$definingClass->$name uses v$register for a permission")
-        }
         replaceInstruction(index, "const-string/jumbo v$register, \"${renamed(oldName)}\"")
     }
     return sites.size
@@ -251,12 +254,16 @@ private fun BytecodePatchContext.checkedPermissionMethods(): List<MutableMethod>
     val methods = classes.flatMap { type ->
         mutableClassDefBy(type).methods.filter { it.hasSharedName() }
     }
+    val registers = mutableMapOf<String, Int>()
     val sites = methods.flatMap { method ->
         method.implementation?.instructions?.withIndex()?.mapNotNull { (index, instruction) ->
-            instruction.sharedName()?.let { method.siteId(index) to it }
+            instruction.sharedName()?.let {
+                registers[method.siteId(index)] = (instruction as OneRegisterInstruction).registerA
+                method.siteId(index) to it
+            }
         } ?: emptyList()
     }
-    validateDexSites(sites, expectedDexSitesFor(packageMetadata.versionCode))
+    validateDexSites(sites, expectedDexSitesFor(packageMetadata.versionCode), registers = registers)
     return methods
 }
 

@@ -51,6 +51,18 @@ class DexSiteContractTest {
     }
 
     @Test
+    fun rejectsALoadAboveV255BeforeAnySiteIsRenamed() {
+        val sites = expectedDexSites.toList()
+        validateDexSites(sites, registers = sites.associate { it.first to 255 })
+        val wide = sites.last().first
+        val failure = assertFailsWith<PatchException> {
+            validateDexSites(sites, registers = sites.associate { it.first to 0 } + (wide to 256))
+        }
+        assertContains(failure.message.orEmpty(), "$wide uses v256 for a permission")
+        assertActionable(failure)
+    }
+
+    @Test
     fun rejectsAMissingInstructionSite() {
         val failure = assertFailsWith<PatchException> {
             validateDexSites(expectedDexSites.toList().dropLast(1))
