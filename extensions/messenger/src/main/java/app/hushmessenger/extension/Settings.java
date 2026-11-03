@@ -80,7 +80,13 @@ public final class Settings {
 
     public static boolean enabled(String key) {
         boolean on = wouldUse(key);
-        if (on) activeAt.put(key, System.currentTimeMillis());
+        if (on) {
+            // Per-draw hooks call this constantly, so a healthy control's time moves once a second. One that failed this
+            // run keeps the exact time, which is what tells a use after the failure from the failure.
+            long now = System.currentTimeMillis();
+            Long last = activeAt.get(key);
+            if (last == null || now - last >= 1000 || now < last || hookErrors.containsKey(key)) activeAt.put(key, now);
+        }
         return on;
     }
 
