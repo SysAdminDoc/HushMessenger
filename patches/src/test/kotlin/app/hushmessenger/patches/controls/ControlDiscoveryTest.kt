@@ -107,8 +107,8 @@ class ControlDiscoveryTest {
                     "browser" -> "const/4 v0, 0x0\nreturn v0"
                     else -> error("Missing synthetic resolver fixture for $key")
                 }
-                // 585's Context-reading app icon check is the one instance gate.
-                val staticGate = (key in pluginGates || key == "ai_search" || key == "growth_story_card" || key == APP_THEMES ||
+                // The Context-reading app icon check and the parameterless gates, Meta AI search's among them, are instance gates.
+                val staticGate = (key in pluginGates || key == "growth_story_card" || key == APP_THEMES ||
                     (key == APP_ICONS && "Landroid/content/Context;" !in id)) && !id.substringAfter('(').startsWith(')')
                 fixtureMethod(id, body, registers = when (key) { "original_photo" -> 22; ORIGINAL_VIDEO -> 24;"chat_animation", "chat_legacy" -> 5; else -> 8 }, flags = AccessFlags.PUBLIC.value or
                     if (staticGate) AccessFlags.STATIC.value else 0)
@@ -149,13 +149,13 @@ class ControlDiscoveryTest {
         return-object v0
     """.trimIndent())))
 
-    @Test fun metaAiSearchGatesAreFoundAsStaticHolderGatesAndAsPrivateInstanceGates() {
+    @Test fun metaAiSearchGatesAreFoundOnlyAsPrivateInstanceGates() {
         val body = "const-string v0, \"com.facebook.messaging.search.aiagent.plugins.implementations.SearchAiagentImplementationsKillSwitch\"\nconst/4 v0, 0x1\nreturn v0"
         fun gates(id: String, flags: Int) = mirroredControls(listOf(fixtureClass("LX/5X8;", listOf(fixtureMethod(id, body, 8, flags)))))
             .getValue("ai_search").map { it.hookId() }
-        // 586 turned 585's static (holder) gates into private instance gates with no parameter.
+        // 586's gates are private instance gates with no parameter. The static holder gates 585 had no longer count.
         assertEquals(listOf("LX/5X8;->A0A()Z"), gates("LX/5X8;->A0A()Z", AccessFlags.PRIVATE.value))
-        assertEquals(listOf("LX/5X8;->A0A(LX/5X8;)Z"), gates("LX/5X8;->A0A(LX/5X8;)Z", AccessFlags.STATIC.value))
+        assertTrue(gates("LX/5X8;->A0A(LX/5X8;)Z", AccessFlags.STATIC.value).isEmpty())
         assertTrue(gates("LX/5X8;->A0A(I)Z", AccessFlags.PRIVATE.value).isEmpty())
         assertTrue(gates("LX/5X8;->A0A()Z", AccessFlags.STATIC.value).isEmpty())
     }

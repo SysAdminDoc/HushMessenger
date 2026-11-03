@@ -14,5 +14,5 @@ internal object ExpectedTotals {
     /** Hook methods per 586 build. Seven of them read the emoji drawer flag and one the search icon flag (585: six and five). */
     const val HOOKS_586 = 245
     /** The complete synthetic discovery fixture, one method per expected hook. */
-    const val DISCOVERY_FIXTURE_HOOKS = 235
+    const val DISCOVERY_FIXTURE_HOOKS = 234
 }

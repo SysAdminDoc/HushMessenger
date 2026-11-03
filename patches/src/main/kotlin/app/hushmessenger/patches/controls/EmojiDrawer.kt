@@ -47,7 +47,7 @@ internal fun connectEmojiDrawer(readers: List<Method>, anchors: List<Method>): L
 }
 
 /**
- * 585's renderer asks a static ()Z getter instead of reading the flag. The getter has to be the read alone: the config
+ * 586's renderer asks a static ()Z getter instead of reading the flag. The getter has to be the read alone: the config
  * object from a no-argument static call, the one flag read, and its answer returned as is.
  */
 internal fun Method.isEmojiDrawerGetter(): Boolean {

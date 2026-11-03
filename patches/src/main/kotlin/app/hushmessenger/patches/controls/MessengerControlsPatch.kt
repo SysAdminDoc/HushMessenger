@@ -447,7 +447,7 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 // Built before the first edit, so a changed stub or check stops the patch with Messenger untouched.
                 val readers = discoveredControls.getValue(INBOX_SEARCH_BAR)
                 val check = searchIconCheck(readers) { classDefByOrNull(it) }
-                val built = searchIconReader(stub, check, readers.any { r -> r.searchIconSites().any { it.viaInterface } })
+                val built = searchIconReader(stub, check)
                 injectControl(key, methods)
                 // MutableMethod.implementation has no setter. Keep both method indexes in sync when replacing it.
                 host.methods.remove(stub)
