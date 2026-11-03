@@ -840,8 +840,8 @@ internal fun ClassDef.isRowWrapper(): Boolean =
 internal fun ClassDef.hasMessageIdGetter(): Boolean = messageIdGetterName.isNotEmpty() &&
     methods.any { it.name == messageIdGetterName && it.returnType == "Ljava/lang/String;" && it.parameterTypes == listOf("I") }
 
-/** The Notifications tab's server flag ID as 585 numbers it. Meta renumbers it with each release. */
-private const val PEOPLE_SERVER_FLAG = 72344162845931861L
+/** The Notifications tab's server flag ID as 586 numbers it. Meta renumbers it with each release. */
+private const val PEOPLE_SERVER_FLAG = 72344145666062935L
 
 /**
  * Where the Notifications tab loads its server flag: the method's only constant with that value, at 17, after the

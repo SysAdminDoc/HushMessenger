@@ -84,8 +84,8 @@ public class CompatReport {
         + "PeopleTabPYMKHandler$fetchPymkSuggestions$$inlined$CoroutineExceptionHandler$1;";
     static final String PEOPLE_JEWEL_KEY = "pymk_jewel_section_hidden";
     static final String STORY_CARD_DATE_KEY = "last_date_creation_card_shown";
-    // The Notifications tab's server flag ID as 585 numbers it. Meta renumbers it with each release.
-    static final long PEOPLE_SERVER_FLAG = 72344162845931861L;
+    // The Notifications tab's server flag ID as 586 numbers it. Meta renumbers it with each release.
+    static final long PEOPLE_SERVER_FLAG = 72344145666062935L;
     // The redesigned emoji drawer's server flag as 585 numbers it. Meta renumbers it with each release.
     static final long EMOJI_DRAWER_FLAG = 36320528377659062L;
     // The drawer renderer throws this when the redesign can't draw, which ties the flag to the emoji drawer
