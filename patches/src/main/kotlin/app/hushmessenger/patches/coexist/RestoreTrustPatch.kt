@@ -148,8 +148,7 @@ val restoreTrustPatch = bytecodePatch(
         // Both launchers are checked before either changes.
         val sites = listOf(threads.linkLaunchSites("Threads"), instagram.linkLaunchSites("Instagram"))
 
-        method.answerOriginalSigners(packageInfo, signers)
-        FbnsPackageCheckFingerprint.method.routeFbnsSigners()
+        method.restoreSigners(packageInfo, signers, FbnsPackageCheckFingerprint.method)
         threads.reportLinkLaunches(sites[0])
         instagram.reportLinkLaunches(sites[1])
     }
@@ -299,7 +298,21 @@ internal fun MutableMethod.answerOriginalSigners(packageInfo: String, signers: S
  * registers, so both must be v15 or lower, and the read must not overwrite the package it read
  * from, which the call still needs. A jump landing straight after the read would skip the call.
  */
-internal fun MutableMethod.routeFbnsSigners() {
+internal fun MutableMethod.routeFbnsSigners(read: FbnsSignersRead = fbnsSignersRead()) {
+    addInstructions(
+        read.index + 1,
+        """
+            invoke-static { v${read.info}, v${read.signatures} }, $FBNS_SIGNERS
+            move-result-object v${read.signatures}
+        """,
+    )
+}
+
+/** Where FBNS's package check reads the signers, and the package and array registers the call names. */
+internal class FbnsSignersRead(val index: Int, val info: Int, val signatures: Int)
+
+/** The one place [routeFbnsSigners] can go, or a refusal. Changes nothing. */
+internal fun Method.fbnsSignersRead(): FbnsSignersRead {
     val code = implementation!!.instructions.toList()
     val reads = code.withIndex().filter { (_, instruction) ->
         instruction.opcode == Opcode.IGET_OBJECT &&
@@ -317,11 +330,15 @@ internal fun MutableMethod.routeFbnsSigners() {
     if (index + 1 in jumpTargets()) throw PatchException(
         "Restore screens on re-signed builds: FBNS's package check jumps past its signatures read"
     )
-    addInstructions(
-        index + 1,
-        """
-            invoke-static { v$info, v$signatures }, $FBNS_SIGNERS
-            move-result-object v$signatures
-        """,
-    )
+    return FbnsSignersRead(index, info, signatures)
+}
+
+/**
+ * Answers the original signers here and routes [fbns]'s signers read. FBNS's read is found first,
+ * so a check that refuses either one leaves both methods as Messenger wrote them.
+ */
+internal fun MutableMethod.restoreSigners(packageInfo: String, signers: String, fbns: MutableMethod) {
+    val read = fbns.fbnsSignersRead()
+    answerOriginalSigners(packageInfo, signers)
+    fbns.routeFbnsSigners(read)
 }

@@ -165,6 +165,37 @@ class RestoreTrustShapesTest {
     }
 
     @Test
+    fun `an fbns check that refuses leaves the signers method as Messenger wrote it`() {
+        val signers = signersMethod(6)
+        val fbns = fbnsCheck(read = "iget-object v2, v0, $SIGNATURES\niget-object v2, v0, $SIGNATURES")
+        val before = signers.body()
+        val fbnsBefore = fbns.body()
+        val failure = assertThrows(PatchException::class.java) { signers.restoreSigners("packageInfo", "Lfixture/Signers;", fbns) }
+        assertEquals(true, failure.message.orEmpty().contains("found 2"), failure.message)
+        assertEquals(before, signers.body())
+        assertEquals(fbnsBefore, fbns.body())
+    }
+
+    @Test
+    fun `a signers method that refuses leaves fbns as Messenger wrote it`() {
+        val signers = signersMethod(6, AccessFlags.PUBLIC.value or AccessFlags.STATIC.value)
+        val fbns = fbnsCheck()
+        val fbnsBefore = fbns.body()
+        assertThrows(PatchException::class.java) { signers.restoreSigners("packageInfo", "Lfixture/Signers;", fbns) }
+        assertEquals(fbnsBefore, fbns.body())
+    }
+
+    @Test
+    fun `both signer edits land together`() {
+        val signers = signersMethod(6)
+        val fbns = fbnsCheck()
+        val fbnsBefore = fbns.body()
+        signers.restoreSigners("packageInfo", "Lfixture/Signers;", fbns)
+        assertEquals(originalSigners, (signers.body()[2].reference as MethodReference).toString())
+        assertRouted(fbnsBefore, fbns.body(), "together")
+    }
+
+    @Test
     fun `the fbns mirror wants the read before both strings`() {
         assertEquals(true, fbnsCheck().isFbnsPackageCheck())
         val tagFirst = fixtureMethod(
