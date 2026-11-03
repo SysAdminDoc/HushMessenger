@@ -86,8 +86,8 @@ public class CompatReport {
     static final String STORY_CARD_DATE_KEY = "last_date_creation_card_shown";
     // The Notifications tab's server flag ID as 586 numbers it. Meta renumbers it with each release.
     static final long PEOPLE_SERVER_FLAG = 72344145666062935L;
-    // The redesigned emoji drawer's server flag as 585 numbers it. Meta renumbers it with each release.
-    static final long EMOJI_DRAWER_FLAG = 36320528377659062L;
+    // The redesigned emoji drawer's server flag as 586 numbers it (585 read 36320528377659062). Meta renumbers it with each release.
+    static final long EMOJI_DRAWER_FLAG = 36320416708509435L;
     // The drawer renderer throws this when the redesign can't draw, which ties the flag to the emoji drawer
     static final String EMOJI_DRAWER_ANCHOR = "Cannot render redesigned drawer with search icon ";
     // The server test that swaps the chat list's search bar for a top bar icon, as 586 numbers it. Meta renumbers it with each release.
