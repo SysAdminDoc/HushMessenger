@@ -149,6 +149,17 @@ class ControlDiscoveryTest {
         return-object v0
     """.trimIndent())))
 
+    @Test fun metaAiSearchGatesAreFoundAsStaticHolderGatesAndAsPrivateInstanceGates() {
+        val body = "const-string v0, \"com.facebook.messaging.search.aiagent.plugins.implementations.SearchAiagentImplementationsKillSwitch\"\nconst/4 v0, 0x1\nreturn v0"
+        fun gates(id: String, flags: Int) = mirroredControls(listOf(fixtureClass("LX/5X8;", listOf(fixtureMethod(id, body, 8, flags)))))
+            .getValue("ai_search").map { it.hookId() }
+        // 586 turned 585's static (holder) gates into private instance gates with no parameter.
+        assertEquals(listOf("LX/5X8;->A0A()Z"), gates("LX/5X8;->A0A()Z", AccessFlags.PRIVATE.value))
+        assertEquals(listOf("LX/5X8;->A0A(LX/5X8;)Z"), gates("LX/5X8;->A0A(LX/5X8;)Z", AccessFlags.STATIC.value))
+        assertTrue(gates("LX/5X8;->A0A(I)Z", AccessFlags.PRIVATE.value).isEmpty())
+        assertTrue(gates("LX/5X8;->A0A()Z", AccessFlags.STATIC.value).isEmpty())
+    }
+
     @Test fun searchChipIsTheFirstRenderableComponentOfTheSearchField() {
         val fixture = completeFixture()
         validateControls(mirroredControls(fixture), setOf("ai_search_chip"))

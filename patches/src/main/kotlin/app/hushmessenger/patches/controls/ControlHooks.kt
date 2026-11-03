@@ -291,8 +291,9 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
             if (messageIsUnsentGetterName.isNotEmpty() && method.name == messageIsUnsentGetterName &&
                 method.returnType == "Z" && method.parameterTypes == listOf("I") &&
                 cls.isRowWrapper() && cls.hasMessageIdGetter()) add("delta_unsent")
-            if (method.returnType == "Z" && AccessFlags.STATIC.isSet(method.accessFlags) &&
-                method.parameterTypes == listOf(cls.type) &&
+            // 585 passes the holder to a static gate; 586 made the same gates private instance methods with no parameter.
+            if (method.returnType == "Z" && (method.parameterTypes == listOf(cls.type) && AccessFlags.STATIC.isSet(method.accessFlags) ||
+                    method.parameterTypes.isEmpty() && !AccessFlags.STATIC.isSet(method.accessFlags)) &&
                 strings.any { "SearchAiagentImplementationsKillSwitch" in it }) add("ai_search")
             if (method.returnType == "Landroid/graphics/Typeface;" && method.parameterTypes.isEmpty() &&
                 !AccessFlags.STATIC.isSet(method.accessFlags) &&

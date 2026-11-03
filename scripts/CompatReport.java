@@ -7996,8 +7996,8 @@ public class CompatReport {
                 }
 
                 // ai_search
-                if ("Z".equals(method.getReturnType()) && isStatic &&
-                    paramTypes.equals(List.of(cls.getType())) &&
+                if ("Z".equals(method.getReturnType()) && ((isStatic && paramTypes.equals(List.of(cls.getType()))) ||
+                        (!isStatic && paramTypes.isEmpty())) &&
                     strings.stream().anyMatch(s -> s.contains("SearchAiagentImplementationsKillSwitch"))) {
                     found.get("ai_search").add(method);
                 }
