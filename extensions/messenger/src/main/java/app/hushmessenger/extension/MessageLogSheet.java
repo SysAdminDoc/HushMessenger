@@ -197,7 +197,7 @@ final class MessageLogSheet {
     void showMessageLog() {
         if (page.isFinishing() || page.isDestroyed() || messageLogDialog != null) return;
         SettingsDialog sheet = new SettingsDialog(page, page.ui, page.text, page.text.get("message_log_title"),
-            page.text.get(messageLogByChat ? "message_log_hint_by_chat" : "message_log_hint"));
+            page.text.get(messageLogHint()));
         Dialog dialog = sheet.dialog;
         messageLogDialog = dialog;
         hideFromRecents(dialog);
@@ -372,9 +372,6 @@ final class MessageLogSheet {
             messageLogByChat = !messageLogByChat;
             messageLogThread = null;
             byChat.setText(text.get(messageLogByChat ? "message_log_by_date" : "message_log_by_chat"));
-            // The hint is the line that says what order the list is in.
-            View hint = byChat.getRootView().findViewWithTag("dialog_hint");
-            if (hint instanceof TextView) ((TextView) hint).setText(text.get(messageLogByChat ? "message_log_hint_by_chat" : "message_log_hint"));
             showMessageLogResults();
         });
         views.addView(byChat, new LinearLayout.LayoutParams(0, -2, 1));
@@ -446,6 +443,9 @@ final class MessageLogSheet {
         SettingsText text = page.text;
         long generation = ++messageLogGeneration;
         messageLogMore = null;
+        // The hint is the line that says what order the list is in.
+        View hint = results.getRootView().findViewWithTag("dialog_hint");
+        if (hint instanceof TextView) ((TextView) hint).setText(text.get(messageLogHint()));
         results.removeAllViews();
         List<MessageLog.Entry> found = index.find(messageLogQuery, messageLogThread, messageLogUnsentOnly && index.hasUnsent, messageLogKind);
         messageLogSaveText.setEnabled(!found.isEmpty());
@@ -514,6 +514,11 @@ final class MessageLogSheet {
                 showMessageLogResults();
             });
         });
+    }
+
+    /** Chat cards come latest message first. Messages, one chat's included, come newest first. */
+    private String messageLogHint() {
+        return messageLogByChat && messageLogThread == null ? "message_log_hint_by_chat" : "message_log_hint";
     }
 
     private void openMessageLogChat(String thread) {

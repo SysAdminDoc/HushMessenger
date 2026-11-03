@@ -350,6 +350,11 @@ public class SettingsDialogTest {
             assertEquals(text.get("message_log_hint"), hint.getText().toString());
             root.findViewWithTag("message_log_by_chat").performClick();
             assertEquals(text.get("message_log_hint_by_chat"), hint.getText().toString());
+            // An opened chat lists its messages, newest first, and All chats goes back to the cards.
+            root.findViewWithTag("message_log_chat").performClick();
+            assertEquals(text.get("message_log_hint"), hint.getText().toString());
+            root.findViewWithTag("message_log_all_chats").performClick();
+            assertEquals(text.get("message_log_hint_by_chat"), hint.getText().toString());
             root.findViewWithTag("message_log_by_chat").performClick();
             assertEquals(text.get("message_log_hint"), hint.getText().toString());
         }
