@@ -547,7 +547,7 @@ final class SettingsTextZhTw {
         {"quiet_calls.title", "將來電設為靜音"},
         {"quiet_calls.description", "仍會接到來電，但 Messenger 不會響鈴、震動，或在畫面上彈出來電。來電會留在通知欄中，並提供接聽與拒接按鈕。未接來電仍會顯示在聊天室中。開啟「只限選定的聊天室」後，只有你挑選的聊天室會這樣，其他來電照常響鈴。若手機上已安裝 Facebook 應用程式，它仍可能因同一通來電而響鈴。"},
         {"car_messages.title", "Android Auto 訊息"},
-        {"car_messages.description", "讓 Android Auto 在它自己的訊息畫面上朗讀你的訊息，並傳送你口述的回覆。Android Auto 只會顯示從 Play 商店安裝的應用程式。開啟其開發人員設定中的「不明來源」後，桌面主機 (Desktop Head Unit) 就會顯示，但實際的車輛仍可能不列出 Messenger。"},
+        {"car_messages.description", "讓 Android Auto 在它自己的訊息畫面上朗讀你的訊息，並傳送你口述的回覆。Android Auto 只會顯示從 Play 商店安裝的應用程式。開啟其開發人員設定中的「不明來源」後，桌面主機 (Desktop Head Unit) 就會顯示，但實際的車輛仍可能不列出 Messenger。朗讀訊息會將聊天室標示為已讀並向對方顯示已讀，即使開啟了「隱藏已讀標記」也一樣。"},
         {"local_chat_search.title", "搜尋已儲存的訊息"},
         {"local_chat_search.description", "在聊天室的搜尋結果中加入一個按鈕，用來搜尋儲存在這支手機上的訊息。對於 Messenger 內建搜尋找不到任何內容的舊聊天室很有幫助。此功能適用於未採用端對端加密的聊天室，而且只能找到手機已載入的內容，所以請先在聊天室中向上捲動。"},
         {"chat_jump.title", "跳到第一則訊息或指定日期"},
