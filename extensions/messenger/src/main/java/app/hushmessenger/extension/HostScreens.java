@@ -39,27 +39,30 @@ public final class HostScreens {
 
     private HostScreens() {}
 
-    /** The patched factory hands over Messenger's Application here, just before Android attaches it. */
+    /**
+     * The patched factory hands over Messenger's Application here, just before Android attaches it. Nothing has
+     * checked safe mode yet, so a class that fails to load or initialize is caught too rather than stopping Messenger.
+     */
     public static void applicationCreated(Application app) {
         application = app;
         try {
             if (Settings.bundled(bundledControls()).contains(ChatAnimation.KEY)) ChatAnimation.register(app);
-        } catch (RuntimeException error) {
+        } catch (RuntimeException | LinkageError error) {
             Log.e("HushMessenger", "Can't watch for chats opening", error);
         }
         try {
             if (app != null && Settings.bundled(bundledControls()).contains(CallRecording.KEY)) CallRecording.register(app);
-        } catch (RuntimeException error) {
+        } catch (RuntimeException | LinkageError error) {
             Log.e("HushMessenger", "Can't watch for calls", error);
         }
         try {
             if (app != null) SettingsReopen.watch(app);
-        } catch (RuntimeException error) {
+        } catch (RuntimeException | LinkageError error) {
             Log.e("HushMessenger", "Can't watch for the first screen after a restart", error);
         }
         try {
             if (app != null) app.registerActivityLifecycleCallbacks(new LeavingMessenger());
-        } catch (RuntimeException error) {
+        } catch (RuntimeException | LinkageError error) {
             Log.e("HushMessenger", "Can't watch for Messenger leaving the screen", error);
         }
     }
