@@ -1696,11 +1696,10 @@ public class CompatReport {
      * The Threads and Instagram link launchers (RestoreTrustPatch.kt's linkLaunchSites): a void (Context, Uri)
      * method with the app's log tag, with (Context, Intent)Z family launches whose answers the return-void after
      * each drops. Every launch must take the extension call the way the patch places it, and the app's package
-     * must load before the tag, as a literal or, on some 585 builds, through a string table lookup.
+     * must load as a literal before the tag.
      */
     static List<String> linkLauncherProblems(List<ClassDef> classes) {
         var problems = new ArrayList<String>();
-        var tables = stringTables(classes);
         String[][] apps = {{"Threads", "com.instagram.barcelona", "ThreadsLinkLauncher"}, {"Instagram", "com.instagram.android", "InstagramLinkLauncher"}};
         for (var app : apps) {
             var launchers = new ArrayList<Method>();
@@ -1718,7 +1717,7 @@ public class CompatReport {
             var code = instructions(launchers.get(0));
             int named = -1, tag = -1;
             for (int i = 0; i < code.size(); i++) {
-                if (named < 0 && (app[1].equals(inboxString(code.get(i))) || (i > 0 && tableStrings(code.subList(i - 1, i + 1), tables).contains(app[1])))) named = i;
+                if (named < 0 && app[1].equals(inboxString(code.get(i)))) named = i;
                 if (tag < 0 && app[2].equals(inboxString(code.get(i)))) tag = i;
             }
             if (named < 0 || named > tag) {

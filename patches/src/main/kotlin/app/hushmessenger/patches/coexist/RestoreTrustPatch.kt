@@ -5,9 +5,7 @@
 package app.hushmessenger.patches.coexist
 
 import app.hushmessenger.patches.MessengerTarget
-import app.hushmessenger.patches.controls.indexOfAnchor
 import app.hushmessenger.patches.controls.jumpTargets
-import app.hushmessenger.patches.controls.redexStringTables
 import app.hushmessenger.patches.controls.settingsExtension
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
@@ -22,7 +20,6 @@ import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import app.morphe.patcher.util.smali.ExternalLabel
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
-import com.android.tools.smali.dexlib2.iface.ClassDef
 import com.android.tools.smali.dexlib2.iface.Method
 import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.Instruction
@@ -97,8 +94,8 @@ internal const val INSTAGRAM_LINK_TAG = "InstagramLinkLauncher"
 /**
  * Messenger's Threads and Instagram link launchers: each takes the tapped link, builds a view intent
  * for its app and hands it to Meta's family launcher, logging under its own tag when that throws.
- * The app's package is checked apart from the fingerprint ([requireLinkPackage]), since some 585
- * builds load Threads' from a string table instead of a literal.
+ * The app's package is checked apart from the fingerprint ([requireLinkPackage]), which needs it
+ * loaded before the tag.
  */
 internal object ThreadsLinkLauncherFingerprint : Fingerprint(
     returnType = "V",
@@ -142,9 +139,8 @@ val restoreTrustPatch = bytecodePatch(
 
         val threads = ThreadsLinkLauncherFingerprint.method
         val instagram = InstagramLinkLauncherFingerprint.method
-        val tables = redexStringTables(mutableListOf<ClassDef>().apply { classDefForEach { add(it) } })
-        threads.requireLinkPackage("Threads", "com.instagram.barcelona", THREADS_LINK_TAG, tables)
-        instagram.requireLinkPackage("Instagram", "com.instagram.android", INSTAGRAM_LINK_TAG, tables)
+        threads.requireLinkPackage("Threads", "com.instagram.barcelona", THREADS_LINK_TAG)
+        instagram.requireLinkPackage("Instagram", "com.instagram.android", INSTAGRAM_LINK_TAG)
         // Both launchers are checked before either changes.
         val sites = listOf(threads.linkLaunchSites("Threads"), instagram.linkLaunchSites("Instagram"))
 
@@ -154,11 +150,12 @@ val restoreTrustPatch = bytecodePatch(
     }
 }
 
-/** Stops the patch unless the launcher loads [pkg], as a literal or a [redexStringTables] lookup, before its [tag]. */
-internal fun Method.requireLinkPackage(app: String, pkg: String, tag: String, tables: Map<String, Map<Int, String>>) {
+/** Stops the patch unless the launcher loads [pkg] as a literal before its [tag]. */
+internal fun Method.requireLinkPackage(app: String, pkg: String, tag: String) {
     val code = implementation?.instructions?.toList().orEmpty()
-    val named = code.indexOfAnchor(pkg, tables)
-    val tagged = code.indexOfFirst { ((it as? ReferenceInstruction)?.reference as? StringReference)?.string == tag }
+    fun loads(value: String) = code.indexOfFirst { ((it as? ReferenceInstruction)?.reference as? StringReference)?.string == value }
+    val named = loads(pkg)
+    val tagged = loads(tag)
     if (named < 0 || named > tagged) throw PatchException("Restore screens on re-signed builds: $app's link launcher doesn't load $pkg before its tag")
 }
 
