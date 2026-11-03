@@ -244,6 +244,17 @@ public class SettingsNavigationTest {
         }
     }
 
+    @Test public void aButtonWithAShortLabelIsStillA48dpTapTarget() {
+        var app = RuntimeEnvironment.getApplication();
+        float density = app.getResources().getDisplayMetrics().density;
+        SettingsUi ui = new SettingsUi(app, false);
+        for (android.widget.Button button : new android.widget.Button[] {ui.button("OK"), ui.primaryButton("OK")}) {
+            button.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            assertTrue(button.getMeasuredWidth() + " px", button.getMeasuredWidth() >= 48 * density);
+            assertTrue(button.getMeasuredHeight() + " px", button.getMeasuredHeight() >= 48 * density);
+        }
+    }
+
     @Test public void largeTextOnANarrowScreenKeepsSwitchesWithinTheirRows() {
         RuntimeEnvironment.setQualifiers("w320dp-h800dp-mdpi");
         RuntimeEnvironment.setFontScale(2f);

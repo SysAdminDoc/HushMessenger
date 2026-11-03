@@ -138,8 +138,9 @@ final class SettingsUi {
         view.setTextColor(new ColorStateList(new int[][] {{-android.R.attr.state_enabled}, {}}, new int[] {muted, accent}));
         view.setMinHeight(dp(48));
         view.setMinimumHeight(dp(48));
-        view.setMinWidth(0);
-        view.setMinimumWidth(0);
+        // Android's own minimum is wider than a short label like "OK" needs, but a tap target stays 48 dp.
+        view.setMinWidth(dp(48));
+        view.setMinimumWidth(dp(48));
         view.setPadding(dp(12), dp(8), dp(12), dp(8));
         view.setBackground(interactive(surface, accent, 12));
         view.setStateListAnimator(null);
