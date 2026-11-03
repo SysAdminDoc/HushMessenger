@@ -297,8 +297,12 @@ class NativeMediaControlsTest {
         assertFailsWith<PatchException> { mask.screenshotViewerSites() }
         assertEquals(listOf(9), screenshotViewerFixture("$EPHEMERAL_VIEWER->A1J(Landroid/os/Bundle;)Landroid/app/Dialog;").screenshotViewerSites())
         assertEquals(listOf(9), screenshotViewerFixture("$EPHEMERAL_VIEWER->A1H(Landroid/os/Bundle;)Landroid/app/Dialog;").screenshotViewerSites())
-        // 584's A1K, A1O and A1I, 583's A1F and 582's A1D overrides, same body, are refused.
-        for (old in listOf("A1K", "A1O", "A1I", "A1F", "A1D")) assertFailsWith<PatchException>(old) {
+        // 586 arm64 names it A1K again, the name 584 once used, with the same body.
+        val dialog586 = screenshotViewerFixture("$EPHEMERAL_VIEWER->$EPHEMERAL_DIALOG_586(Landroid/os/Bundle;)Landroid/app/Dialog;")
+        assertEquals(listOf(9), dialog586.screenshotViewerSites())
+        assertEquals(listOf(9), CompatMirror.screenshotViewerSites(dialog586))
+        // 584's A1O and A1I, 583's A1F and 582's A1D overrides, same body, are refused.
+        for (old in listOf("A1O", "A1I", "A1F", "A1D")) assertFailsWith<PatchException>(old) {
             screenshotViewerFixture("$EPHEMERAL_VIEWER->$old(Landroid/os/Bundle;)Landroid/app/Dialog;").screenshotViewerSites()
         }
         val quick = "$QUICKSNAP_VIEWER->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;"

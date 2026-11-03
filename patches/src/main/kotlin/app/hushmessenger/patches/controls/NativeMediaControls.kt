@@ -27,10 +27,11 @@ internal const val GENERATE_MENU_LABEL_ARMV7 = 0x7f141c2f
 /** 586 arm64 renumbers both: the AI label the same four renders offer, and the menu label the grid's Generate branch shows. */
 internal const val GENERATE_AI_LABEL_586 = 0x7f14055d
 internal const val GENERATE_MENU_LABEL_586 = 0x7f141c4e
-/** The viewer's onCreateDialog override: A1J in 585 arm64 and the 347014974 armv7 family, A1H in the 347014990 one. */
+/** The viewer's onCreateDialog override: A1J in 585 arm64 and the 347014974 armv7 family, A1H in the 347014990 one, A1K in 586 arm64. */
 internal const val EPHEMERAL_DIALOG = "A1J"
-internal val EPHEMERAL_DIALOGS = setOf(EPHEMERAL_DIALOG, "A1H")
-/** The Quicksnap viewer's onCreateView frame: 40 registers on 585 arm64, 39 on armv7. */
+internal const val EPHEMERAL_DIALOG_586 = "A1K"
+internal val EPHEMERAL_DIALOGS = setOf(EPHEMERAL_DIALOG, "A1H", EPHEMERAL_DIALOG_586)
+/** The Quicksnap viewer's onCreateView frame: 40 registers on 585 arm64, 39 on armv7 and on 586 arm64. */
 internal val QUICKSNAP_REGISTERS = setOf(39, 40)
 private const val WINDOW = "Landroid/view/Window;"
 private const val SET_FLAGS = "$WINDOW->setFlags(II)V"

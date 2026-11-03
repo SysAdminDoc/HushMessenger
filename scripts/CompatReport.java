@@ -1827,10 +1827,10 @@ public class CompatReport {
     static final int GENERATE_MENU_LABEL_ARMV7 = 0x7f141c2f;
     // 586 arm64 renumbers both labels, as in NativeMediaControls.kt
     static final int GENERATE_AI_LABEL_586 = 0x7f14055d, GENERATE_MENU_LABEL_586 = 0x7f141c4e;
-    // The viewer's onCreateDialog override: A1J in 585 arm64 and the 347014974 armv7 family, A1H in the 347014990 one
+    // The viewer's onCreateDialog override: A1J in 585 arm64 and the 347014974 armv7 family, A1H in the 347014990 one, A1K in 586 arm64
     static final String EPHEMERAL_DIALOG = "A1J";
-    static final java.util.Set<String> EPHEMERAL_DIALOGS = Set.of(EPHEMERAL_DIALOG, "A1H");
-    // The Quicksnap viewer's onCreateView frame: 40 registers on 585 arm64, 39 on armv7
+    static final java.util.Set<String> EPHEMERAL_DIALOGS = Set.of(EPHEMERAL_DIALOG, "A1H", "A1K");
+    // The Quicksnap viewer's onCreateView frame: 40 registers on 585 arm64, 39 on armv7 and on 586 arm64
     static final java.util.Set<Integer> QUICKSNAP_REGISTERS = Set.of(39, 40);
 
     static int mediaTarget(List<Instruction> code, int at) {
