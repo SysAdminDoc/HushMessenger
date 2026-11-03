@@ -80,10 +80,19 @@ object DexInspector {
     private fun query(classes: List<ClassDef>, byType: Map<String, ClassDef>, q: String) {
         val (kind, arg) = q.split(":", limit = 2)
         println("\n==== $q ====")
+        // Every kind says when nothing matched, so a mistyped name never reads as "no callers".
+        var found = 0
+        fun show(line: String) { found++; println("  $line") }
+        // The class a member or type query names, when the APK doesn't define it.
+        val undefined = when (kind) {
+            "callers", "reads", "writes" -> arg.substringBefore("->")
+            "impl", "uses" -> arg
+            else -> null
+        }?.takeIf { it !in byType }
         when (kind) {
             "class" -> {
                 val cls = byType[arg] ?: return println("  not found")
-                println("  ${cls.type} extends ${cls.superclass} implements ${cls.interfaces}  redex=${cls.redexName()} access=0x${cls.accessFlags.toString(16)}")
+                show("${cls.type} extends ${cls.superclass} implements ${cls.interfaces}  redex=${cls.redexName()} access=0x${cls.accessFlags.toString(16)}")
                 cls.fields.filter { it.name != "__redex_internal_original_name" }
                     .forEach { println("  field ${if (it.accessFlags and 0x8 != 0) "static " else ""}${it.name}: ${it.type}") }
                 cls.methods.forEach { println("  method ${it.id()} [${it.implementation?.instructions?.count() ?: 0}]") }
@@ -91,7 +100,7 @@ object DexInspector {
             "method" -> {
                 val (cls, name) = splitMember(arg)
                 val c = byType[cls] ?: return println("  not found")
-                c.methods.filter { it.name == name || it.id() == arg }.forEach(::dumpMethod)
+                c.methods.filter { it.name == name || it.id() == arg }.forEach { found++; dumpMethod(it) }
             }
             "callers" -> {
                 val (cls, name) = splitMember(arg)
@@ -100,14 +109,14 @@ object DexInspector {
                         val r = (insn as? ReferenceInstruction)?.reference as? MethodReference
                         r != null && r.definingClass == cls && (r.name == name || "${r.definingClass}->${r.name}(${r.parameterTypes.joinToString("")})${r.returnType}" == arg)
                     } ?: false
-                    if (hit) println("  ${m.id()}  redex=${c.redexName()}")
+                    if (hit) show("${m.id()}  redex=${c.redexName()}")
                 }
             }
             "strings" -> for (c in classes) for (m in c.methods) {
                 val hits = m.implementation?.instructions
                     ?.mapNotNull { ((it as? ReferenceInstruction)?.reference as? StringReference)?.string }
                     ?.filter { it.contains(arg) }.orEmpty()
-                if (hits.isNotEmpty()) println("  ${m.id()}  redex=${c.redexName()}  ${hits.distinct()}")
+                if (hits.isNotEmpty()) show("${m.id()}  redex=${c.redexName()}  ${hits.distinct()}")
             }
             "reads", "writes" -> {
                 val (cls, name) = splitMember(arg)
@@ -118,11 +127,11 @@ object DexInspector {
                         val isWrite = insn.opcode.name.let { it.startsWith("iput") || it.startsWith("sput") }
                         r != null && r.definingClass == cls && r.name == name && isWrite == (kind == "writes")
                     } ?: false
-                    if (hit) println("  ${m.id()}  redex=${c.redexName()}")
+                    if (hit) show("${m.id()}  redex=${c.redexName()}")
                 }
             }
             "impl" -> classes.filter { it.superclass == arg || arg in it.interfaces }
-                .forEach { println("  ${it.type} redex=${it.redexName()}") }
+                .forEach { show("${it.type} redex=${it.redexName()}") }
             "uses" -> for (c in classes) for (m in c.methods) {
                 val sites = m.implementation?.instructions?.withIndex()?.filter { (_, insn) ->
                     when (val r = (insn as? ReferenceInstruction)?.reference) {
@@ -132,7 +141,7 @@ object DexInspector {
                         else -> false
                     }
                 }?.map { (i, insn) -> "[$i] ${insn.opcode}" }.orEmpty()
-                if (sites.isNotEmpty()) println("  ${m.id()}  redex=${c.redexName()}  $sites")
+                if (sites.isNotEmpty()) show("${m.id()}  redex=${c.redexName()}  $sites")
             }
             "literal" -> {
                 val value = arg.toLong()
@@ -140,15 +149,16 @@ object DexInspector {
                     val hit = m.implementation?.instructions?.any { insn ->
                         (insn as? WideLiteralInstruction)?.wideLiteral == value
                     } ?: false
-                    if (hit) println("  ${m.id()}  redex=${c.redexName()}")
+                    if (hit) show("${m.id()}  redex=${c.redexName()}")
                 }
             }
             "sig" -> {
                 val pattern = Regex(arg)
-                for (c in classes) for (m in c.methods) if (pattern.containsMatchIn(m.id())) println("  ${m.id()}  redex=${c.redexName()}")
+                for (c in classes) for (m in c.methods) if (pattern.containsMatchIn(m.id())) show("${m.id()}  redex=${c.redexName()}")
             }
-            else -> println("  unknown query kind $kind (class, method, callers, strings, reads, writes, impl, uses, literal, sig)")
+            else -> return println("  unknown query kind $kind (class, method, callers, strings, reads, writes, impl, uses, literal, sig)")
         }
+        if (found == 0) println(undefined?.let { "  0 matches ($it isn't defined in the APK)" } ?: "  0 matches")
     }
 
     @JvmStatic fun main(args: Array<String>) {
