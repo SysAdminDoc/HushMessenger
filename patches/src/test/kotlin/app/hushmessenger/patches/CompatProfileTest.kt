@@ -160,4 +160,29 @@ class CompatProfileTest {
         val (_, report) = compatReport(apk.toString())
         assertFalse("[FAIL] Signer" in report, report)
     }
+
+    @Test fun aTruncatedApkIsNamedInOneLineAndExitsTwo(@TempDir dir: Path) {
+        val apk = dir.resolve("truncated.apk")
+        Files.write(apk, byteArrayOf(0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00))
+        val (exit, output) = compatReport(apk.toString())
+        assertEquals(2, exit, output)
+        assertContains(output, "$apk: isn't a readable APK")
+        assertFalse("\tat " in output || "Exception in thread" in output, output)
+    }
+
+    @Test fun aMalformedRecordIsNamedInOneLineAndExitsTwo(@TempDir dir: Path) {
+        Files.copy(Path.of("../scripts/CompatReport.java"), dir.resolve("CompatReport.java"))
+        val record = dir.resolve("profiles").createDirectories().resolve("347215348.txt")
+        record.writeLines(profiles.resolve("347215348.txt").readLines() + "hook people")
+        val apk = dir.resolve("any.apk")
+        ZipOutputStream(Files.newOutputStream(apk)).use { it.putNextEntry(ZipEntry("resources.arsc")); it.closeEntry() }
+        val (exit, output) = compatReport(apk.toString(), script = dir.resolve("CompatReport.java").toString())
+        assertEquals(2, exit, output)
+        assertContains(output, "$record: malformed line hook people")
+        assertFalse("\tat " in output || "Exception in thread" in output, output)
+        // The same record read for --kotlin says the same.
+        val (kotlinExit, kotlin) = compatReport("--kotlin", record.toString(), script = dir.resolve("CompatReport.java").toString())
+        assertEquals(2, kotlinExit, kotlin)
+        assertContains(kotlin, "$record: malformed line hook people")
+    }
 }

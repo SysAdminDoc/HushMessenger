@@ -63,6 +63,7 @@ import java.util.jar.JarFile;
 import java.util.regex.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 public class CompatReport {
@@ -314,6 +315,8 @@ public class CompatReport {
             for (var line : Files.readAllLines(file)) {
                 if (line.isBlank() || line.startsWith("#")) continue;
                 var parts = line.split(" ", 3);
+                int needs = "hook".equals(parts[0]) || "dexSite".equals(parts[0]) ? 3 : 2;
+                if (parts.length < needs) throw new Unreadable(file + ": malformed line " + line);
                 switch (parts[0]) {
                     case "version" -> p.version = parts[1];
                     case "code" -> p.code = parts[1];
@@ -321,7 +324,7 @@ public class CompatReport {
                     case "hook" -> p.hooks.computeIfAbsent(parts[1], key -> new TreeSet<>()).add(parts[2]);
                     case "dexSite" -> p.dexSites.put(parts[1], parts[2]);
                     default -> {
-                        if (!FIELD_CONTROLS.containsKey(parts[0])) throw new IOException(file + ": unknown line " + line);
+                        if (!FIELD_CONTROLS.containsKey(parts[0])) throw new Unreadable(file + ": unknown line " + line);
                         p.fields.put(parts[0], line.substring(parts[0].length() + 1));
                     }
                 }
@@ -373,6 +376,13 @@ public class CompatReport {
         names.addAll(List.of("Install beside Meta apps", "Restore screens on re-signed builds", "Material You theme", CLONE));
         for (var name : names) { command.add("--enable"); command.add(name); }
         return new ProcessBuilder(command).inheritIO().start().waitFor() == 0;
+    }
+
+    /** A damaged APK or record. That isn't an incompatible build, so the report names the file and exits 2. */
+    static final class Unreadable extends IOException {
+        Unreadable(String message) {
+            super(message);
+        }
     }
 
     /** Version code -> recorded build. */
@@ -1551,9 +1561,14 @@ public class CompatReport {
     static List<ClassDef> loadDex(File apk) throws Exception {
         // The container API reads the same in upstream dexlib2 and in the patcher's fork the tests use.
         var classes = new ArrayList<ClassDef>();
-        var container = DexFileFactory.loadDexContainer(apk, Opcodes.getDefault());
-        for (var name : container.getDexEntryNames()) {
-            if (name.matches("classes[0-9]*\\.dex")) classes.addAll(container.getEntry(name).getDexFile().getClasses());
+        try {
+            var container = DexFileFactory.loadDexContainer(apk, Opcodes.getDefault());
+            for (var name : container.getDexEntryNames()) {
+                if (name.matches("classes[0-9]*\\.dex")) classes.addAll(container.getEntry(name).getDexFile().getClasses());
+            }
+        } catch (IOException | RuntimeException damaged) {
+            String why = damaged.getMessage() == null ? "" : damaged.getMessage().lines().findFirst().orElse("");
+            throw new Unreadable(apk + ": can't read its dex files (" + damaged.getClass().getSimpleName() + (why.isEmpty() ? "" : ": " + why) + ")");
         }
         return classes;
     }
@@ -8282,6 +8297,8 @@ public class CompatReport {
                     if (parts.length >= 3) abis.add(parts[1]);
                 }
             }
+        } catch (ZipException damaged) {
+            throw new Unreadable(apk + ": isn't a readable APK (" + damaged.getMessage() + ")");
         }
         return abis;
     }
@@ -9151,6 +9168,15 @@ public class CompatReport {
     }
 
     public static void main(String[] args) throws Exception {
+        try {
+            report(args);
+        } catch (Unreadable unreadable) {
+            System.err.println(unreadable.getMessage());
+            System.exit(2);
+        }
+    }
+
+    static void report(String[] args) throws Exception {
         if (args.length == 2 && "--kotlin".equals(args[0])) {
             System.exit(printKotlin(Path.of(args[1])));
         }
@@ -9197,7 +9223,11 @@ public class CompatReport {
         }
         String code = info != null ? info.versionCode : null;
         Profile expected = code != null ? builds.get(code) : null;
-        if (info != null && expected == null) {
+        if (info != null && expected == null && save && code != null) {
+            // --save is how a new build gets its record, so the missing one is what this run writes. Every way the
+            // write can fall through below fails the run on its own.
+            System.out.println("[INFO] Version code: " + code + " has no recorded build in scripts/profiles yet, so --save records it");
+        } else if (info != null && expected == null) {
             System.out.println("[FAIL] Version code: " +
                 (code == null ? "aapt2 couldn't read it" : code + " has no recorded build in scripts/profiles"));
             anyFail = true;
