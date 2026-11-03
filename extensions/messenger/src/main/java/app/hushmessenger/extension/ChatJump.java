@@ -762,7 +762,7 @@ public final class ChatJump {
             if (!(found instanceof FrameLayout)) return;
             content = (ViewGroup) found;
             Context context = chat.getContext();
-            SettingsUi ui = new SettingsUi(context, Settings.preferences.getBoolean("light", false));
+            SettingsUi ui = new SettingsUi(context, MaterialYouTheme.chatIsLight());
             bar = ui.row();
             bar.setBackgroundColor(ui.background);
             bar.setGravity(Gravity.CENTER_VERTICAL);
