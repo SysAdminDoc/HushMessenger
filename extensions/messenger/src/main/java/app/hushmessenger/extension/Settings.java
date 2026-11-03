@@ -678,6 +678,12 @@ public final class Settings {
     public static Object shareStorySection(Object state, Object skip) {
         return state != skip && enabled(SHARE_STORY) ? skip : state;
     }
+    static final String BLOCKED_LIST_PICTURES = "blocked_list_pictures";
+    /**
+     * The blocked people list hands over each blocked person's picture before it goes on their row. Null gives the row
+     * Messenger builds for someone it can't look up, with no picture. Off, Pause and safe mode keep the picture.
+     */
+    public static Object blockedListPicture(Object picture) { return enabled(BLOCKED_LIST_PICTURES) ? null : picture; }
     static final String AVATAR_SHAPE = "avatar_shape";
     /** Under Square profile pictures: rounds the square's corners. */
     static final String AVATAR_ROUNDED = "avatar_shape_rounded";

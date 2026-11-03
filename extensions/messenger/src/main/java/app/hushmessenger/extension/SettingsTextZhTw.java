@@ -614,6 +614,8 @@ final class SettingsTextZhTw {
         {"anonymous_stories.description", "觀看他人的限時動態時，不會將你加入觀看者名單。Messenger 仍會在你這一端將其標示為已看過。"},
         {"save_stories.title", "儲存任何限時動態"},
         {"save_stories.description", "在他人限時動態的「更多選項」選單中加入「儲存」，讓你將相片或影片儲存在手機上。"},
+        {"blocked_list_pictures.title", "隱藏封鎖名單上的大頭貼照"},
+        {"blocked_list_pictures.description", "隱藏「隱私和安全」中封鎖名單上你封鎖的人的大頭貼照。他們的名字和「解除封鎖」仍會顯示。"},
         {"material_you.title", "Material You 主題"},
         {"material_you.description", "在 Android 12 以上版本中，依桌布配色為 Messenger 深色模式上色；在 Android 11 中則使用固定藍色。請先在 Messenger 中啟用深色模式。除非開啟「淺色模式強調色」，否則淺色模式保持原本的顏色。"},
         {"app_icons.title", "解鎖應用程式圖示"},

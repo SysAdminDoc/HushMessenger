@@ -614,6 +614,8 @@ final class SettingsTextViVN {
         {"anonymous_stories.description", "Khi xem tin của người khác, bạn sẽ không bị thêm vào danh sách người xem. Messenger vẫn sẽ đánh dấu là đã xem ở phía bạn."},
         {"save_stories.title", "Lưu bất kỳ tin nào"},
         {"save_stories.description", "Thêm 'Lưu' vào menu 'Tùy chọn khác' của tin người khác, cho phép bạn lưu ảnh hoặc video về điện thoại."},
+        {"blocked_list_pictures.title", "Ẩn ảnh trong danh sách chặn"},
+        {"blocked_list_pictures.description", "Ẩn ảnh đại diện của những người bạn đã chặn trong danh sách chặn, ở mục 'Quyền riêng tư và an toàn'. Tên của họ và nút 'Bỏ chặn' vẫn hiển thị."},
         {"material_you.title", "Chủ đề Material You"},
         {"material_you.description", "Trong Android 12 trở lên, tô màu chế độ tối của Messenger theo bảng màu hình nền; trong Android 11, sử dụng màu xanh lam cố định. Vui lòng bật chế độ tối trong Messenger trước. Chế độ sáng giữ nguyên màu trừ khi bạn bật Màu nhấn cho chế độ sáng."},
         {"app_icons.title", "Mở khóa biểu tượng ứng dụng"},

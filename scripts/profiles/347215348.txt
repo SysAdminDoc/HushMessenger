@@ -62,6 +62,7 @@ hook avatar_shape LX/4Z5;-><init>([FFZZZ)V
 hook avatar_shape LX/ZWT;->A04(LX/cXn;LX/4Tl;)V
 hook avatar_stickers LX/PFZ;->A01(LX/PFZ;)Z
 hook avatar_tabs Lcom/facebook/messaging/msys/thread/composer/configuration/xapp/BaseXappComposerConfigurationFactory;->A0S()Lcom/google/common/collect/ImmutableList;
+hook blocked_list_pictures LX/PwX;->call()Ljava/lang/Object;
 hook browser Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0K(Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;)Z
 hook bubble_mode LX/2LY;->A01(Lcom/facebook/auth/usersession/FbUserSession;)Z
 hook bubbles LX/2LY;->A00()Z

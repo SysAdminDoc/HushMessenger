@@ -209,6 +209,7 @@ public class CompatReport {
         PATCHES.put("Save button for voice messages", List.of("save_voice_menu"));
         PATCHES.put("Hide the Instants button", List.of("instants_button"));
         PATCHES.put("Hide Your story when sharing", List.of("share_story"));
+        PATCHES.put("Hide pictures on the Blocked list", List.of("blocked_list_pictures"));
         PATCHES.put("Use the phone's camera app", List.of("system_camera"));
         PATCHES.put("Open your gallery app", List.of("external_gallery", "gallery_temp_file"));
         PATCHES.put("Put gallery picks in the chat", List.of("gallery_to_chat"));
@@ -1816,7 +1817,9 @@ public class CompatReport {
         for (int i = 0; i < code.size(); i++) { if (offset == target) return i; offset += code.get(i).getCodeUnits(); }
         return -1;
     }
-    static Set<Integer> mediaTargets(Method method) {
+    static Set<Integer> mediaTargets(Method method) { return mediaTargets(method, true); }
+    /** With branches false, only the switch cases and catch handlers, as ControlHooks.kt's jumpTargets(branches = false). */
+    static Set<Integer> mediaTargets(Method method, boolean branches) {
         var code = instructions(method); var offsets = new HashMap<Integer, Integer>(); int offset = 0;
         for (int i = 0; i < code.size(); i++) { offsets.put(offset, i); offset += code.get(i).getCodeUnits(); }
         var targets = new HashSet<Integer>(); offset = 0;
@@ -1826,7 +1829,7 @@ public class CompatReport {
                 if (i.getOpcode() == Opcode.PACKED_SWITCH || i.getOpcode() == Opcode.SPARSE_SWITCH) {
                     if (landing != null && code.get(landing) instanceof SwitchPayload payload)
                         for (var e : payload.getSwitchElements()) targets.add(offsets.getOrDefault(offset + e.getOffset(), -1));
-                } else if (landing != null) targets.add(landing);
+                } else if (branches && landing != null) targets.add(landing);
             }
             offset += i.getCodeUnits();
         }
@@ -5857,7 +5860,84 @@ public class CompatReport {
         return List.of();
     }
 
-    static final String HOISTED_SHARE_LOADER = "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/" +
+    static final String BLOCK_PEOPLE_PRESENTER = "BlockPeopleV2PresenterImpl";
+    static final String BLOCKED_ID_UNREADABLE = "user id/phone-number is null/empty when trying to parse the id";
+    static final String USER_MODEL = "Lcom/facebook/user/model/User;";
+    static final Set<Opcode> BLOCKED_PICTURE_GOTOS = Set.of(Opcode.GOTO, Opcode.GOTO_16, Opcode.GOTO_32);
+
+    /** The registers a call hands its User parameters, its receiver left out. */
+    static List<Integer> userArguments(Instruction i) {
+        if (!(i instanceof ReferenceInstruction ri) || !(ri.getReference() instanceof MethodReference call)) return List.of();
+        var args = bubbleArgs(i);
+        int at = i.getOpcode() == Opcode.INVOKE_STATIC || i.getOpcode() == Opcode.INVOKE_STATIC_RANGE ? 0 : 1;
+        var users = new ArrayList<Integer>();
+        for (var type : call.getParameterTypes()) {
+            if (USER_MODEL.contentEquals(type) && at < args.size()) users.add(args.get(at));
+            at += "J".contentEquals(type) || "D".contentEquals(type) ? 2 : 1;
+        }
+        return users;
+    }
+
+    /**
+     * One picture store of the blocked list's row builder: `iput-object vP` into an object field right after
+     * `const/4 vP, 0`, which follows `if-nez vU` on the move-result-object of a call returning User. The if-nez lands on
+     * one straight run, with no branch in it and nothing landing inside it, that hands vU unchanged to a call as a User,
+     * ends with `move-result-object vP`, and goes back with the only branch to the store, which no switch case or catch
+     * handler lands on.
+     */
+    static boolean blockedPictureAt(Method builder, List<Instruction> code, int store, Set<Integer> targets) {
+        if (store < 4 || code.get(store).getOpcode() != Opcode.IPUT_OBJECT) return false;
+        var field = (FieldReference) ((ReferenceInstruction) code.get(store)).getReference();
+        int picture = register(code.get(store));
+        var empty = code.get(store - 1);
+        if (!field.getType().startsWith("L") || empty.getOpcode() != Opcode.CONST_4 || register(empty) != picture ||
+            ((NarrowLiteralInstruction) empty).getNarrowLiteral() != 0) return false;
+        var check = code.get(store - 2);
+        if (check.getOpcode() != Opcode.IF_NEZ) return false;
+        int user = register(check);
+        var result = code.get(store - 3);
+        if (result.getOpcode() != Opcode.MOVE_RESULT_OBJECT || register(result) != user ||
+            !(code.get(store - 4) instanceof ReferenceInstruction lookup && lookup.getReference() instanceof MethodReference person &&
+                USER_MODEL.equals(person.getReturnType()))) return false;
+        int known = mediaTarget(code, store - 2), back = -1, into = 0;
+        for (int i = 0; i < code.size(); i++) if (code.get(i) instanceof OffsetInstruction && mediaTarget(code, i) == store) { back = i; into++; }
+        if (into != 1 || known < 0 || back <= known || !BLOCKED_PICTURE_GOTOS.contains(code.get(back).getOpcode()) ||
+            mediaTargets(builder, false).contains(store)) return false;
+        for (int i = known; i < back; i++) if (code.get(i) instanceof OffsetInstruction) return false;
+        for (int i = known + 1; i <= back; i++) if (targets.contains(i)) return false;
+        var built = code.get(back - 1);
+        if (built.getOpcode() != Opcode.MOVE_RESULT_OBJECT || register(built) != picture) return false;
+        int handed = -1;
+        for (int i = known; i < back && handed < 0; i++) if (userArguments(code.get(i)).contains(user)) handed = i;
+        if (handed < 0) return false;
+        for (int i = known; i < handed; i++) {
+            var op = code.get(i).getOpcode();
+            int written = register(code.get(i));
+            if (op.setsRegister() && written >= 0 && (written == user || (op.setsWideRegister() && written + 1 == user))) return false;
+        }
+        return true;
+    }
+
+    /**
+     * blocked_list_pictures: the app's only method holding both the blocked list presenter's log tag and its id parse
+     * failure, taken when exactly one picture store in it has blockedPictureAt's shape. Mirrors BlockedListPictures.kt.
+     */
+    static List<Method> blockedListPictures(List<ClassDef> classes) {
+        var builders = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            var strings = literals(method);
+            if (strings.contains(BLOCK_PEOPLE_PRESENTER) && strings.contains(BLOCKED_ID_UNREADABLE)) builders.add(method);
+        }
+        if (builders.size() != 1) return List.of();
+        var builder = builders.get(0);
+        var code = instructions(builder);
+        var targets = mediaTargets(builder);
+        int sites = 0;
+        for (int store = 0; store < code.size(); store++) if (blockedPictureAt(builder, code, store, targets)) sites++;
+        return sites == 1 ? List.of(builder) : List.of();
+    }
+
+    static final String HOISTED_SHARE_LOADER ="Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/" +
         "morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;";
     static final String UNHOISTED_SHARE_TRACE = "messaging.sharing.broadcastflow.mutation.loader.sections.morewaystoshare.unhoisted." +
         "BroadcastFlowUnhoistedMoreWaysToShareSectionsLoader";
@@ -7592,6 +7672,7 @@ public class CompatReport {
         found.get("wifi_identity").addAll(wifiIdentityReads(classes));
         found.get("phone_id_sync").addAll(phoneIdSync(classes));
         found.get("story_hold").addAll(storyHold(classes));
+        found.get("blocked_list_pictures").addAll(blockedListPictures(classes));
         found.get("share_story").addAll(shareStory(classes));
         found.get("avatar_shape").addAll(avatarShape(classes));
         found.get("story_ring").addAll(storyRing(classes));

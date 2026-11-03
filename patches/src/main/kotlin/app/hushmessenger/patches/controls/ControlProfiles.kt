@@ -95,6 +95,7 @@ internal val PROFILE_347215348 = ControlProfile(
         ),
         "avatar_stickers" to setOf("LX/PFZ;->A01(LX/PFZ;)Z"),
         "avatar_tabs" to setOf("Lcom/facebook/messaging/msys/thread/composer/configuration/xapp/BaseXappComposerConfigurationFactory;->A0S()Lcom/google/common/collect/ImmutableList;"),
+        "blocked_list_pictures" to setOf("LX/PwX;->call()Ljava/lang/Object;"),
         "browser" to setOf("Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0K(Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "bubble_mode" to setOf("LX/2LY;->A01(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "bubbles" to setOf("LX/2LY;->A00()Z"),
