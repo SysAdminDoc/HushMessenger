@@ -1453,6 +1453,9 @@ public final class SettingsActivity extends Activity {
                 super.onInitializeAccessibilityNodeInfo(host, info);
                 info.setClassName(Button.class.getName());
                 info.setHeading(true);
+                // A label of its own: read from the children, TalkBack said "Collapsed, Button" before the section's name.
+                CharSequence tally = count.getContentDescription();
+                info.setContentDescription(tally == null ? text.get(id) : text.get(id) + ". " + tally);
                 info.addAction(sectionShown(id) ? android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_COLLAPSE
                     : android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_EXPAND);
             }

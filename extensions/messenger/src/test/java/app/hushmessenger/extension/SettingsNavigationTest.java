@@ -38,6 +38,11 @@ public class SettingsNavigationTest {
             android.view.accessibility.AccessibilityNodeInfo info = header.createAccessibilityNodeInfo();
             assertTrue(info.isHeading());
             assertEquals(android.widget.Button.class.getName(), info.getClassName().toString());
+            // Named by the header itself, so TalkBack says the section and its count before "Button".
+            // The table's own case, not the capitals the heading is drawn in.
+            CharSequence tally = ((android.view.ViewGroup) header).getChildAt(1).getContentDescription();
+            assertNotNull(tally);
+            assertEquals(new SettingsText(screen.get()).get("inbox") + ". " + tally, info.getContentDescription().toString());
             assertTrue(info.getActionList().contains(android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_EXPAND));
             assertFalse(info.getActionList().contains(android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_COLLAPSE));
             // TalkBack speaks the state from these actions, so a state description of our own would say it twice.
