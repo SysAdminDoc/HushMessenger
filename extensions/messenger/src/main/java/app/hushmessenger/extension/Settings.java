@@ -621,6 +621,13 @@ public final class Settings {
     public static boolean holdStoryAtEnd() { return enabled("story_hold"); }
 
     /**
+     * Asked with each of Meta's answers when a chat is pressed and held in the chat list: whether to open Messenger's
+     * preview, and for an encrypted chat whether its preview is allowed. True opens the preview. Off, Pause and safe mode
+     * keep Meta's answer.
+     */
+    public static boolean chatPreview(boolean stock) { return enabled("chat_preview") || stock; }
+
+    /**
      * Asked when a call starts ringing, before Messenger decides to ring and vibrate, and again for the call's
      * notification. True takes Messenger's own ringtone-off path and posts the notification without the pop-up. With
      * Only chosen chats on, only a call from a chosen chat gets true.

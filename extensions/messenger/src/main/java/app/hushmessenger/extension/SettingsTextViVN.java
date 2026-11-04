@@ -510,6 +510,8 @@ final class SettingsTextViVN {
         {"subtabs.description", "Ẩn các tab 'Tất cả', 'Chưa đọc' và 'Nhóm' phía trên các đoạn chat."},
         {"inbox_search_bar.title", "Giữ thanh tìm kiếm"},
         {"inbox_search_bar.description", "Đưa thanh tìm kiếm trở lại đầu danh sách trò chuyện khi Messenger đã thay nó bằng biểu tượng tìm kiếm. Có hiệu lực sau khi khởi động lại Messenger. Nếu bạn chưa nhận được biểu tượng đó, sẽ không có thay đổi nào xảy ra."},
+        {"chat_preview.title", "Xem trước phòng chat khi nhấn giữ"},
+        {"chat_preview.description", "Nhấn giữ một phòng chat để xem nhanh trong bản xem trước của chính Messenger, kèm menu của phòng chat ở bên dưới, mà không cần mở phòng chat."},
         {"mark_read_action.title", "Ẩn 'Đánh dấu là đã đọc'"},
         {"mark_read_action.description", "Ẩn 'Đánh dấu là đã đọc' trong menu hiển thị khi nhấn giữ phòng chat trong danh sách trò chuyện, tránh việc vô tình đánh dấu phòng chat là đã đọc. 'Đánh dấu là chưa đọc' sẽ vẫn được giữ lại."},
         {"pinned_chats.title", "Ghim nhiều cuộc trò chuyện hơn"},

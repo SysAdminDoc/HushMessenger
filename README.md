@@ -70,6 +70,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Hide the Instants button | Hides the + button that slides in at the right edge of your chat list and the one under your chat heads. Both open Instants. |
 | Hide inbox tabs | Hides the All, Unread and Groups tabs above your chats. |
 | Keep the search bar | Brings back the search bar above your chats when Messenger has swapped it for a search icon. Takes effect after a restart, and nothing changes if you never got the icon. Experimental. |
+| Preview chats on long press | Pressing and holding a chat opens Messenger's own preview of it, with the chat's menu underneath, so you can peek at a chat without opening it. Experimental. |
 | Hide Mark as read | Takes Mark as read out of the menu you get when you press and hold a chat, so you can't mark one read by accident. Mark as unread stays. |
 | Pin more chats | Lets you pin chats past Messenger's limit and puts Pin back on chats that don't offer it. Pins past the limit stay on this phone, so they won't show on your other devices. Experimental. |
 | Hide People tab | Hides the People tab in the bottom bar. Restart Messenger to see it go. |

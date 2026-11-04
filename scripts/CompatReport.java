@@ -177,6 +177,7 @@ public class CompatReport {
         PATCHES.put("Hide stories and notes", List.of("stories", "story_ring"));
         PATCHES.put("Hide inbox tabs", List.of("subtabs"));
         PATCHES.put("Keep the search bar", List.of("inbox_search_bar"));
+        PATCHES.put("Preview chats on long press", List.of("chat_preview"));
         PATCHES.put("Hide Mark as read", List.of("mark_read_action"));
         PATCHES.put("Pin more chats", List.of("pinned_chats", "pin_rows", "pin_ask", "pin_drop", "pin_full", "pin_list"));
         PATCHES.put("Hide Facebook shortcuts", List.of("facebook", "facebook_profile", "facebook_profile_header"));
@@ -5860,6 +5861,48 @@ public class CompatReport {
         return List.of();
     }
 
+    static final String CHAT_PREVIEW_FRAGMENT = "Lcom/facebook/messaging/threadlist/threaditemmenu/preview/InboxThreadPreviewDialogFragment;";
+    static final long CHAT_PREVIEW_FLAG = 0x1010535000040deL;
+    static final long CHAT_PREVIEW_ENCRYPTED_FLAG = 0x101055b0000432fL;
+
+    static boolean buildsChatPreview(Method method) {
+        for (var i : instructions(method))
+            if (i.getOpcode() == Opcode.NEW_INSTANCE && ((TypeReference) ((ReferenceInstruction) i).getReference()).getType().equals(CHAT_PREVIEW_FRAGMENT)) return true;
+        return false;
+    }
+
+    /**
+     * chat_preview: the one method that new-instances InboxThreadPreviewDialogFragment, when its preview flag is read
+     * once and its encrypted-chat flag at least once, each as const-wide, an invoke-static (…J)Z taking the pair last,
+     * move-result and an if-eqz on that result, with nothing jumping into the read. Mirrors ChatPreview.kt.
+     */
+    static List<Method> chatPreview(List<ClassDef> classes) {
+        Method builder = null;
+        int builders = 0;
+        for (var cls : classes) for (var method : cls.getMethods()) if (buildsChatPreview(method)) { builder = method; builders++; }
+        if (builders != 1) return List.of();
+        var code = instructions(builder);
+        var targets = mediaTargets(builder);
+        int previews = 0, encrypted = 0;
+        for (int at = 0; at < code.size(); at++) {
+            if (code.get(at).getOpcode() != Opcode.CONST_WIDE) continue;
+            long flag = ((WideLiteralInstruction) code.get(at)).getWideLiteral();
+            if (flag != CHAT_PREVIEW_FLAG && flag != CHAT_PREVIEW_ENCRYPTED_FLAG) continue;
+            int pair = register(code.get(at));
+            if (at + 3 >= code.size() || !(code.get(at + 1) instanceof FiveRegisterInstruction call) ||
+                !(((ReferenceInstruction) call).getReference() instanceof MethodReference check)) return List.of();
+            var args = List.of(call.getRegisterC(), call.getRegisterD(), call.getRegisterE(), call.getRegisterF(), call.getRegisterG()).subList(0, call.getRegisterCount());
+            var params = check.getParameterTypes();
+            if (call.getOpcode() != Opcode.INVOKE_STATIC || !"Z".equals(check.getReturnType()) || params.isEmpty() ||
+                !"J".equals(params.get(params.size() - 1).toString()) || args.size() < 2 || !args.subList(args.size() - 2, args.size()).equals(List.of(pair, pair + 1)) ||
+                code.get(at + 2).getOpcode() != Opcode.MOVE_RESULT || code.get(at + 3).getOpcode() != Opcode.IF_EQZ ||
+                register(code.get(at + 3)) != register(code.get(at + 2)) || targets.contains(at + 1) || targets.contains(at + 2) || targets.contains(at + 3))
+                return List.of();
+            if (flag == CHAT_PREVIEW_FLAG) previews++; else encrypted++;
+        }
+        return previews == 1 && encrypted > 0 ? List.of(builder) : List.of();
+    }
+
     static final String BLOCK_PEOPLE_PRESENTER = "BlockPeopleV2PresenterImpl";
     static final String BLOCKED_ID_UNREADABLE = "user id/phone-number is null/empty when trying to parse the id";
     static final String USER_MODEL = "Lcom/facebook/user/model/User;";
@@ -7672,6 +7715,7 @@ public class CompatReport {
         found.get("wifi_identity").addAll(wifiIdentityReads(classes));
         found.get("phone_id_sync").addAll(phoneIdSync(classes));
         found.get("story_hold").addAll(storyHold(classes));
+        found.get("chat_preview").addAll(chatPreview(classes));
         found.get("blocked_list_pictures").addAll(blockedListPictures(classes));
         found.get("share_story").addAll(shareStory(classes));
         found.get("avatar_shape").addAll(avatarShape(classes));

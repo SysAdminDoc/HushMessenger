@@ -114,6 +114,7 @@ internal val PROFILE_347215348 = ControlProfile(
         "chat_inbox" to setOf("LX/1pO;-><init>()V"),
         "chat_jump" to setOf("LX/1qk;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "chat_legacy" to setOf("LX/1qh;->onCreateAnimation(IZI)Landroid/view/animation/Animation;"),
+        "chat_preview" to setOf("Lcom/facebook/messaging/threadlist/plugins/core/clickhandler/DefaultThreadListClickHandler;->A02()V"),
         "chat_promotions" to setOf("LX/Hk2;->A0E()Z", "LX/Hk2;->A0F()Z"),
         "community_inbox" to setOf("LX/28c;->invoke(Ljava/lang/Object;)Ljava/lang/Object;"),
         "delta_unsent" to setOf("LX/VvU;->DQY(I)Z"),
