@@ -93,12 +93,11 @@ public class SettingsGradientTitlesTest {
                 TextView wordmark = root.findViewWithTag("wordmark");
                 assertEquals(new SettingsText(screen.get()).get("search_settings"), wordmark.getText().toString());
                 assertArrayEquals(stops(light), ShimmerTitle.stopsOf(wordmark));
-                // A whole drift round on and between sweeps, the words run from blue at the start to coral at the end.
+                // A whole drift round on and between sweeps, the words run from sky blue at the start to royal at the end.
                 ShimmerTitle.frameFor(wordmark, ShimmerTitle.DRIFT_MS);
                 Bitmap pixels = Bitmap.createBitmap(wordmark.getWidth(), wordmark.getHeight(), Bitmap.Config.ARGB_8888);
                 wordmark.draw(new Canvas(pixels));
-                assertTrue(name(light) + ": cool letters", anyPixel(pixels, false));
-                assertTrue(name(light) + ": warm letters", anyPixel(pixels, true));
+                assertTrue(name(light) + ": sky to royal letters", hueSpread(pixels) >= 20f);
             }
         }
     }
@@ -123,15 +122,20 @@ public class SettingsGradientTitlesTest {
     private static String name(boolean light) { return light ? "light" : "dark"; }
 
     /** Whether a solid letter pixel is clearly warm (red over blue) or, for not warm, clearly cool. */
-    private static boolean anyPixel(Bitmap bitmap, boolean warm) {
+    /** How many degrees of hue the solid, colored letters span. Soft edges and anything near white don't count. */
+    private static float hueSpread(Bitmap bitmap) {
+        float low = 360f, high = 0f;
+        float[] hsv = new float[3];
         for (int x = 0; x < bitmap.getWidth(); x++)
             for (int y = 0; y < bitmap.getHeight(); y++) {
                 int pixel = bitmap.getPixel(x, y);
                 if (Color.alpha(pixel) < 250) continue;
-                int lean = Color.red(pixel) - Color.blue(pixel);
-                if (warm ? lean > 60 : lean < -60) return true;
+                Color.colorToHSV(pixel, hsv);
+                if (hsv[1] < 0.4f) continue;
+                low = Math.min(low, hsv[0]);
+                high = Math.max(high, hsv[0]);
             }
-        return false;
+        return high < low ? 0f : high - low;
     }
 
     private static View lay(View root) {
