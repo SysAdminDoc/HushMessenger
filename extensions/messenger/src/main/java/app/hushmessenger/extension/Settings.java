@@ -395,6 +395,7 @@ public final class Settings {
         owners.put(QuietCalls.CHOSEN_ONLY, QuietCalls.KEY);
         owners.put(MessageLog.SAVE_EXPIRING, MessageLog.KEY);
         owners.put(MessageLogButton.KEY, MessageLog.KEY);
+        owners.put(MessageLogButton.MENU_KEY, MessageLog.KEY);
         SUB_SWITCHES = Collections.unmodifiableMap(owners);
     }
 
@@ -2050,53 +2051,72 @@ public final class Settings {
         }
     }
 
-    /** Puts a HushMessenger copy of the Menu tab's Settings folder row right after it (one title String per row). */
+    /**
+     * Puts a HushMessenger copy of the Menu tab's Settings folder row right after it (one title String per row), and a
+     * Message log copy after that while its switch is on.
+     */
     @SuppressWarnings("unchecked")
     public static void addMenuSettingsEntry(ArrayList list) {
         try {
-            if (list == null || list.isEmpty() || menuRowHidden()) return;
+            boolean settingsRow = !menuRowHidden();
+            Context context = appContext;
+            String logRow = MessageLogButton.inMenu() && context != null ? MessageLogButton.label(context) : null;
+            if (list == null || list.isEmpty() || !settingsRow && logRow == null) return;
             // Messenger builds its QR code row into the same list, so find Settings by its folder key.
             int at = -1;
             for (int i = 0; i < list.size() && at < 0; i++) if (holdsSettingsKey(list.get(i))) at = i;
             if (at < 0) return;
             Object original = list.get(at);
-            Object clone = shallowClone(original);
-            if (clone == null) return;
-            java.lang.reflect.Field title = null;
-            for (java.lang.reflect.Field f : original.getClass().getDeclaredFields()) {
-                if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) continue;
-                f.setAccessible(true);
-                if (f.getType() == String.class) {
-                    if (title != null) return;
-                    title = f;
-                } else if (f.getType() == Integer.class) {
-                    f.set(clone, null);
-                } else if (f.getType().getName().endsWith("HeterogeneousMap")) {
-                    // Folder metadata, such as Settings' unseen badge count, belongs to the Settings row.
-                    Object metadata = f.get(original);
-                    if (metadata == null) continue;
-                    Object copy = shallowClone(metadata);
-                    if (copy == null) return;
-                    for (java.lang.reflect.Field m : copy.getClass().getDeclaredFields()) {
-                        if (java.lang.reflect.Modifier.isStatic(m.getModifiers()) || m.getType() != Map.class) continue;
-                        m.setAccessible(true);
-                        m.set(copy, new java.util.HashMap<>());
-                    }
-                    f.set(clone, copy);
-                } else if (f.getType().getName().endsWith("DrawerFolderKey")) {
-                    // Folder keys compare by identity, so a copy keeps this row from acting as Settings.
-                    Object key = f.get(original);
-                    Object copy = key == null ? null : shallowClone(key);
-                    if (copy == null) return;
-                    f.set(clone, copy);
-                }
+            if (settingsRow) {
+                Object hush = menuRowCopy(original, "HushMessenger");
+                if (hush == null) return;
+                list.add(++at, hush);
             }
-            if (title == null) return;
-            title.set(clone, "HushMessenger");
-            list.add(at + 1, clone);
+            if (logRow != null) {
+                Object log = menuRowCopy(original, logRow);
+                if (log != null) list.add(at + 1, log);
+            }
         } catch (Exception | LinkageError e) {
             hookFailed("menu_row", "addMenuSettingsEntry failed", e);
         }
+    }
+
+    /** A copy of the Settings folder row under [name], with its own folder key and no badge, or null if it can't be labeled. */
+    private static Object menuRowCopy(Object original, String name) throws ReflectiveOperationException {
+        Object clone = shallowClone(original);
+        if (clone == null) return null;
+        java.lang.reflect.Field title = null;
+        for (java.lang.reflect.Field f : original.getClass().getDeclaredFields()) {
+            if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) continue;
+            f.setAccessible(true);
+            if (f.getType() == String.class) {
+                if (title != null) return null;
+                title = f;
+            } else if (f.getType() == Integer.class) {
+                f.set(clone, null);
+            } else if (f.getType().getName().endsWith("HeterogeneousMap")) {
+                // Folder metadata, such as Settings' unseen badge count, belongs to the Settings row.
+                Object metadata = f.get(original);
+                if (metadata == null) continue;
+                Object copy = shallowClone(metadata);
+                if (copy == null) return null;
+                for (java.lang.reflect.Field m : copy.getClass().getDeclaredFields()) {
+                    if (java.lang.reflect.Modifier.isStatic(m.getModifiers()) || m.getType() != Map.class) continue;
+                    m.setAccessible(true);
+                    m.set(copy, new java.util.HashMap<>());
+                }
+                f.set(clone, copy);
+            } else if (f.getType().getName().endsWith("DrawerFolderKey")) {
+                // Folder keys compare by identity, so a copy keeps this row from acting as Settings.
+                Object key = f.get(original);
+                Object copy = key == null ? null : shallowClone(key);
+                if (copy == null) return null;
+                f.set(clone, copy);
+            }
+        }
+        if (title == null) return null;
+        title.set(clone, name);
+        return clone;
     }
 
     private static boolean holdsSettingsKey(Object row) throws IllegalAccessException {
@@ -2110,25 +2130,32 @@ public final class Settings {
         return false;
     }
 
-    /** Opens settings for the HushMessenger folder row and returns null; other rows come back unchanged. */
+    /**
+     * Opens settings for the HushMessenger folder row, or the message log for the Message log row, and returns null;
+     * other rows come back unchanged.
+     */
     public static Object drawerFolderClicked(Object item) {
         if (item == null) return null;
         boolean recognized = false;
         Context context = null;
         try {
-            boolean titled = false, settingsKey = false;
+            boolean settingsKey = false;
+            List<String> titles = new ArrayList<>();
             for (java.lang.reflect.Field f : item.getClass().getDeclaredFields()) {
                 if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) continue;
                 f.setAccessible(true);
                 Object value = f.get(item);
                 if (value instanceof Context) context = (Context) value;
-                else if ("HushMessenger".equals(value)) titled = true;
-                // Only the copy of the Settings row carries a Settings folder key with this title.
+                else if (value instanceof String) titles.add((String) value);
+                // Only our copies of the Settings row carry a Settings folder key with one of our titles.
                 else if (value != null && value.getClass().getName().endsWith("SettingsFolderKey")) settingsKey = true;
             }
-            if (!titled || !settingsKey || context == null) return item;
+            if (!settingsKey || context == null) return item;
+            boolean settings = titles.contains("HushMessenger");
+            if (!settings && !titles.contains(MessageLogButton.label(context))) return item;
             recognized = true;
-            HostScreens.open(context, HostScreens.SETTINGS);
+            if (settings) HostScreens.open(context, HostScreens.SETTINGS);
+            else MessageLogButton.open(context);
             return null;
         } catch (ReflectiveOperationException | RuntimeException | LinkageError error) {
             hookFailedPrivately("menu_row", "Opening the drawer entry failed", error);
@@ -2186,8 +2213,7 @@ public final class Settings {
             textField.setAccessible(true);
             Object tv = textField.get(viewHolder);
             if (!(tv instanceof android.widget.TextView)) return;
-            CharSequence text = ((android.widget.TextView) tv).getText();
-            if (!"HushMessenger".equals(text != null ? text.toString() : null)) return;
+            if (MenuRowClick.ours((android.widget.TextView) tv) == null) return;
             java.lang.reflect.Field viewField = null;
             for (Class<?> c = viewHolder.getClass(); c != null; c = c.getSuperclass()) {
                 try { viewField = c.getDeclaredField("A0I"); break; }
@@ -2218,14 +2244,24 @@ public final class Settings {
             this.label = label;
         }
 
-        @Override public void onClick(android.view.View v) {
+        /** Which of our rows [label] shows right now: HostScreens.SETTINGS, MessageLog.KEY, or null for Messenger's own. */
+        static String ours(android.widget.TextView label) {
             CharSequence text = label.getText();
-            if ("HushMessenger".equals(text != null ? text.toString() : null)) {
+            String shown = text != null ? text.toString() : null;
+            if ("HushMessenger".equals(shown)) return HostScreens.SETTINGS;
+            return shown != null && shown.equals(MessageLogButton.label(label.getContext())) ? MessageLog.KEY : null;
+        }
+
+        @Override public void onClick(android.view.View v) {
+            String row = ours(label);
+            if (HostScreens.SETTINGS.equals(row)) {
                 try {
                     HostScreens.open(v.getContext(), HostScreens.SETTINGS);
                 } catch (RuntimeException e) {
                     hookFailed("menu_row", "Opening settings failed", e);
                 }
+            } else if (row != null) {
+                MessageLogButton.open(v.getContext());
             } else if (stock != null) {
                 stock.onClick(v);
             }

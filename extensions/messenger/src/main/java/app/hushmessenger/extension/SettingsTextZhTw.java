@@ -399,6 +399,8 @@ final class SettingsTextZhTw {
         {"message_log_photo_missing", "無法顯示這張相片。"},
         {"message_log_button", "聊天室頂端的按鈕"},
         {"message_log_button_help", "在新訊息按鈕旁放一個時鐘，點一下就能開啟紀錄。"},
+        {"message_log_menu_row", "「選單」分頁中的項目"},
+        {"message_log_menu_row_help", "在 Messenger「選單」分頁的設定下方加入訊息紀錄，點一下就能開啟紀錄。"},
         {"auto_reply_edit", "編輯回覆"},
         {"auto_reply_title", "自動回覆"},
         {"auto_reply_hint", "依序由上至下比對回覆規則，傳送第一則符合條件的回覆。"},

@@ -980,6 +980,8 @@ public final class SettingsActivity extends Activity {
                 else {
                     messageLog.addMessageLogActions(wrapper);
                     ui.add(wrapper, controlRow(MessageLogButton.KEY, text.format(MessageLogButton.KEY), text.format("message_log_button_help"), false), 8);
+                    if (Settings.installed.contains("menu_row")) ui.add(wrapper, controlRow(MessageLogButton.MENU_KEY,
+                        text.format(MessageLogButton.MENU_KEY), text.format("message_log_menu_row_help"), false), 8);
                     if (Build.VERSION.SDK_INT >= 29) ui.add(wrapper, controlRow(MessageLog.SAVE_EXPIRING,
                         text.format(MessageLog.SAVE_EXPIRING), text.format("message_log_save_expiring_help"), false), 8);
                 }
@@ -1284,7 +1286,7 @@ public final class SettingsActivity extends Activity {
         String parent = Settings.KEEP_FACEBOOK_PROFILE.equals(key) ? "facebook"
             : Settings.AVATAR_ROUNDED.equals(key) ? Settings.AVATAR_SHAPE
             : Settings.KEEP_BADGES.containsValue(key) ? Settings.TAB_BADGES
-            : MessageLogButton.KEY.equals(key) || MessageLog.SAVE_EXPIRING.equals(key) ? MessageLog.KEY
+            : MessageLogButton.KEY.equals(key) || MessageLogButton.MENU_KEY.equals(key) || MessageLog.SAVE_EXPIRING.equals(key) ? MessageLog.KEY
             : QuietCalls.CHOSEN_ONLY.equals(key) || key.startsWith(QuietCalls.CHAT_PREFIX) ? QuietCalls.KEY : key;
         String section = "";
         for (String[] spec : CONTROLS) if (spec[0].equals(parent)) { section = spec[3]; break; }
@@ -1904,6 +1906,8 @@ public final class SettingsActivity extends Activity {
                 inside = text.get("message_log_keep");
                 for (int days : MessageLog.KEEP_CHOICES) inside += " " + text.get("message_log_keep_" + days);
                 inside += " " + text.get(MessageLogButton.KEY) + " " + text.get("message_log_button_help");
+                if (Settings.installed.contains("menu_row"))
+                    inside += " " + text.get(MessageLogButton.MENU_KEY) + " " + text.get("message_log_menu_row_help");
                 if (Build.VERSION.SDK_INT >= 29) inside += " " + text.get(MessageLog.SAVE_EXPIRING) + " " + text.get("message_log_save_expiring_help");
             }
             boolean match = SettingsSearch.matches(terms, spec[1], spec[2],

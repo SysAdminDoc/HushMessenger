@@ -399,6 +399,8 @@ final class SettingsTextViVN {
         {"message_log_photo_missing", "Không thể hiển thị ảnh này."},
         {"message_log_button", "Nút ở đầu Đoạn chat"},
         {"message_log_button_help", "Thêm một đồng hồ cạnh nút tin nhắn mới. Chạm vào để mở nhật ký."},
+        {"message_log_menu_row", "Mục trong tab 'Menu'"},
+        {"message_log_menu_row_help", "Thêm mục Nhật ký tin nhắn dưới Cài đặt trong tab 'Menu' của Messenger. Chạm vào để mở nhật ký."},
         {"auto_reply_edit", "Chỉnh sửa phản hồi"},
         {"auto_reply_title", "Phản hồi tự động"},
         {"auto_reply_hint", "So khớp các quy tắc phản hồi theo thứ tự từ trên xuống dưới, gửi phản hồi đầu tiên đáp ứng điều kiện."},
