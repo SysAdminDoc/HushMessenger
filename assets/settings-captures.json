@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "rendered_on": "79825db2a77b288672794d7e24a8c332c34290d3",
+  "rendered_on": "a200039eb4077c3d87bc49e556f5f4bc3ec2a586",
   "producer": "SettingsScreenshotTest.captureProductionPagesAndDialogsInBothThemes",
   "controls": 73,
   "catalog_sha256": "4525410f41d051ff6affec1296f435fafb891509dcbee5cddd9011845f8be989",
   "images": {
-    "assets/settings-dark.png": "4f7e1d83a792f88ad5c467e04618300aa43e64c4cadb70861a2cebfb88c22a7c",
-    "assets/settings-light.png": "b4cfb9ed5794834d98643f7d0ef77326cbcb354905f07b20ff0b161d179b413f",
+    "assets/settings-dark.png": "8f07140435cd5966df8ccd17f722d97b9a171dc7d5478c35108fd9f47997a0b1",
+    "assets/settings-light.png": "eb3a7ddefcbf084a6128ca6e47a83e4860e1022ff2a6376cfc808b09bcc39846",
     "assets/settings-app-dark.png": "d6c3557de0f196dfa7b8f62ad4461c638e8ffd9d5cda0ca77d1ddff2345c9989",
     "assets/settings-app-light.png": "aaf6e85ca9d418fc7a48cbd4267f624884750dbf2a4aee822af3e729c7d76429"
   }
