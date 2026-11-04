@@ -145,6 +145,28 @@ public class SettingsRestartBarTest {
         }
     }
 
+    @Test public void undoComingAndGoingLeavesTheRowsWhereTheyWere() {
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            View root = lay(screen.get().getWindow().getDecorView());
+            View row = root.findViewWithTag("enabled_count");
+            View scroll = row;
+            while (!(scroll instanceof android.widget.ScrollView)) scroll = (View) scroll.getParent();
+            scroll.scrollTo(0, 120);
+            lay(root);
+            assertEquals(120, scroll.getScrollY());
+            int before = top(row);
+            screen.get().offerUndo("x", () -> { });
+            lay(root);
+            View undo = root.findViewWithTag("undo");
+            assertTrue(undo.isShown());
+            assertEquals("With Undo showing", before, top(row));
+            Shadows.shadowOf(Looper.getMainLooper()).idleFor(java.time.Duration.ofMillis(SettingsActivity.UNDO_MILLIS + 1));
+            lay(root);
+            assertFalse(undo.isShown());
+            assertEquals("With Undo gone again", before, top(row));
+        }
+    }
+
     private static int left(View view) {
         int[] spot = new int[2];
         view.getLocationInWindow(spot);

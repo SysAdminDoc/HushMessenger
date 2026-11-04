@@ -101,6 +101,8 @@ public final class SettingsActivity extends Activity {
     private Button undoButton;
     /** What Undo does and when its time runs out. Main thread only, null when nothing can be taken back. */
     private Runnable undoAction, undoExpiry;
+    /** Whether the header last laid out with Undo showing, so the page only makes up for Undo coming or going. */
+    private boolean undoLaidOut;
     /** Between onStart and onStop. A Clear that finishes while settings are out of sight is final at once. */
     boolean started;
     static final int UNDO_MILLIS = 10_000;
@@ -731,6 +733,17 @@ public final class SettingsActivity extends Activity {
         undoSpace.setMarginStart(ui.dp(2));
         undoSpace.setMarginEnd(ui.dp(2));
         header.addView(undoButton, undoSpace);
+        // The header sits above the page, so Undo coming or going would slide every row under the finger. The page scrolls
+        // by what the header grew or shrank instead, leaving the swatch or button just tapped where it was.
+        header.addOnLayoutChangeListener((changed, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            boolean shown = undoButton.getVisibility() == View.VISIBLE;
+            if (shown == undoLaidOut) return;
+            undoLaidOut = shown;
+            int grew = (bottom - top) - (oldBottom - oldTop);
+            ScrollView scroll = "app".equals(page) ? appScroll : controlsScroll;
+            if (scrollHeader || oldBottom == oldTop || grew == 0 || scroll == null || !scroll.isShown()) return;
+            scroll.scrollBy(0, grew);
+        });
     }
 
     /** Shows Undo for [what] until it's tapped, its time runs out, something else takes its place or settings close. */

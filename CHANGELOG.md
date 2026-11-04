@@ -51,6 +51,7 @@
 - In the message log, a chat's name is in the link color when tapping it opens that chat.
 - `Search saved messages` shows each result as its own card with room between them, and a long message ends in "…". Tapping Search with nothing typed says to type a word first instead of doing nothing.
 - Picking an accent color, `Use copied theme`, `Back to wallpaper colors` and `Remove the picture` under `Your own home header` can all be undone with Undo at the top of settings. The color dots and the Record button over a call show your tap now.
+- Undo no longer shoves the settings around when it shows up at the top or goes away 10 seconds later. The page moves with it, so the color dot or button you just tapped stays under your finger.
 - The bar at the bottom of a chat while `Jump to the first message or a date` scrolls back has a line along its top, and TalkBack names it when it shows up. A tap beside Cancel no longer lands on the chat box under it.
 - When an update is out, `View release` is the main button under `Check for updates`, and a check that fails says so in red.
 - An auto reply picture with see-through parts, like a logo saved as a PNG, goes out on white. Those parts used to turn black.
