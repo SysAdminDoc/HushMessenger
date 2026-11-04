@@ -46,9 +46,11 @@ public final class SettingsActivity extends Activity {
     SettingsUi ui;
     SettingsText text;
     private LinearLayout controlsPage, appPage;
-    private LinearLayout header, brand, controlsContent, appContent;
+    private LinearLayout header, brand, controlsContent, appContent, pageHeader;
     private ScrollView controlsScroll, appScroll;
-    private TextView reminder;
+    private TextView reminder, wordmark, headerName;
+    /** The bar title's visibility as last set here, so it changes only when what it should show does. */
+    private int barTitleShown = -1;
     private EditText search;
     private boolean compact, scrollHeader, binding, lightTheme, recreatingTheme;
     private int restoreControlsScroll = -1, restoreAppScroll = -1;
@@ -278,6 +280,14 @@ public final class SettingsActivity extends Activity {
                 // From the search row down a whole page, so its filters and first matches show above the keyboard too.
                 View row = (View) search.getParent();
                 int viewport = controlsScroll.getHeight() - controlsScroll.getPaddingTop() - controlsScroll.getPaddingBottom();
+                // The header above can leave a short list of matches too little page to lift the search to the top,
+                // so the page grows while the search has focus, and then the reveal runs again.
+                int room = row.getTop() + Math.max(row.getHeight(), viewport) + controlsContent.getPaddingBottom();
+                if (controlsContent.getHeight() < room && controlsContent.getMinimumHeight() < room) {
+                    revealSearch = true;
+                    controlsContent.post(() -> controlsContent.setMinimumHeight(room));
+                    return;
+                }
                 row.requestRectangleOnScreen(new Rect(0, 0, row.getWidth(), Math.max(row.getHeight(), viewport)), false);
             }
         };
@@ -309,6 +319,12 @@ public final class SettingsActivity extends Activity {
         root.addView(controlsPage, new LinearLayout.LayoutParams(-1, 0, 1));
         controlsScroll = scrollPage(controlsPage);
         controlsContent = pageContent(controlsScroll);
+        // The page opens on HushMessenger's icon, name and version, and the bar leaves the name off while it shows.
+        pageHeader = SettingsHeader.create(this, ui, text, hostVersion());
+        controlsContent.addView(pageHeader, new LinearLayout.LayoutParams(-1, -2));
+        headerName = pageHeader.findViewWithTag(SettingsHeader.NAME);
+        headerName.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> updateBarTitle());
+        controlsScroll.setOnScrollChangeListener((view, x, y, oldX, oldY) -> updateBarTitle());
         buildControls(controlsContent);
         reminder = ui.text(text.get("reopen"), 12, ui.muted, false);
         reminder.setPadding(ui.dp(16), ui.dp(12), ui.dp(16), ui.dp(32));
@@ -511,6 +527,40 @@ public final class SettingsActivity extends Activity {
         ((ViewGroup) reminder.getParent()).removeView(reminder);
         reminder.setPadding(ui.dp(compact ? 0 : 16), ui.dp(12), ui.dp(compact ? 0 : 16), ui.dp(compact ? 16 : 32));
         ui.add(compact ? controlsContent : controlsPage, reminder, 0);
+        // A short window keeps its height for the rows, so the bar names the page instead.
+        if (pageHeader != null) pageHeader.setVisibility(compact ? View.GONE : View.VISIBLE);
+        updateBarTitle();
+    }
+
+    /** Messenger's version name, or null when Android doesn't say. */
+    private String hostVersion() {
+        try {
+            return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException unknown) {
+            return null;
+        }
+    }
+
+    /** The bar's title: Search settings while there's a search, else HushMessenger unless the page's header shows it. */
+    private void updateBarTitle() {
+        if (wordmark == null || search == null) return;
+        boolean typed = !search.getText().toString().trim().isEmpty();
+        CharSequence shown = typed ? text.get("search_settings") : "HushMessenger";
+        if (!android.text.TextUtils.equals(shown, wordmark.getText())) wordmark.setText(shown);
+        // Invisible rather than gone, so the bar keeps its height and the rows don't jump as the header scrolls.
+        int visibility = !typed && headerNameShown() ? View.INVISIBLE : View.VISIBLE;
+        if (visibility == barTitleShown) return;
+        barTitleShown = visibility;
+        wordmark.setVisibility(visibility);
+    }
+
+    /** Whether any of the header's name is on screen, counting a header not laid out yet as showing. */
+    private boolean headerNameShown() {
+        if (headerName == null || !headerName.isShown()) return false;
+        if (headerName.getHeight() == 0) return true;
+        android.graphics.Rect place = new android.graphics.Rect(0, 0, headerName.getWidth(), headerName.getHeight());
+        controlsContent.offsetDescendantRectToMyCoords(headerName, place);
+        return place.bottom > controlsScroll.getScrollY();
     }
 
     private void placeBrand() {
@@ -518,9 +568,16 @@ public final class SettingsActivity extends Activity {
         LinearLayout parent = compact ? ("app".equals(page) ? appContent : controlsContent) : header;
         if (brand.getParent() == parent) return;
         ((ViewGroup) brand.getParent()).removeView(brand);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+        LinearLayout.LayoutParams params = brandSpace();
         params.bottomMargin = ui.dp(compact ? 12 : 0);
         parent.addView(brand, 0, params);
+    }
+
+    /** The brand row's place: 12 dp into its parent's padding, where Back's touch area starts. */
+    private LinearLayout.LayoutParams brandSpace() {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+        params.setMarginStart(-ui.dp(12));
+        return params;
     }
 
     private void placeHeader() {
@@ -530,28 +587,46 @@ public final class SettingsActivity extends Activity {
         parent.addView(header, 0, new LinearLayout.LayoutParams(-1, -2));
     }
 
+    @SuppressWarnings("deprecation")
     private void buildHeader(LinearLayout root) {
-        // A toolbar, like HushFacebook's: the name, Open and the two tabs, with no banner above the settings.
+        // A toolbar, like HushFacebook's: Back, the name, Open and the two tabs, with no banner above the settings.
         header = ui.column();
         header.setPadding(ui.dp(16), ui.dp(8), ui.dp(16), 0);
+        // The bar reaches into the padding, so Back's arrow lines up 16 dp from the edge with all 48 dp of it tappable.
+        header.setClipToPadding(false);
         ui.add(root, header, 0);
         brand = ui.row();
         if (ui.largeText) brand.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout wordmark = ui.column();
+        LinearLayout bar = ui.row();
+        android.widget.ImageButton back = new android.widget.ImageButton(this);
+        back.setTag("back");
+        back.setImageDrawable(SettingsIcons.icon(this, SettingsIcons.BACK, ui.heading));
+        back.setScaleType(android.widget.ImageView.ScaleType.CENTER);
+        back.setPadding(0, 0, 0, 0);
+        back.setBackground(ui.interactive(ui.background, 0, 12, ui.heading));
+        back.setContentDescription(text.get("back"));
+        // What the system Back does, so a settings screen opened from the app drawer closes the same way.
+        back.setOnClickListener(view -> onBackPressed());
+        LinearLayout.LayoutParams backSpace = new LinearLayout.LayoutParams(ui.dp(48), ui.dp(48));
+        backSpace.setMarginEnd(ui.dp(8));
+        bar.addView(back, backSpace);
+        LinearLayout wordmarkColumn = ui.column();
         TextView title = ui.title("HushMessenger", 20);
         title.setTag("wordmark");
         title.setAccessibilityHeading(true);
         // Linear font scaling on Android 13 and older could otherwise split the wordmark mid-word.
         title.setMaxLines(1);
         title.setAutoSizeTextTypeUniformWithConfiguration(14, 20, 1, TypedValue.COMPLEX_UNIT_SP);
-        ui.add(wordmark, title, 0);
+        ui.add(wordmarkColumn, title, 0);
+        wordmark = title;
         // Only a preview build says anything under the name, since that's a warning.
         if (Settings.preview) {
             TextView notice = ui.text(text.get("preview_notice"), 13, ui.warning, false);
             notice.setTag("preview_notice");
-            ui.add(wordmark, notice, 4);
+            ui.add(wordmarkColumn, notice, 4);
         }
-        brand.addView(wordmark, new LinearLayout.LayoutParams(ui.largeText ? -1 : 0, -2, ui.largeText ? 0 : 1));
+        bar.addView(wordmarkColumn, new LinearLayout.LayoutParams(0, -2, 1));
+        brand.addView(bar, new LinearLayout.LayoutParams(ui.largeText ? -1 : 0, -2, ui.largeText ? 0 : 1));
         Button open = ui.button(text.get("open"));
         open.setTag("open_messenger");
         open.setContentDescription(text.get("open_messenger"));
@@ -559,10 +634,11 @@ public final class SettingsActivity extends Activity {
         open.setPadding(ui.dp(12), ui.dp(6), ui.dp(12), ui.dp(6));
         open.setOnClickListener(view -> openMessenger());
         LinearLayout.LayoutParams openParams = new LinearLayout.LayoutParams(ui.largeText ? -2 : ui.dp(68), -2);
-        openParams.setMarginStart(ui.dp(ui.largeText ? 0 : 12));
+        // Large text stacks Open under the bar, on the page's line rather than the bar's.
+        openParams.setMarginStart(ui.dp(12));
         openParams.topMargin = ui.dp(ui.largeText ? 8 : 0);
         brand.addView(open, openParams);
-        ui.add(header, brand, 0);
+        header.addView(brand, brandSpace());
         LinearLayout navigation = ui.row();
         navigation.setPadding(ui.dp(3), ui.dp(3), ui.dp(3), ui.dp(3));
         navigation.setBackground(ui.shape(ui.surface, ui.line, 12));
@@ -697,6 +773,8 @@ public final class SettingsActivity extends Activity {
     private LinearLayout pageContent(ScrollView scroll) {
         LinearLayout content = ui.column();
         content.setPadding(ui.dp(16), ui.dp(12), ui.dp(16), ui.dp(24));
+        // A short window moves the bar in here, and Back's touch area reaches into the padding.
+        content.setClipToPadding(false);
         scroll.addView(content);
         return content;
     }
@@ -730,6 +808,8 @@ public final class SettingsActivity extends Activity {
         search.setTag("find_control");
         search.setBackground(ui.interactive(ui.surface, ui.outline, 8));
         search.setImeOptions(android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH);
+        // The room a reveal added under the matches goes with the keyboard.
+        search.setOnFocusChangeListener((view, focused) -> { if (!focused) controlsContent.setMinimumHeight(0); });
         search.setOnEditorActionListener((view, action, event) -> {
             if (action != android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) return false;
             ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(search.getWindowToken(), 0);
@@ -1529,6 +1609,7 @@ public final class SettingsActivity extends Activity {
             tab.setTextColor(selected ? ui.selectedText : ui.muted);
             tab.setBackground(ui.interactive(selected ? ui.accentFill : ui.surface, 0, 10));
         }
+        updateBarTitle();
     }
 
     private void updateSetup() {
@@ -1603,6 +1684,7 @@ public final class SettingsActivity extends Activity {
             visible == 0 ? text.get("no_matches") : text.get(controlRows.size() == 1 ? "results_one" : "results_many", visible, controlRows.size()));
         // With nothing installed, the status line already explains what to do.
         emptyState.setVisibility(visible == 0 && !controlRows.isEmpty() ? View.VISIBLE : View.GONE);
+        updateBarTitle();
     }
 
     @Override protected void onSaveInstanceState(Bundle state) {

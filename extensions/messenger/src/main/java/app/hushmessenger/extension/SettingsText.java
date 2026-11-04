@@ -100,6 +100,11 @@ final class SettingsText {
         ENGLISH.put("preview_notice", "UI preview. These controls don't change Messenger.");
         ENGLISH.put("open", "Open");
         ENGLISH.put("open_messenger", "Open Messenger");
+        ENGLISH.put("back", "Back");
+        ENGLISH.put("search_settings", "Search settings");
+        // The patches' version, then Messenger's.
+        ENGLISH.put("header_version", "Version %1$s for Messenger %2$s");
+        ENGLISH.put("header_version_alone", "Version %s");
         ENGLISH.put("reopen", "Some changes apply after App > Restart Messenger.");
         ENGLISH.put("quick_access", "Quick access");
         ENGLISH.put("access_help", "Long-press Messenger's home screen icon for Patch controls or Restart Messenger. You can also open HushMessenger settings from your app drawer.");
