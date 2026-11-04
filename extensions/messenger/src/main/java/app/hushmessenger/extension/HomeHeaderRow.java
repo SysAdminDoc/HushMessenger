@@ -137,9 +137,22 @@ final class HomeHeaderRow {
 
     private void removePicture() {
         if (job != null) return;
-        boolean gone = HomeHeaderPicture.remove(HomeHeader.file(page));
+        java.io.File file = HomeHeader.file(page);
+        // A few hundred KB at most, held only while Undo shows.
+        byte[] kept = HomeHeaderPicture.keep(file);
+        boolean gone = HomeHeaderPicture.remove(file);
         refresh();
         page.feedback(page.text.get(gone ? "home_header_removed" : "home_header_remove_failed"), Toast.LENGTH_SHORT);
+        if (gone && kept != null) page.offerUndo(page.text.format("home_header_remove"), () -> putBack(kept));
+    }
+
+    /** Undo for Remove the picture. A picture picked since then stays, since Undo shouldn't take that one away. */
+    private void putBack(byte[] kept) {
+        java.io.File file = HomeHeader.file(page);
+        if (job != null || file.isFile()) return;
+        boolean back = HomeHeaderPicture.restore(kept, file);
+        refresh();
+        if (!back) page.feedback(page.text.get("home_header_not_saved"), Toast.LENGTH_LONG);
     }
 
     /** What a refused pick says. */

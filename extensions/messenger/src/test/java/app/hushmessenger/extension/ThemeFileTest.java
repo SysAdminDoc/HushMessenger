@@ -264,6 +264,45 @@ public class ThemeFileTest {
         }
     }
 
+    @Test public void everyThemeChangeCanBeUndoneAndASwatchShowsItsPress() {
+        MaterialYouTheme.bind();
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            View root = screen.get().getWindow().getDecorView();
+            TextView undo = root.findViewWithTag("undo");
+            View pink = root.findViewWithTag("theme_accent_E1306C");
+            assertTrue(((InsetDrawable) pink.getBackground()).getDrawable() instanceof android.graphics.drawable.RippleDrawable);
+
+            // An accent over wallpaper colors goes back to none.
+            pink.performClick();
+            assertEquals(View.VISIBLE, undo.getVisibility());
+            assertEquals("Undo theme change", undo.getText().toString());
+            undo.performClick();
+            assertNull(ThemeFile.saved());
+            assertFalse(pink.isSelected());
+            assertEquals(View.GONE, root.findViewWithTag("theme_clear").getVisibility());
+
+            // A pasted theme comes back with its name and pure black, after an accent replaced it and after it was cleared.
+            copy(SUNSET);
+            root.findViewWithTag("theme_paste").performClick();
+            assertTrue(Settings.preferences.getBoolean(MaterialYouTheme.BLACK_KEY, false));
+            root.findViewWithTag("theme_accent_2E7D32").performClick();
+            undo.performClick();
+            assertEquals("Sunset", ThemeFile.saved().name);
+            root.findViewWithTag("theme_clear").performClick();
+            assertNull(ThemeFile.saved());
+            undo.performClick();
+            assertEquals("Sunset", ThemeFile.saved().name);
+            assertEquals(View.VISIBLE, root.findViewWithTag("theme_clear").getVisibility());
+
+            // Undo for the paste itself puts the pure black switch back the way it was, unset.
+            Settings.preferences.edit().remove(ThemeFile.KEY).remove(MaterialYouTheme.BLACK_KEY).commit();
+            root.findViewWithTag("theme_paste").performClick();
+            undo.performClick();
+            assertNull(ThemeFile.saved());
+            assertFalse(Settings.preferences.contains(MaterialYouTheme.BLACK_KEY));
+        }
+    }
+
     @Test public void eachAccentSwatchIsAFullSizeTargetAroundTheSameDot() {
         MaterialYouTheme.bind();
         try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {

@@ -191,6 +191,7 @@ final class SettingsTextViVN {
         {"theme_copied", "Đã sao chép chủ đề"},
         {"theme_copy_failed", "Không thể sao chép chủ đề. Hãy thử lại."},
         {"theme_cleared", "Đã quay lại màu hình nền"},
+        {"theme_change", "đổi màu giao diện"},
         {"theme_file_help", "Chủ đề là một đoạn văn bản như {\"name\": \"Sunset\", \"accent\": \"#E1306C\", \"neutral\": \"#1A1418\", \"pure_black\": true}. Accent tô lại màu xanh của Messenger và neutral tô lại các màu xám. Cả hai giữ nguyên độ sáng của Messenger nên chữ vẫn dễ đọc. Sao chép chủ đề cho bạn các màu đang dùng để chỉnh sửa hoặc chia sẻ."},
         {"about", "Giới thiệu về HushMessenger"},
         {"version", "Phiên bản"},

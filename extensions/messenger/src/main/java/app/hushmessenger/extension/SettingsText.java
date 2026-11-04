@@ -277,6 +277,7 @@ final class SettingsText {
         ENGLISH.put("theme_copied", "Theme copied");
         ENGLISH.put("theme_copy_failed", "Couldn't copy the theme. Try again.");
         ENGLISH.put("theme_cleared", "Back to your wallpaper colors");
+        ENGLISH.put("theme_change", "theme change");
         ENGLISH.put("theme_file_help", "A theme is a bit of text like {\"name\": \"Sunset\", \"accent\": \"#E1306C\", \"neutral\": \"#1A1418\", \"pure_black\": true}. Accent tints Messenger's blues and neutral tints its grays. Both keep Messenger's own brightness, so text stays easy to read. Copy theme gives you the colors in use to edit or share.");
         ENGLISH.put("about", "About HushMessenger");
         ENGLISH.put("version", "Version");

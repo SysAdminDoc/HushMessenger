@@ -191,6 +191,7 @@ final class SettingsTextZhTw {
         {"theme_copied", "已複製主題"},
         {"theme_copy_failed", "無法複製主題。請再試一次。"},
         {"theme_cleared", "已改回桌布顏色"},
+        {"theme_change", "主題變更"},
         {"theme_file_help", "主題是一段文字，例如 {\"name\": \"Sunset\", \"accent\": \"#E1306C\", \"neutral\": \"#1A1418\", \"pure_black\": true}。accent 會改變 Messenger 的藍色，neutral 會改變灰色。兩者都保留 Messenger 原本的亮度，文字依然清楚易讀。「複製主題」會提供目前使用的顏色，方便編輯或分享。"},
         {"about", "關於 HushMessenger"},
         {"version", "版本"},

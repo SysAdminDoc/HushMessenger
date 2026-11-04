@@ -222,6 +222,33 @@ public class HomeHeaderTest {
         assertTrue(Color.blue(end) > Color.red(end));
     }
 
+    @Test @Config(sdk = 36) @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void removingThePictureCanBeUndoneButNeverOverOneChosenSince() throws Exception {
+        Settings.preferences.edit().putBoolean(HomeHeader.KEY, true).commit();
+        OpenSections.all();
+        File copy = HomeHeader.file(context);
+        byte[] picture = png(40, 20, Color.RED);
+        java.nio.file.Files.write(copy.toPath(), picture);
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            android.view.View root = screen.get().getWindow().getDecorView();
+            android.widget.TextView undo = root.findViewWithTag("undo");
+            root.findViewWithTag("home_header_remove").performClick();
+            assertFalse(copy.exists());
+            assertEquals("Undo Remove the picture", undo.getText().toString());
+            undo.performClick();
+            assertArrayEquals(picture, java.nio.file.Files.readAllBytes(copy.toPath()));
+            assertEquals(android.view.View.VISIBLE, root.findViewWithTag("home_header_remove").getVisibility());
+            assertFalse(new File(context.getFilesDir(), HomeHeaderPicture.PARTIAL).exists());
+
+            // A picture chosen after the remove stays when Undo is tapped.
+            root.findViewWithTag("home_header_remove").performClick();
+            byte[] chosen = png(30, 30, Color.GREEN);
+            java.nio.file.Files.write(copy.toPath(), chosen);
+            undo.performClick();
+            assertArrayEquals(chosen, java.nio.file.Files.readAllBytes(copy.toPath()));
+        }
+    }
+
     @Test public void aPictureKeepsItsShapeAtTheWordmarksHeightAndShrinksWhenTooWide() {
         Bitmap picture = Bitmap.createBitmap(400, 100, Bitmap.Config.ARGB_8888);
         HomeHeader.PictureMark mark = new HomeHeader.PictureMark(picture, 50, 1000);
