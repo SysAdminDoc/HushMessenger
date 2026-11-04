@@ -46,14 +46,15 @@ final class SettingsUi {
         accentFill = 0xff0866ff; // Messenger's launcher blue; white on it 4.82
         onAccent = 0xffffffff;
         line = light ? 0xff84878c : 0xff525c6c; // card outlines and dividers: light 3.21 / 3.60, dark 3.11
-        switchOff = light ? 0xff84878c : 0xff6b7584; // light 3.60 on white, dark 4.50; a white thumb on it 3.60 / 4.66
+        switchOff = light ? 0xff84878c : 0xff6b7584; // light 3.60 on white, dark 4.50; the off thumb on it light 5.65, dark 4.66
         outline = switchOff;
         selected = accentFill;
         warning = light ? 0xff785100 : 0xffffcc67; // on warningSurface: light 6.19, dark 9.68
         warningSurface = light ? 0xffffefc5 : 0xff352800;
         // A switch that can't be used, on or off: the off track at half strength, so it never reads as on.
         track = half(switchOff);
-        thumb = 0xffffffff;
+        // HushGram's off thumb: the title color in the light look, since a white one vanishes on the white card.
+        thumb = light ? text : 0xffffffff;
         // The heading color at 20 percent.
         ripple = (accent & 0x00ffffff) | 0x33000000;
         infoSurface = light ? 0xffe7f3ff : 0xff0f1c2e; // the heading color on it: light 4.79, dark 5.92
@@ -115,6 +116,19 @@ final class SettingsUi {
         drawable.setColor(fill);
         drawable.setCornerRadius(dp(radius));
         if (border != 0) drawable.setStroke(dp(stroke), border);
+        return drawable;
+    }
+
+    /** A borderless shape that reports sides and ends as its padding, which a GradientDrawable takes only from XML before Android 10. */
+    GradientDrawable paddedShape(int fill, int radius, int sides, int ends) {
+        GradientDrawable drawable = new GradientDrawable() {
+            @Override public boolean getPadding(android.graphics.Rect padding) {
+                padding.set(sides, ends, sides, ends);
+                return true;
+            }
+        };
+        drawable.setColor(fill);
+        drawable.setCornerRadius(dp(radius));
         return drawable;
     }
 
@@ -296,15 +310,19 @@ final class SettingsUi {
         view.setThumbTintList(null);
         view.setTrackTintList(null);
         // A 20 dp square thumb with 2 dp of track around it, on a 40 by 24 dp track; disabled is the same at half strength.
+        // Switch shrinks the track by the thumb's inset wherever the track's padding doesn't cover it, takes the inset off
+        // the travel, and is at least two thumbs plus the padding wide. So the thumb is inset only above and below, the
+        // handle reports 2 dp a side (a 16 dp thumb to Switch) and the track 4 dp a side: 40 dp wide, 16 dp of travel, and
+        // the 20 dp square drawn 2 dp in from either end.
         int[][] states = {{-android.R.attr.state_enabled, android.R.attr.state_checked}, {-android.R.attr.state_enabled},
             {android.R.attr.state_checked}, {}};
         int[] thumbs = {half(onAccent), half(thumb), onAccent, thumb}, tracks = {track, track, accentFill, switchOff};
         StateListDrawable handles = new StateListDrawable(), rails = new StateListDrawable();
         for (int i = 0; i < states.length; i++) {
-            GradientDrawable handle = shape(thumbs[i], 0, 4);
+            GradientDrawable handle = paddedShape(thumbs[i], 4, dp(2), 0);
             handle.setSize(dp(20), dp(20));
-            handles.addState(states[i], new android.graphics.drawable.InsetDrawable(handle, dp(2)));
-            GradientDrawable rail = shape(tracks[i], 0, 6);
+            handles.addState(states[i], new android.graphics.drawable.InsetDrawable(handle, 0, dp(2), 0, dp(2)));
+            GradientDrawable rail = paddedShape(tracks[i], 6, dp(4), dp(2));
             rail.setSize(dp(40), dp(24));
             rails.addState(states[i], rail);
         }
@@ -312,6 +330,9 @@ final class SettingsUi {
         view.setTrackDrawable(rails);
         view.setBackground(interactive(0x00000000, 0, 8));
         view.setChecked(checked);
+        // New drawables take no state until the switch's next state change, and an off switch built off has none, so
+        // until then it drew in its disabled look.
+        view.refreshDrawableState();
         return view;
     }
 }
