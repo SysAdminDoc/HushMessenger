@@ -82,6 +82,13 @@ final class ShimmerTitle implements Runnable, View.OnAttachStateChangeListener, 
         return WORN.containsKey(title);
     }
 
+    /** The stops title wears, or null when it wears none: the dark look's stops on the light page read at about 1:1. */
+    static int[] stopsOf(TextView title) {
+        WeakReference<ShimmerTitle> worn = WORN.get(title);
+        ShimmerTitle shimmer = worn == null ? null : worn.get();
+        return shimmer == null ? null : shimmer.stops.clone();
+    }
+
     @Override public void onViewAttachedToWindow(View view) {
         startedAt = -1L;
         if (!running) {
