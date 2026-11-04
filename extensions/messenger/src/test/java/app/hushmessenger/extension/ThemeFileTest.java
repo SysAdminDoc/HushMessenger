@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.InsetDrawable;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import java.util.List;
 import org.json.JSONObject;
@@ -18,6 +19,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.GraphicsMode;
 import org.robolectric.shadows.ShadowToast;
 import static org.junit.Assert.*;
 
@@ -301,6 +303,55 @@ public class ThemeFileTest {
             assertNull(ThemeFile.saved());
             assertFalse(Settings.preferences.contains(MaterialYouTheme.BLACK_KEY));
         }
+    }
+
+    /** On the S25 the row rose 49 px under the finger as the two-line wallpaper note gave way to the one-line saved one. */
+    @Test @Config(sdk = 36, qualifiers = "w411dp-h914dp-mdpi") @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void theSwatchesStayUnderTheFingerAsTheLineAboveThemChangesLength() {
+        MaterialYouTheme.bind();
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            View root = screen.get().getWindow().getDecorView();
+            root.findViewWithTag("tab_app").performClick();
+            frame(root);
+            View pink = root.findViewWithTag("theme_accent_E1306C");
+            TextView status = root.findViewWithTag("theme_status");
+            View list = pink;
+            while (!(list instanceof ScrollView)) list = (View) list.getParent();
+            // Partway down the screen, where a thumb reaches them.
+            list.scrollTo(0, list.getScrollY() + top(pink) - 400);
+            frame(root);
+            int before = top(pink), wallpaperNote = status.getHeight();
+            pink.performClick();
+            frame(root);
+            assertNotEquals("The saved note is another length", wallpaperNote, status.getHeight());
+            assertEquals("After the pick, with Undo showing", before, top(pink));
+            root.findViewWithTag("undo").performClick();
+            frame(root);
+            assertEquals("After Undo", before, top(pink));
+            copy(SUNSET);
+            root.findViewWithTag("theme_paste").performClick();
+            frame(root);
+            assertEquals("After a paste", before, top(pink));
+            root.findViewWithTag("theme_clear").performClick();
+            frame(root);
+            assertEquals("After going back to wallpaper colors", before, top(pink));
+        }
+    }
+
+    private static int top(View view) {
+        int[] spot = new int[2];
+        view.getLocationInWindow(spot);
+        return spot[1];
+    }
+
+    /** One frame on the 411 x 914 dp screen: layout, then the pass just before drawing. */
+    private static void frame(View root) {
+        float density = root.getResources().getDisplayMetrics().density;
+        int width = Math.round(411 * density), height = Math.round(914 * density);
+        root.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+        root.layout(0, 0, width, height);
+        root.getViewTreeObserver().dispatchOnPreDraw();
+        idle();
     }
 
     @Test public void eachAccentSwatchIsAFullSizeTargetAroundTheSameDot() {

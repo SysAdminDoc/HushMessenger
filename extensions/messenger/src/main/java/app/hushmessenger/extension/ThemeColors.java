@@ -32,6 +32,7 @@ final class ThemeColors {
     private TextView themeStatus;
     private Button themeClear;
     private final View[] swatches = new View[ACCENTS.length];
+    private HorizontalScrollView accents;
 
     ThemeColors(SettingsActivity page) {
         this.page = page;
@@ -56,11 +57,11 @@ final class ThemeColors {
             row.addView(swatch, new LinearLayout.LayoutParams(ui.dp(36 + 2 * DOT_INSET), ui.dp(36 + 2 * DOT_INSET)));
             swatches[i] = swatch;
         }
-        HorizontalScrollView scroll = new HorizontalScrollView(page);
-        scroll.setHorizontalScrollBarEnabled(false);
-        scroll.addView(row);
-        ui.add(appearance, scroll, 2);
-        ((LinearLayout.LayoutParams) scroll.getLayoutParams()).setMarginStart(-ui.dp(DOT_INSET));
+        accents = new HorizontalScrollView(page);
+        accents.setHorizontalScrollBarEnabled(false);
+        accents.addView(row);
+        ui.add(appearance, accents, 2);
+        ((LinearLayout.LayoutParams) accents.getLayoutParams()).setMarginStart(-ui.dp(DOT_INSET));
         Button paste = ui.button(text.get("theme_paste"));
         paste.setTag("theme_paste");
         paste.setOnClickListener(view -> pasteTheme());
@@ -82,6 +83,8 @@ final class ThemeColors {
         SettingsText text = page.text;
         SettingsUi ui = page.ui;
         ThemeFile theme = ThemeFile.saved();
+        // The line above the swatches changes length with the theme, so they hold their place rather than slide under the finger.
+        page.keepInPlace(accents);
         themeStatus.setText(theme == null ? text.get("theme_status_wallpaper")
             : theme.name.isEmpty() ? text.get("theme_status_unnamed") : text.get("theme_status_saved", theme.name));
         themeClear.setVisibility(theme == null ? View.GONE : View.VISIBLE);

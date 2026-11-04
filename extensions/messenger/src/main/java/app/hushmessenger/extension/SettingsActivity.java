@@ -18,6 +18,7 @@ import android.os.PersistableBundle;
 import android.view.DisplayCutout;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -818,6 +819,30 @@ public final class SettingsActivity extends Activity {
         controlsScroll.offsetDescendantRectToMyCoords(view, spot);
         int top = controlsScroll.getScrollY();
         return spot.bottom > top && spot.top < top + controlsScroll.getHeight();
+    }
+
+    /**
+     * Keeps [anchor] where it is on screen through the next frame, scrolling its page by however far a change above it
+     * moved it. A line of text above a row growing or shrinking would otherwise slide the row out from under the finger.
+     */
+    void keepInPlace(View anchor) {
+        View list = anchor;
+        while (list != null && !(list instanceof ScrollView)) list = list.getParent() instanceof View ? (View) list.getParent() : null;
+        if (list == null || !anchor.isLaidOut() || !anchor.isShown()) return;
+        ScrollView scroll = (ScrollView) list;
+        int[] spot = new int[2];
+        anchor.getLocationInWindow(spot);
+        int before = spot[1];
+        // After the frame's layout, which has already made up for Undo coming or going in the header.
+        anchor.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override public boolean onPreDraw() {
+                anchor.getViewTreeObserver().removeOnPreDrawListener(this);
+                if (!anchor.isShown()) return true;
+                anchor.getLocationInWindow(spot);
+                scroll.scrollBy(0, spot[1] - before);
+                return true;
+            }
+        });
     }
 
     private ScrollView scrollPage(LinearLayout parent) {
