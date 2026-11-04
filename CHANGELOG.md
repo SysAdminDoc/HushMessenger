@@ -43,6 +43,17 @@
 - TalkBack reads a settings section's name and count first. It used to say "Collapsed, Button" before the name.
 - Buttons in the Hush settings with a short label like "OK" are at least 48 dp wide now, so they're as easy to hit as the taller ones.
 - The Hush settings page has a new layout, the one HushGram uses, drawn in Messenger's colors. It opens on the HushMessenger logo and name, and the name moves up into the top bar once you scroll past it. Right under the name is the search box, with `Show all settings as a list` below it if you'd rather see every switch at once. Sections are cards now, each row with its own icon. Sheets got bigger titles and buttons that are easier to tell apart, and the restart bar sits at the bottom of the screen. Dark mode is true black and light mode follows the same layout. Switches are squared off, with the thumb inside the track. The HushMessenger name and the other titles drift through Messenger's blues, sky to royal, and the pink and orange are gone.
+- A switch that can't work on your phone says why on a line of its own now, at full strength. The reason used to be dimmed along with the switch, and it was hard to read. `Log out` does the same with the line that says where to log out instead.
+- Buttons that remove something are red, like `Clear log`, `Remove the picture` and removing an auto reply or its picture, and they look grayed out while they can't be used. Text boxes have a thicker outline that turns red while what's in one needs fixing, and an empty auto reply now says "Write a reply here, or remove this one before saving."
+- The `Shared install` help is an amber warning now, since uninstalling Messenger from there removes its data too. The note that auto reply is off sits in a box of its own instead of one that looked like a text field.
+- Cards in settings, the sheets, the message log and the restart screen all use the same corners and padding.
+- A search left typed on the Controls tab doesn't rename the App tab's top bar anymore.
+- In the message log, a chat's name is in the link color when tapping it opens that chat.
+- `Search saved messages` shows each result as its own card with room between them, and a long message ends in "…". Tapping Search with nothing typed says to type a word first instead of doing nothing.
+- Picking an accent color, `Use copied theme`, `Back to wallpaper colors` and `Remove the picture` under `Your own home header` can all be undone with Undo at the top of settings. The color dots and the Record button over a call show your tap now.
+- The bar at the bottom of a chat while `Jump to the first message or a date` scrolls back has a line along its top, and TalkBack names it when it shows up. A tap beside Cancel no longer lands on the chat box under it.
+- When an update is out, `View release` is the main button under `Check for updates`, and a check that fails says so in red.
+- An auto reply picture with see-through parts, like a logo saved as a PNG, goes out on white. Those parts used to turn black.
 
 ### Checks
 
