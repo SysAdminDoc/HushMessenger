@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "rendered_on": "37b81fae8db9b79d3d06cbed9b96c2e7c625f71a",
+  "rendered_on": "e681be1a0c2f71af496cd3600cfbc3f3226e3e90",
   "producer": "SettingsScreenshotTest.captureProductionPagesAndDialogsInBothThemes",
-  "controls": 72,
-  "catalog_sha256": "b32ccc9b2e97bc92c48dc7493cda8cd56290be8ac0aebf20c7934e7931326dd0",
+  "controls": 73,
+  "catalog_sha256": "4525410f41d051ff6affec1296f435fafb891509dcbee5cddd9011845f8be989",
   "images": {
-    "assets/settings-dark.png": "3fee31af09703851fbcd7c473af8127542ba57a1f859de187c3fa4f23d667c33",
-    "assets/settings-light.png": "cbf4ef68c2b39dccd8cc1406f5f4d0a2b491989b7bb84f8973ba78281b16b495",
-    "assets/settings-app-dark.png": "13d7f9d5c7f68229400b37180f9be06514434701a1576c4f7815b806dc273c43",
-    "assets/settings-app-light.png": "81d889313677b236904c2433e10b728531a982ad4714b052f05e4ac0fdb3adbf"
+    "assets/settings-dark.png": "2cd6df83bf535e8b53e595f59b8adcdd0a143515f7f2f48e7436a49bcc91d87e",
+    "assets/settings-light.png": "9000b1cb0949f9e6db528bed6a1aa2ad015dff035729accc00e397a817c4d9eb",
+    "assets/settings-app-dark.png": "1153b394995419a4b2a430fc3aac683ceb8a8409158bc7c51dd2f21304801c41",
+    "assets/settings-app-light.png": "daa5aa2989542a8e9c41ea8b2f772e7f968e1b02756e7f51a76bd47571bec7cd"
   }
 }
