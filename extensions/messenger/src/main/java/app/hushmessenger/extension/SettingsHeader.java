@@ -38,8 +38,8 @@ final class SettingsHeader {
 
         ImageView icon = new ImageView(context);
         icon.setTag(ICON);
-        // Messenger has no HushMessenger launcher icon to show, so the patched mark the status card wears.
-        icon.setImageDrawable(SettingsIcons.icon(context, SettingsIcons.PATCHED, ui.heading));
+        // HushMessenger's own logo, in its own colors. Messenger has none, so the payload carries it.
+        icon.setImageDrawable(SettingsLogo.drawable(context));
         icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
         // The name under it says the same.
         icon.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
