@@ -21,12 +21,14 @@ final class SettingsUi {
     final Context context;
     /** accent is for text and lines on the page; accentFill is Messenger's blue behind white text, like its own buttons. */
     final int background, surface, text, muted, accent, accentFill, line, outline, selected, warning, warningSurface;
-    final int track, thumb, ripple, infoSurface, infoBorder, selectedText, error, selection;
+    final int track, thumb, ripple, infoSurface, infoBorder, warningBorder, selectedText, error, selection;
     /** The settings layout's roles by name; each is one of the colors above or its own. */
     final int dialog, card, hint, heading, switchOff, iconSurface, onAccent;
     final boolean largeText, light;
     /** The in-call Record button: red while it records (white on it 4.98), else the call screen's dark glass (white 16.1). */
     static final int RECORDING = 0xffd32f2f, CALL_SCRIM = 0xe6202124;
+    /** The Record button's press, a white wash that shows on the red and on the dark glass alike. */
+    static final int CALL_RIPPLE = 0x40ffffff;
 
     // Ratios are WCAG contrast, measured against the page, card and dialog (dark: all black; light: page #f0f2f5, card white).
     SettingsUi(Context context, boolean light) {
@@ -51,6 +53,7 @@ final class SettingsUi {
         selected = accentFill;
         warning = light ? 0xff785100 : 0xffffcc67; // on warningSurface: light 6.19, dark 9.68
         warningSurface = light ? 0xffffefc5 : 0xff352800;
+        warningBorder = light ? 0xfff2d58c : 0xff5c4600; // like infoBorder: the surface's edge, drawn a step stronger
         // A switch that can't be used, on or off: the off track at half strength, so it never reads as on.
         track = half(switchOff);
         // HushGram's off thumb: the title color in the light look, since a white one vanishes on the white card.
@@ -216,6 +219,25 @@ final class SettingsUi {
         return parts;
     }
 
+    /** HushGram's card corner, for every card: the section cards, the cards on the sheets and the restart card. */
+    static final int CARD_RADIUS = 10;
+
+    /** A card's background: the card fill in a 1 dp outline. */
+    GradientDrawable cardShape() { return shape(card, line, CARD_RADIUS); }
+
+    /** [fill] under a 1 dp line along its top, for a bar that sits over content scrolling past it. */
+    Drawable topEdge(int fill) {
+        return new LayerDrawable(new Drawable[] {shape(line, 0, 0), new android.graphics.drawable.InsetDrawable(shape(fill, 0, 0), 0, dp(1), 0, 0)});
+    }
+
+    /** A note in its own box: the info blue, or amber when it warns that something could be lost. */
+    TextView notice(String value, boolean caution) {
+        TextView view = text(value, 13, caution ? warning : muted, false);
+        view.setPadding(dp(12), dp(12), dp(12), dp(12));
+        view.setBackground(caution ? shape(warningSurface, warningBorder, 8) : shape(infoSurface, infoBorder, 8));
+        return view;
+    }
+
     /** A secondary dialog or page button: the card's fill in a 2 dp outline, with text in the heading color. */
     Button button(String title) {
         Button view = new Button(context);
@@ -241,6 +263,14 @@ final class SettingsUi {
         return view;
     }
 
+    /** A button that removes something: the secondary button with its text and focus ring in the error color. */
+    Button destructiveButton(String title) {
+        Button view = button(title);
+        view.setTextColor(new ColorStateList(new int[][] {{-android.R.attr.state_enabled}, {}}, new int[] {muted, error}));
+        view.setBackground(interactive(card, line, 12, error, 2));
+        return view;
+    }
+
     EditText field(String hint, int limit, boolean singleLine) {
         EditText view = new EditText(context);
         view.setId(View.generateViewId());
@@ -254,7 +284,7 @@ final class SettingsUi {
         view.setHighlightColor(selection);
         view.setMinHeight(dp(48));
         view.setPadding(dp(12), dp(10), dp(12), dp(10));
-        view.setBackground(interactive(dialog, switchOff, 12, heading, 2));
+        view.setBackground(fieldBackground(false));
         if (android.os.Build.VERSION.SDK_INT >= 29) {
             Drawable cursor = view.getTextCursorDrawable(), middle = view.getTextSelectHandle();
             Drawable left = view.getTextSelectHandleLeft(), right = view.getTextSelectHandleRight();
@@ -266,6 +296,11 @@ final class SettingsUi {
         return view;
     }
 
+    /** A field's 2 dp outline, in the error color while its text needs fixing. */
+    Drawable fieldBackground(boolean wrong) {
+        return wrong ? interactive(dialog, error, 12, error, 2) : interactive(dialog, switchOff, 12, heading, 2);
+    }
+
     private Drawable tinted(Drawable drawable) {
         Drawable copy = drawable.mutate();
         copy.setTint(accent);
@@ -275,8 +310,7 @@ final class SettingsUi {
     LinearLayout panel() {
         LinearLayout view = column();
         view.setPadding(dp(16), dp(16), dp(16), dp(16));
-        // HushGram's section card: the card fill in a 1 dp outline, 10 dp corners.
-        view.setBackground(shape(card, line, 10));
+        view.setBackground(cardShape());
         return view;
     }
 

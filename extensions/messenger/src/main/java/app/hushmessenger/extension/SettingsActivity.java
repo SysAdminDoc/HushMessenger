@@ -545,7 +545,8 @@ public final class SettingsActivity extends Activity {
     /** The bar's title: Search settings while there's a search, else HushMessenger unless the page's header shows it. */
     private void updateBarTitle() {
         if (wordmark == null || search == null) return;
-        boolean typed = !search.getText().toString().trim().isEmpty();
+        // The search lives on the Controls tab, so a search left typed there doesn't rename the App tab.
+        boolean typed = "controls".equals(page) && !search.getText().toString().trim().isEmpty();
         CharSequence shown = typed ? text.get("search_settings") : "HushMessenger";
         if (!android.text.TextUtils.equals(shown, wordmark.getText())) wordmark.setText(shown);
         // Invisible rather than gone, so the bar keeps its height and the rows don't jump as the header scrolls.
@@ -1103,7 +1104,7 @@ public final class SettingsActivity extends Activity {
     private LinearLayout controlRow(String key, String title, String description, boolean divided) {
         boolean overlay = !"paused".equals(key) && !ui.largeText;
         boolean available = Settings.available(key);
-        if (!available) description += " " + text.format(CameraActivity.KEY.equals(key) ? "camera_unsupported"
+        String reason = available ? "" : text.format(CameraActivity.KEY.equals(key) ? "camera_unsupported"
             : GalleryPicker.KEY.equals(key) ? "gallery_unsupported"
             : LocalChatSearch.KEY.equals(key) ? "local_search_unsupported"
             : CallRecording.KEY.equals(key) ? "call_recording_unsupported"
@@ -1138,6 +1139,14 @@ public final class SettingsActivity extends Activity {
             summary.setLineSpacing(0, 1);
             if (!available) summary.setAlpha(0.75f);
             ui.add(labels, summary, 4);
+        }
+        // Why the switch is off limits, on its own line at full strength: dimmed with the summary it fell under 4.5:1.
+        if (!available) {
+            TextView why = ui.text(text.display(reason), 13, ui.muted, false);
+            why.setTag("unavailable_" + key);
+            why.setLineSpacing(0, 1);
+            ui.add(labels, why, 4);
+            description = description.isEmpty() ? reason : description + " " + reason;
         }
         // A switch records a use only when Messenger reaches its screen or event, so an off switch shows nothing.
         // A failure newer than the last use means the switch isn't doing its job, so that shows instead.
@@ -1333,17 +1342,16 @@ public final class SettingsActivity extends Activity {
             ui.add(access, wayControl(Settings.HIDE_LOGO_PRESS), 10);
         }
         if (drawerAlias && !hosted) {
-            TextView sharedInstall = ui.text(text.get("shared_install_help"), 13, ui.muted, false);
+            // Amber, since uninstalling from there wipes Messenger's data along with the icon.
+            TextView sharedInstall = ui.notice(text.get("shared_install_help"), true);
             sharedInstall.setTag("shared_install_help");
-            sharedInstall.setPadding(ui.dp(12), ui.dp(12), ui.dp(12), ui.dp(12));
-            sharedInstall.setBackground(ui.shape(ui.infoSurface, ui.infoBorder, 8));
             ui.add(access, sharedInstall, 12);
         }
         section(content, "quick_access", access);
         if (!installedControls.isEmpty()) {
             // The section around it carries the "quick_setups" tag.
             LinearLayout quick = quickPanel = ui.panel();
-            quick.setPadding(ui.dp(12), ui.dp(16), ui.dp(12), ui.dp(16));
+            quick.setPadding(ui.dp(12), ui.dp(14), ui.dp(12), ui.dp(14));
             ui.add(quick, ui.text(text.get("quick_setups_help"), 13, ui.muted, false), 0);
             for (String name : QuickSetups.CHOICES) {
                 ui.rule(quick, 12);
@@ -1392,7 +1400,7 @@ public final class SettingsActivity extends Activity {
         section(content, "about", about);
         updates.syncUpdateChoice(true);
         LinearLayout choices = ui.panel();
-        choices.setPadding(ui.dp(12), ui.dp(16), ui.dp(12), ui.dp(16));
+        choices.setPadding(ui.dp(12), ui.dp(14), ui.dp(12), ui.dp(14));
         Button copy = ui.button(text.get("copy"));
         copy.setTag("copy_setup");
         copy.setOnClickListener(view -> copySetup());
@@ -1434,8 +1442,8 @@ public final class SettingsActivity extends Activity {
             logOut.setOnClickListener(null);
             logOut.setEnabled(false);
             logOut.setClickable(false);
+            // The title dims, but the line saying where to log out instead keeps its full contrast.
             logOut.getChildAt(0).setAlpha(0.38f);
-            logOut.getChildAt(1).setAlpha(0.75f);
             ((TextView) logOut.getChildAt(1)).setText(text.get("log_out_unavailable"));
             logOut.setContentDescription(text.get("log_out") + ". " + text.get("log_out_unavailable"));
         }
@@ -1702,8 +1710,8 @@ public final class SettingsActivity extends Activity {
             }
         });
         ui.add(group, header, 0);
-        // HushGram's section card: one per section, the card fill in a 1 dp outline with 10 dp corners.
-        body.setBackground(ui.shape(ui.card, ui.line, 10));
+        // HushGram's section card, one per section.
+        body.setBackground(ui.cardShape());
         ui.add(group, body, 0);
         ui.add(parent, group, 0);
         sections.put(id, new LinearLayout[] {group, header});

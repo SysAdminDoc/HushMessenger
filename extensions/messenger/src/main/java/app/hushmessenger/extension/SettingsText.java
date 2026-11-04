@@ -497,7 +497,7 @@ final class SettingsText {
         ENGLISH.put("auto_reply_count", "%1$s of %2$s replies");
         ENGLISH.put("auto_reply_number", "Reply %s");
         ENGLISH.put("auto_reply_remove_number", "Remove reply %s");
-        ENGLISH.put("auto_reply_required", "Write a reply, or remove this rule before saving.");
+        ENGLISH.put("auto_reply_required", "Write a reply here, or remove this one before saving.");
         ENGLISH.put("auto_reply_cancel", "Cancel");
         ENGLISH.put("auto_reply_remove", "Remove");
         ENGLISH.put("auto_reply_add", "Add a reply");

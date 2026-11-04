@@ -409,7 +409,7 @@ final class SettingsTextViVN {
         {"auto_reply_count", "%1$s / %2$s phản hồi"},
         {"auto_reply_number", "Phản hồi %s"},
         {"auto_reply_remove_number", "Xóa phản hồi %s"},
-        {"auto_reply_required", "Vui lòng điền nội dung phản hồi, hoặc xóa quy tắc này trước khi lưu."},
+        {"auto_reply_required", "Hãy viết nội dung phản hồi ở đây, hoặc xóa phản hồi này trước khi lưu."},
         {"auto_reply_cancel", "Hủy"},
         {"auto_reply_remove", "Xóa"},
         {"auto_reply_add", "Thêm phản hồi"},

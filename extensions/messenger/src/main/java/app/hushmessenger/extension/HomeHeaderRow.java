@@ -68,7 +68,7 @@ final class HomeHeaderRow {
         choose.setTag("home_header_choose");
         choose.setOnClickListener(view -> pick());
         ui.add(content, choose, 8);
-        remove = ui.button(text.get("home_header_remove"));
+        remove = ui.destructiveButton(text.get("home_header_remove"));
         remove.setTag("home_header_remove");
         remove.setOnClickListener(view -> removePicture());
         ui.add(content, remove, 8);

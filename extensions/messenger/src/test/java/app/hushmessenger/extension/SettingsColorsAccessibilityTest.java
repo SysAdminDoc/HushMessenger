@@ -126,6 +126,57 @@ public class SettingsColorsAccessibilityTest {
         }
     }
 
+    /** A switch that can't be used dims its title and summary, but the line saying why keeps the muted color's full 4.5:1. */
+    @Test @Config(sdk = 29) public void theReasonASwitchIsOffLimitsKeepsItsContrast() {
+        for (boolean light : new boolean[] {false, true}) {
+            Settings.preferences.edit().clear().putBoolean("light", light).commit();
+            try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+                View root = screen.get().getWindow().getDecorView();
+                SettingsUi ui = new SettingsUi(screen.get(), light);
+                String look = light ? "light" : "dark";
+                android.widget.TextView why = root.findViewWithTag("unavailable_bubbles");
+                assertNotNull(look, why);
+                assertEquals(look, 1f, why.getAlpha(), 0f);
+                assertEquals(look, ui.muted, why.getCurrentTextColor());
+                assertAtLeast(look + " reason on the card", 4.5, why.getCurrentTextColor(), ui.card);
+                String reason = new SettingsText(screen.get()).format("unavailable");
+                assertTrue(look, why.getText().toString().contains(reason));
+                Switch bubbles = root.findViewWithTag("bubbles");
+                assertTrue(look + ": TalkBack still hears the reason", bubbles.getContentDescription().toString().endsWith(reason));
+            }
+        }
+    }
+
+    @Test public void buttonsThatRemoveSomethingAreTheErrorColorAndLookOffWhenDisabled() {
+        for (boolean light : new boolean[] {false, true}) {
+            SettingsUi ui = new SettingsUi(RuntimeEnvironment.getApplication(), light);
+            String look = light ? "light" : "dark";
+            android.widget.Button remove = ui.destructiveButton("Remove");
+            assertEquals(look, ui.error, remove.getCurrentTextColor());
+            for (int ground : new int[] {ui.card, ui.dialog}) assertAtLeast(look + " remove text on " + hex(ground), 4.5, ui.error, ground);
+            remove.setEnabled(false);
+            assertEquals(look + " a disabled one is muted like the rest", ui.muted, remove.getCurrentTextColor());
+            Settings.preferences.edit().clear().putBoolean("light", light).commit();
+            try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+                android.widget.Button clear = screen.get().getWindow().getDecorView().findViewWithTag("message_log_clear");
+                assertNotNull(look, clear);
+                assertEquals(look + " Clear log", ui.error, clear.getCurrentTextColor());
+            }
+        }
+    }
+
+    @Test public void notesWarnInAmberAndInformInBlue() {
+        for (boolean light : new boolean[] {false, true}) {
+            SettingsUi ui = new SettingsUi(RuntimeEnvironment.getApplication(), light);
+            String look = light ? "light" : "dark";
+            android.widget.TextView caution = ui.notice("Careful", true), info = ui.notice("Note", false);
+            assertEquals(look, ui.warning, caution.getCurrentTextColor());
+            assertEquals(look, ui.warningSurface, ((GradientDrawable) caution.getBackground()).getColor().getDefaultColor());
+            assertEquals(look, ui.infoSurface, ((GradientDrawable) info.getBackground()).getColor().getDefaultColor());
+            assertAtLeast(look + " muted on the info surface", 4.5, ui.muted, ui.infoSurface);
+        }
+    }
+
     /** Counts the rounded shapes behind every view, adding any off the 0, 4, 6, 8, 10, 12 dp scale or round end to end. */
     private static int corners(View view, List<String> bad) {
         int seen = shapes(view.getBackground(), view, bad);

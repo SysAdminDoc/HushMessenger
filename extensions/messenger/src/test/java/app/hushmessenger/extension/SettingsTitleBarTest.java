@@ -151,6 +151,21 @@ public class SettingsTitleBarTest {
         }
     }
 
+    @Test public void aSearchLeftTypedOnControlsDoesntRenameTheAppTab() {
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            View root = layout(screen.get(), 400, 900);
+            TextView wordmark = root.findViewWithTag("wordmark");
+            root.<EditText>findViewWithTag("find_control").setText("People");
+            root.findViewWithTag("tab_app").performClick();
+            layout(screen.get(), 400, 900);
+            assertEquals("HushMessenger", wordmark.getText().toString());
+            root.findViewWithTag("tab_controls").performClick();
+            layout(screen.get(), 400, 900);
+            assertEquals("and the search is still there when Controls comes back",
+                new SettingsText(screen.get()).get("search_settings"), wordmark.getText().toString());
+        }
+    }
+
     @Test public void backIsANamedFortyEightDpTargetAtTheStart() {
         try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
             View root = layout(screen.get(), 400, 900);

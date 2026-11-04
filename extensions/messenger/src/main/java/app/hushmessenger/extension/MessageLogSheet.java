@@ -156,7 +156,7 @@ final class MessageLogSheet {
         view.setTag("message_log_view");
         view.setOnClickListener(clicked -> showMessageLog());
         actions.addView(view);
-        Button clear = page.ui.button(page.text.get("message_log_clear"));
+        Button clear = page.ui.destructiveButton(page.text.get("message_log_clear"));
         clear.setTag("message_log_clear");
         clear.setOnClickListener(clicked -> clearMessageLog());
         LinearLayout.LayoutParams clearParams = new LinearLayout.LayoutParams(-2, -2);
@@ -227,7 +227,7 @@ final class MessageLogSheet {
         // Scrolling near the end builds the next page, and so does a layout that leaves the end in view.
         sheet.scroll.setOnScrollChangeListener((view, x, y, oldX, oldY) -> moreMessageLogIfNear());
         sheet.scroll.getViewTreeObserver().addOnGlobalLayoutListener(this::moreMessageLogIfNear);
-        messageLogClear = page.ui.button(page.text.get("message_log_clear"));
+        messageLogClear = page.ui.destructiveButton(page.text.get("message_log_clear"));
         messageLogClear.setTag("message_log_dialog_clear");
         messageLogClear.setOnClickListener(clicked -> clearMessageLog());
         sheet.action(messageLogClear);
@@ -304,7 +304,7 @@ final class MessageLogSheet {
                         notice.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
                         notice.addView(ui.title(text.get("message_log_set_aside"), 18));
                         ui.add(notice, ui.text(text.get("message_log_set_aside_help"), 14, ui.muted, false), 8);
-                        Button remove = ui.button(text.get("message_log_set_aside_remove"));
+                        Button remove = ui.destructiveButton(text.get("message_log_set_aside_remove"));
                         remove.setTag("message_log_set_aside_remove");
                         remove.setOnClickListener(view -> { view.setEnabled(false); removeSetAsideLog(); });
                         ui.add(notice, remove, 16);
@@ -565,7 +565,7 @@ final class MessageLogSheet {
         SettingsUi ui = page.ui;
         SettingsText text = page.text;
         LinearLayout card = ui.column();
-        card.setBackground(ui.shape(ui.surface, ui.line, 12));
+        card.setBackground(ui.cardShape());
         // A name that opens its chat is a full-height tap target, so the card's top padding makes room for it.
         boolean opens = messageLogThread == null && !entry.thread.isEmpty();
         card.setPadding(ui.dp(16), ui.dp(opens ? 4 : 16), ui.dp(16), ui.dp(16));
@@ -575,6 +575,8 @@ final class MessageLogSheet {
             android.text.format.DateFormat.getTimeFormat(page).format(new java.util.Date(entry.time)));
         if (opens) {
             metadata.setTag("message_log_open_chat");
+            // In the link color, so the name reads as something to tap and the plain ones in a chat's own log don't.
+            metadata.setTextColor(ui.accent);
             metadata.setMinHeight(ui.dp(48));
             metadata.setGravity(android.view.Gravity.CENTER_VERTICAL);
             metadata.setBackground(ui.interactive(0, 0, 8));
@@ -664,7 +666,7 @@ final class MessageLogSheet {
         SettingsText text = page.text;
         LinearLayout card = ui.column();
         card.setTag("message_log_chat");
-        card.setBackground(ui.interactive(ui.surface, ui.line, 12));
+        card.setBackground(ui.interactive(ui.card, ui.line, SettingsUi.CARD_RADIUS));
         card.setPadding(ui.dp(16), ui.dp(16), ui.dp(16), ui.dp(16));
         card.addView(ui.title(chat.name.isEmpty() ? text.get("message_log_unknown_thread") : chat.name, 15));
         ui.add(card, ui.text(text.get("message_log_chat_count", String.valueOf(chat.count)) + "  ·  " +

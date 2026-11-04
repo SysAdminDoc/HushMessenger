@@ -409,7 +409,7 @@ final class SettingsTextZhTw {
         {"auto_reply_count", "%1$s / %2$s 則回覆"},
         {"auto_reply_number", "回覆 %s"},
         {"auto_reply_remove_number", "移除回覆 %s"},
-        {"auto_reply_required", "請填寫回覆內容，或先移除此規則再儲存。"},
+        {"auto_reply_required", "請在這裡填寫回覆內容，或先移除這則回覆再儲存。"},
         {"auto_reply_cancel", "取消"},
         {"auto_reply_remove", "移除"},
         {"auto_reply_add", "新增回覆"},

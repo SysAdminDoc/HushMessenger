@@ -116,7 +116,7 @@ public class RestartActivity extends Activity {
         LinearLayout message = ui.column();
         message.setGravity(Gravity.CENTER);
         message.setPadding(ui.dp(24), ui.dp(32), ui.dp(24), ui.dp(32));
-        message.setBackground(ui.shape(ui.surface, ui.line, 12));
+        message.setBackground(ui.cardShape());
         TextView brand = ui.heading("HushMessenger");
         brand.setGravity(Gravity.CENTER);
         brand.setTextSize(11);

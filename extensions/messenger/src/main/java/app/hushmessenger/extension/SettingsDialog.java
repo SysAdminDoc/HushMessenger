@@ -50,10 +50,7 @@ final class SettingsDialog extends LinearLayout {
         actions = ui.row();
         actions.setTag("dialog_actions");
         actions.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-        actions.setBackground(new android.graphics.drawable.LayerDrawable(new android.graphics.drawable.Drawable[] {
-            ui.shape(ui.line, 0, 0),
-            new android.graphics.drawable.InsetDrawable(ui.shape(ui.dialog, 0, 0), 0, ui.dp(1), 0, 0)
-        }));
+        actions.setBackground(ui.topEdge(ui.dialog));
         actions.setPadding(0, ui.dp(16), 0, 0);
         if (ui.largeText) actions.setOrientation(VERTICAL);
         scrolled = ui.column();
