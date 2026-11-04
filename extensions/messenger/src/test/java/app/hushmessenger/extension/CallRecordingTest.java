@@ -193,6 +193,16 @@ public class CallRecordingTest {
         assertNull(pill());
     }
 
+    @Test public void theButtonShowsItsPressBeforeAndDuringARecording() throws Exception {
+        on();
+        open();
+        callStarts();
+        assertTrue(pill().getBackground() instanceof android.graphics.drawable.RippleDrawable);
+        recording();
+        idle();
+        assertTrue(pill().getBackground() instanceof android.graphics.drawable.RippleDrawable);
+    }
+
     @Test public void aScreenThatOpensDuringTheCallGetsTheButton() {
         on();
         callStarts();

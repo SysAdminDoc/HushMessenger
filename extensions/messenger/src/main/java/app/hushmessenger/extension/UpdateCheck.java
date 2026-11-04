@@ -126,7 +126,8 @@ final class UpdateCheck {
             updateStatus.setTextColor(comparison > 0 ? page.ui.accent : page.ui.muted);
             if (comparison > 0) {
                 updateStatus.setText(page.text.get("update_available", latest));
-                Button view = page.ui.button(page.text.get("update_action"));
+                // The one thing to do once an update is out, so it's the filled button.
+                Button view = page.ui.primaryButton(page.text.get("update_action"));
                 view.setTag("update_release");
                 updateRelease = view;
                 view.setOnClickListener(v -> page.openPage(release.page));
@@ -154,6 +155,7 @@ final class UpdateCheck {
         page.runOnUiThread(() -> {
             if (!currentUpdate(generation)) return;
             updateStatus.setText(page.text.get("update_error"));
+            updateStatus.setTextColor(page.ui.error);
             updateStatus.setVisibility(View.VISIBLE);
         });
     }

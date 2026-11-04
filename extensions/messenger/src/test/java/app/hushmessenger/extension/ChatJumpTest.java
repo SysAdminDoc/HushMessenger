@@ -411,6 +411,26 @@ public class ChatJumpTest {
         assertEquals("This is the start of the chat", ShadowToast.getTextOfLatestToast());
     }
 
+    @Test public void theBarHasAnEdgeTakesTapsBesideCancelAndIsNamedForTalkBack() {
+        on(true);
+        openChat();
+        ChatJump.chooser = shown;
+        hold(name);
+        shadowOf(ShadowAlertDialog.getLatestAlertDialog()).clickOnItem(0);
+        ChatJump.Bar bar = ChatJump.running.bar;
+        assertTrue(bar.bar.getBackground() instanceof android.graphics.drawable.LayerDrawable);
+        assertTrue(bar.bar.getAccessibilityPaneTitle().toString().startsWith("Loading older messages"));
+        // Not a button to TalkBack, but a touch on the count never reaches the chat box under the bar.
+        assertFalse(bar.bar.isClickable());
+        MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 4, 4, 0);
+        assertTrue(bar.bar.dispatchTouchEvent(down));
+        down.recycle();
+        assertSame(bar, ChatJump.running.bar);
+        bar.cancel.performClick();
+        assertNull(ChatJump.running);
+        assertNull(bar.bar);
+    }
+
     /** Whether the menu's title is drawn in a dark color, as it is on a light sheet. */
     private static boolean darkTitle(AlertDialog menu) {
         int id = menu.getContext().getResources().getIdentifier("alertTitle", "id", "android");

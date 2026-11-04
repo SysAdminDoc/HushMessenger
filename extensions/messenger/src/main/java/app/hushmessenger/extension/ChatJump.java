@@ -764,15 +764,20 @@ public final class ChatJump {
             Context context = chat.getContext();
             SettingsUi ui = new SettingsUi(context, MaterialYouTheme.chatIsLight());
             bar = ui.row();
-            bar.setBackgroundColor(ui.background);
+            // A line along its top, like a sheet's buttons, so the bar reads apart from the messages under it.
+            bar.setBackground(ui.topEdge(ui.background));
             bar.setGravity(Gravity.CENTER_VERTICAL);
-            bar.setPadding(ui.dp(16), ui.dp(8), ui.dp(16), ui.dp(8));
+            bar.setPadding(ui.dp(16), ui.dp(9), ui.dp(16), ui.dp(8));
+            // A tap beside Cancel stops here instead of opening the chat box the bar covers.
+            bar.setOnTouchListener((view, event) -> true);
             status = ui.text("", 15, ui.text, false);
             bar.addView(status, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
             cancel = ui.button(new SettingsText(context).get("chat_jump_cancel"));
             cancel.setOnClickListener(tapped -> jump.stop(Outcome.CANCELLED));
             bar.addView(cancel);
             update();
+            // TalkBack says the count once as the bar comes up, without reading out every page it loads.
+            bar.setAccessibilityPaneTitle(status.getText());
             content.addView(bar, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
             content.getViewTreeObserver().addOnGlobalLayoutListener(this);

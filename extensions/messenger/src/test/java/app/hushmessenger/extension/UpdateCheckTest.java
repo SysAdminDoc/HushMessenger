@@ -106,6 +106,22 @@ public class UpdateCheckTest {
         assertNotNull(root.findViewWithTag("update_release"));
     }
 
+    @Test public void theReleaseButtonIsTheFilledOne() throws Exception {
+        reply = json(200, release("v99.0.0", RELEASE_PAGE));
+        View root = openWithCheckOn();
+        TextView status = awaitStatus(root);
+        android.widget.Button view = root.findViewWithTag("update_release");
+        assertEquals(lastOpened.ui.onAccent, view.getCurrentTextColor());
+        assertEquals(lastOpened.ui.accent, status.getCurrentTextColor());
+    }
+
+    @Test public void aFailedCheckSaysSoInRed() throws Exception {
+        reply = json(200, "{\"name\":\"latest\"}");
+        TextView status = awaitStatus(openWithCheckOn());
+        assertEquals("Couldn't check for updates. Check your connection and try again.", status.getText().toString());
+        assertEquals(lastOpened.ui.error, status.getCurrentTextColor());
+    }
+
     @Test public void theSameReleaseSaysUpToDate() throws Exception {
         reply = json(200, release("v" + BuildConfig.VERSION_NAME, page("v" + BuildConfig.VERSION_NAME)));
         View root = openWithCheckOn();
