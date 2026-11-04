@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "rendered_on": "a200039eb4077c3d87bc49e556f5f4bc3ec2a586",
+  "rendered_on": "d1bf45f181299bffc38d360d65ad2ecda3d6ce7a",
   "producer": "SettingsScreenshotTest.captureProductionPagesAndDialogsInBothThemes",
   "controls": 73,
   "catalog_sha256": "4525410f41d051ff6affec1296f435fafb891509dcbee5cddd9011845f8be989",
   "images": {
     "assets/settings-dark.png": "8f07140435cd5966df8ccd17f722d97b9a171dc7d5478c35108fd9f47997a0b1",
     "assets/settings-light.png": "eb3a7ddefcbf084a6128ca6e47a83e4860e1022ff2a6376cfc808b09bcc39846",
-    "assets/settings-app-dark.png": "d6c3557de0f196dfa7b8f62ad4461c638e8ffd9d5cda0ca77d1ddff2345c9989",
-    "assets/settings-app-light.png": "aaf6e85ca9d418fc7a48cbd4267f624884750dbf2a4aee822af3e729c7d76429"
+    "assets/settings-app-dark.png": "e88b439d751217d6c70085ef9b61ad86ccec854d95b36ad7b82ffeb37bd10f9a",
+    "assets/settings-app-light.png": "e45963512a1a9c427aba54d599f67d64f173d465e08d0d9fadbb4ea2d4af01c3"
   }
 }
