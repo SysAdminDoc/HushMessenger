@@ -327,7 +327,7 @@ public final class SettingsActivity extends Activity {
         controlsScroll.setOnScrollChangeListener((view, x, y, oldX, oldY) -> updateBarTitle());
         buildControls(controlsContent);
         reminder = ui.text(text.get("reopen"), 12, ui.muted, false);
-        reminder.setPadding(ui.dp(16), ui.dp(12), ui.dp(16), ui.dp(32));
+        reminder.setPadding(ui.dp(18), ui.dp(12), ui.dp(18), ui.dp(32));
         ui.add(controlsPage, reminder, 0);
         appPage = ui.column();
         appPage.setTag("app_page");
@@ -520,12 +520,12 @@ public final class SettingsActivity extends Activity {
         if (compact == next && scrollHeader == nextScrollHeader) return;
         compact = next;
         scrollHeader = nextScrollHeader;
-        // Content pages already pad 16dp, so a header or reminder moved inside them adds none.
+        // Content pages already pad 18 dp, so a header or reminder moved inside them adds none.
         header.setPadding(ui.dp(scrollHeader ? 0 : 16), ui.dp(compact ? 4 : 8), ui.dp(scrollHeader ? 0 : 16), 0);
         placeBrand();
         placeHeader();
         ((ViewGroup) reminder.getParent()).removeView(reminder);
-        reminder.setPadding(ui.dp(compact ? 0 : 16), ui.dp(12), ui.dp(compact ? 0 : 16), ui.dp(compact ? 16 : 32));
+        reminder.setPadding(ui.dp(compact ? 0 : 18), ui.dp(12), ui.dp(compact ? 0 : 18), ui.dp(compact ? 16 : 32));
         ui.add(compact ? controlsContent : controlsPage, reminder, 0);
         // A short window keeps its height for the rows, so the bar names the page instead.
         if (pageHeader != null) pageHeader.setVisibility(compact ? View.GONE : View.VISIBLE);
@@ -568,15 +568,16 @@ public final class SettingsActivity extends Activity {
         LinearLayout parent = compact ? ("app".equals(page) ? appContent : controlsContent) : header;
         if (brand.getParent() == parent) return;
         ((ViewGroup) brand.getParent()).removeView(brand);
-        LinearLayout.LayoutParams params = brandSpace();
+        LinearLayout.LayoutParams params = brandSpace(parent);
         params.bottomMargin = ui.dp(compact ? 12 : 0);
         parent.addView(brand, 0, params);
     }
 
-    /** The brand row's place: 12 dp into its parent's padding, where Back's touch area starts. */
-    private LinearLayout.LayoutParams brandSpace() {
+    /** The brand row's place: into its parent's padding, so Back's touch area starts 4 dp from the edge and its arrow 16. */
+    private LinearLayout.LayoutParams brandSpace(LinearLayout parent) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
-        params.setMarginStart(-ui.dp(12));
+        // The header pads 16 dp, a page 18.
+        params.setMarginStart(-ui.dp(parent == header ? 12 : 14));
         return params;
     }
 
@@ -584,7 +585,13 @@ public final class SettingsActivity extends Activity {
         LinearLayout parent = scrollHeader ? ("app".equals(page) ? appContent : controlsContent) : (LinearLayout) controlsPage.getParent();
         if (header.getParent() == parent) return;
         ((ViewGroup) header.getParent()).removeView(header);
-        parent.addView(header, 0, new LinearLayout.LayoutParams(-1, -2));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+        if (scrollHeader) {
+            // Inside a page the bar keeps the 16 dp line it has above one.
+            params.setMarginStart(-ui.dp(2));
+            params.setMarginEnd(-ui.dp(2));
+        }
+        parent.addView(header, 0, params);
     }
 
     @SuppressWarnings("deprecation")
@@ -638,7 +645,7 @@ public final class SettingsActivity extends Activity {
         openParams.setMarginStart(ui.dp(12));
         openParams.topMargin = ui.dp(ui.largeText ? 8 : 0);
         brand.addView(open, openParams);
-        header.addView(brand, brandSpace());
+        header.addView(brand, brandSpace(header));
         LinearLayout navigation = ui.row();
         navigation.setPadding(ui.dp(3), ui.dp(3), ui.dp(3), ui.dp(3));
         navigation.setBackground(ui.shape(ui.surface, ui.line, 12));
@@ -650,7 +657,12 @@ public final class SettingsActivity extends Activity {
             tabs.add(button);
             navigation.addView(button, new LinearLayout.LayoutParams(0, -2, 1));
         }
-        ui.add(header, navigation, 8);
+        // The bar keeps 16 dp for Back's arrow, and the tabs step in to the cards' 18 dp line under it.
+        LinearLayout.LayoutParams navigationSpace = new LinearLayout.LayoutParams(-1, -2);
+        navigationSpace.topMargin = ui.dp(8);
+        navigationSpace.setMarginStart(ui.dp(2));
+        navigationSpace.setMarginEnd(ui.dp(2));
+        header.addView(navigation, navigationSpace);
         // In the header, so it shows on both pages the moment a restart-gated change is made, with the button right there.
         restartRow = ui.row();
         restartRow.setTag("restart_row");
@@ -772,7 +784,8 @@ public final class SettingsActivity extends Activity {
 
     private LinearLayout pageContent(ScrollView scroll) {
         LinearLayout content = ui.column();
-        content.setPadding(ui.dp(16), ui.dp(12), ui.dp(16), ui.dp(24));
+        // HushGram's card line: cards, search and the restart bar all sit 18 dp in from the screen edge.
+        content.setPadding(ui.dp(18), ui.dp(12), ui.dp(18), ui.dp(24));
         // A short window moves the bar in here, and Back's touch area reaches into the padding.
         content.setClipToPadding(false);
         scroll.addView(content);
@@ -782,7 +795,8 @@ public final class SettingsActivity extends Activity {
     private void buildControls(LinearLayout content) {
         // One small card: how many controls are on, and Pause.
         LinearLayout setup = ui.panel();
-        setup.setPadding(ui.dp(14), ui.dp(10), ui.dp(14), ui.dp(2));
+        // 12 dp in from the card, so its text starts on the rows' 30 dp icon line.
+        setup.setPadding(ui.dp(12), ui.dp(10), ui.dp(12), ui.dp(2));
         enabledCount = ui.text("", 15, ui.text, true);
         enabledCount.setTag("enabled_count");
         ui.add(setup, enabledCount, 0);
@@ -848,14 +862,14 @@ public final class SettingsActivity extends Activity {
             if (!last.equals(spec[3])) {
                 last = spec[3];
                 groupBody = ui.column();
-                groupBody.setPadding(ui.dp(14), ui.dp(2), ui.dp(14), ui.dp(2));
-                groupBody.setBackground(ui.shape(ui.surface, ui.line, 12));
+                // Inside the section's 1 dp outline, with HushGram's 4 dp more above the first row and below the last.
+                groupBody.setPadding(ui.dp(1), ui.dp(4), ui.dp(1), ui.dp(4));
                 // Lines only between shown controls: none above the first, none over the card's own border under the last.
                 android.graphics.drawable.GradientDrawable divider = ui.shape(ui.line, 0, 0);
                 divider.setSize(1, ui.dp(1));
                 groupBody.setDividerDrawable(divider);
                 groupBody.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-                group = section(content, last, groupBody, groups.isEmpty() ? 12 : 8);
+                group = section(content, last, groupBody);
                 groups.add(group);
             }
             LinearLayout row = controlRow(spec[0], text.control(spec, 1), text.control(spec, 2), true);
@@ -883,7 +897,10 @@ public final class SettingsActivity extends Activity {
                     if (Build.VERSION.SDK_INT >= 29) ui.add(wrapper, controlRow(MessageLog.SAVE_EXPIRING,
                         text.format(MessageLog.SAVE_EXPIRING), text.format("message_log_save_expiring_help"), false), 8);
                 }
-                wrapper.setPadding(0, 0, 0, ui.dp(12));
+                // The wrapper takes the row's side padding, so the row's extras line up with its icon.
+                row.setPadding(0, row.getPaddingTop(), 0, row.getPaddingBottom());
+                ((android.graphics.drawable.LayerDrawable) row.getBackground()).setLayerInsetRelative(1, 0, 0, 0, 0);
+                wrapper.setPadding(ui.dp(11), 0, ui.dp(11), ui.dp(12));
                 row = wrapper;
             }
             row.setTag(spec[3]);
@@ -1036,7 +1053,6 @@ public final class SettingsActivity extends Activity {
 
     @SuppressWarnings("deprecation")
     private LinearLayout controlRow(String key, String title, String description, boolean divided) {
-        boolean appRow = !divided && !"paused".equals(key);
         boolean overlay = !"paused".equals(key) && !ui.largeText;
         boolean available = Settings.available(key);
         if (!available) description += " " + text.format(CameraActivity.KEY.equals(key) ? "camera_unsupported"
@@ -1055,7 +1071,11 @@ public final class SettingsActivity extends Activity {
         // As tall as the switch track beside it, so the description starts under the track.
         if (overlay) titleLine.setMinimumHeight(ui.dp(24));
         if (ui.largeText) titleLine.setOrientation(LinearLayout.VERTICAL);
-        titleLine.addView(ui.text(text.display(title), appRow ? 14 : 15, ui.text, false), new LinearLayout.LayoutParams(-2, -2));
+        // HushGram's row type: a 16 sp medium title over a 13 sp summary, both wrapping, an unusable row's dimmed.
+        TextView titleView = ui.text(text.display(title), 16, ui.text, true);
+        titleView.setLineSpacing(0, 1);
+        if (!available) titleView.setAlpha(0.38f);
+        titleLine.addView(titleView, new LinearLayout.LayoutParams(-2, -2));
         if (EXPERIMENTAL.contains(key)) {
             TextView badge = ui.text(text.get("experimental"), 11, ui.warning, false);
             badge.setBackground(ui.shape(ui.warningSurface, 0, 4));
@@ -1065,7 +1085,12 @@ public final class SettingsActivity extends Activity {
             titleLine.addView(badge, params);
         }
         labels.addView(titleLine, titleSpace);
-        if (!description.isEmpty()) ui.add(labels, ui.text(text.display(description), appRow ? 12 : 13, ui.muted, false), 4);
+        if (!description.isEmpty()) {
+            TextView summary = ui.text(text.display(description), 13, ui.muted, false);
+            summary.setLineSpacing(0, 1);
+            if (!available) summary.setAlpha(0.75f);
+            ui.add(labels, summary, 4);
+        }
         // A switch records a use only when Messenger reaches its screen or event, so an off switch shows nothing.
         // A failure newer than the last use means the switch isn't doing its job, so that shows instead.
         TextView activeLabel = null;
@@ -1075,7 +1100,10 @@ public final class SettingsActivity extends Activity {
             activityLabels.put(key, activeLabel);
             ui.add(labels, activeLabel, 4);
         }
-        row.addView(labels, new LinearLayout.LayoutParams(overlay ? -1 : 0, -2, overlay ? 0 : 1));
+        LinearLayout.LayoutParams labelSpace = new LinearLayout.LayoutParams(overlay ? -1 : 0, -2, overlay ? 0 : 1);
+        // The row's icon sits in this 38 dp: 24 dp of icon and 14 dp before the title.
+        labelSpace.setMarginStart(ui.dp(38));
+        row.addView(labels, labelSpace);
         Switch control = ui.toggle(key, text.display(title), text.display((EXPERIMENTAL.contains(key) ? text.format("experimental") + ". " : "") + description), Settings.preferences.getBoolean(key, false));
         LinearLayout.LayoutParams switchParams = new LinearLayout.LayoutParams(ui.dp(48), -2);
         // Normal-size App descriptions span the panel. Large text reserves a separate switch column.
@@ -1143,9 +1171,48 @@ public final class SettingsActivity extends Activity {
             }
         });
         // A group draws the lines between its controls, so a control's own buttons sit above the line, not below it.
-        row.setBackground(ui.interactive(ui.surface, 0, 0));
-        row.setPadding(0, ui.dp(divided ? 11 : 0), 0, ui.dp(divided ? 11 : 0));
+        // The icon is drawn by the background, 30 dp from the screen edge in a section card or an App panel.
+        row.setBackground(ui.rowParts(ui.interactive(0, 0, 6), rowIcon(key), divided ? 11 : 0, false, 0));
+        // After the background, which would otherwise set the padding.
+        row.setPadding(ui.dp(divided ? 11 : 0), ui.dp(divided ? 10 : 0), ui.dp(divided ? 11 : 0), ui.dp(divided ? 10 : 0));
+        if (divided) row.setMinimumHeight(ui.dp(64));
         return row;
+    }
+
+    /** A row's icon: one its key's words call for, else its section's. Fixed per key, since some rows are rebuilt later. */
+    private static String rowIcon(String key) {
+        if (WAYS_IN.contains(key) || "hide_drawer_icon".equals(key)) return SettingsIcons.forKey(key, sectionIcon("quick_access"));
+        if ("light".equals(key) || "material_you_black".equals(key) || MaterialYouTheme.LIGHT_KEY.equals(key))
+            return SettingsIcons.forKey(key, sectionIcon("appearance"));
+        if ("check_updates".equals(key)) return SettingsIcons.forKey(key, sectionIcon("about"));
+        // A switch under another one takes that one's section.
+        String parent = Settings.KEEP_FACEBOOK_PROFILE.equals(key) ? "facebook"
+            : Settings.AVATAR_ROUNDED.equals(key) ? Settings.AVATAR_SHAPE
+            : Settings.KEEP_BADGES.containsValue(key) ? Settings.TAB_BADGES
+            : MessageLogButton.KEY.equals(key) || MessageLog.SAVE_EXPIRING.equals(key) ? MessageLog.KEY
+            : QuietCalls.CHOSEN_ONLY.equals(key) || key.startsWith(QuietCalls.CHAT_PREFIX) ? QuietCalls.KEY : key;
+        String section = "";
+        for (String[] spec : CONTROLS) if (spec[0].equals(parent)) { section = spec[3]; break; }
+        return SettingsIcons.forKey(key, sectionIcon(section));
+    }
+
+    /** Each section's icon, for its rows that have none of their own. */
+    private static String sectionIcon(String section) {
+        switch (section) {
+            case "inbox": return SettingsIcons.CHATS;
+            case "navigation": return SettingsIcons.TAB_BAR;
+            case "stickers": return SettingsIcons.LIKE;
+            case "conversations": return SettingsIcons.WRITING;
+            case "calls": return SettingsIcons.PHONE;
+            case "photos_videos": return SettingsIcons.STORIES;
+            case "links_bubbles": return SettingsIcons.LINKS;
+            case "privacy": return SettingsIcons.PRIVACY;
+            case "theme": return SettingsIcons.APPEARANCE;
+            case "quick_access": return SettingsIcons.OPENING;
+            case "appearance": return SettingsIcons.MOON;
+            case "about": return SettingsIcons.ABOUT;
+            default: return SettingsIcons.SETTINGS;
+        }
     }
 
     private void refreshStatus(Switch control) {
@@ -1177,7 +1244,7 @@ public final class SettingsActivity extends Activity {
         restart.setOnClickListener(view -> HostScreens.restartInto(this, page));
         ui.add(content, restart, 0);
         LinearLayout access = ui.panel();
-        access.setPadding(ui.dp(14), ui.dp(14), ui.dp(14), ui.dp(14));
+        access.setPadding(ui.dp(12), ui.dp(14), ui.dp(12), ui.dp(14));
         // The Menu tab row is its own patch, recorded as menu_row only when it applied.
         boolean menuRow = Settings.installed.contains("menu_row");
         // A Root Mount install has no drawer entry to mention or hide.
@@ -1224,10 +1291,11 @@ public final class SettingsActivity extends Activity {
             sharedInstall.setBackground(ui.shape(ui.infoSurface, ui.infoBorder, 8));
             ui.add(access, sharedInstall, 12);
         }
-        section(content, "quick_access", access, 12);
+        section(content, "quick_access", access);
         if (!installedControls.isEmpty()) {
             // The section around it carries the "quick_setups" tag.
             LinearLayout quick = quickPanel = ui.panel();
+            quick.setPadding(ui.dp(12), ui.dp(16), ui.dp(12), ui.dp(16));
             ui.add(quick, ui.text(text.get("quick_setups_help"), 13, ui.muted, false), 0);
             for (String name : QuickSetups.CHOICES) {
                 ui.rule(quick, 12);
@@ -1237,7 +1305,7 @@ public final class SettingsActivity extends Activity {
                 ui.add(quick, choice, 8);
                 ui.add(quick, ui.text(text.get("quick_" + name + "_help"), 13, ui.muted, false), 8);
             }
-            quickSection = section(content, "quick_setups", quick, 8);
+            quickSection = section(content, "quick_setups", quick);
             // A long press anywhere on the section hides it, header, buttons and help lines included.
             holdToHide(quickSection.getChildAt(0));
             holdToHide(quick);
@@ -1245,7 +1313,7 @@ public final class SettingsActivity extends Activity {
             showQuickSetups();
         }
         LinearLayout appearance = ui.panel();
-        appearance.setPadding(ui.dp(14), ui.dp(14), ui.dp(14), ui.dp(14));
+        appearance.setPadding(ui.dp(12), ui.dp(14), ui.dp(12), ui.dp(14));
         ui.add(appearance, controlRow("light", text.format("light"), text.format("light_help"), false), 0);
         if (Settings.installed.contains("material_you")) {
             ui.rule(appearance, 10);
@@ -1257,9 +1325,9 @@ public final class SettingsActivity extends Activity {
         }
         ui.rule(appearance, 10);
         ui.add(appearance, ui.text(text.get("theme_help"), 13, ui.muted, false), 12);
-        section(content, "appearance", appearance, 8);
+        section(content, "appearance", appearance);
         LinearLayout about = ui.panel();
-        about.setPadding(ui.dp(14), ui.dp(14), ui.dp(14), ui.dp(14));
+        about.setPadding(ui.dp(12), ui.dp(14), ui.dp(12), ui.dp(14));
         infoRow(about, text.get("version"), BuildConfig.VERSION_NAME);
         int art = ScreenArt.artDpi.applyAsInt(this), screen = getResources().getDisplayMetrics().densityDpi;
         if (ScreenArt.blurry(art, screen)) {
@@ -1273,9 +1341,10 @@ public final class SettingsActivity extends Activity {
         ui.rule(about, 10);
         ui.add(about, controlRow("check_updates", text.format("check_updates"), text.format("check_updates_help"), false), 4);
         updates.addTo(about);
-        section(content, "about", about, 8);
+        section(content, "about", about);
         updates.syncUpdateChoice(true);
         LinearLayout choices = ui.panel();
+        choices.setPadding(ui.dp(12), ui.dp(16), ui.dp(12), ui.dp(16));
         Button copy = ui.button(text.get("copy"));
         copy.setTag("copy_setup");
         copy.setOnClickListener(view -> copySetup());
@@ -1297,9 +1366,9 @@ public final class SettingsActivity extends Activity {
             ui.add(choices, quickHomeStatus, 8);
             showQuickSetups();
         }
-        section(content, "choices", choices, 8);
+        section(content, "choices", choices);
         LinearLayout usage = ui.panel();
-        usage.setPadding(ui.dp(14), ui.dp(14), ui.dp(14), ui.dp(14));
+        usage.setPadding(ui.dp(12), ui.dp(14), ui.dp(12), ui.dp(14));
         ui.add(usage, ui.text(text.get("save_help"), 13, ui.muted, false), 0);
         ui.add(usage, ui.text(text.get("pause_help"), 13, ui.muted, false), 10);
         ui.add(usage, ui.text(text.get("account_help"), 13, ui.muted, false), 10);
@@ -1309,38 +1378,49 @@ public final class SettingsActivity extends Activity {
         ui.add(help, ui.text(text.get("missing"), 15, ui.accent, true), 0);
         ui.add(help, ui.text(text.get("missing_help"), 13, ui.muted, false), 6);
         ui.add(usage, help, 12);
-        section(content, "usage", usage, 8);
+        section(content, "usage", usage);
         // #88: Messenger's own Log out, no dialog in front of it. A build the patch found none in says where to go instead.
-        LinearLayout logOut = linkPanel("log_out", "log_out", this::logOut);
+        // Log out acts on the spot, so it gets no chevron.
+        LinearLayout logOut = linkPanel("log_out", "log_out", SettingsIcons.PERSON, false, this::logOut);
         if (!LogOut.available()) {
             logOut.setOnClickListener(null);
             logOut.setEnabled(false);
             logOut.setClickable(false);
-            logOut.getChildAt(0).setAlpha(0.6f);
+            logOut.getChildAt(0).setAlpha(0.38f);
+            logOut.getChildAt(1).setAlpha(0.75f);
             ((TextView) logOut.getChildAt(1)).setText(text.get("log_out_unavailable"));
             logOut.setContentDescription(text.get("log_out") + ". " + text.get("log_out_unavailable"));
         }
-        ui.add(content, logOut, 16);
-        Button source = ui.button(text.get("source"));
-        source.setTag("source_licenses");
-        source.setOnClickListener(view -> openPage("https://github.com/SysAdminDoc/HushMessenger#credits"));
-        ui.add(content, source, 16);
+        addOverview(content, logOut, 16, false);
+        addOverview(content, linkPanel("source_licenses", "source", SettingsIcons.LICENSE, true,
+            () -> openPage("https://github.com/SysAdminDoc/HushMessenger#credits")), 16, false);
         // Built when tapped, so the controls listed are the ones on right then.
-        ui.add(content, linkPanel("report_problem", "report", () -> openPage(ProblemReport.issueUrl(reportFacts()))), 12);
-        ui.add(content, linkPanel("support", "support", () -> openPage(SUPPORT_PAGE)), 12);
+        addOverview(content, linkPanel("report_problem", "report", SettingsIcons.BUG, true,
+            () -> openPage(ProblemReport.issueUrl(reportFacts()))), 16, false);
+        // Report and Support share one card, so Support's top line is Report's bottom one.
+        addOverview(content, linkPanel("support", "support", SettingsIcons.LIKE, true, () -> openPage(SUPPORT_PAGE)), 0, true);
         ui.add(content, ui.text(text.get("credits"), 12, ui.muted, false), 16);
         ui.add(content, ui.text(text.get("independent"), 12, ui.muted, false), 20);
     }
 
-    /** A panel that opens a page: text [id]'s title in the accent color over its "_help" line, read out as one button. */
-    private LinearLayout linkPanel(String tag, String id, Runnable open) {
+    /**
+     * HushGram's overview row: text [id]'s title over its "_help" line, read out as one button, with icon at the start
+     * and a chevron at the end when it opens a page. Full bleed, so its side lines sit just off screen.
+     */
+    private LinearLayout linkPanel(String tag, String id, String icon, boolean opens, Runnable open) {
         // A row with no "_help" text is its title alone, like Support.
         boolean help = SettingsText.ENGLISH.containsKey(id + "_help");
-        LinearLayout panel = ui.panel();
+        LinearLayout panel = ui.column();
         panel.setTag(tag);
         panel.setClickable(true);
         panel.setFocusable(true);
-        panel.setBackground(ui.interactive(ui.surface, ui.line, 12));
+        android.graphics.drawable.LayerDrawable parts = ui.rowParts(ui.interactive(ui.card, ui.line, 0), icon, 20, opens, 20);
+        parts.setLayerInsetRelative(0, -ui.dp(1), 0, -ui.dp(1), 0);
+        panel.setBackground(parts);
+        // After the background, which would otherwise set the padding.
+        panel.setPadding(ui.dp(20), ui.dp(6), ui.dp(20), ui.dp(6));
+        panel.setMinimumHeight(ui.dp(52));
+        panel.setGravity(Gravity.CENTER_VERTICAL);
         panel.setContentDescription(help ? text.get(id) + ". " + text.get(id + "_help") : text.get(id));
         panel.setAccessibilityDelegate(new View.AccessibilityDelegate() {
             @Override public void onInitializeAccessibilityNodeInfo(View host, android.view.accessibility.AccessibilityNodeInfo info) {
@@ -1349,10 +1429,30 @@ public final class SettingsActivity extends Activity {
                 info.setClassName(Button.class.getName());
             }
         });
-        ui.add(panel, ui.text(text.get(id), 16, ui.accent, true), 0);
-        if (help) ui.add(panel, ui.text(text.get(id + "_help"), 14, ui.muted, false), 4);
+        // The icon's 38 dp at the start, and the chevron's 16 plus 12 at the end.
+        TextView title = ui.text(text.get(id), 15, ui.text, true);
+        panel.addView(title, overviewText(opens, 0));
+        if (help) panel.addView(ui.text(text.get(id + "_help"), 12, ui.muted, false), overviewText(opens, 2));
         panel.setOnClickListener(view -> open.run());
         return panel;
+    }
+
+    private LinearLayout.LayoutParams overviewText(boolean opens, int top) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+        params.topMargin = ui.dp(top);
+        params.setMarginStart(ui.dp(38));
+        params.setMarginEnd(ui.dp(opens ? 28 : 0));
+        return params;
+    }
+
+    /** An overview row across the whole window, out of the page's 18 dp padding. Joined, it shares the row above's line. */
+    private void addOverview(LinearLayout content, LinearLayout row, int top, boolean joined) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+        params.topMargin = ui.dp(top);
+        params.setMarginStart(-ui.dp(18));
+        params.setMarginEnd(-ui.dp(18));
+        if (joined) ((android.graphics.drawable.LayerDrawable) row.getBackground()).setLayerInset(0, -ui.dp(1), -ui.dp(1), -ui.dp(1), 0);
+        content.addView(row, params);
     }
 
     /** What Report a problem fills in: versions, the phone and the English titles of the controls saved on. */
@@ -1503,15 +1603,17 @@ public final class SettingsActivity extends Activity {
     /**
      * One accordion section, HushFacebook's way: a header that opens and closes the card under it.
      * The header holds the title, a count the Controls tab fills in and the chevron, in that order.
+     * It looks like HushGram's heading, 22 dp in from the screen edge over a card on the 18 dp line.
      */
-    private LinearLayout section(LinearLayout parent, String id, View body, int top) {
+    private LinearLayout section(LinearLayout parent, String id, View body) {
         LinearLayout group = ui.column();
         group.setTag(id);
         LinearLayout header = ui.row();
         header.setTag("section_" + id);
         header.setMinimumHeight(ui.dp(48));
-        header.setPadding(ui.dp(14), ui.dp(10), ui.dp(10), ui.dp(10));
-        header.setBackground(ui.interactive(ui.surface, ui.line, 12));
+        header.setBackground(ui.interactive(0, 0, 8));
+        // After the background, which would otherwise set the padding.
+        header.setPadding(ui.dp(4), ui.dp(20), ui.dp(4), ui.dp(8));
         header.setClickable(true);
         header.setFocusable(true);
         TextView title = ui.heading(text.get(id));
@@ -1552,8 +1654,10 @@ public final class SettingsActivity extends Activity {
             }
         });
         ui.add(group, header, 0);
-        ui.add(group, body, 6);
-        ui.add(parent, group, top);
+        // HushGram's section card: one per section, the card fill in a 1 dp outline with 10 dp corners.
+        body.setBackground(ui.shape(ui.card, ui.line, 10));
+        ui.add(group, body, 0);
+        ui.add(parent, group, 0);
         sections.put(id, new LinearLayout[] {group, header});
         bindSection(id);
         return group;
@@ -1584,9 +1688,8 @@ public final class SettingsActivity extends Activity {
         boolean shown = sectionShown(id);
         LinearLayout header = parts[1];
         parts[0].getChildAt(1).setVisibility(shown ? View.VISIBLE : View.GONE);
-        ((TextView) header.getChildAt(0)).setTextColor(shown ? ui.accent : ui.muted);
+        // The heading keeps its color and the chevron says open or shut, so an open section wears no outline.
         header.getChildAt(2).setRotation(shown ? -90 : 90);
-        header.setActivated(shown);
         // No state description: TalkBack already says "collapsed" or "expanded" from the expand and collapse actions,
         // and a description of our own made it say the state twice.
     }

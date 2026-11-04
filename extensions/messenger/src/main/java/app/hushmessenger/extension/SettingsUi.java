@@ -162,6 +162,26 @@ final class SettingsUi {
         return new RippleDrawable(ColorStateList.valueOf(ripple), states, shape(0xffffffff, 0, radius));
     }
 
+    /**
+     * A row's background with its leading icon, 24 dp in the heading color, start dp in from the row's
+     * start edge, and a chevron end dp in from its end edge when a tap opens something. Both follow
+     * the row's layout direction and dim with it.
+     */
+    LayerDrawable rowParts(Drawable base, String icon, int start, boolean chevron, int end) {
+        Drawable glyph = SettingsIcons.icon(context, icon, heading);
+        LayerDrawable parts = new LayerDrawable(chevron
+            ? new Drawable[] {base, glyph, new Chevron(muted, dp(2))} : new Drawable[] {base, glyph});
+        parts.setLayerGravity(1, Gravity.START | Gravity.CENTER_VERTICAL);
+        parts.setLayerSize(1, dp(24), dp(24));
+        parts.setLayerInsetRelative(1, dp(start), 0, 0, 0);
+        if (chevron) {
+            parts.setLayerGravity(2, Gravity.END | Gravity.CENTER_VERTICAL);
+            parts.setLayerSize(2, dp(16), dp(24));
+            parts.setLayerInsetRelative(2, 0, 0, dp(end), 0);
+        }
+        return parts;
+    }
+
     /** A secondary dialog or page button: the card's fill in a 2 dp outline, with text in the heading color. */
     Button button(String title) {
         Button view = new Button(context);
@@ -221,7 +241,8 @@ final class SettingsUi {
     LinearLayout panel() {
         LinearLayout view = column();
         view.setPadding(dp(16), dp(16), dp(16), dp(16));
-        view.setBackground(shape(surface, line, 12));
+        // HushGram's section card: the card fill in a 1 dp outline, 10 dp corners.
+        view.setBackground(shape(card, line, 10));
         return view;
     }
 

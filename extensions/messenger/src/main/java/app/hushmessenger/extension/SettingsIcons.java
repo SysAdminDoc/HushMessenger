@@ -117,6 +117,7 @@ final class SettingsIcons {
      * icons it names.
      */
     private static final String[][] BY_WORD = {
+            {PAUSE, "paused"},
             {HIDDEN, "receipts", "typing", "anonymous", "unsent", "screenshot"},
             {AI, "meta", "ai"},
             {SEARCH, "search"},
@@ -130,7 +131,7 @@ final class SettingsIcons {
             {STORIES, "stories", "story", "photo", "media", "camera", "gallery", "instants", "moments"},
             {LINKS, "browser"},
             {PLACE, "nearby"},
-            {UPDATES, "log"},
+            {UPDATES, "log", "updates"},
             {PERSON, "people", "friend", "avatar"},
             {APPEARANCE, "emoji", "stickers", "themes", "material", "font", "style", "icons", "header"},
             {CHATS, "chat", "chats", "inbox", "messages", "reply", "bubbles", "pinned", "read"},
