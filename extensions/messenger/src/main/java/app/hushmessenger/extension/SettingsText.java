@@ -102,6 +102,9 @@ final class SettingsText {
         ENGLISH.put("open_messenger", "Open Messenger");
         ENGLISH.put("back", "Back");
         ENGLISH.put("search_settings", "Search settings");
+        // The list switch says what a tap shows.
+        ENGLISH.put("show_as_list", "Show all settings as a list");
+        ENGLISH.put("show_by_category", "Show settings by category");
         // The patches' version, then Messenger's.
         ENGLISH.put("header_version", "Version %1$s for Messenger %2$s");
         ENGLISH.put("header_version_alone", "Version %s");

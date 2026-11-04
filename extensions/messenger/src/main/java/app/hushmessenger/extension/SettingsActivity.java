@@ -96,6 +96,7 @@ public final class SettingsActivity extends Activity {
     /** Shown above both pages while a change waits for Messenger to restart. */
     private LinearLayout restartRow;
     private TextView restartWaiting;
+    private LinearLayout viewToggle;
     /** Shown above both pages for a few seconds after a Quick setup or Clear log, which act at once with no dialog. */
     private Button undoButton;
     /** What Undo does and when its time runs out. Main thread only, null when nothing can be taken back. */
@@ -583,15 +584,32 @@ public final class SettingsActivity extends Activity {
 
     private void placeHeader() {
         LinearLayout parent = scrollHeader ? ("app".equals(page) ? appContent : controlsContent) : (LinearLayout) controlsPage.getParent();
-        if (header.getParent() == parent) return;
-        ((ViewGroup) header.getParent()).removeView(header);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
-        if (scrollHeader) {
-            // Inside a page the bar keeps the 16 dp line it has above one.
-            params.setMarginStart(-ui.dp(2));
-            params.setMarginEnd(-ui.dp(2));
+        if (header.getParent() != parent) {
+            ((ViewGroup) header.getParent()).removeView(header);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+            if (scrollHeader) {
+                // Inside a page the bar keeps the 16 dp line it has above one.
+                params.setMarginStart(-ui.dp(2));
+                params.setMarginEnd(-ui.dp(2));
+            }
+            parent.addView(header, 0, params);
         }
-        parent.addView(header, 0, params);
+        placeRestartBar(parent);
+    }
+
+    /**
+     * The restart bar sits under the list, on the 18 dp line and above the gesture bar the window pads for. When the keyboard
+     * leaves the list almost no room, it goes into the page under the bar, with the header, and scrolls away with it.
+     */
+    private void placeRestartBar(LinearLayout parent) {
+        if (restartRow.getParent() == parent) return;
+        if (restartRow.getParent() != null) ((ViewGroup) restartRow.getParent()).removeView(restartRow);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+        // A page's content already pads 18 dp at the sides.
+        int side = ui.dp(scrollHeader ? 0 : 18);
+        params.setMargins(side, ui.dp(8), side, ui.dp(8));
+        if (scrollHeader) parent.addView(restartRow, parent.indexOfChild(header) + 1, params);
+        else parent.addView(restartRow, params);
     }
 
     @SuppressWarnings("deprecation")
@@ -663,32 +681,55 @@ public final class SettingsActivity extends Activity {
         navigationSpace.setMarginStart(ui.dp(2));
         navigationSpace.setMarginEnd(ui.dp(2));
         header.addView(navigation, navigationSpace);
-        // In the header, so it shows on both pages the moment a restart-gated change is made, with the button right there.
+        // HushGram's restart bar: off until a change waits on a restart, then one tap target under the list on both pages
+        // (placeHeader puts it there). The tools icon and the waiting line lead, and Restart says what a tap does.
         restartRow = ui.row();
         restartRow.setTag("restart_row");
         restartRow.setGravity(Gravity.CENTER_VERTICAL);
         if (ui.largeText) restartRow.setOrientation(LinearLayout.VERTICAL);
-        restartRow.setPadding(ui.dp(14), ui.dp(10), ui.dp(10), ui.dp(10));
-        restartRow.setBackground(ui.shape(ui.warningSurface, 0, 12));
-        restartWaiting = ui.text("", 14, ui.warning, true);
+        restartRow.setBackground(ui.interactive(ui.card, ui.heading, 12, ui.heading));
+        // After the background, which would otherwise set the padding.
+        restartRow.setPaddingRelative(ui.dp(16), ui.dp(12), ui.dp(20), ui.dp(12));
+        restartRow.setMinimumHeight(ui.dp(56));
+        restartRow.setClickable(true);
+        restartRow.setFocusable(true);
+        restartRow.setOnClickListener(view -> HostScreens.restartInto(this, page));
+        restartRow.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+            @Override public void onInitializeAccessibilityNodeInfo(View host, android.view.accessibility.AccessibilityNodeInfo info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+                info.setClassName(Button.class.getName());
+            }
+        });
+        restartWaiting = ui.text("", 15, ui.text, false);
         restartWaiting.setTag("restart_waiting");
         restartWaiting.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        restartWaiting.setGravity(Gravity.CENTER_VERTICAL);
+        restartWaiting.setCompoundDrawablesRelativeWithIntrinsicBounds(SettingsIcons.icon(this, SettingsIcons.TOOLS, ui.heading), null, null, null);
+        restartWaiting.setCompoundDrawablePadding(ui.dp(14));
         restartRow.addView(restartWaiting, new LinearLayout.LayoutParams(ui.largeText ? -1 : 0, -2, ui.largeText ? 0 : 1));
-        Button restartNow = ui.primaryButton(text.get("restart"));
+        TextView restartNow = ui.text(text.get("restart"), 15, ui.heading, true);
         restartNow.setTag("restart_now");
+        // The bar takes the tap and the screen reader's focus, so the label only names what it does.
         restartNow.setOnClickListener(view -> HostScreens.restartInto(this, page));
+        restartNow.setClickable(false);
+        restartNow.setFocusable(false);
         LinearLayout.LayoutParams restartParams = new LinearLayout.LayoutParams(-2, -2);
-        restartParams.setMarginStart(ui.dp(ui.largeText ? 0 : 12));
+        // Stacked under large text, it starts where the waiting line's words do, past the icon.
+        restartParams.setMarginStart(ui.dp(ui.largeText ? 38 : 12));
         restartParams.topMargin = ui.dp(ui.largeText ? 8 : 0);
         restartRow.addView(restartNow, restartParams);
         restartRow.setVisibility(View.GONE);
-        ui.add(header, restartRow, 8);
         undoButton = ui.button("");
         undoButton.setTag("undo");
         undoButton.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
         undoButton.setOnClickListener(view -> undo());
         undoButton.setVisibility(View.GONE);
-        ui.add(header, undoButton, 8);
+        // On the cards' 18 dp line, like the tabs.
+        LinearLayout.LayoutParams undoSpace = new LinearLayout.LayoutParams(-1, -2);
+        undoSpace.topMargin = ui.dp(8);
+        undoSpace.setMarginStart(ui.dp(2));
+        undoSpace.setMarginEnd(ui.dp(2));
+        header.addView(undoButton, undoSpace);
     }
 
     /** Shows Undo for [what] until it's tapped, its time runs out, something else takes its place or settings close. */
@@ -793,6 +834,48 @@ public final class SettingsActivity extends Activity {
     }
 
     private void buildControls(LinearLayout content) {
+        // HushGram's order under the header: the search, the list switch, then the Pause card and the sections.
+        // ui.field is HushGram's field: 12 dp corners in a 2 dp outline that takes the heading color with focus.
+        search = ui.field(text.get("search"), 100, true);
+        search.setTag("find_control");
+        search.setImeOptions(android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH);
+        // The room a reveal added under the matches goes with the keyboard.
+        search.setOnFocusChangeListener((view, focused) -> { if (!focused) controlsContent.setMinimumHeight(0); });
+        search.setOnEditorActionListener((view, action, event) -> {
+            if (action != android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) return false;
+            ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(search.getWindowToken(), 0);
+            return true;
+        });
+        LinearLayout searchRow = ui.row();
+        searchRow.addView(search, new LinearLayout.LayoutParams(0, -2, 1));
+        clearQuery = ui.button(text.get("search_clear"));
+        clearQuery.setTag("clear_query");
+        clearQuery.setContentDescription(text.get("search_clear_description"));
+        clearQuery.setOnClickListener(view -> { search.setText(""); search.requestFocus(); });
+        LinearLayout.LayoutParams clearQueryParams = new LinearLayout.LayoutParams(-2, -2);
+        clearQueryParams.setMarginStart(ui.dp(8));
+        searchRow.addView(clearQuery, clearQueryParams);
+        ui.add(content, searchRow, 0);
+        searchStatus = ui.text("", 12, ui.muted, false);
+        searchStatus.setTag("search_status");
+        searchStatus.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        ui.add(content, searchStatus, 6);
+        drawerSearchLink = ui.button(text.get("drawer_search"));
+        drawerSearchLink.setTag("find_drawer_icon");
+        drawerSearchLink.setOnClickListener(view -> {
+            // The drawer switches live in Quick access, so the link opens it on the way.
+            if (openSections.add("quick_access")) {
+                saveSections();
+                bindSection("quick_access");
+            }
+            showPage("app");
+        });
+        ui.add(content, drawerSearchLink, 8);
+        // HushGram's list switch: every section open on one page, or each folded under its heading. It stays through a
+        // search, so nothing above the field moves while a word is typed.
+        viewToggle = linkPanel("view_toggle", "show_as_list", SettingsIcons.MENU, false, this::flipSectionView);
+        viewToggle.setMinimumHeight(ui.dp(48));
+        addOverview(content, viewToggle, 10, false);
         // One small card: how many controls are on, and Pause.
         LinearLayout setup = ui.panel();
         // 12 dp in from the card, so its text starts on the rows' 30 dp icon line.
@@ -817,43 +900,7 @@ public final class SettingsActivity extends Activity {
         ui.add(setup, safeModeAction, 8);
         ui.rule(setup, 8);
         ui.add(setup, controlRow("paused", text.format("paused"), "", false), 0);
-        ui.add(content, setup, 0);
-        search = ui.field(text.get("search"), 100, true);
-        search.setTag("find_control");
-        search.setBackground(ui.interactive(ui.surface, ui.outline, 8));
-        search.setImeOptions(android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH);
-        // The room a reveal added under the matches goes with the keyboard.
-        search.setOnFocusChangeListener((view, focused) -> { if (!focused) controlsContent.setMinimumHeight(0); });
-        search.setOnEditorActionListener((view, action, event) -> {
-            if (action != android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) return false;
-            ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(search.getWindowToken(), 0);
-            return true;
-        });
-        LinearLayout searchRow = ui.row();
-        searchRow.addView(search, new LinearLayout.LayoutParams(0, -2, 1));
-        clearQuery = ui.button(text.get("search_clear"));
-        clearQuery.setTag("clear_query");
-        clearQuery.setContentDescription(text.get("search_clear_description"));
-        clearQuery.setOnClickListener(view -> { search.setText(""); search.requestFocus(); });
-        LinearLayout.LayoutParams clearQueryParams = new LinearLayout.LayoutParams(-2, -2);
-        clearQueryParams.setMarginStart(ui.dp(8));
-        searchRow.addView(clearQuery, clearQueryParams);
-        ui.add(content, searchRow, 10);
-        searchStatus = ui.text("", 12, ui.muted, false);
-        searchStatus.setTag("search_status");
-        searchStatus.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-        ui.add(content, searchStatus, 6);
-        drawerSearchLink = ui.button(text.get("drawer_search"));
-        drawerSearchLink.setTag("find_drawer_icon");
-        drawerSearchLink.setOnClickListener(view -> {
-            // The drawer switches live in Quick access, so the link opens it on the way.
-            if (openSections.add("quick_access")) {
-                saveSections();
-                bindSection("quick_access");
-            }
-            showPage("app");
-        });
-        ui.add(content, drawerSearchLink, 8);
+        ui.add(content, setup, 10);
         LinearLayout group = null;
         LinearLayout groupBody = null;
         String last = "";
@@ -909,8 +956,9 @@ public final class SettingsActivity extends Activity {
             installedControls.add(spec);
         }
         if (installedControls.isEmpty()) {
-            // Nothing to search; the status line explains how to add controls.
+            // Nothing to search or fold; the status line explains how to add controls.
             search.setVisibility(View.GONE);
+            viewToggle.setVisibility(View.GONE);
         }
         emptyState = ui.panel();
         emptyState.setTag("empty_state");
@@ -1679,7 +1727,53 @@ public final class SettingsActivity extends Activity {
             saveSections();
         }
         bindSection(id);
+        updateViewToggle();
         if (parts != null) parts[1].sendAccessibilityEvent(android.view.accessibility.AccessibilityEvent.TYPE_VIEW_SELECTED);
+    }
+
+    /** Whether every Controls section on show is open, which is the list view. With none on show, the saved choice says. */
+    private boolean listView() {
+        boolean any = false;
+        for (LinearLayout group : groups) {
+            if (group.getVisibility() != View.VISIBLE) continue;
+            any = true;
+            if (!sectionShown((String) group.getTag())) return false;
+        }
+        if (any) return true;
+        for (LinearLayout group : groups) if (!openSections.contains((String) group.getTag())) return false;
+        return !groups.isEmpty();
+    }
+
+    /** The list switch's tap: every Controls section opens, or they all fold. During a search only the search's view changes. */
+    private void flipSectionView() {
+        boolean list = !listView();
+        for (LinearLayout group : groups) {
+            String id = (String) group.getTag();
+            if (searching) {
+                if (list) searchClosed.remove(id);
+                else searchClosed.add(id);
+            } else if (list) openSections.add(id);
+            else openSections.remove(id);
+        }
+        if (!searching) saveSections();
+        for (LinearLayout group : groups) bindSection((String) group.getTag());
+        updateViewToggle();
+    }
+
+    /** Words the list switch for what a tap shows: the long list, or the sections under their headings. */
+    private void updateViewToggle() {
+        if (viewToggle == null) return;
+        boolean list = listView();
+        String label = text.get(list ? "show_by_category" : "show_as_list");
+        TextView title = (TextView) viewToggle.getChildAt(0);
+        if (label.contentEquals(title.getText())) return;
+        title.setText(label);
+        viewToggle.setContentDescription(label);
+        // Stacked cards for the sections, lines for the long list, after HushGram.
+        android.graphics.drawable.Drawable icon = SettingsIcons.icon(this, list ? SettingsIcons.FEED : SettingsIcons.MENU, ui.heading);
+        // A drawable swapped into a layer gets no state of its own, and with none its tint reads as disabled.
+        icon.setState(viewToggle.getDrawableState());
+        ((android.graphics.drawable.LayerDrawable) viewToggle.getBackground()).setDrawable(1, icon);
     }
 
     private void bindSection(String id) {
@@ -1783,6 +1877,7 @@ public final class SettingsActivity extends Activity {
         searching = !terms.isEmpty();
         searchClosed.clear();
         for (String id : sections.keySet()) bindSection(id);
+        updateViewToggle();
         searchStatus.setText(controlRows.isEmpty() ? text.get("none_installed") :
             visible == 0 ? text.get("no_matches") : text.get(controlRows.size() == 1 ? "results_one" : "results_many", visible, controlRows.size()));
         // With nothing installed, the status line already explains what to do.

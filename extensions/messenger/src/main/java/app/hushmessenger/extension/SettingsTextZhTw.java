@@ -23,6 +23,8 @@ final class SettingsTextZhTw {
         {"open_messenger", "開啟 Messenger"},
         {"back", "返回"},
         {"search_settings", "搜尋設定"},
+        {"show_as_list", "以清單顯示所有設定"},
+        {"show_by_category", "依分類顯示設定"},
         {"header_version", "版本 %1$s，適用於 Messenger %2$s"},
         {"header_version_alone", "版本 %s"},
         {"reopen", "部分變更需透過「應用程式 > 重新啟動 Messenger」才會生效。"},

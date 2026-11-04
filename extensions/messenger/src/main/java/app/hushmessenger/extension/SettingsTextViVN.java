@@ -23,6 +23,8 @@ final class SettingsTextViVN {
         {"open_messenger", "Mở Messenger"},
         {"back", "Quay lại"},
         {"search_settings", "Tìm kiếm cài đặt"},
+        {"show_as_list", "Hiện mọi cài đặt dạng danh sách"},
+        {"show_by_category", "Hiện cài đặt theo danh mục"},
         {"header_version", "Phiên bản %1$s cho Messenger %2$s"},
         {"header_version_alone", "Phiên bản %s"},
         {"reopen", "Một số thay đổi yêu cầu khởi động lại Messenger thông qua 'Ứng dụng > Khởi động lại Messenger' để có hiệu lực."},
