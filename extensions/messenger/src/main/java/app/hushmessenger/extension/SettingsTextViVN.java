@@ -97,6 +97,7 @@ final class SettingsTextViVN {
         {"local_search_nothing", "Điện thoại này chưa lưu nội dung nào của đoạn chat này. Hãy cuộn lên trong đoạn chat để tải các tin nhắn cũ hơn rồi tìm lại."},
         {"local_search_failed", "Không đọc được các tin nhắn đã lưu. Hãy thử lại sau giây lát."},
         {"local_search_open_failed", "Không mở được tin nhắn đó"},
+        {"local_search_empty", "Hãy nhập một từ cần tìm trước."},
         {"call_recording_unsupported", "Tính năng này cần Android 10 trở lên. Lựa chọn của bạn đã được lưu."},
         {"call_recording_start", "Ghi âm"},
         {"call_recording_stop_pill", "Đang ghi âm, chạm để dừng"},

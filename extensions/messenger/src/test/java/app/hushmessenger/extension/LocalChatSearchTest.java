@@ -220,6 +220,78 @@ public class LocalChatSearchTest {
         assertFalse(activity.isFinishing());
     }
 
+    private static Intent screenFor(String words) {
+        Intent intent = new Intent(RuntimeEnvironment.getApplication(), LocalSearchActivity.class)
+            .putExtra(LocalSearchActivity.EXTRA_CHAT_KEY, "ONE_TO_ONE:" + CHAT + ":42");
+        return words == null ? intent : intent.putExtra(LocalSearchActivity.EXTRA_WORDS, words);
+    }
+
+    private static String status(Activity activity) {
+        return ((android.widget.TextView) activity.getWindow().getDecorView().findViewWithTag("local_search_status")).getText().toString();
+    }
+
+    @Test public void searchWithNothingTypedSaysWhatToDo() {
+        Settings.preferences.edit().putBoolean(LocalChatSearch.KEY, true).commit();
+        Activity activity = Robolectric.buildActivity(LocalSearchActivity.class, screenFor(null)).setup().get();
+        SettingsText text = new SettingsText(activity);
+        assertEquals("opened with no words, the help stays up", text.get("local_search_help"), status(activity));
+        activity.getWindow().getDecorView().findViewWithTag("local_search_run").performClick();
+        assertEquals(text.get("local_search_empty"), status(activity));
+        assertTrue(activity.getWindow().getDecorView().findViewWithTag("local_search_field").isFocused());
+    }
+
+    // Native graphics, so the optional screenshots draw what's on screen and not a blank frame.
+    @Test @org.robolectric.annotation.GraphicsMode(org.robolectric.annotation.GraphicsMode.Mode.NATIVE)
+    public void hitsAreCardsWithRoomBetweenThemAndALongOneEndsInAnEllipsis() throws Exception {
+        Settings.preferences.edit().putBoolean(LocalChatSearch.KEY, true).commit();
+        File databases = RuntimeEnvironment.getApplication().getDatabasePath("x").getParentFile();
+        databases.mkdirs();
+        String longer = "Dinner on Friday? " + "We could try the place by the river again. ".repeat(12);
+        try (SQLiteDatabase saved = SQLiteDatabase.openOrCreateDatabase(new File(databases, "msys_database_42"), null)) {
+            saved.execSQL("CREATE TABLE messages(thread_key LONG_INT, timestamp_ms LONG_INT, message_id TEXT, text TEXT,"
+                + " sender_id LONG_INT, is_admin_message BOOL DEFAULT 0, is_unsent BOOL DEFAULT 0)");
+            saved.execSQL("CREATE TABLE contacts(id LONG_INT, name TEXT)");
+            saved.execSQL("INSERT INTO contacts VALUES (7, 'Ana Souza'), (8, 'Sam Lee')");
+            saved.execSQL("INSERT INTO messages(thread_key, timestamp_ms, message_id, text, sender_id) VALUES (?, 1767225600000, 'm1', ?, 7)",
+                new Object[] {CHAT, longer});
+            saved.execSQL("INSERT INTO messages(thread_key, timestamp_ms, message_id, text, sender_id) VALUES (?, 1767139200000, 'm2', ?, 8)",
+                new Object[] {CHAT, "Sure, dinner sounds good. I'll book a table for four."});
+        }
+        for (boolean light : new boolean[] {false, true}) {
+            Settings.preferences.edit().putBoolean("light", light).commit();
+            Activity activity = Robolectric.buildActivity(LocalSearchActivity.class, screenFor("dinner")).setup().get();
+            View root = activity.getWindow().getDecorView();
+            android.widget.ListView list = root.findViewWithTag("local_search_hits");
+            for (long end = System.currentTimeMillis() + 10_000; list.getAdapter().getCount() < 2 && System.currentTimeMillis() < end; ) {
+                Thread.sleep(20);
+                org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle();
+            }
+            assertEquals(2, list.getAdapter().getCount());
+            SettingsUi ui = new SettingsUi(activity, light);
+            assertEquals(ui.dp(8), list.getDividerHeight());
+            root.measure(View.MeasureSpec.makeMeasureSpec(390, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(844, View.MeasureSpec.EXACTLY));
+            root.layout(0, 0, 390, 844);
+            ViewGroup card = (ViewGroup) list.getChildAt(0);
+            assertEquals("local_search_hit", card.getTag());
+            assertTrue("a hit shows its press", card.getBackground() instanceof android.graphics.drawable.RippleDrawable);
+            String shown = ((android.widget.TextView) card.getChildAt(1)).getText().toString();
+            assertTrue(shown.endsWith("…"));
+            assertFalse(shown.endsWith("..."));
+            assertTrue(((android.widget.TextView) card.getChildAt(0)).getText().toString().startsWith("Ana Souza, "));
+            String screenshots = System.getenv("HUSH_SCREENSHOTS");
+            if (screenshots != null && !screenshots.isBlank()) {
+                Files.createDirectories(new File(screenshots).toPath());
+                android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(390, 844, android.graphics.Bitmap.Config.ARGB_8888);
+                root.draw(new android.graphics.Canvas(bitmap));
+                try (java.io.OutputStream stream = Files.newOutputStream(new File(screenshots,
+                        "local-search-" + (light ? "light" : "dark") + "-sdk" + android.os.Build.VERSION.SDK_INT + ".png").toPath())) {
+                    assertTrue(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream));
+                }
+                bitmap.recycle();
+            }
+        }
+    }
+
     @Test public void theSettingsRowIsListedAndOffByDefault() {
         boolean listed = false;
         for (String[] control : SettingsActivity.CONTROLS) listed |= LocalChatSearch.KEY.equals(control[0]);

@@ -97,6 +97,7 @@ final class SettingsTextZhTw {
         {"local_search_nothing", "這支手機尚未儲存此聊天室的文字。請在聊天室中向上捲動以載入較舊的訊息，然後再搜尋一次。"},
         {"local_search_failed", "無法讀取已儲存的訊息，請稍後再試。"},
         {"local_search_open_failed", "無法開啟該訊息"},
+        {"local_search_empty", "請先輸入要尋找的字詞。"},
         {"call_recording_unsupported", "此功能需要 Android 10 或更新版本。你的選擇已儲存。"},
         {"call_recording_start", "錄音"},
         {"call_recording_stop_pill", "錄音中，輕觸即可停止"},

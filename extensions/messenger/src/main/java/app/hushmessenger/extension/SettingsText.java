@@ -183,6 +183,7 @@ final class SettingsText {
         ENGLISH.put("local_search_nothing", "This phone has no saved text for this chat. Scroll up in the chat to load older messages, then search again.");
         ENGLISH.put("local_search_failed", "Couldn't read the saved messages. Try again in a moment.");
         ENGLISH.put("local_search_open_failed", "Couldn't open that message");
+        ENGLISH.put("local_search_empty", "Type a word to look for first.");
         ENGLISH.put("call_recording_unsupported", "This needs Android 10 or newer. Your choice is saved.");
         ENGLISH.put("call_recording_start", "Record");
         ENGLISH.put("call_recording_stop_pill", "Recording, tap to stop");
