@@ -29,13 +29,15 @@ final class SettingsDialog extends LinearLayout {
         dialog = new Dialog(owner);
         setTag("settings_dialog");
         setOrientation(VERTICAL);
-        setBackgroundColor(ui.background);
+        setBackgroundColor(ui.dialog);
         setPadding(ui.dp(20), ui.dp(20), ui.dp(20), ui.dp(16));
         setLayoutDirection(text.layoutDirection());
         if (text.layoutDirection() == LAYOUT_DIRECTION_RTL) setTextDirection(TEXT_DIRECTION_RTL);
         setAccessibilityPaneTitle(title);
         header = ui.column();
-        TextView heading = ui.title(title, 24);
+        // HushGram's dialog title: 20 sp medium in the gradient, wrapping onto as many lines as it needs.
+        TextView heading = ui.title(title, 20);
+        heading.setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL));
         heading.setTag("dialog_title");
         heading.setAccessibilityHeading(true);
         header.addView(heading);
@@ -50,7 +52,7 @@ final class SettingsDialog extends LinearLayout {
         actions.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
         actions.setBackground(new android.graphics.drawable.LayerDrawable(new android.graphics.drawable.Drawable[] {
             ui.shape(ui.line, 0, 0),
-            new android.graphics.drawable.InsetDrawable(ui.shape(ui.background, 0, 0), 0, ui.dp(1), 0, 0)
+            new android.graphics.drawable.InsetDrawable(ui.shape(ui.dialog, 0, 0), 0, ui.dp(1), 0, 0)
         }));
         actions.setPadding(0, ui.dp(16), 0, 0);
         if (ui.largeText) actions.setOrientation(VERTICAL);
@@ -87,10 +89,10 @@ final class SettingsDialog extends LinearLayout {
         });
         dialog.setContentView(this);
         if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(ui.background));
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(ui.dialog));
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-            dialog.getWindow().setStatusBarColor(ui.background);
-            dialog.getWindow().setNavigationBarColor(ui.background);
+            dialog.getWindow().setStatusBarColor(ui.dialog);
+            dialog.getWindow().setNavigationBarColor(ui.dialog);
             dialog.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
                 (ui.light ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR : 0));
@@ -98,11 +100,8 @@ final class SettingsDialog extends LinearLayout {
         }
     }
 
+    /** Adds button as it comes: ui.button is HushGram's secondary action and ui.primaryButton its primary one. */
     void action(Button button) {
-        if (button.getTextColors().getDefaultColor() == ui.accent) {
-            button.setTextColor(ui.muted);
-            button.setBackground(ui.interactive(ui.surface, ui.outline, 12));
-        }
         LayoutParams params = new LayoutParams(ui.largeText ? -1 : 0, -2, ui.largeText ? 0 : 1);
         if (actions.getChildCount() > 0) {
             if (ui.largeText) params.topMargin = ui.dp(8);
@@ -113,7 +112,11 @@ final class SettingsDialog extends LinearLayout {
 
     void show() {
         dialog.show();
-        if (dialog.getWindow() != null) dialog.getWindow().setLayout(-1, -1);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(-1, -1);
+            // show() can reset the window's mode, and a panning window leaves Save behind the keyboard.
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
         requestApplyInsets();
     }
 

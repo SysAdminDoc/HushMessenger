@@ -163,6 +163,26 @@ final class SettingsUi {
     }
 
     /**
+     * A choice's background, after HushGram's choice cards: the picked one wears the accent at 13 percent,
+     * an unpicked one stays clear until pressed, and focus or hover rings it in the heading color.
+     */
+    Drawable choice(int radius) {
+        ColorStateList picked = new ColorStateList(new int[][] {{android.R.attr.state_checked}, {}},
+            new int[] {(accent & 0x00ffffff) | 0x22000000, 0});
+        StateListDrawable states = new StateListDrawable();
+        for (int state : new int[] {android.R.attr.state_focused, android.R.attr.state_hovered, android.R.attr.state_selected, android.R.attr.state_activated}) {
+            GradientDrawable ring = shape(0, 0, radius);
+            ring.setColor(picked);
+            ring.setStroke(dp(state == android.R.attr.state_focused ? 2 : 1), heading);
+            states.addState(new int[] {state}, ring);
+        }
+        GradientDrawable plain = shape(0, 0, radius);
+        plain.setColor(picked);
+        states.addState(new int[] {}, plain);
+        return new RippleDrawable(ColorStateList.valueOf(ripple), states, shape(0xffffffff, 0, radius));
+    }
+
+    /**
      * A row's background with its leading icon, 24 dp in the heading color, start dp in from the row's
      * start edge, and a chevron end dp in from its end edge when a tap opens something. Both follow
      * the row's layout direction and dim with it.

@@ -959,7 +959,7 @@ public final class SettingsActivity extends Activity {
         choice.setPadding(ui.dp(8), ui.dp(8), ui.dp(8), ui.dp(8));
         choice.setButtonTintList(new android.content.res.ColorStateList(
             new int[][] {{-android.R.attr.state_enabled}, {android.R.attr.state_checked}, {}}, new int[] {ui.outline, ui.accent, ui.muted}));
-        choice.setBackground(ui.interactive(0, 0, 8));
+        choice.setBackground(ui.choice(8));
         return choice;
     }
 
