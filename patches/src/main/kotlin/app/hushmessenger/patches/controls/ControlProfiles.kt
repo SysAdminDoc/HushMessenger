@@ -328,6 +328,7 @@ internal val PROFILE_347215341 = ControlProfile(
         "ai_sticker_cell" to setOf("LX/O19;->render(LX/2Cz;)LX/1H9;"),
         "ai_sticker_grid" to setOf("LX/E4j;->render(LX/2Cz;)LX/1H9;"),
         "ai_stickers" to setOf("LX/SGt;->A03(LX/SGt;)Z", "LX/bac;->A07(LX/bac;)Z"),
+        "ai_summary" to setOf("LX/5m8;->A04(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;JZZ)Z"),
         "ai_tab" to setOf("LX/1rI;->A03(LX/1rI;)Z"),
         "ai_toolbar" to setOf("LX/2Nt;->A04()Z"),
         "allow_screenshot" to setOf(
@@ -443,6 +444,8 @@ internal val PROFILE_347215341 = ControlProfile(
         "inbox_search_bar" to setOf("LX/4EC;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "instants_button" to setOf("LX/1zJ;->A0F(LX/1zJ;)V", "LX/TGo;->A0V(LX/TGo;)V"),
         "keep_unsent" to setOf("LX/bR4;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
+        "landscape_lock" to setOf("LX/090;->A0K()Z"),
+        "landscape_media" to setOf("LX/7bG;->A00(LX/7bG;I)V"),
         "local_chat_search" to setOf(
             "LX/KyT;->F3K(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
             "LX/KyT;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
