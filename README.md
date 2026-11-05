@@ -188,23 +188,30 @@ With **Hide read receipts** on, a chat you open stays unread on your phone, beca
 
 ## Supported Messenger builds
 
+This table is for the next release, which moves to Messenger 586.0.0.55.92. v0.28.0, the current one, still takes the 585.0.0.53.94 builds listed in step 1 under Install.
+
 | Field | Value |
 | --- | --- |
 | Package | `com.facebook.orca` |
 | Version | `586.0.0.55.92` |
-| Version code, arm64-v8a | `347215348` |
+| Version codes, arm64-v8a | `347215257`, `347215330`, `347215343`, `347215344`, `347215348` |
 | Version code, armeabi-v7a | `347215341` |
-| Screen density | 560-640 dpi on APKMirror |
+| Icons for every screen density | `347215257`, `347215343` |
+| Icons for one screen density | 120-160 dpi `347215344`. 360-480 dpi `347215330` and the armeabi-v7a build. 560-640 dpi `347215348` |
 | Minimum Android version | Android 9 (API 28) |
 | APKMirror download | [586.0.0.55.92](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-586-0-0-55-92-release/) |
 
-HushMessenger takes two builds of 586.0.0.55.92, 347215348 for arm64 phones and 347215341 for 32-bit (armeabi-v7a) ones. The patch checks the version code before it changes anything and stops on a build that isn't listed. Older Messenger versions aren't supported by current bundles. v0.28.0 still takes 585.0.0.53.94 (armv7 too), v0.27.0 takes 584.1.0.61.98, v0.26.0 takes 584.0.0.49.98, v0.25.0 takes 583.0.0.29.95 and v0.23.0 takes 582.0.0.61.92.
+APKMirror lists three more arm64 builds of 586 (`347215273`, `347215275` and `347215277`). Meta compiled those a little differently, and they aren't supported yet, so pick one from the table. The patch checks the version code before it changes anything and stops on a build that isn't listed. Older Messenger versions aren't supported by current bundles. v0.28.0 takes 585.0.0.53.94 (armv7 too), v0.27.0 takes 584.1.0.61.98, v0.26.0 takes 584.0.0.49.98, v0.25.0 takes 583.0.0.29.95 and v0.23.0 takes 582.0.0.61.92.
 
 SHA-256 of the stock APKs the checks ran against:
 
 ```text
-347215348  ee4bee15fe07eecc933aacfb7ec8d8d3f8ace8f4d7ccf517c6bd1ff0b63aae7e
+347215257  d362ca4c12b3df2255cadfe16bad6e6b8e6f7dce28f678ef1c148c50343938a2
+347215330  503251702dc69d100feba9d56cfa28e96ec1c9ea974cf385bf88d6ee2ed037c1
 347215341  c2a2b65edf52bede0de5b1d5603f332813a7c404784ac8913801a29670190691
+347215343  d6335e5da25effadd6c8f03220750e0990bc17bcd2670275883bfd8dd3605edc
+347215344  2049f4d122994249ddb69d9dca718bd1aafebc7b0c3ccd24866f0a3e33f15e23
+347215348  ee4bee15fe07eecc933aacfb7ec8d8d3f8ace8f4d7ccf517c6bd1ff0b63aae7e
 ```
 
 On Windows, compare your file with `Get-FileHash -Algorithm SHA256 .\messenger.apk`. Meta sometimes publishes different APKs under one version name.

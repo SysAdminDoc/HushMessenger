@@ -27,7 +27,7 @@ private const val NOTIFY_SETTING = "Lcom/facebook/messaging/model/threads/Notifi
 private const val FOLDER_READ = "iget-object v5, v2, $THREAD_SUMMARY->A10:$FOLDER"
 
 /** The folder enum's type in each stock build. */
-private val NATIVE_FOLDERS = mapOf("347215341" to "LX/20T;", "347215348" to FOLDER)
+private val NATIVE_FOLDERS = mapOf(PROFILE_347215341 to "LX/20T;", PROFILE_347215348 to FOLDER)
 
 /**
  * The thread check cut down from 586: Other, Spam and Restricted end it, a muted chat ends it, and only Inbox gets a
@@ -177,11 +177,11 @@ class RestrictedNotifyTest {
             val hooks = findRestrictedNotify(classes)
             assertEquals(activeProfile.hooks.getValue(RESTRICTED_NOTIFY), hooks.map { it.hookId() }.toSet(), code)
             validateControls(mapOf(RESTRICTED_NOTIFY to hooks), setOf(RESTRICTED_NOTIFY))
-            val folderClass = classes.single { it.type == NATIVE_FOLDERS.getValue(code) }.enumConstantFields()
+            val folderClass = classes.single { it.type == NATIVE_FOLDERS.getValue(activeProfile) }.enumConstantFields()
             val method = MutableMethod(hooks.single())
             val before = method.code()
             val site = method.folderRead()!!
-            assertEquals(NATIVE_FOLDERS.getValue(code), site.type, code)
+            assertEquals(NATIVE_FOLDERS.getValue(activeProfile), site.type, code)
             assertEquals(5, site.register, code)
             assertTrue(folderClass.getValue(RESTRICTED_FOLDER) in site.compared && folderClass.getValue(INBOX_FOLDER) in site.compared, code)
             method.injectRestrictedNotify()

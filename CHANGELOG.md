@@ -29,9 +29,9 @@
 
 ### Changed and fixed
 
-- HushMessenger now targets Messenger 586.0.0.55.92, build 347215348 for arm64 phones. 585.0.0.53.94 is no longer supported, so update Messenger before you patch. The build was checked patch by patch, and Morphe Desktop applied and rebuilt it.
+- HushMessenger now targets Messenger 586.0.0.55.92. 585.0.0.53.94 is no longer supported, so update Messenger before you patch. Arm64 phones can use builds 347215257, 347215330, 347215343, 347215344 or 347215348, and 347215257 and 347215343 are the nodpi ones with icons for every screen. Each was checked patch by patch, and Morphe Desktop applied and rebuilt it. APKMirror lists three more arm64 builds of 586 (347215273, 347215275 and 347215277) that aren't supported yet, and the patch stops on those before it changes anything. Refs #137, #145.
 - Messenger 586's 32-bit build (armeabi-v7a, 347215341) is supported too, so 32-bit phones can patch 586. It was checked patch by patch the same way, and Morphe Desktop applied and rebuilt it. Refs #106.
-- Morphe Manager now knows the exact Messenger builds the patches take, not only their version name. It looks for build 347215348 on arm64 phones and 347215341 on 32-bit ones when it downloads Messenger for you, and it turns down a saved APK that has the right version name but is a different build, before patching starts. The patches are built with Morphe's patcher 2.2.0 now, so they need Morphe Manager 2.4.0 or newer, or Morphe Desktop 2.0.0 or newer. Refs #137, #138.
+- The patches are built with Morphe's patcher 2.2.0 now, so they need Morphe Manager 2.4.0 or newer, or Morphe Desktop 2.0.0 or newer. Refs #137, #138.
 - `Hide Meta AI` also hides Meta AI's offer to summarize the messages you haven't read. That's the "Summarize N unread messages" pill over a chat and the Summarize link on the unread divider. They're never built, so they don't leave a gap. Refs #142.
 
 - Chat heads show up for messages that arrive while Messenger is still running in the background, once you allow it unrestricted battery use. On Optimized battery Android blocks the chat head in that case, so one only appeared if Messenger had been closed. `Allow chat bubbles` now has an `Allow unrestricted battery use` button under its modes that asks Android for it, and its help text says why.

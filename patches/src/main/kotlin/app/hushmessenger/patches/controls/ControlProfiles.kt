@@ -581,7 +581,11 @@ internal val BASE_PROFILE = PROFILE_347215348
 
 /** Each supported build's profile, by version code. Builds that share a mapping share a profile. */
 internal val controlProfiles: Map<Int, ControlProfile> = mapOf(
+    347215257 to PROFILE_347215348,
+    347215330 to PROFILE_347215348,
     347215341 to PROFILE_347215341,
+    347215343 to PROFILE_347215348,
+    347215344 to PROFILE_347215348,
     347215348 to PROFILE_347215348,
 )
 

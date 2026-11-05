@@ -113,7 +113,11 @@ internal val expectedDexSites = expectedDexSites347215348
 
 /** Each supported build's permission loads, by version code, as scripts/profiles records them. */
 internal val expectedDexSitesByBuild: Map<Int, Map<String, String>> = mapOf(
+    347215257 to expectedDexSites347215348,
+    347215330 to expectedDexSites347215348,
     347215341 to expectedDexSites347215341,
+    347215343 to expectedDexSites347215348,
+    347215344 to expectedDexSites347215348,
     347215348 to expectedDexSites347215348,
 )
 

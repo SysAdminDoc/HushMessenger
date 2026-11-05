@@ -6,7 +6,9 @@ import app.morphe.patcher.patch.Compatibility
 import app.morphe.patcher.patch.SupportedAbi
 
 /**
- * The stock Messenger builds the patches were checked against. 586 has two, one for arm64 and one for armv7.
+ * The stock Messenger builds the patches were checked against. APKMirror lists eight arm64 builds of 586 (one per
+ * screen density, nodpi among them) and one armv7. Three of the arm64 ones (347215273, 347215275, 347215277) were
+ * optimized differently, so strings and calls several finders anchor on sit in other methods, and they aren't here yet.
  *
  * A version name alone is insufficient: Meta publishes several DEX variants with that name. Each
  * build is recorded in scripts/profiles by CompatReport; the APKs themselves are local research
@@ -18,13 +20,17 @@ internal object MessengerTarget {
 
     /** Each supported version name and the version codes of its checked builds. */
     val VERSIONS: Map<String, List<Int>> = mapOf(
-        "586.0.0.55.92" to listOf(347215341, 347215348),
+        "586.0.0.55.92" to listOf(347215257, 347215330, 347215341, 347215343, 347215344, 347215348),
     )
     val VERSION_CODES = VERSIONS.values.flatten()
 
     /** The ABI each checked build is for, as its record's APK ships native code for. */
     val ABIS: Map<Int, SupportedAbi> = mapOf(
+        347215257 to SupportedAbi.ARM64_V8A,
+        347215330 to SupportedAbi.ARM64_V8A,
         347215341 to SupportedAbi.ARMEABI_V7A,
+        347215343 to SupportedAbi.ARM64_V8A,
+        347215344 to SupportedAbi.ARM64_V8A,
         347215348 to SupportedAbi.ARM64_V8A,
     )
 
@@ -32,7 +38,8 @@ internal object MessengerTarget {
      * The build codes Manager is told for one version name: one per ABI, which it hands its APK download helper and
      * checks a picked APK against (#138: without them it linked an unsupported build of the same version). Null when
      * a build's ABI isn't recorded or an ABI has more than one build, since the map holds one code per ABI and a
-     * missing ABI means any build.
+     * missing ABI means any build. 586's several arm64 builds land here (#145), so Manager takes any 586 APK and the
+     * patch-time check refuses one that isn't recorded.
      */
     fun exactCodes(codes: List<Int>, abis: Map<Int, SupportedAbi> = ABIS): Map<SupportedAbi, Int>? {
         val byAbi = codes.groupBy { abis[it] ?: return null }

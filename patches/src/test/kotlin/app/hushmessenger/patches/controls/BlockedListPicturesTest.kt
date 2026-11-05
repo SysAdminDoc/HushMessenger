@@ -28,7 +28,7 @@ private const val ROW = "LX/91d;"
 private const val PICTURE = "LX/KNi;"
 
 /** The row's picture type in each stock build, the same one-method interface under each build's own name. */
-private val NATIVE_PICTURES = mapOf("347215341" to "LX/KUL;", "347215348" to PICTURE)
+private val NATIVE_PICTURES = mapOf(PROFILE_347215341 to "LX/KUL;", PROFILE_347215348 to PICTURE)
 private const val TILE = "LX/91c;"
 private const val LOOKUP = "LX/NNP;->A0j(LX/1xr;Ljava/lang/String;)$USER_MODEL"
 private const val TILE_PARAMS = "LX/1xl;->A0f($USER_MODEL)LX/VuA;"
@@ -152,7 +152,7 @@ class BlockedListPicturesTest {
             val method = MutableMethod(hooks.single())
             val before = method.code()
             val site = method.blockedPicture()!!
-            assertEquals(NATIVE_PICTURES.getValue(code), site.type, code)
+            assertEquals(NATIVE_PICTURES.getValue(activeProfile), site.type, code)
             method.injectBlockedListPictures()
             val after = method.code()
             assertEquals("$SETTINGS->blockedListPicture(Ljava/lang/Object;)Ljava/lang/Object;",

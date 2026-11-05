@@ -24,9 +24,9 @@ class SourceIndexTest {
             MessengerTarget.VERSIONS.entries.single { it.key == target.version }.value
                 .forEach { assertContains(description, it.toString()) }
         }
-        // #138: Manager hands these to its APK download helper and refuses a picked APK whose code differs.
-        assertEquals(mapOf(SupportedAbi.ARM64_V8A to 347215348, SupportedAbi.ARMEABI_V7A to 347215341),
-            targets.single { it.version == "586.0.0.55.92" }.versionCodes)
+        // #145: 586 has several arm64 builds and the map holds one code per ABI, so Manager is told none and the
+        // patch-time check is what refuses a build that isn't recorded. Declaring one would turn the others away.
+        assertNull(targets.single { it.version == "586.0.0.55.92" }.versionCodes)
     }
 
     @Test
