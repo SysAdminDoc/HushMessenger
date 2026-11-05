@@ -732,6 +732,7 @@ public final class Settings {
             return stock;
         }
     }
+    static final String HIDDEN_CHATS = "hidden_chats";
     /** Asked each time a chat's swipe up for disappearing messages could start; true keeps the gesture from starting. */
     public static boolean blockDisappearingSwipe() { return enabled("disappearing_swipe"); }
     /** Asked each time a chat looks for a photo or video taken just before it opened; true shows no card for it. */

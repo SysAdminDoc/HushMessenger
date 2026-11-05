@@ -129,7 +129,7 @@ public final class SettingsActivity extends Activity {
     /** Switches whose effect hasn't been confirmed on a phone. Each shows the Experimental badge. */
     /** The switches that take a way into these settings away, each with a reason when it can't turn on. */
     static final Set<String> WAYS_IN = Set.of("hide_menu_row", Settings.HIDE_ICON_SHORTCUTS, Settings.HIDE_LOGO_PRESS);
-    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "quiet_calls", "save_voice", "gallery_to_chat", "call_recording", "inbox_search_bar", "landscape");
+    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "quiet_calls", "save_voice", "gallery_to_chat", "call_recording", "inbox_search_bar", "landscape");
     static final String[][] CONTROLS = {
         {"people", "Hide People You May Know", "Hides suggested people in chats, search and stories, and on the People and Notifications tabs. Good if you only want people you know.", "inbox"},
         {"friend_requests", "Hide friend request cards", "Hides friend request cards in your chat list. It doesn't accept or decline anyone.", "inbox"},
@@ -143,6 +143,7 @@ public final class SettingsActivity extends Activity {
         {"chat_preview", "Preview chats on long press", "Press and hold a chat to peek at it in Messenger's own preview, with the chat's menu under it, without opening the chat.", "inbox"},
         {"mark_read_action", "Hide Mark as read", "Hides Mark as read in the menu you get when you press and hold a chat in your chat list, so you can't mark a chat read by accident. Mark as unread stays.", "inbox"},
         {"pinned_chats", "Pin more chats", "Lets you pin chats past Messenger's limit and puts Pin back on chats that don't offer it. Pins past the limit stay on this phone, so they won't show on your other devices.", "inbox"},
+        {"hidden_chats", "Hide chosen chats", "Adds Hide from chat list to the menu you get when you press and hold a chat. A hidden chat stays off your chat list when new messages come in, and search still finds it. Hiding stays on this phone, and you can unhide chats in HushMessenger settings. It doesn't stop notifications, so mute the chat in Messenger for that.", "inbox"},
         {"facebook", "Hide Facebook shortcuts", "Hides Facebook buttons, profile and sharing shortcuts, and the Also from Meta and Subscriptions sections in the Menu tab. Handy if you only use Messenger.", "navigation"},
         {"meta_ai", "Hide Meta AI", "Hides the Meta AI floating button, toolbar button, tab and menu entries, AI in search and in @ suggestions, and the offer to summarize a chat's unread messages. Restart Messenger to see the tab go.", "navigation"},
         {"moments", "Hide Chat Moments", "Hides Chat Moments in the menu.", "navigation"},
@@ -963,7 +964,7 @@ public final class SettingsActivity extends Activity {
             LinearLayout row = controlRow(spec[0], text.control(spec, 1), text.control(spec, 2), true);
             if ("bubbles".equals(spec[0]) || "facebook".equals(spec[0]) || Settings.TAB_BADGES.equals(spec[0]) || OwnFont.KEY.equals(spec[0])
                     || MessageLog.KEY.equals(spec[0]) || AutoReply.KEY.equals(spec[0]) || Settings.AVATAR_SHAPE.equals(spec[0])
-                    || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0])) {
+                    || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0]) || ChatHiding.KEY.equals(spec[0])) {
                 // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
                 ui.add(wrapper, row, 0);
@@ -976,6 +977,7 @@ public final class SettingsActivity extends Activity {
                     for (String keep : Settings.KEEP_BADGES.values()) ui.add(wrapper, controlRow(keep, text.format(keep), "", false), 8);
                 }
                 else if (QuietCalls.KEY.equals(spec[0])) addQuietCallChats(wrapper);
+                else if (ChatHiding.KEY.equals(spec[0])) addHiddenChats(wrapper);
                 else if (OwnFont.KEY.equals(spec[0])) fontFile.addTo(wrapper);
                 else if (HomeHeader.KEY.equals(spec[0])) homeHeader.addTo(wrapper);
                 else if (AutoReply.KEY.equals(spec[0])) autoReplies.addAutoReplyActions(wrapper);
@@ -1035,6 +1037,32 @@ public final class SettingsActivity extends Activity {
             ui.add(content, none, 8);
         }
         for (String[] chat : chats) ui.add(content, controlRow(QuietCalls.CHAT_PREFIX + chat[0], chat[1], "", false), 8);
+    }
+
+    /** This account's hidden chats, each under its name with Unhide, or a line saying where they'll show up. */
+    private void addHiddenChats(LinearLayout content) {
+        TextView none = ui.text(text.get("hidden_chats_empty"), 13, ui.muted, false);
+        none.setTag("hidden_chats_empty");
+        ui.add(content, none, 8);
+        List<String[]> chats = ChatHiding.chosen();
+        none.setVisibility(chats.isEmpty() ? View.VISIBLE : View.GONE);
+        for (String[] chat : chats) {
+            LinearLayout row = ui.row();
+            if (ui.largeText) row.setOrientation(LinearLayout.VERTICAL);
+            String name = chat[1].isEmpty() ? text.get("hidden_chats_unnamed") : chat[1];
+            row.addView(ui.text(name, 15, ui.text, false), new LinearLayout.LayoutParams(ui.largeText ? -1 : 0, -2, ui.largeText ? 0 : 1));
+            Button unhide = ui.button(text.get("hidden_chats_unhide"));
+            unhide.setTag("hidden_chats_unhide_" + chat[0]);
+            unhide.setContentDescription(text.get("hidden_chats_unhide") + ", " + name);
+            unhide.setOnClickListener(view -> {
+                ChatHiding.unhide(chat[0]);
+                content.removeView(row);
+                if (ChatHiding.chosen().isEmpty()) none.setVisibility(View.VISIBLE);
+                feedback(text.get("hidden_chats_shown"), Toast.LENGTH_SHORT);
+            });
+            row.addView(unhide, new LinearLayout.LayoutParams(ui.largeText ? -1 : -2, -2));
+            ui.add(content, row, 8);
+        }
     }
 
     /** One choice of a RadioGroup, in the page's colors. */

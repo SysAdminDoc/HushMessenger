@@ -267,7 +267,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
                 STORY_SUGGESTIONS_QUERY in strings + method.tableStrings(stringTables)) add("people_story")
             // The chat list supplier's items read, which first traces under its own name.
             if (cls.type == INBOX_SUPPLIER && !AccessFlags.STATIC.isSet(method.accessFlags) && method.returnType == IMMUTABLE_LIST &&
-                method.parameterTypes.isEmpty() && INBOX_ITEMS_TRACE in strings) { add(INBOX_REFRESH_HOOK); add(PIN_LIST) }
+                method.parameterTypes.isEmpty() && INBOX_ITEMS_TRACE in strings) { add(INBOX_REFRESH_HOOK); add(PIN_LIST); add(HIDDEN_CHAT_LIST) }
             if (cls.type == "Lcom/facebook/screenshot/ScreenshotContentObserver;" && method.name == "onChange" &&
                 method.returnType == "V") add("allow_screenshot")
             // Android 14 and newer report a screenshot here, and Messenger turns it into the in-chat notice.
@@ -403,6 +403,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(AD_EVENTS).addAll(findAdEvents(classes))
     found.getValue(MQTT_TELEMETRY).addAll(findMqttTelemetry(classes))
     findPinnedChats(classes).forEach { (hook, methods) -> found.getValue(hook).addAll(methods) }
+    findHiddenChats(classes).forEach { (hook, methods) -> found.getValue(hook).addAll(methods) }
     found.getValue(NEARBY_SCANS).addAll(patchStage("Find nearby scans") { findNearbyScans(classes) })
     found.getValue(WIFI_IDENTITY).addAll(patchStage("Find Wi-Fi identity reads") { findWifiIdentityReads(classes) })
     found.getValue(PHONE_ID_SYNC).addAll(findPhoneIdSync(classes))

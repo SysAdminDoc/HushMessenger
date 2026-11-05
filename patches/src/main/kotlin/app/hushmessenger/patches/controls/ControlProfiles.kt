@@ -164,6 +164,9 @@ internal val PROFILE_347215348 = ControlProfile(
         "growth" to setOf("LX/21Q;->A09()Z"),
         "growth_notes" to setOf("Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->A01(Landroidx/fragment/app/Fragment;LX/RTk;Ljava/util/List;LX/5VR;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;"),
         "growth_story_card" to setOf("Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->A16(Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;)Z"),
+        "hidden_chat_list" to setOf("Lcom/facebook/messaging/msys/threadlist/plugins/core/itemsupplier/ThreadListItemSupplierImplementation;->A0F()Lcom/google/common/collect/ImmutableList;"),
+        "hidden_chat_row" to setOf("LX/Hlt;->Bt2()Ljava/util/ArrayList;"),
+        "hidden_chat_tap" to setOf("LX/Hlt;->E6u(I)V"),
         "hide_call_bar" to setOf(
             "LX/56Y;->A07(Landroid/content/Context;LX/0XG;Lcom/facebook/auth/usersession/FbUserSession;LX/50n;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KOT;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5Pg;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/DBb;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;",
             "LX/7dK;->F4t(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/7KM;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
@@ -434,6 +437,9 @@ internal val PROFILE_347215341 = ControlProfile(
         "growth" to setOf("LX/21p;->A09()Z"),
         "growth_notes" to setOf("Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->A01(Landroidx/fragment/app/Fragment;LX/RSH;Ljava/util/List;LX/5Vk;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;"),
         "growth_story_card" to setOf("Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->A17(Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;)Z"),
+        "hidden_chat_list" to setOf("Lcom/facebook/messaging/msys/threadlist/plugins/core/itemsupplier/ThreadListItemSupplierImplementation;->A0F()Lcom/google/common/collect/ImmutableList;"),
+        "hidden_chat_row" to setOf("LX/HrM;->BtC()Ljava/util/ArrayList;"),
+        "hidden_chat_tap" to setOf("LX/HrM;->E79(I)V"),
         "hide_call_bar" to setOf(
             "LX/56r;->A07(Landroid/content/Context;LX/0XA;Lcom/facebook/auth/usersession/FbUserSession;LX/516;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KVD;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5Pz;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/DB7;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;",
             "LX/7eE;->F5G(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/7LG;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",

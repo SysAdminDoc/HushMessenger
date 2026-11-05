@@ -146,6 +146,9 @@ hook gallery_to_chat LX/NQ9;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object
 hook growth LX/21Q;->A09()Z
 hook growth_notes Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->A01(Landroidx/fragment/app/Fragment;LX/RTk;Ljava/util/List;LX/5VR;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 hook growth_story_card Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->A16(Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;)Z
+hook hidden_chat_list Lcom/facebook/messaging/msys/threadlist/plugins/core/itemsupplier/ThreadListItemSupplierImplementation;->A0F()Lcom/google/common/collect/ImmutableList;
+hook hidden_chat_row LX/Hlt;->Bt2()Ljava/util/ArrayList;
+hook hidden_chat_tap LX/Hlt;->E6u(I)V
 hook hide_call_bar LX/56Y;->A07(Landroid/content/Context;LX/0XG;Lcom/facebook/auth/usersession/FbUserSession;LX/50n;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/KOT;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/5Pg;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/DBb;Lcom/google/common/collect/ImmutableList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZZZZZZZZ)Lcom/google/common/collect/ImmutableList;
 hook hide_call_bar LX/7dK;->F4t(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/7KM;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V
 hook hide_read_receipts LX/4oD;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4oD;Ljava/lang/String;)V

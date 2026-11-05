@@ -73,6 +73,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Preview chats on long press | Pressing and holding a chat opens Messenger's own preview of it, with the chat's menu underneath, so you can peek at a chat without opening it. Experimental. |
 | Hide Mark as read | Takes Mark as read out of the menu you get when you press and hold a chat, so you can't mark one read by accident. Mark as unread stays. |
 | Pin more chats | Lets you pin chats past Messenger's limit and puts Pin back on chats that don't offer it. Pins past the limit stay on this phone, so they won't show on your other devices. Experimental. |
+| Hide chosen chats | Adds Hide from chat list to the menu you get when you press and hold a chat. A hidden chat stays off your list when new messages come in, search still finds it, and you can unhide it in HushMessenger settings. Hiding stays on this phone and doesn't silence anything, so mute the chat in Messenger if you want it quiet. Experimental. |
 | Hide People tab | Hides the People tab in the bottom bar. Restart Messenger to see it go. |
 | Hide Notifications tab | Hides the Notifications tab in the bottom bar. Restart Messenger to see it go. |
 | Hide tab badges | Hides the red dots and counts on the bottom tabs and on the Facebook button at the top. The Keep switches under it bring back the ones you want. Takes effect after a restart. |

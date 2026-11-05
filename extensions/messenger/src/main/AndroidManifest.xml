@@ -60,6 +60,7 @@
         <meta-data android:name="hush.feature.ad_events" android:value="true" />
         <meta-data android:name="hush.feature.mqtt_telemetry" android:value="true" />
         <meta-data android:name="hush.feature.pinned_chats" android:value="true" />
+        <meta-data android:name="hush.feature.hidden_chats" android:value="true" />
         <meta-data android:name="hush.feature.nearby_scans" android:value="true" />
         <meta-data android:name="hush.feature.phone_id_sync" android:value="true" />
         <meta-data android:name="hush.feature.message_log" android:value="true" />

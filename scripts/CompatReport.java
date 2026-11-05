@@ -180,6 +180,7 @@ public class CompatReport {
         PATCHES.put("Preview chats on long press", List.of("chat_preview"));
         PATCHES.put("Hide Mark as read", List.of("mark_read_action"));
         PATCHES.put("Pin more chats", List.of("pinned_chats", "pin_rows", "pin_ask", "pin_drop", "pin_full", "pin_list"));
+        PATCHES.put("Hide chosen chats", List.of("hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
         PATCHES.put("Hide Facebook shortcuts", List.of("facebook", "facebook_profile", "facebook_profile_header"));
         PATCHES.put("Hide Meta AI", List.of("ai_menu", "ai_fab", "ai_toolbar", "ai_tab", "ai_muse_tab", "ai_search", "ai_search_chip", "ai_mentions", "ai_commands", "ai_search_hint", "ai_search_screen_hint", "ai_mention_rows", "ai_summary", "tab_config"));
         PATCHES.put("Hide Chat Moments", List.of("moments"));
@@ -5842,6 +5843,202 @@ public class CompatReport {
         return false;
     }
 
+    // hidden_chat_list, hidden_chat_row and hidden_chat_tap: Hide chosen chats. Mirrors HideChats.kt.
+    static final String HIDDEN_PARTICIPANT = "Lcom/facebook/messaging/model/threads/ThreadParticipant;";
+    static final String HIDDEN_PARTICIPANT_INFO = "Lcom/facebook/messaging/model/messages/ParticipantInfo;";
+    static final String HIDDEN_USER_KEY = "Lcom/facebook/user/model/UserKey;";
+    static final String HIDDEN_NAMER = "Lcom/facebook/messaging/threadlist/plugins/core/threadname/standard/StandardThreadNameImplementation;";
+    static final List<String> HIDDEN_FILTER_PARAMS =
+        List.of("Lcom/facebook/messaging/threadlist/clientfilter/ThreadListClientFilter;", IMMUTABLE_LIST, "Ljava/lang/String;");
+    static final String HIDDEN_ITERATOR = "Ljava/util/AbstractCollection;->iterator()Ljava/util/Iterator;";
+    static final String HIDDEN_NEXT = "Ljava/util/Iterator;->next()Ljava/lang/Object;";
+    static final String HIDDEN_ROWS = "Ljava/util/ArrayList;";
+
+    /** The items read walks the chats its last client filter handed back exactly once, both registers plain and this untouched. */
+    static boolean hiddenListSite(Method items) {
+        var impl = items.getImplementation();
+        if (impl == null || !INBOX_SUPPLIER.equals(items.getDefiningClass()) || AccessFlags.STATIC.isSet(items.getAccessFlags()) ||
+            !items.getParameterTypes().isEmpty() || !IMMUTABLE_LIST.equals(items.getReturnType())) return false;
+        var code = instructions(items);
+        int self = impl.getRegisterCount() - 1, sites = 0;
+        for (var i : code) if (writes(i, self)) return false;
+        for (int at = 0; at < code.size(); at++) if (hiddenListSiteAt(code, at, self)) sites++;
+        return sites == 1;
+    }
+
+    static boolean hiddenListSiteAt(List<Instruction> code, int at, int self) {
+        if (!(code.get(at) instanceof FiveRegisterInstruction walk) || walk.getOpcode() != Opcode.INVOKE_VIRTUAL ||
+            !HIDDEN_ITERATOR.equals(ref(walk)) || walk.getRegisterCount() != 1 || at + 1 >= code.size()) return false;
+        int list = walk.getRegisterC();
+        var taken = code.get(at + 1);
+        if (taken.getOpcode() != Opcode.MOVE_RESULT_OBJECT) return false;
+        int iterator = register(taken);
+        if (iterator == list || list > 15 || iterator > 15 || list >= self || iterator >= self) return false;
+        int written = -1;
+        for (int i = at - 1; i >= 1 && written < 0; i--) if (writes(code.get(i), list)) written = i;
+        if (written < 0) return false;
+        var filter = code.get(written - 1);
+        if (code.get(written).getOpcode() != Opcode.MOVE_RESULT_OBJECT ||
+            (filter.getOpcode() != Opcode.INVOKE_INTERFACE && filter.getOpcode() != Opcode.INVOKE_INTERFACE_RANGE) ||
+            !(filter instanceof ReferenceInstruction fr) || !(fr.getReference() instanceof MethodReference filtered) ||
+            !IMMUTABLE_LIST.equals(filtered.getReturnType()) || !inboxParams(filtered).equals(HIDDEN_FILTER_PARAMS)) return false;
+        int next = -1;
+        for (int i = at + 2; i <= Math.min(at + 8, code.size() - 3) && next < 0; i++)
+            if (code.get(i).getOpcode() == Opcode.INVOKE_INTERFACE && HIDDEN_NEXT.equals(ref(code.get(i))) &&
+                ((FiveRegisterInstruction) code.get(i)).getRegisterC() == iterator) next = i;
+        if (next < 0) return false;
+        var chat = code.get(next + 1);
+        var cast = code.get(next + 2);
+        if (chat.getOpcode() != Opcode.MOVE_RESULT_OBJECT || cast.getOpcode() != Opcode.CHECK_CAST || register(cast) != register(chat) ||
+            !THREAD_SUMMARY_TYPE.equals(((TypeReference) ((ReferenceInstruction) cast).getReference()).getType())) return false;
+        var loop = code.subList(next + 3, code.size());
+        return hiddenRead(loop, THREAD_SUMMARY_TYPE, THREAD_KEY, null) && hiddenRead(loop, THREAD_SUMMARY_TYPE, IMMUTABLE_LIST, null) &&
+            hiddenRead(loop, HIDDEN_PARTICIPANT, HIDDEN_PARTICIPANT_INFO, null) && hiddenRead(loop, HIDDEN_PARTICIPANT_INFO, HIDDEN_USER_KEY, null) &&
+            hiddenRead(loop, HIDDEN_USER_KEY, "Ljava/lang/String;", "id");
+    }
+
+    static boolean hiddenRead(List<Instruction> code, String owner, String type, String name) {
+        for (var i : code)
+            if (i.getOpcode() == Opcode.IGET_OBJECT && ((ReferenceInstruction) i).getReference() instanceof FieldReference f &&
+                owner.equals(f.getDefiningClass()) && type.equals(f.getType()) && (name == null || name.equals(f.getName()))) return true;
+        return false;
+    }
+
+    /** The chat's own name, its people's SecretString names and the SecretString's text field, each read exactly where HideChats.kt reads it. */
+    static boolean hiddenChatNames(Map<String, ClassDef> byType) {
+        var namer = byType.get(HIDDEN_NAMER);
+        var info = byType.get(HIDDEN_PARTICIPANT_INFO);
+        var secret = byType.get(SECRET_STRING);
+        if (namer == null || info == null || secret == null) return false;
+        var namers = new ArrayList<Method>();
+        for (var m : namer.getMethods()) if (params(m).equals(List.of(THREAD_SUMMARY_TYPE))) namers.add(m);
+        if (namers.size() != 1 || !hiddenRead(instructions(namers.get(0)), THREAD_SUMMARY_TYPE, "Ljava/lang/String;", null)) return false;
+        var described = new ArrayList<Method>();
+        for (var m : info.getMethods())
+            if ("toString".equals(m.getName()) && m.getParameterTypes().isEmpty() && "Ljava/lang/String;".equals(m.getReturnType())) described.add(m);
+        if (described.size() != 1 || described.get(0).getImplementation() == null) return false;
+        var code = instructions(described.get(0));
+        int label = -1;
+        for (int k = 0; k < code.size() && label < 0; k++)
+            if ((code.get(k).getOpcode() == Opcode.CONST_STRING || code.get(k).getOpcode() == Opcode.CONST_STRING_JUMBO) && "name".equals(inboxString(code.get(k)))) label = k;
+        if (label < 0 || label + 1 >= code.size()) return false;
+        var read = code.get(label + 1);
+        if (read.getOpcode() != Opcode.IGET_OBJECT || !(((ReferenceInstruction) read).getReference() instanceof FieldReference named) ||
+            !HIDDEN_PARTICIPANT_INFO.equals(named.getDefiningClass()) || !SECRET_STRING.equals(named.getType())) return false;
+        var ctors = new ArrayList<Method>();
+        for (var m : secret.getMethods())
+            if ("<init>".equals(m.getName()) && m.getImplementation() != null && params(m).equals(List.of("Ljava/lang/String;"))) ctors.add(m);
+        if (ctors.size() != 1) return false;
+        int argument = ctors.get(0).getImplementation().getRegisterCount() - 1;
+        var texts = new LinkedHashSet<String>();
+        for (var i : instructions(ctors.get(0)))
+            if (i instanceof ReferenceInstruction r && r.getReference() instanceof FieldReference f && SECRET_STRING.equals(f.getDefiningClass()) &&
+                "Ljava/lang/String;".equals(f.getType()) && i instanceof TwoRegisterInstruction t && t.getRegisterA() == argument) texts.add(fieldId(f));
+        return texts.size() == 1;
+    }
+
+    /** The chat list menu: the one class built right after its plugin's "MenuItems" check, with one row list and one tap. */
+    static Map<String, List<Method>> hiddenChats(List<ClassDef> classes, Map<String, ClassDef> byType) {
+        var built = new LinkedHashSet<String>();
+        for (var cls : classes)
+            for (var m : cls.getMethods()) {
+                var code = instructions(m);
+                for (int at = 0; at < code.size(); at++) { var menu = hiddenMenuBuiltAt(code, at); if (menu != null) built.add(menu); }
+            }
+        var menus = new ArrayList<ClassDef>();
+        for (var type : built) {
+            var menu = byType.get(type);
+            if (menu != null && hiddenMenuMethods(menu, true).size() == 1 && hiddenMenuMethods(menu, false).size() == 1) menus.add(menu);
+        }
+        var hooks = new LinkedHashMap<String, List<Method>>();
+        hooks.put("hidden_chat_row", List.of());
+        hooks.put("hidden_chat_tap", List.of());
+        if (menus.size() != 1) return hooks;
+        var row = hiddenMenuMethods(menus.get(0), true).get(0);
+        var tap = hiddenMenuMethods(menus.get(0), false).get(0);
+        if (hiddenRowProved(row, byType)) hooks.put("hidden_chat_row", List.of(row));
+        if (hiddenTapProved(tap)) hooks.put("hidden_chat_tap", List.of(tap));
+        return hooks;
+    }
+
+    static String hiddenMenuBuiltAt(List<Instruction> code, int at) {
+        var op = code.get(at).getOpcode();
+        if ((op != Opcode.CONST_STRING && op != Opcode.CONST_STRING_JUMBO) || !"MenuItems".equals(inboxString(code.get(at))) || at + 4 >= code.size()) return null;
+        if (code.get(at + 1).getOpcode() != Opcode.INVOKE_VIRTUAL || !"Ljava/lang/String;->equals(Ljava/lang/Object;)Z".equals(ref(code.get(at + 1))) ||
+            code.get(at + 2).getOpcode() != Opcode.MOVE_RESULT || code.get(at + 3).getOpcode() != Opcode.IF_EQZ ||
+            code.get(at + 4).getOpcode() != Opcode.NEW_INSTANCE) return null;
+        return ((TypeReference) ((ReferenceInstruction) code.get(at + 4)).getReference()).getType();
+    }
+
+    /** The menu's instance row lists, ()ArrayList, or its instance taps, (I)V. */
+    static List<Method> hiddenMenuMethods(ClassDef menu, boolean rows) {
+        var found = new ArrayList<Method>();
+        for (var m : menu.getMethods()) {
+            if (AccessFlags.STATIC.isSet(m.getAccessFlags())) continue;
+            if (rows ? m.getParameterTypes().isEmpty() && HIDDEN_ROWS.equals(m.getReturnType()) : "V".equals(m.getReturnType()) && params(m).equals(List.of("I")))
+                found.add(m);
+        }
+        return found;
+    }
+
+    /**
+     * The row list hands back one plain register with a second free beside it, and builds its rows through one builder
+     * class: a factory, an int id, a String description, a CharSequence title, an icon whose enum has both eye icons, and
+     * a static build that takes the builder and a name.
+     */
+    static boolean hiddenRowProved(Method row, Map<String, ClassDef> byType) {
+        var impl = row.getImplementation();
+        if (impl == null) return false;
+        var code = instructions(row);
+        int at = -1, returns = 0;
+        for (int i = 0; i < code.size(); i++) if (code.get(i).getOpcode() == Opcode.RETURN_OBJECT) { at = i; returns++; }
+        if (returns != 1) return false;
+        int rows = register(code.get(at)), menu = rows == 0 ? 1 : 0;
+        if (rows > 15 || menu >= impl.getRegisterCount() - 1) return false;
+        var builds = new LinkedHashMap<String, MethodReference>();
+        for (var i : code)
+            if (i.getOpcode() == Opcode.INVOKE_STATIC && ((ReferenceInstruction) i).getReference() instanceof MethodReference m &&
+                inboxParams(m).equals(List.of(m.getDefiningClass(), "Ljava/lang/String;")) && m.getReturnType().startsWith("L")) builds.put(m.toString(), m);
+        if (builds.size() != 1) return false;
+        String owner = builds.values().iterator().next().getDefiningClass();
+        var icons = new LinkedHashMap<String, MethodReference>();
+        var factories = new LinkedHashSet<String>();
+        var titles = new LinkedHashSet<String>();
+        var ids = new LinkedHashSet<String>();
+        var descriptions = new LinkedHashSet<String>();
+        for (var i : code) {
+            if (!(i instanceof ReferenceInstruction ri)) continue;
+            if (ri.getReference() instanceof MethodReference m && owner.equals(m.getDefiningClass())) {
+                var types = inboxParams(m);
+                if (i.getOpcode() == Opcode.INVOKE_VIRTUAL && "V".equals(m.getReturnType()) && types.size() == 1 && types.get(0).startsWith("L") &&
+                    !types.get(0).equals("Ljava/lang/CharSequence;")) icons.put(m.toString(), m);
+                if (i.getOpcode() == Opcode.INVOKE_STATIC && types.isEmpty() && owner.equals(m.getReturnType())) factories.add(m.toString());
+                if (i.getOpcode() == Opcode.INVOKE_VIRTUAL && "V".equals(m.getReturnType()) && types.equals(List.of("Ljava/lang/CharSequence;"))) titles.add(m.toString());
+            }
+            if (ri.getReference() instanceof FieldReference f && owner.equals(f.getDefiningClass())) {
+                if (i.getOpcode() == Opcode.IPUT && "I".equals(f.getType())) ids.add(fieldId(f));
+                if (i.getOpcode() == Opcode.IPUT_OBJECT && "Ljava/lang/String;".equals(f.getType())) descriptions.add(fieldId(f));
+            }
+        }
+        if (icons.size() != 1 || factories.size() != 1 || titles.size() != 1 || ids.size() != 1 || descriptions.size() != 1) return false;
+        var iconType = byType.get(icons.values().iterator().next().getParameterTypes().get(0).toString());
+        if (iconType == null || !AccessFlags.ENUM.isSet(iconType.getAccessFlags())) return false;
+        var names = new HashSet<String>();
+        for (var m : iconType.getMethods()) for (var i : instructions(m)) { var s = inboxString(i); if (s != null) names.add(s); }
+        return names.contains("EYE") && names.contains("EYE_CROSS");
+    }
+
+    /** The tap has two scratch locals, nothing jumps to its start, and it reads one chat field of its own class. */
+    static boolean hiddenTapProved(Method tap) {
+        var impl = tap.getImplementation();
+        if (impl == null || impl.getRegisterCount() - 2 < 2 || mediaTargets(tap).contains(0)) return false;
+        var summaries = new LinkedHashSet<String>();
+        for (var i : instructions(tap))
+            if (i.getOpcode() == Opcode.IGET_OBJECT && ((ReferenceInstruction) i).getReference() instanceof FieldReference f &&
+                tap.getDefiningClass().equals(f.getDefiningClass()) && THREAD_SUMMARY_TYPE.equals(f.getType())) summaries.add(fieldId(f));
+        return summaries.size() == 1;
+    }
+
     /**
      * nearby_scans: the foreground location controller's one static (Context, FbUserSession, controller, J)V that names
      * the task it queues, and the app's one reader of WifiManager.getScanResults. Both are taken only while the app's
@@ -7952,6 +8149,7 @@ public class CompatReport {
         found.get("ad_events").addAll(adEvents(classes));
         found.get("mqtt_telemetry").addAll(mqttTelemetry(classes));
         pinnedChats(classes).forEach((hook, methods) -> found.get(hook).addAll(methods));
+        hiddenChats(classes, inboxTypes).forEach((hook, methods) -> found.get(hook).addAll(methods));
         found.get("nearby_scans").addAll(nearbyScans(classes));
         found.get("wifi_identity").addAll(wifiIdentityReads(classes));
         found.get("phone_id_sync").addAll(phoneIdSync(classes));
@@ -8442,6 +8640,7 @@ public class CompatReport {
                     paramTypes.isEmpty() && strings.contains(INBOX_ITEMS_TRACE) && inboxRefreshRoute(inboxTypes, method) != null) {
                     found.get("people_inbox_refresh").add(method);
                     if (pinListSite(method)) found.get("pin_list").add(method);
+                    if (hiddenListSite(method) && hiddenChatNames(inboxTypes)) found.get("hidden_chat_list").add(method);
                 }
 
                 // avatar_tabs: the sticker keyboard's tab list, filled inline in a composer factory method that

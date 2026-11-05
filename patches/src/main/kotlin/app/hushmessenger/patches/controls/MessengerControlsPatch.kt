@@ -191,6 +191,9 @@ internal fun MutableMethod.validateHook(hook: String) {
         PIN_DROP -> if (!isPinDrop() || pinStepKey() == null) throw PatchException("Messenger controls: the unpin call changed (${hookId()})")
         PIN_FULL -> pinFullSite() ?: throw PatchException("Messenger controls: the pin limit's answer changed (${hookId()})")
         PIN_LIST -> pinListTrace() ?: throw PatchException("Messenger controls: the chat list's read changed (${hookId()})")
+        HIDDEN_CHAT_LIST -> hiddenListSite() ?: throw PatchException("Messenger controls: the chat list's walk changed (${hookId()})")
+        HIDDEN_CHAT_ROW -> hiddenRowSite() ?: throw PatchException("Messenger controls: the chat menu's rows changed (${hookId()})")
+        HIDDEN_CHAT_TAP -> hiddenTapSummary() ?: throw PatchException("Messenger controls: the chat menu's tap changed (${hookId()})")
         NEARBY_SCANS -> validateNearbyScans()
         WIFI_IDENTITY -> validateWifiIdentity()
         PHONE_ID_SYNC -> validatePhoneIdSync()
@@ -301,6 +304,9 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             PIN_DROP -> method.injectPinStep(UNPINNING_CALL)
             PIN_FULL -> method.injectPinFull()
             PIN_LIST -> method.injectPinList()
+            HIDDEN_CHAT_LIST -> method.injectHiddenChatList()
+            HIDDEN_CHAT_ROW -> method.injectHiddenChatRow()
+            HIDDEN_CHAT_TAP -> method.injectHiddenChatTap()
             NEARBY_SCANS -> method.injectNearbyScans()
             WIFI_IDENTITY -> method.injectWifiIdentity()
             PHONE_ID_SYNC -> method.injectPhoneIdSync()
@@ -381,6 +387,10 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
             val pinRoute = if (PIN_LIST in selected) {
                 val row = discoveredControls.getValue(PIN_ROWS).first { it.definingClass == PIN_MENU_ITEM }
                 resolvePinnedChatRoute(row, discoveredControls.getValue(PIN_LIST).single()) { classDefByOrNull(it) } to pinnedChatStub()
+            } else null
+            val hiddenRoute = if (HIDDEN_CHAT_LIST in selected) {
+                resolveHiddenChatRoute(discoveredControls.getValue(HIDDEN_CHAT_LIST).single(), discoveredControls.getValue(HIDDEN_CHAT_ROW).single(),
+                    discoveredControls.getValue(HIDDEN_CHAT_TAP).single()) { classDefByOrNull(it) } to hiddenChatStub()
             } else null
             val emojiFontHolder = if ("emoji_typeface" in selected) {
                 discoveredControls.getValue("emoji_typeface").single().emojiFontHolder { classDefByOrNull(it) }
@@ -497,6 +507,7 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 injectControl(key, methods)
                 inboxRoute?.let { (route, stub) -> stub.writeInboxRefreshRoute(route) }
                 pinRoute?.let { (route, stub) -> stub.writePinnedChatRoute(route) }
+                hiddenRoute?.let { (route, stub) -> stub.writeHiddenChatRoute(route) }
                 emojiFontHolder?.let { init ->
                     mutableClassDefBy(init.substringBefore("->")).methods.single { it.hookId() == init }.injectEmojiFontHolder()
                 }
@@ -542,6 +553,8 @@ val previewChatsPatch = controlPatch("chat_preview", "Preview chats on long pres
     "Pressing and holding a chat opens Messenger's own preview of it, with the chat's menu underneath, so you can peek at a chat without opening it.", "Inbox")
 @Suppress("unused")
 val pinMoreChatsPatch = controlPatch("pinned_chats", "Pin more chats", "Lets you pin chats past Messenger's limit and puts Pin back on chats that don't offer it. Pins past the limit stay on this phone, so they won't show on your other devices.", "Inbox", PINNED_CHATS, PIN_ROWS, PIN_ASK, PIN_DROP, PIN_FULL, PIN_LIST)
+@Suppress("unused")
+val hideChosenChatsPatch = controlPatch("hidden_chats", "Hide chosen chats", "Adds Hide from chat list to the menu you get when you press and hold a chat. A hidden chat stays off your chat list when new messages come in, and search still finds it. Hiding stays on this phone, and you can unhide chats in HushMessenger settings. It doesn't stop notifications, so mute the chat in Messenger for that.", "Inbox", HIDDEN_CHAT_LIST, HIDDEN_CHAT_ROW, HIDDEN_CHAT_TAP)
 @Suppress("unused")
 val hideFacebookPatch = controlPatch("facebook", "Hide Facebook shortcuts", "Hides Facebook buttons, profile and sharing shortcuts, and the Also from Meta and Subscriptions sections in the Menu tab. Handy if you only use Messenger.", "Navigation", "facebook", FACEBOOK_PROFILE, FACEBOOK_PROFILE_HEADER)
 @Suppress("unused")

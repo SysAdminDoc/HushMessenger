@@ -197,6 +197,14 @@ final class SettingsText {
         ENGLISH.put("save_voice_menu_failed", "Couldn't save this voice message");
         ENGLISH.put("local_pin_kept", "Pinned on this phone");
         ENGLISH.put("local_pin_removed", "Unpinned");
+        ENGLISH.put("hidden_chats_hide", "Hide from chat list");
+        ENGLISH.put("hidden_chats_show", "Show in chat list");
+        ENGLISH.put("hidden_chats_hidden", "Hidden from your chat list");
+        ENGLISH.put("hidden_chats_shown", "Back on your chat list");
+        ENGLISH.put("hidden_chats_failed", "Couldn't hide this chat");
+        ENGLISH.put("hidden_chats_empty", "Chats you hide from your chat list show up here.");
+        ENGLISH.put("hidden_chats_unhide", "Unhide");
+        ENGLISH.put("hidden_chats_unnamed", "Chat");
         ENGLISH.put("text_style_bold", "Bold");
         ENGLISH.put("text_style_italic", "Italic");
         ENGLISH.put("text_style_read_only","Bold and Italic only work on text you're typing.");
