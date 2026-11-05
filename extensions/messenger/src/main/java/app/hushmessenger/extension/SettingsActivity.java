@@ -76,6 +76,9 @@ public final class SettingsActivity extends Activity {
     private final List<View> controlRows = new ArrayList<>();
     /** The rows under Hide chosen chats, or null while the controls page isn't built. */
     private LinearLayout hiddenChats;
+    /** The switch for each chat that called lately under Quiet incoming calls, or null while the page isn't built. */
+    private LinearLayout quietCallers;
+    private final List<Switch> quietCallerSwitches = new ArrayList<>();
     private final List<String[]> installedControls = new ArrayList<>();
     private final List<LinearLayout> groups = new ArrayList<>();
     private final List<Button> tabs = new ArrayList<>();
@@ -385,6 +388,7 @@ public final class SettingsActivity extends Activity {
         super.onResume();
         refreshChoices();
         if (hiddenChats != null) fillHiddenChats();
+        if (quietCallers != null) fillQuietCallers();
         updates.syncUpdateChoice(false);
     }
 
@@ -1034,13 +1038,28 @@ public final class SettingsActivity extends Activity {
     private void addQuietCallChats(LinearLayout content) {
         ui.add(content, controlRow(QuietCalls.CHOSEN_ONLY, text.format(QuietCalls.CHOSEN_ONLY),
             text.format("quiet_calls_chosen_help"), false), 8);
+        quietCallers = ui.column();
+        quietCallers.setTag("quiet_calls_recent_list");
+        ui.add(content, quietCallers, 0);
+        fillQuietCallers();
+    }
+
+    /** Filled again on every return, so a chat that called while settings sat behind Messenger shows up here too. */
+    private void fillQuietCallers() {
+        switches.removeAll(quietCallerSwitches);
+        quietCallerSwitches.clear();
+        quietCallers.removeAllViews();
         List<String[]> chats = QuietCalls.recent();
         if (chats.isEmpty()) {
             TextView none = ui.text(text.get("quiet_calls_recent_empty"), 13, ui.muted, false);
             none.setTag("quiet_calls_recent_empty");
-            ui.add(content, none, 8);
+            ui.add(quietCallers, none, 8);
         }
-        for (String[] chat : chats) ui.add(content, controlRow(QuietCalls.CHAT_PREFIX + chat[0], chat[1], "", false), 8);
+        for (String[] chat : chats) {
+            int before = switches.size();
+            ui.add(quietCallers, controlRow(QuietCalls.CHAT_PREFIX + chat[0], chat[1], "", false), 8);
+            quietCallerSwitches.addAll(switches.subList(before, switches.size()));
+        }
     }
 
     /** This account's hidden chats, each under its name with Unhide, or a line saying where they'll show up. */
