@@ -181,7 +181,7 @@ public class CompatReport {
         PATCHES.put("Hide Mark as read", List.of("mark_read_action"));
         PATCHES.put("Pin more chats", List.of("pinned_chats", "pin_rows", "pin_ask", "pin_drop", "pin_full", "pin_list"));
         PATCHES.put("Hide Facebook shortcuts", List.of("facebook", "facebook_profile", "facebook_profile_header"));
-        PATCHES.put("Hide Meta AI", List.of("ai_menu", "ai_fab", "ai_toolbar", "ai_tab", "ai_muse_tab", "ai_search", "ai_search_chip", "ai_mentions", "ai_commands", "ai_search_hint", "ai_search_screen_hint", "ai_mention_rows", "tab_config"));
+        PATCHES.put("Hide Meta AI", List.of("ai_menu", "ai_fab", "ai_toolbar", "ai_tab", "ai_muse_tab", "ai_search", "ai_search_chip", "ai_mentions", "ai_commands", "ai_search_hint", "ai_search_screen_hint", "ai_mention_rows", "ai_summary", "tab_config"));
         PATCHES.put("Hide Chat Moments", List.of("moments"));
         PATCHES.put("Hide Reels badge", List.of("reels_badge"));
         PATCHES.put("Hide People tab", List.of("tab_people", "tab_config"));
@@ -5861,6 +5861,45 @@ public class CompatReport {
         return List.of();
     }
 
+    static final String AI_SUMMARY_PILL = "AiSummaryFloatingPillEventHandler";
+    static final List<String> AI_SUMMARY_PARAMETERS =
+        List.of(THREAD_KEY, "Lcom/facebook/xapp/messaging/capability/vector/Capabilities;", "J", "Z", "Z");
+
+    /**
+     * ai_summary: the one class with a method naming AiSummaryFloatingPillEventHandler, the one distinct
+     * (ThreadKey, Capabilities, J, Z, Z)Z method it calls, and that method defined with code in these classes. Mirrors
+     * AiSummary.kt.
+     */
+    static List<Method> aiSummary(List<ClassDef> classes) {
+        ClassDef handler = null;
+        int handlers = 0;
+        for (var cls : classes) {
+            boolean names = false;
+            for (var method : cls.getMethods())
+                for (var i : instructions(method))
+                    if (i instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference s && AI_SUMMARY_PILL.equals(s.getString())) names = true;
+            if (names) { handler = cls; handlers++; }
+        }
+        if (handlers != 1) return List.of();
+        var checks = new LinkedHashSet<String>();
+        for (var method : handler.getMethods())
+            for (var i : instructions(method)) {
+                if (!(i instanceof ReferenceInstruction ri) || !(ri.getReference() instanceof MethodReference call)) continue;
+                var params = new ArrayList<String>();
+                for (var t : call.getParameterTypes()) params.add(t.toString());
+                if ("Z".equals(call.getReturnType()) && params.equals(AI_SUMMARY_PARAMETERS)) checks.add(methodId(call));
+            }
+        if (checks.size() != 1) return List.of();
+        var check = checks.iterator().next();
+        for (var cls : classes) {
+            if (!cls.getType().equals(check.substring(0, check.indexOf("->")))) continue;
+            for (var method : cls.getMethods())
+                if (hookId(method).equals(check)) return method.getImplementation() != null ? List.of(method) : List.of();
+            return List.of();
+        }
+        return List.of();
+    }
+
     static final String CHAT_PREVIEW_FRAGMENT = "Lcom/facebook/messaging/threadlist/threaditemmenu/preview/InboxThreadPreviewDialogFragment;";
     static final long CHAT_PREVIEW_FLAG = 0x1010535000040deL;
     static final long CHAT_PREVIEW_ENCRYPTED_FLAG = 0x101055b0000432fL;
@@ -7695,6 +7734,7 @@ public class CompatReport {
         found.get("ai_search_hint").addAll(searchBars);
         found.get("ai_search_screen_hint").addAll(searchScreenHints(classes, searchBars));
         found.get("ai_mention_rows").addAll(aiMentionRowChecks(classes));
+        found.get("ai_summary").addAll(aiSummary(classes));
         found.get("xhe_audio").addAll(shareCopies(classes));
         found.get("disappearing_swipe").addAll(disappearingSwipeStarts(classes));
         found.get("recent_media").addAll(recentMediaDetectors(classes));
@@ -8316,7 +8356,7 @@ public class CompatReport {
      * check of its own. The control tests' zero-local check (MirroredFinders.kt) fails when this set and the patches part.
      */
     static final Set<String> NEEDS_A_LOCAL = Set.of("ad_events", "ai_commands", "ai_fab", "ai_mention_rows", "ai_menu", "ai_search",
-        "ai_search_chip", "allow_screenshot", "analytics_uploads", "app_icons", "app_themes", "attribution_uploads", "bubbles", "call_recording", "delta_unsent",
+        "ai_search_chip", "ai_summary", "allow_screenshot", "analytics_uploads", "app_icons", "app_themes", "attribution_uploads", "bubbles", "call_recording", "delta_unsent",
         "disappearing_swipe", "external_gallery", "facebook", "facebook_profile", "font_by_name", "font_repository", "growth_notes", "growth_story_card", "instants_button", "keep_unsent",
         "mqtt_telemetry", "nearby_scans", "original_photo", "people_story", "phone_id_sync", "people_tab", "recent_media", "stories", "system_camera",
         "tab_badges", "typing", "unsent_indicator", "unsent_recall");

@@ -390,6 +390,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(AI_SEARCH_HINT).addAll(searchBars)
     found.getValue(AI_SEARCH_SCREEN_HINT).addAll(findAiSearchScreenHint(classes, searchBars))
     found.getValue(AI_MENTION_ROWS).addAll(findAiMentionRows(classes))
+    found.getValue(AI_SUMMARY).addAll(findAiSummary(classes))
     found.getValue(XHE_AUDIO).addAll(findXheAudio(classes))
     found.getValue(DISAPPEARING_SWIPE).addAll(findDisappearingSwipe(classes))
     found.getValue(RECENT_MEDIA).addAll(findRecentMedia(classes))

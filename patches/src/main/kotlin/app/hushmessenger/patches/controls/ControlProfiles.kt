@@ -58,6 +58,7 @@ internal val PROFILE_347215348 = ControlProfile(
         "ai_sticker_cell" to setOf("LX/REu;->render(LX/2Ca;)LX/1Gk;"),
         "ai_sticker_grid" to setOf("LX/E1C;->render(LX/2Ca;)LX/1Gk;"),
         "ai_stickers" to setOf("LX/PFZ;->A03(LX/PFZ;)Z", "LX/bM9;->A07(LX/bM9;)Z"),
+        "ai_summary" to setOf("LX/5lp;->A04(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;JZZ)Z"),
         "ai_tab" to setOf("LX/1qt;->A03(LX/1qt;)Z"),
         "ai_toolbar" to setOf("LX/2NU;->A04()Z"),
         "allow_screenshot" to setOf(

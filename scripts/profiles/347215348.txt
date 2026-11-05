@@ -29,6 +29,7 @@ hook ai_sticker_cell LX/REu;->render(LX/2Ca;)LX/1Gk;
 hook ai_sticker_grid LX/E1C;->render(LX/2Ca;)LX/1Gk;
 hook ai_stickers LX/PFZ;->A03(LX/PFZ;)Z
 hook ai_stickers LX/bM9;->A07(LX/bM9;)Z
+hook ai_summary LX/5lp;->A04(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;JZZ)Z
 hook ai_tab LX/1qt;->A03(LX/1qt;)Z
 hook ai_toolbar LX/2NU;->A04()Z
 hook allow_screenshot LX/4wv;->A00(Landroid/view/Window;)V

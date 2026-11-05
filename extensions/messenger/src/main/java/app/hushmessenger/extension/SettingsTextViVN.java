@@ -519,7 +519,7 @@ final class SettingsTextViVN {
         {"facebook.title", "Ẩn phím tắt Facebook"},
         {"facebook.description", "Ẩn nút Facebook, phím tắt trang cá nhân và chia sẻ, cũng như phần 'Các sản phẩm khác của Meta' và 'Đăng ký' trong tab 'Menu'. Phù hợp với người dùng chỉ sử dụng Messenger."},
         {"meta_ai.title", "Ẩn Meta AI"},
-        {"meta_ai.description", "Ẩn nút nổi Meta AI, nút thanh công cụ, tab và mục menu, cũng như nội dung AI trong tìm kiếm và gợi ý @. Tab sẽ chỉ bị ẩn sau khi khởi động lại Messenger."},
+        {"meta_ai.description", "Ẩn nút nổi Meta AI, nút thanh công cụ, tab và mục menu, nội dung AI trong tìm kiếm và gợi ý @, cùng lời mời tóm tắt các tin nhắn chưa đọc trong đoạn chat. Tab sẽ chỉ bị ẩn sau khi khởi động lại Messenger."},
         {"moments.title", "Ẩn Chat Moments"},
         {"moments.description", "Ẩn Chat Moments trong menu."},
         {"reels_badge.title", "Ẩn huy hiệu Reels"},

@@ -519,7 +519,7 @@ final class SettingsTextZhTw {
         {"facebook.title", "隱藏 Facebook 捷徑"},
         {"facebook.description", "隱藏 Facebook 按鈕、個人檔案與分享捷徑，以及「選單」分頁中的「Meta 旗下其他產品」與「訂閱」區塊。適合只使用 Messenger 的使用者。"},
         {"meta_ai.title", "隱藏 Meta AI"},
-        {"meta_ai.description", "隱藏 Meta AI 浮動按鈕、工具列按鈕、分頁與選單項目，以及搜尋與 @ 建議中的 AI 內容。重新啟動 Messenger 後才會隱藏分頁。"},
+        {"meta_ai.description", "隱藏 Meta AI 浮動按鈕、工具列按鈕、分頁與選單項目、搜尋與 @ 建議中的 AI 內容，以及摘要聊天室未讀訊息的提示。重新啟動 Messenger 後才會隱藏分頁。"},
         {"moments.title", "隱藏 Chat Moments"},
         {"moments.description", "隱藏選單中的 Chat Moments。"},
         {"reels_badge.title", "隱藏 Reels 標記"},
