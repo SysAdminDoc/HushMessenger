@@ -187,6 +187,8 @@ internal fun MutableMethod.validateHook(hook: String) {
         PHONE_ID_SYNC -> validatePhoneIdSync()
         STORY_HOLD -> validateStoryHold()
         CHAT_PREVIEW -> validateChatPreview()
+        LANDSCAPE_LOCK -> validatePortraitLock()
+        LANDSCAPE_MEDIA -> validateMediaOrientation()
         BLOCKED_LIST_PICTURES -> validateBlockedListPictures()
         SHARE_STORY -> validateShareStory()
         AVATAR_SHAPE -> validateAvatarShape()
@@ -295,6 +297,8 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             PHONE_ID_SYNC -> method.injectPhoneIdSync()
             STORY_HOLD -> method.injectStoryHold()
             CHAT_PREVIEW -> method.injectChatPreview()
+            LANDSCAPE_LOCK -> method.injectPortraitLock()
+            LANDSCAPE_MEDIA -> method.injectMediaOrientation()
             BLOCKED_LIST_PICTURES -> method.injectBlockedListPictures()
             SHARE_STORY -> method.injectShareStory()
             AVATAR_SHAPE -> method.injectAvatarShape()
@@ -620,6 +624,10 @@ val localChatSearchPatch = controlPatch("local_chat_search", "Search saved messa
 val chatJumpPatch = controlPatch("chat_jump", "Jump to the first message or a date",
     "Long press a chat's name at the top of the chat to jump to its first message or to a day you pick. Messenger loads a chat a page at a time, so it scrolls back with a count on screen until it gets there, and Cancel stops it. It can only go as far back as Messenger can load.", "Conversations",
     CHAT_JUMP)
+@Suppress("unused")
+val allowLandscapePatch = controlPatch("landscape", "Allow landscape",
+    "Lets Messenger turn sideways with your phone, for a wider keyboard and bigger photos and videos. It follows your phone's auto-rotate setting. Calls, the camera, payments and a few other screens stay upright. Restart Messenger after you change it.", "Conversations",
+    LANDSCAPE_LOCK, LANDSCAPE_MEDIA)
 @Suppress("unused")
 val callRecordingPatch = controlPatch("call_recording", "Record calls",
     "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it. Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first.", "Calls")

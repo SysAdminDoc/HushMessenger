@@ -174,6 +174,8 @@ internal val PROFILE_347215348 = ControlProfile(
         "inbox_search_bar" to setOf("LX/4Dv;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "instants_button" to setOf("LX/1yu;->A0F(LX/1yu;)V", "LX/VyC;->A0V(LX/VyC;)V"),
         "keep_unsent" to setOf("LX/PAv;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
+        "landscape_lock" to setOf("LX/090;->A0K()Z"),
+        "landscape_media" to setOf("LX/7aM;->A00(LX/7aM;I)V"),
         "local_chat_search" to setOf(
             "LX/Nic;->F2z(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
             "LX/Nic;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",

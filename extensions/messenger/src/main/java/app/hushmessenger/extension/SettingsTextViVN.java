@@ -570,6 +570,8 @@ final class SettingsTextViVN {
         {"local_chat_search.description", "Thêm một nút vào kết quả tìm kiếm trong đoạn chat để tìm trong các tin nhắn đã lưu trên điện thoại này. Tính năng này hữu ích với các đoạn chat cũ mà tìm kiếm của Messenger không tìm thấy gì. Tính năng hoạt động trong các đoạn chat không được mã hóa đầu cuối và chỉ tìm được những gì điện thoại đã tải, vì vậy hãy cuộn lên trong đoạn chat trước."},
         {"chat_jump.title", "Chuyển đến tin nhắn đầu tiên hoặc một ngày"},
         {"chat_jump.description", "Nhấn giữ tên đoạn chat ở trên cùng để chuyển đến tin nhắn đầu tiên hoặc một ngày bạn chọn. Messenger chỉ tải đoạn chat từng trang, nên nó cuộn ngược lại và hiện số lượng trên màn hình cho đến khi tới nơi, bấm Hủy để dừng. Nó chỉ lùi được tới mức Messenger tải được."},
+        {"landscape.title", "Cho phép xoay ngang"},
+        {"landscape.description", "Cho phép Messenger xoay ngang theo điện thoại, để bàn phím rộng hơn và ảnh, video lớn hơn. Nó làm theo cài đặt tự động xoay của điện thoại. Cuộc gọi, máy ảnh, thanh toán và một vài màn hình khác vẫn giữ dọc. Hãy khởi động lại Messenger sau khi thay đổi."},
         {"call_recording.title", "Ghi âm cuộc gọi"},
         {"call_recording.description", "Thêm nút Ghi âm trên Messenger trong khi gọi. Cuộc gọi được lưu thành một tệp âm thanh trong Recordings/Messenger Calls trên điện thoại (Music/Messenger Calls trên Android 10 và 11). Khi bật, cuộc gọi dùng đường âm thanh thông thường của Android thay vì của Messenger, và cần khởi động lại Messenger sau khi thay đổi. Messenger không báo cho những người khác, và luật về ghi âm khác nhau tùy nơi, vì vậy hãy hỏi ý kiến mọi người trước."},
         {"hide_call_buttons.title", "Ẩn nút gọi"},

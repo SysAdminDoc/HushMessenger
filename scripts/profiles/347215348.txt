@@ -156,6 +156,8 @@ hook inbox_search_bar LX/4Dv;->A00(Lcom/facebook/auth/usersession/FbUserSession;
 hook instants_button LX/1yu;->A0F(LX/1yu;)V
 hook instants_button LX/VyC;->A0V(LX/VyC;)V
 hook keep_unsent LX/PAv;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V
+hook landscape_lock LX/090;->A0K()Z
+hook landscape_media LX/7aM;->A00(LX/7aM;I)V
 hook local_chat_search LX/Nic;->F2z(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V
 hook local_chat_search LX/Nic;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook mark_read_action LX/Hlt;->A0V()Z

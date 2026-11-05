@@ -226,6 +226,7 @@ public class CompatReport {
         PATCHES.put("Android Auto messages", List.of("car_messages"));
         PATCHES.put("Search saved messages", List.of("local_chat_search"));
         PATCHES.put("Jump to the first message or a date", List.of("chat_jump"));
+        PATCHES.put("Allow landscape", List.of("landscape_lock", "landscape_media"));
         PATCHES.put("Record calls", List.of("call_recording"));
         PATCHES.put("Hide call buttons", List.of("hide_call_bar"));
         PATCHES.put("Ask before a call", List.of("hide_call_bar"));
@@ -5942,6 +5943,90 @@ public class CompatReport {
         return previews == 1 && encrypted > 0 ? List.of(builder) : List.of();
     }
 
+    static final String FB_FRAGMENT_ACTIVITY = "Lcom/facebook/base/activity/FbFragmentActivity;";
+    static final long LANDSCAPE_FLAG = 0x8105f000002c01L;
+    static final String MEDIA_ORIENTATION_OPTION = "allowOrientationChanges";
+
+    /**
+     * The portrait lock check: non-static ()Z with code and 3 to 16 registers, reading the lock flag as const-wide,
+     * reading exactly one FbFragmentActivity field of its own class and always from a this nothing overwrites, calling
+     * an FbFragmentActivity ()Z method, and leaving through plain returns nothing jumps onto. Mirrors Landscape.kt.
+     */
+    static boolean isPortraitLock(Method m) {
+        if (AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"Z".equals(m.getReturnType()) || !m.getParameterTypes().isEmpty() || m.getImplementation() == null) return false;
+        int registers = m.getImplementation().getRegisterCount();
+        if (registers > 16 || registers < 3) return false;
+        var code = instructions(m);
+        int self = parameterRegister(m, 0);
+        boolean flag = false, optIn = false;
+        var fields = new HashSet<String>();
+        for (var i : code) {
+            if (i.getOpcode() == Opcode.CONST_WIDE && ((WideLiteralInstruction) i).getWideLiteral() == LANDSCAPE_FLAG) flag = true;
+            if (i.getOpcode() == Opcode.IGET_OBJECT && ((ReferenceInstruction) i).getReference() instanceof FieldReference f && FB_FRAGMENT_ACTIVITY.equals(f.getType())) {
+                if (!f.getDefiningClass().equals(m.getDefiningClass()) || ((TwoRegisterInstruction) i).getRegisterB() != self) return false;
+                fields.add(f.toString());
+            }
+            if (i.getOpcode() == Opcode.INVOKE_VIRTUAL && ((ReferenceInstruction) i).getReference() instanceof MethodReference c &&
+                FB_FRAGMENT_ACTIVITY.equals(c.getDefiningClass()) && c.getParameterTypes().isEmpty() && "Z".equals(c.getReturnType())) optIn = true;
+            if (writesRegister(i, self)) return false;
+        }
+        if (!flag || !optIn || fields.size() != 1) return false;
+        var targets = mediaTargets(m);
+        boolean returns = false;
+        for (int at = 0; at < code.size(); at++)
+            if (code.get(at).getOpcode() == Opcode.RETURN) { if (targets.contains(at)) return false; returns = true; }
+        return returns;
+    }
+
+    /** landscape_lock: the one method with the portrait lock check's shape. */
+    static List<Method> portraitLock(List<ClassDef> classes) {
+        Method found = null;
+        int count = 0;
+        for (var cls : classes) for (var m : cls.getMethods()) if (isPortraitLock(m)) { found = m; count++; }
+        return count == 1 ? List.of(found) : List.of();
+    }
+
+    /**
+     * The media viewers' orientation call: static (own class, I)V with code and at most 16 registers, an instance-of
+     * FbFragmentActivity, and at least one (I)V call, each a two-register invoke passing p1 second. Mirrors Landscape.kt.
+     */
+    static boolean isMediaOrientation(Method m) {
+        if (!AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"V".equals(m.getReturnType()) || m.getImplementation() == null) return false;
+        var params = new ArrayList<String>();
+        for (var t : m.getParameterTypes()) params.add(t.toString());
+        if (!params.equals(List.of(m.getDefiningClass(), "I")) || m.getImplementation().getRegisterCount() > 16) return false;
+        int orientation = parameterRegister(m, 1);
+        boolean checks = false;
+        int handOffs = 0;
+        for (var i : instructions(m)) {
+            if (i.getOpcode() == Opcode.INSTANCE_OF && ((TypeReference) ((ReferenceInstruction) i).getReference()).getType().equals(FB_FRAGMENT_ACTIVITY)) checks = true;
+            if (i instanceof ReferenceInstruction ri && ri.getReference() instanceof MethodReference c && "V".equals(c.getReturnType()) &&
+                c.getParameterTypes().size() == 1 && "I".equals(c.getParameterTypes().get(0).toString())) {
+                if (!(i instanceof FiveRegisterInstruction call) || call.getRegisterCount() != 2 || call.getRegisterD() != orientation) return false;
+                handOffs++;
+            }
+        }
+        return checks && handOffs > 0;
+    }
+
+    /** landscape_media: the one class naming allowOrientationChanges, and its one method with the orientation call's shape. */
+    static List<Method> mediaOrientation(List<ClassDef> classes) {
+        ClassDef helper = null;
+        int helpers = 0;
+        for (var cls : classes) {
+            boolean names = false;
+            for (var method : cls.getMethods())
+                for (var i : instructions(method))
+                    if (i instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference s && MEDIA_ORIENTATION_OPTION.equals(s.getString())) names = true;
+            if (names) { helper = cls; helpers++; }
+        }
+        if (helpers != 1) return List.of();
+        Method found = null;
+        int count = 0;
+        for (var m : helper.getMethods()) if (isMediaOrientation(m)) { found = m; count++; }
+        return count == 1 ? List.of(found) : List.of();
+    }
+
     static final String BLOCK_PEOPLE_PRESENTER = "BlockPeopleV2PresenterImpl";
     static final String BLOCKED_ID_UNREADABLE = "user id/phone-number is null/empty when trying to parse the id";
     static final String USER_MODEL = "Lcom/facebook/user/model/User;";
@@ -7756,6 +7841,8 @@ public class CompatReport {
         found.get("phone_id_sync").addAll(phoneIdSync(classes));
         found.get("story_hold").addAll(storyHold(classes));
         found.get("chat_preview").addAll(chatPreview(classes));
+        found.get("landscape_lock").addAll(portraitLock(classes));
+        found.get("landscape_media").addAll(mediaOrientation(classes));
         found.get("blocked_list_pictures").addAll(blockedListPictures(classes));
         found.get("share_story").addAll(shareStory(classes));
         found.get("avatar_shape").addAll(avatarShape(classes));

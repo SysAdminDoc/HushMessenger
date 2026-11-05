@@ -21,6 +21,7 @@
 - `Report a problem` now also says whether Messenger's notifications can pop up on your phone. It fills in Android's notification switch for Messenger, your chat bubbles choice, whether Messenger may draw over other apps and show calls full screen, and which notification channels sit below the level that pops up. Channels go in by Messenger's own id for them, never a chat's name. Refs #126.
 - `Your own home header` is a new switch under Theme. Type a few words or pick a picture and it shows at the top of the chat list in place of Messenger's wordmark. Words take the wordmark's own colors, gradient and dark mode white included, and stand as tall as its letters in the same spot. A picture keeps its colors, sits at that height too and wins when both are set. With neither, the wordmark stays. Refs #129.
 - `Hide pictures on the Blocked list` is a new switch under Privacy. The list of people you've blocked, in Privacy and safety, keeps their names and Unblock but drops their profile pictures, the same way Messenger already shows someone it can't look up. It starts off. (Hushfacebook #361)
+- `Allow landscape` is a new switch under Conversations. Messenger turns sideways with your phone when auto-rotate is on, so you get a wider keyboard and bigger photos and videos, and a photo or video you close doesn't snap the screen back upright. Calls, the camera, payments and a few other screens stay upright. Messenger needs a restart after you change it. It's experimental and it starts off. Refs #140.
 
 ### Changed and fixed
 
