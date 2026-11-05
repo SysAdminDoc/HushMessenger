@@ -1597,6 +1597,8 @@ public final class SettingsActivity extends Activity {
      * the restart row follow from refreshChoices, the same as after a tap on each switch.
      */
     private void applyQuickSetup(String name) {
+        // Words typed a moment ago count as there, so iPhone look never writes over them.
+        homeHeader.saveWords();
         java.util.Map<String, Boolean> values = QuickSetups.values(name);
         // Turning a control off never needs this phone to run it, so Back to defaults also clears one it can't.
         java.util.function.Predicate<String> settable = "defaults".equals(name) ? Settings.installed::contains
@@ -1605,21 +1607,36 @@ public final class SettingsActivity extends Activity {
         // What each changed key held, null for one never saved, so Undo puts back exactly that.
         java.util.Map<String, Boolean> before = new java.util.HashMap<>();
         for (String key : changes.keySet()) before.put(key, Settings.preferences.contains(key) ? Settings.preferences.getBoolean(key, false) : null);
-        if (!changes.isEmpty()) {
+        // iPhone look titles a header with no words and no picture "Chats", in this page's language.
+        String words = "iphone".equals(name) && settable.test(HomeHeader.KEY) && !HomeHeader.file(this).isFile()
+            && HomeHeader.clean(Settings.preferences.getString(HomeHeader.TEXT, "")).isEmpty()
+            ? text.get("quick_iphone_words") : null;
+        int changed = changes.size() + (words != null ? 1 : 0);
+        if (changed > 0) {
             SharedPreferences.Editor edit = Settings.preferences.edit();
             for (java.util.Map.Entry<String, Boolean> change : changes.entrySet()) edit.putBoolean(change.getKey(), change.getValue());
+            if (words != null) edit.putString(HomeHeader.TEXT, words);
             edit.apply();
         }
+        if (words != null) homeHeader.reload();
         refreshChoices();
-        feedback(!changes.isEmpty() ? text.count("quick_changed", changes.size())
+        feedback(changed > 0 ? text.count("quick_changed", changed)
             : text.get(QuickSetups.anySettable(values, settable) ? "quick_unchanged" : "quick_missing"), Toast.LENGTH_SHORT);
-        if (!changes.isEmpty()) offerUndo(text.format("quick_" + name), () -> undoQuickSetup(changes, before));
+        if (changed > 0) offerUndo(text.format("quick_" + name), () -> undoQuickSetup(changes, before, words));
     }
 
-    /** Puts back what a Quick setup changed, except a switch flipped again since, which stays as it is now. */
-    private void undoQuickSetup(java.util.Map<String, Boolean> changes, java.util.Map<String, Boolean> before) {
+    /**
+     * Puts back what a Quick setup changed, except a switch flipped again since, which stays as it is now. Header words
+     * it filled in go too, unless they were edited since.
+     */
+    private void undoQuickSetup(java.util.Map<String, Boolean> changes, java.util.Map<String, Boolean> before, String words) {
+        homeHeader.saveWords();
         SharedPreferences.Editor edit = Settings.preferences.edit();
         int restored = 0;
+        if (words != null && words.equals(Settings.preferences.getString(HomeHeader.TEXT, ""))) {
+            edit.remove(HomeHeader.TEXT);
+            restored++;
+        }
         for (java.util.Map.Entry<String, Boolean> change : changes.entrySet()) {
             String key = change.getKey();
             boolean set = change.getValue();
@@ -1630,6 +1647,7 @@ public final class SettingsActivity extends Activity {
             restored++;
         }
         edit.apply();
+        if (words != null) homeHeader.reload();
         refreshChoices();
         feedback(text.count("quick_undone", restored), Toast.LENGTH_SHORT);
     }
