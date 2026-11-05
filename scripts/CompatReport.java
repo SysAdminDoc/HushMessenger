@@ -1131,7 +1131,8 @@ public class CompatReport {
             return ref.getName().equals("<init>") && ref.getDefiningClass().equals(shortcut.getReturnType()) && index >= 0 &&
                 argument != null && Objects.equals(s.callValue(at, argument), build);
         });
-        if (containerCtor == null || !s.returns(s.key(containerCtor, s.argument(containerCtor, 0)))) return null;
+        if (containerCtor == null) return bubbleHolderField(byType, shortcut, s, build);
+        if (!s.returns(s.key(containerCtor, s.argument(containerCtor, 0)))) return null;
         var constructor = bubbleTarget(byType, s.reference(containerCtor)); if (constructor == null) return null;
         var cf = new BubbleValues(constructor); Integer shortcutRegister = cf.parameter(BUBBLE_SHORTCUT);
         if (shortcutRegister == null) return null;
@@ -1142,6 +1143,48 @@ public class CompatReport {
                 !(((ReferenceInstruction)i).getReference() instanceof FieldReference field)) continue;
             if (field.getType().equals(BUBBLE_SHORTCUT) && Objects.equals(cf.key(at, write.getRegisterA()), cf.key(0, shortcutRegister)) &&
                 Objects.equals(cf.key(at, write.getRegisterB()), cf.key(0, cf.parameterStart))) shortcutFields.add(field);
+        }
+        return shortcutFields.size() == 1 ? shortcutFields.get(0) : null;
+    }
+
+    /**
+     * 586's armv7 build puts the shortcut in a holder and hands the holder to the returned container's constructor, which
+     * copies it onto the container's own field. That field, as in NativeBubbles.kt's bubbleHolderField.
+     */
+    static FieldReference bubbleHolderField(Map<String, ClassDef> byType, Method shortcut, BubbleValues s, int build) {
+        var holderWrites = new ArrayList<Integer>();
+        for (int at = 0; at < s.code.size(); at++) {
+            var i = s.code.get(at);
+            if (i.getOpcode() == Opcode.IPUT_OBJECT && i instanceof TwoRegisterInstruction write &&
+                ((ReferenceInstruction)i).getReference() instanceof FieldReference field && field.getType().equals(BUBBLE_SHORTCUT) &&
+                Objects.equals(s.callValue(at, write.getRegisterA()), build)) holderWrites.add(at);
+        }
+        if (holderWrites.size() != 1) return null;
+        int store = holderWrites.get(0);
+        var holderField = (FieldReference)((ReferenceInstruction)s.code.get(store)).getReference();
+        String holderKey = s.key(store, ((TwoRegisterInstruction)s.code.get(store)).getRegisterB());
+        if (holderKey == null) return null;
+        Integer containerCtor = bubbleSingle(s.calls(), at -> {
+            var ref = s.reference(at); int index = bubbleParameters(ref).indexOf(holderField.getDefiningClass());
+            Integer argument = s.argument(at, index + 1);
+            return ref.getName().equals("<init>") && ref.getDefiningClass().equals(shortcut.getReturnType()) && index >= 0 &&
+                bubbleParameters(ref).stream().filter(holderField.getDefiningClass()::equals).count() == 1 &&
+                argument != null && holderKey.equals(s.key(at, argument));
+        });
+        if (containerCtor == null || !s.returns(s.key(containerCtor, s.argument(containerCtor, 0)))) return null;
+        var constructor = bubbleTarget(byType, s.reference(containerCtor)); if (constructor == null) return null;
+        var cf = new BubbleValues(constructor); Integer holder = cf.parameter(holderField.getDefiningClass());
+        if (holder == null) return null;
+        var shortcutFields = new ArrayList<FieldReference>();
+        for (int at = 0; at < cf.code.size(); at++) {
+            var i = cf.code.get(at);
+            if (i.getOpcode() != Opcode.IPUT_OBJECT || !(i instanceof TwoRegisterInstruction write) ||
+                !(((ReferenceInstruction)i).getReference() instanceof FieldReference field) ||
+                !field.getDefiningClass().equals(shortcut.getReturnType()) || !field.getType().equals(BUBBLE_SHORTCUT) ||
+                !Objects.equals(cf.key(at, write.getRegisterB()), cf.key(0, cf.parameterStart))) continue;
+            var read = cf.fieldKey(at, write.getRegisterA());
+            if (read != null && read.reference().toString().equals(holderField.toString()) && Objects.equals(read.base(), cf.key(0, holder)))
+                shortcutFields.add(field);
         }
         return shortcutFields.size() == 1 ? shortcutFields.get(0) : null;
     }
@@ -1699,7 +1742,7 @@ public class CompatReport {
      * The Threads and Instagram link launchers (RestoreTrustPatch.kt's linkLaunchSites): a void (Context, Uri)
      * method with the app's log tag, with (Context, Intent)Z family launches whose answers the return-void after
      * each drops. Every launch must take the extension call the way the patch places it, and the app's package
-     * must load as a literal before the tag.
+     * must load before the tag, as a literal or from a string pool by a constant key (586's armv7 Threads launcher).
      */
     static List<String> linkLauncherProblems(List<ClassDef> classes) {
         var problems = new ArrayList<String>();
@@ -1720,7 +1763,7 @@ public class CompatReport {
             var code = instructions(launchers.get(0));
             int named = -1, tag = -1;
             for (int i = 0; i < code.size(); i++) {
-                if (named < 0 && app[1].equals(inboxString(code.get(i)))) named = i;
+                if (named < 0 && (app[1].equals(inboxString(code.get(i))) || app[1].equals(pooledLinkPackage(classes, launchers.get(0), code, i)))) named = i;
                 if (tag < 0 && app[2].equals(inboxString(code.get(i)))) tag = i;
             }
             if (named < 0 || named > tag) {
@@ -1731,6 +1774,48 @@ public class CompatReport {
             if (why != null) problems.add(app[0] + "'s link launcher " + hookId(launchers.get(0)) + " " + why);
         }
         return problems;
+    }
+
+    /**
+     * What the move-result at {@code at} takes from a Redex string pool looked up by a constant key straight ahead of it,
+     * with nothing jumping between them, as RestoreTrustPatch.kt's requireLinkPackage reads it. Null for anything else.
+     */
+    static String pooledLinkPackage(List<ClassDef> classes, Method method, List<Instruction> code, int at) {
+        if (at < 2 || code.get(at).getOpcode() != Opcode.MOVE_RESULT_OBJECT || code.get(at - 1).getOpcode() != Opcode.INVOKE_STATIC ||
+            !(code.get(at - 1) instanceof FiveRegisterInstruction lookup) || lookup.getRegisterCount() != 1 ||
+            !(((ReferenceInstruction) lookup).getReference() instanceof MethodReference pool)) return null;
+        var key = code.get(at - 2);
+        if (!Set.of(Opcode.CONST_4, Opcode.CONST_16, Opcode.CONST, Opcode.CONST_HIGH16).contains(key.getOpcode()) ||
+            register(key) != lookup.getRegisterC()) return null;
+        var targets = mediaTargets(method);
+        if (targets.contains(at - 1) || targets.contains(at)) return null;
+        var pools = new ArrayList<Method>();
+        for (var cls : classes) if (cls.getType().equals(pool.getDefiningClass()))
+            for (var m : cls.getMethods()) if (hookId(m).equals(pool.toString())) pools.add(m);
+        return pools.size() == 1 ? poolString(pools.get(0), ((NarrowLiteralInstruction) key).getNarrowLiteral()) : null;
+    }
+
+    /** What a Redex string pool answers for a key, as RestoreTrustPatch.kt's poolString. */
+    static String poolString(Method pool, int key) {
+        var impl = pool.getImplementation();
+        if (impl == null || !AccessFlags.STATIC.isSet(pool.getAccessFlags()) || !"Ljava/lang/String;".equals(pool.getReturnType()) ||
+            pool.getParameterTypes().size() != 1 || !"I".equals(pool.getParameterTypes().get(0).toString())) return null;
+        var code = instructions(pool);
+        if (code.isEmpty() || !(code.get(0) instanceof OffsetInstruction table) ||
+            (code.get(0).getOpcode() != Opcode.PACKED_SWITCH && code.get(0).getOpcode() != Opcode.SPARSE_SWITCH) ||
+            register(code.get(0)) != impl.getRegisterCount() - 1) return null;
+        var indexAt = new HashMap<Integer, Integer>();
+        for (int i = 0, address = 0; i < code.size(); address += code.get(i).getCodeUnits(), i++) indexAt.put(address, i);
+        var payloadAt = indexAt.get(table.getCodeOffset());
+        if (payloadAt == null || !(code.get(payloadAt) instanceof SwitchPayload payload)) return null;
+        var cases = payload.getSwitchElements().stream().filter(e -> e.getKey() == key).toList();
+        if (cases.size() != 1) return null;
+        Integer at = indexAt.get(cases.get(0).getOffset());
+        if (at == null || at + 1 >= code.size()) return null;
+        var load = code.get(at);
+        if ((load.getOpcode() != Opcode.CONST_STRING && load.getOpcode() != Opcode.CONST_STRING_JUMBO) ||
+            code.get(at + 1).getOpcode() != Opcode.RETURN_OBJECT || register(code.get(at + 1)) != register(load)) return null;
+        return ((StringReference) ((ReferenceInstruction) load).getReference()).getString();
     }
 
     static String linkLaunchProblem(Method method) {
@@ -1806,10 +1891,12 @@ public class CompatReport {
     static final int GENERATE_AI_LABEL = 0x7f14055d;
     // "Generate": the same cell's label when its tap opens the custom, AI and music sticker menu
     static final int GENERATE_MENU_LABEL = 0x7f141c4e;
-    // The viewer's onCreateDialog override in 586
-    static final String EPHEMERAL_DIALOG = "A1K";
-    // The Quicksnap viewer's onCreateView frame in 586
-    static final int QUICKSNAP_REGISTERS = 39;
+    // The same label in 586's armv7 string pack, two resources on
+    static final int GENERATE_MENU_LABEL_ARMV7 = 0x7f141c50;
+    // The viewer's onCreateDialog override in 586, A1L in its armv7 build
+    static final Set<String> EPHEMERAL_DIALOGS = Set.of("A1K", "A1L");
+    // The Quicksnap viewer's onCreateView frame in 586: 39 registers, 38 in its armv7 build
+    static final Set<Integer> QUICKSNAP_FRAMES = Set.of(39, 38);
 
     static int mediaTarget(List<Instruction> code, int at) {
         if (!(code.get(at) instanceof OffsetInstruction jump)) return -1;
@@ -1870,7 +1957,7 @@ public class CompatReport {
         var impl = method.getImplementation(); var c = instructions(method); var p = bubbleParameters(method);
         if (impl == null || AccessFlags.STATIC.isSet(method.getAccessFlags())) return List.of();
         List<Integer> sites; boolean valid, resume = false;
-        if (method.getDefiningClass().equals(EPHEMERAL_VIEWER) && EPHEMERAL_DIALOG.equals(method.getName()) &&
+        if (method.getDefiningClass().equals(EPHEMERAL_VIEWER) && EPHEMERAL_DIALOGS.contains(method.getName()) &&
                 p.equals(List.of("Landroid/os/Bundle;")) && method.getReturnType().equals("Landroid/app/Dialog;")) {
             sites = List.of(9);
             valid = impl.getTryBlocks().isEmpty() && impl.getRegisterCount() == 5 && c.size() == 15 && mediaResult(c, 4, "Landroid/app/Dialog;", 2) &&
@@ -1896,7 +1983,7 @@ public class CompatReport {
             for (int i = 0; i <= site; i++) prefixEnd += c.get(i).getCodeUnits();
             boolean covered = false;
             for (var block : impl.getTryBlocks()) if (block.getStartCodeAddress() < prefixEnd) covered = true;
-            valid = !covered && impl.getRegisterCount() == QUICKSNAP_REGISTERS && mediaResult(c, site - 6, "Landroid/app/Dialog;", 0) &&
+            valid = !covered && QUICKSNAP_FRAMES.contains(impl.getRegisterCount()) && mediaResult(c, site - 6, "Landroid/app/Dialog;", 0) &&
                 mediaNull(c, site - 5, 0, site + 1) && mediaWindow(c, site - 4, "Landroid/app/Dialog;", 0, 1, site + 1) &&
                 mediaLiteral(c, site - 1, 0) && mediaCall(c, site, ADD_FLAGS, 1, 0);
         } else return List.of();
@@ -1911,13 +1998,15 @@ public class CompatReport {
 
     /**
      * Mirrors NativeMediaControls.kt: 586's cell, its label, how many renders offer that label, the same for its Generate
-     * menu label, and its render's size (24 registers). Four renders offer the AI label and one the menu label.
+     * menu label, and its render's size (24 registers). Four renders offer the AI label and one the menu label. Each ABI's
+     * DEX names the cell differently, so each gets a row.
      */
     record AiCell(String type, String superclass, String scope, String component, int label, int sources, int size, int menu, int menuSources) {
         String render() { return type + "->render(" + scope + ")" + component; }
     }
     static final List<AiCell> AI_CELLS = List.of(
-        new AiCell("LX/REu;", "LX/1JA;", "LX/2Ca;", "LX/1Gk;", GENERATE_AI_LABEL, 4, 113, GENERATE_MENU_LABEL, 1));
+        new AiCell("LX/REu;", "LX/1JA;", "LX/2Ca;", "LX/1Gk;", GENERATE_AI_LABEL, 4, 113, GENERATE_MENU_LABEL, 1),
+        new AiCell("LX/O19;", "LX/1JZ;", "LX/2Cz;", "LX/1H9;", GENERATE_AI_LABEL, 4, 109, GENERATE_MENU_LABEL_ARMV7, 1));
     static List<Method> findAiStickerCells(List<ClassDef> classes) {
         var result = new ArrayList<Method>();
         for (var shape : AI_CELLS) {
@@ -3558,18 +3647,27 @@ public class CompatReport {
 
     /**
      * The chat's static handler for a photo picked in another app: handed one thread and one result event, it checks for
-     * 1112 and reads the event's one intent field from that parameter, which it never writes. Mirrors galleryItemsIntent
-     * in ExternalGallery.kt.
+     * 1112 and reads the event's one intent field from that parameter, before anything writes over it. Mirrors
+     * galleryItemsIntent in ExternalGallery.kt.
      */
     static boolean isGalleryItemsHandler(Method m, Map<String, ClassDef> byType) {
         if (!AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"V".equals(m.getReturnType()) || m.getImplementation() == null ||
             onlyParameter(m, THREAD_KEY) < 0 || onlyParameter(m, ACTIVITY_RESULT_EVENT) < 0 || !hasLiteral(m, 1112)) return false;
         int event = galleryItemsRegister(m, ACTIVITY_RESULT_EVENT);
+        var code = instructions(m);
+        // 586's armv7 handler reuses the event's register for the coroutine's last argument once it's done with the event.
+        // The hooks run before any of it, so that's fine while nothing from the reuse on branches or catches, and only
+        // reads ahead of it count.
+        int reused = code.size();
+        for (int at = code.size() - 1; at >= 0; at--) if (writesRegister(code.get(at), event)) reused = at;
+        if (reused < code.size() && (!m.getImplementation().getTryBlocks().isEmpty() ||
+            code.subList(reused, code.size()).stream().anyMatch(i -> i instanceof OffsetInstruction))) return false;
         var intents = new LinkedHashMap<String, FieldReference>();
-        for (var i : instructions(m)) {
-            if (writesRegister(i, event)) return false;
-            if (i.getOpcode() == Opcode.IGET_OBJECT && ((TwoRegisterInstruction) i).getRegisterB() == event &&
-                ((ReferenceInstruction) i).getReference() instanceof FieldReference f && ACTIVITY_RESULT_EVENT.equals(f.getDefiningClass()) &&
+        for (int at = 0; at < code.size(); at++) {
+            var i = code.get(at);
+            if (i.getOpcode() != Opcode.IGET_OBJECT || ((TwoRegisterInstruction) i).getRegisterB() != event) continue;
+            if (at > reused) return false;
+            if (((ReferenceInstruction) i).getReference() instanceof FieldReference f && ACTIVITY_RESULT_EVENT.equals(f.getDefiningClass()) &&
                 "Landroid/content/Intent;".equals(f.getType())) intents.put(f.toString(), f);
         }
         if (intents.size() != 1) return false;
@@ -3681,8 +3779,8 @@ public class CompatReport {
     record GalleryChatSite(int at, int intent, int media, int chat, int params, String chatType, String unit) {}
 
     /**
-     * The coroutine copies the picked item into a MediaResource and builds the editor's params with it right after, then
-     * opens the editor and returns Unit. The run into the copy, with no branch out and none landing inside, reads the
+     * The coroutine copies the picked item into a MediaResource (see copiedMedia) and builds the editor's params with it
+     * right after, then opens the editor and returns Unit. The run into the copy, with no branch out and none landing inside, reads the
      * intent's type and casts the chat to one of the given types, and neither register changes after. All four registers
      * are locals below v16 and no try covers the builder. Mirrors galleryChatSite in GalleryToChat.kt.
      */
@@ -3695,12 +3793,8 @@ public class CompatReport {
                 if (at >= 0) return null;
                 at = i;
             }
-        if (at < 2 || code.get(at - 1).getOpcode() != Opcode.MOVE_RESULT_OBJECT) return null;
-        var copy = code.get(at - 2);
-        if ((copy.getOpcode() != Opcode.INVOKE_STATIC && copy.getOpcode() != Opcode.INVOKE_STATIC_RANGE) ||
-            !(copy instanceof ReferenceInstruction cr && cr.getReference() instanceof MethodReference copied) ||
-            copied.getParameterTypes().size() != 1 || !CHAT_MEDIA.equals(copied.getReturnType())) return null;
-        int media = register(code.get(at - 1)), params = register(code.get(at));
+        int media = copiedMedia(code, at), params = register(code.get(at));
+        if (media < 0) return null;
         int open = at + 1;
         for (; open < code.size(); open++) {
             var i = code.get(open);
@@ -3747,6 +3841,28 @@ public class CompatReport {
         for (var block : m.getImplementation().getTryBlocks())
             if (address >= block.getStartCodeAddress() && address < block.getStartCodeAddress() + block.getCodeUnitCount()) return null;
         return new GalleryChatSite(at, intent, media, chat, params, typeOf(code.get(cast)), unit.toString());
+    }
+
+    /**
+     * The register holding the item's MediaResource copy right before the builder at {@code at}, or -1: either a static
+     * copy with one parameter and its move-result (586 arm64), or the copy's constructor inlined as new-instance,
+     * invoke-direct with one argument and a move-object out of the new register (586 armv7).
+     */
+    static int copiedMedia(List<Instruction> code, int at) {
+        if (at < 2) return -1;
+        var copy = code.get(at - 2);
+        if (code.get(at - 1).getOpcode() == Opcode.MOVE_RESULT_OBJECT)
+            return (copy.getOpcode() == Opcode.INVOKE_STATIC || copy.getOpcode() == Opcode.INVOKE_STATIC_RANGE) &&
+                copy instanceof ReferenceInstruction cr && cr.getReference() instanceof MethodReference copied &&
+                copied.getParameterTypes().size() == 1 && CHAT_MEDIA.equals(copied.getReturnType()) ? register(code.get(at - 1)) : -1;
+        if (at < 3 || code.get(at - 1).getOpcode() != Opcode.MOVE_OBJECT || code.get(at - 3).getOpcode() != Opcode.NEW_INSTANCE ||
+            !CHAT_MEDIA.equals(typeOf(code.get(at - 3))) || copy.getOpcode() != Opcode.INVOKE_DIRECT ||
+            !(copy instanceof FiveRegisterInstruction made) || made.getRegisterCount() != 2 ||
+            !(((ReferenceInstruction) copy).getReference() instanceof MethodReference init) || !"<init>".equals(init.getName()) ||
+            !CHAT_MEDIA.equals(init.getDefiningClass()) || init.getParameterTypes().size() != 1) return -1;
+        var moved = (TwoRegisterInstruction) code.get(at - 1);
+        int built = register(code.get(at - 3));
+        return made.getRegisterC() == built && moved.getRegisterB() == built ? moved.getRegisterA() : -1;
     }
 
     static boolean publicStaticCall(String id, Map<String, ClassDef> byType) {
@@ -7883,7 +7999,7 @@ public class CompatReport {
         // leaves the control unresolved, as findControls in ControlHooks.kt clears it then.
         boolean changedViewer = false;
         for (var cls : classes) for (var method : cls.getMethods()) {
-            boolean candidate = (EPHEMERAL_VIEWER.equals(cls.getType()) && (EPHEMERAL_DIALOG.equals(method.getName()) || "onResume".equals(method.getName()))) ||
+            boolean candidate = (EPHEMERAL_VIEWER.equals(cls.getType()) && (EPHEMERAL_DIALOGS.contains(method.getName()) || "onResume".equals(method.getName()))) ||
                 (QUICKSNAP_VIEWER.equals(cls.getType()) && "onCreateView".equals(method.getName()));
             if (!candidate) continue;
             if (screenshotViewerSites(method).isEmpty()) changedViewer = true;

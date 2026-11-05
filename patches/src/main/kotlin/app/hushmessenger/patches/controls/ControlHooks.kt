@@ -200,7 +200,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
             ?.initialValue.let { (it as? StringEncodedValue)?.value }
         for (method in cls.methods) {
             fun add(key: String) { found.getValue(key).add(method) }
-            if ((cls.type == EPHEMERAL_VIEWER && (method.name == EPHEMERAL_DIALOG || method.name == "onResume")) ||
+            if ((cls.type == EPHEMERAL_VIEWER && (method.name in EPHEMERAL_DIALOGS || method.name == "onResume")) ||
                 (cls.type == QUICKSNAP_VIEWER && method.name == "onCreateView")) {
                 try {
                     method.screenshotViewerSites()
