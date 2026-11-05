@@ -34,20 +34,21 @@ internal fun Document.addSettingsEntry() {
         "authorities" to MessengerTarget.PACKAGE + SETTINGS_AUTHORITY_SUFFIX, "exported" to "false")
     // Settings get their own task, so Recents left a second card for them beside Messenger's (#54). Android still shows
     // the card while settings are in front, and drops it once anything else is.
+    // Labels and the icon are the APK's own resources, which settingsResources adds (#141).
     application.child("activity", "name" to "app.hushmessenger.extension.SettingsActivity",
-        "label" to "HushMessenger settings", "exported" to "true", "excludeFromRecents" to "true",
-        "icon" to "@android:drawable/ic_menu_preferences", "taskAffinity" to "app.hushmessenger.settings")
+        "label" to "@string/$SETTINGS_LABEL", "exported" to "true", "excludeFromRecents" to "true",
+        "icon" to "@drawable/$SETTINGS_ICON", "taskAffinity" to "app.hushmessenger.settings")
     // The app drawer entry is an alias, so settings can hide it while the shortcuts and Menu tab row keep working.
     val launcher = application.child("activity-alias", "name" to "app.hushmessenger.extension.SettingsLauncher",
-        "targetActivity" to "app.hushmessenger.extension.SettingsActivity", "label" to "HushMessenger settings",
-        "icon" to "@android:drawable/ic_menu_preferences", "exported" to "true")
+        "targetActivity" to "app.hushmessenger.extension.SettingsActivity", "label" to "@string/$SETTINGS_LABEL",
+        "icon" to "@drawable/$SETTINGS_ICON", "exported" to "true")
     // Android opens the first launcher match for the package (Android Auto too), so this one sorts after Messenger's.
     val filter = launcher.child("intent-filter", "priority" to "-1")
     filter.child("action", "name" to "android.intent.action.MAIN")
     filter.child("category", "name" to "android.intent.category.LAUNCHER")
     // Launcher shortcuts start it as Messenger itself, so no other app needs a way to kill the process.
     application.child("activity", "name" to "app.hushmessenger.extension.RestartActivity",
-        "label" to "Restart Messenger", "exported" to "false", "excludeFromRecents" to "true",
+        "label" to "@string/$RESTART_LABEL", "exported" to "false", "excludeFromRecents" to "true",
         "noHistory" to "true", "configChanges" to "orientation|screenSize|keyboardHidden",
         "theme" to "@android:style/Theme.Material.NoActionBar")
 }
@@ -60,6 +61,14 @@ internal val settingsResources = resourcePatch(description = "Install HushMessen
             it.hasNativeBubbleActivity()
         }
         document("AndroidManifest.xml").use { it.addSettingsAccess() }
+        // One decode call: patcher 2 loads the whole APK again for each one.
+        decode(*MANIFEST_STRINGS.keys.toTypedArray())
+        if (!get(DEFAULT_STRINGS, false).exists()) throw PatchException("Messenger controls: Messenger has no $DEFAULT_STRINGS for the labels")
+        for ((path, strings) in MANIFEST_STRINGS) if (get(path, false).exists()) document(path).use { it.addStrings(strings) }
+        val icon = get(SETTINGS_ICON_PATH)
+        if (icon.exists()) throw PatchException("HushMessenger: $SETTINGS_ICON_PATH is already in the APK. Start with the stock APK.")
+        icon.parentFile.mkdirs()
+        icon.writeText(SETTINGS_ICON_XML)
     }
 }
 

@@ -1,9 +1,14 @@
 package app.hushmessenger.patches.coexist
 
 import app.hushmessenger.patches.MessengerTarget
+import app.hushmessenger.patches.controls.DEFAULT_STRINGS
+import app.hushmessenger.patches.controls.MANIFEST_STRINGS
+import app.hushmessenger.patches.controls.RESTART_LABEL
 import app.hushmessenger.patches.controls.SETTINGS_AUTHORITY_SUFFIX
+import app.hushmessenger.patches.controls.SETTINGS_LABEL
 import app.hushmessenger.patches.controls.SHORTCUT_HOST
 import app.hushmessenger.patches.controls.addSettingsEntry
+import app.hushmessenger.patches.controls.addStrings
 import app.hushmessenger.patches.controls.collectLifecycle
 import app.hushmessenger.patches.controls.fixtureClass
 import app.hushmessenger.patches.controls.fixtureMethod
@@ -339,16 +344,39 @@ class CloneInstallPatchTest {
         assertEquals(COPY, manifest.named("meta-data", "android.telephony.PROPERTY_SATELLITE_DATA_OPTIMIZED").getAttribute("android:value"))
         assertEquals("com.facebook.orca.prefs.Parent", manifest.named("meta-data", "android.support.PARENT_ACTIVITY").getAttribute("android:value"))
 
-        assertEquals("Copy", manifest.elements("application").single().getAttribute("android:label"))
-        assertEquals("Copy", manifest.named("activity-alias", "com.facebook.orca.LauncherAliasDreamy").getAttribute("android:label"))
-        assertEquals("Copy", manifest.named("activity-alias", "com.facebook.orca.auth.StartScreenActivity").getAttribute("android:label"))
-        assertEquals("Copy settings", manifest.named("activity", "app.hushmessenger.extension.SettingsActivity").getAttribute("android:label"))
-        assertEquals("Copy settings", manifest.named("activity-alias", "app.hushmessenger.extension.SettingsLauncher").getAttribute("android:label"))
-        assertEquals("Restart Messenger", manifest.named("activity", "app.hushmessenger.extension.RestartActivity").getAttribute("android:label"))
+        // Every label is a string resource: a realme launcher showed one written into the manifest as Messenger's (#141).
+        assertEquals("@string/$CLONE_LABEL", manifest.elements("application").single().getAttribute("android:label"))
+        assertEquals("@string/$CLONE_LABEL", manifest.named("activity-alias", "com.facebook.orca.LauncherAliasDreamy").getAttribute("android:label"))
+        assertEquals("@string/$CLONE_LABEL", manifest.named("activity-alias", "com.facebook.orca.auth.StartScreenActivity").getAttribute("android:label"))
+        assertEquals("@string/$SETTINGS_LABEL", manifest.named("activity", "app.hushmessenger.extension.SettingsActivity").getAttribute("android:label"))
+        assertEquals("@string/$SETTINGS_LABEL", manifest.named("activity-alias", "app.hushmessenger.extension.SettingsLauncher").getAttribute("android:label"))
+        assertEquals("@string/$RESTART_LABEL", manifest.named("activity", "app.hushmessenger.extension.RestartActivity").getAttribute("android:label"))
         assertEquals(4, result.labels)
+        assertTrue(manifest.elements("*").none { (it.getAttribute("android:label").ifEmpty { "@" }).first() != '@' },
+            "No label is left as plain text")
         // Android resolves alias names against the new package only when they're relative, and none are.
         assertTrue(manifest.elements("activity-alias").none { it.getAttribute("android:name").startsWith(COPY) })
         assertFalse("com.facebook.orca" in manifest.values())
+    }
+
+    @Test fun theClonesNameGoesInTheStringsTheLabelsPointAt() {
+        fun strings(vararg pairs: Pair<String, String>) = xml("<resources>" + pairs.joinToString("") { (name, text) ->
+            "<string name=\"$name\">$text</string>" } + "</resources>")
+        fun Document.text(name: String) = elements("string").singleOrNull { it.getAttribute("name") == name }?.textContent
+        val files = MANIFEST_STRINGS.mapValues { (_, texts) -> strings("app_name" to "Messenger").apply { addStrings(texts) } }
+        for ((path, document) in files) document.nameClone(path, "Copy (2)")
+        assertEquals("Copy (2)", files.getValue(DEFAULT_STRINGS).text(CLONE_LABEL))
+        assertEquals("Messenger", files.getValue(DEFAULT_STRINGS).text("app_name"), "Messenger's own name stays for its screens")
+        assertEquals(listOf("Copy (2) settings", "Cài đặt Copy (2)", "Copy (2) 設定"), files.values.map { it.text(SETTINGS_LABEL) })
+        // Only the default file needs the app name; every language falls back to it.
+        assertEquals(listOf("Copy (2)", null, null), files.values.map { it.text(CLONE_LABEL) })
+        assertEquals("Restart Messenger", files.getValue(DEFAULT_STRINGS).text(RESTART_LABEL))
+        // Without settings in the patch there is no settings label to name, and the app name still goes in.
+        val bare = strings("app_name" to "Messenger").apply { nameClone(DEFAULT_STRINGS, "Copy") }
+        assertEquals("Copy", bare.text(CLONE_LABEL))
+        assertNull(bare.text(SETTINGS_LABEL))
+        // A strings file that has the clone's string already was patched before.
+        assertFailsWith<PatchException> { bare.nameClone(DEFAULT_STRINGS, "Copy") }
     }
 
     @Test fun anythingThatWouldCollideStopsThePatchBeforeTheManifestChanges() {
@@ -742,7 +770,7 @@ class CloneInstallPatchTest {
             assertFalse("com.facebook.orca" in manifest.values(), code)
             val aliases = manifest.elements("activity-alias").filter { it.getAttribute("android:name").startsWith("com.facebook.orca.LauncherAlias") }
             assertEquals(7, aliases.size, code)
-            assertTrue(aliases.all { it.getAttribute("android:label") == CLONE_DEFAULT_LABEL }, code)
+            assertTrue(aliases.all { it.getAttribute("android:label") == "@string/$CLONE_LABEL" }, code)
         }
     }
 
