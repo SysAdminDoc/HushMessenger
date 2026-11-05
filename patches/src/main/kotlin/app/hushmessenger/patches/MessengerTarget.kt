@@ -3,6 +3,7 @@ package app.hushmessenger.patches
 import app.morphe.patcher.patch.ApkFileType
 import app.morphe.patcher.patch.AppTarget
 import app.morphe.patcher.patch.Compatibility
+import app.morphe.patcher.patch.SupportedAbi
 
 /**
  * The stock Messenger builds the patches were checked against. 586 has one, for arm64.
@@ -21,6 +22,23 @@ internal object MessengerTarget {
     )
     val VERSION_CODES = VERSIONS.values.flatten()
 
+    /** The ABI each checked build is for, as its record's APK ships native code for. */
+    val ABIS: Map<Int, SupportedAbi> = mapOf(
+        347215348 to SupportedAbi.ARM64_V8A,
+    )
+
+    /**
+     * The build codes Manager is told for one version name: one per ABI, which it hands its APK download helper and
+     * checks a picked APK against (#138: without them it linked an unsupported build of the same version). Null when
+     * a build's ABI isn't recorded or an ABI has more than one build, since the map holds one code per ABI and a
+     * missing ABI means any build.
+     */
+    fun exactCodes(codes: List<Int>, abis: Map<Int, SupportedAbi> = ABIS): Map<SupportedAbi, Int>? {
+        val byAbi = codes.groupBy { abis[it] ?: return null }
+        if (byAbi.values.any { it.size != 1 }) return null
+        return byAbi.mapValues { it.value.single() }
+    }
+
     private const val FACEBOOK_SIGNER =
         "e3f9e1e0cf99d0e56a055ba65e241b3399f7cea524326b0cdd6ec1327ed0fdc1"
     private const val META_SIGNER =
@@ -30,7 +48,7 @@ internal object MessengerTarget {
     fun supportedApks(versions: Map<String, List<Int>> = VERSIONS): String =
         versions.entries.joinToString(" or ") { (name, codes) -> "$name APK (version code ${codes.joinToString(" or ")})" }
 
-    fun compatibility(versions: Map<String, List<Int>>) = Compatibility(
+    fun compatibility(versions: Map<String, List<Int>>, abis: Map<Int, SupportedAbi> = ABIS) = Compatibility(
         name = "Messenger",
         packageName = PACKAGE,
         apkFileType = ApkFileType.APK,
@@ -41,7 +59,7 @@ internal object MessengerTarget {
                 else "builds ${codes.dropLast(1).joinToString(", ")} and ${codes.last()}"
             AppTarget(
                 version = name,
-                versionCodes = null,
+                versionCodes = exactCodes(codes, abis),
                 minSdk = MIN_SDK,
                 description = "Stock $builds; checked again during patching",
             )

@@ -25,6 +25,7 @@
 ### Changed and fixed
 
 - HushMessenger now targets Messenger 586.0.0.55.92. APKMirror lists one build of it, 347215348 for arm64 phones, and that's the one it takes. 585.0.0.53.94 is no longer supported, so update Messenger before you patch. Meta didn't put out an armv7 build of 586, so 32-bit phones can keep using v0.28.0 with Messenger 585. The build was checked patch by patch, and Morphe Desktop applied and rebuilt it.
+- Morphe Manager now knows the exact Messenger build the patches take, not only its version name. It looks for build 347215348 when it downloads Messenger for you, and it turns down a saved APK that has the right version name but is a different build, before patching starts. The patches are built with Morphe's patcher 2.2.0 now, so they need Morphe Manager 2.4.0 or newer, or Morphe Desktop 2.0.0 or newer. Refs #137, #138.
 
 - Chat heads show up for messages that arrive while Messenger is still running in the background, once you allow it unrestricted battery use. On Optimized battery Android blocks the chat head in that case, so one only appeared if Messenger had been closed. `Allow chat bubbles` now has an `Allow unrestricted battery use` button under its modes that asks Android for it, and its help text says why.
 - Coming back to HushMessenger's settings from an Android screen, like `Android bubble settings`, keeps your place in the list. If you'd searched first, the list used to jump back up to the search box.
