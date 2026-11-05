@@ -22,9 +22,10 @@ import java.util.WeakHashMap;
 
 /**
  * #129: words or a picture of your own at the top of the chat list, in place of Messenger's "messenger" wordmark. The
- * wordmark's component hands its drawable to {@link #dress} right after loading it, and draws whatever comes back at the
- * wordmark's height, its width following the drawable's shape. Words take the wordmark's own colors, its gradient
- * included, so they follow dark mode. A picture keeps its own colors and takes the place of the words when both are
+ * wordmark's component hands its drawable to {@link #dress} right after loading it, and scales whatever comes back to
+ * its slot the way it scales the wordmark. So the words or picture keep the wordmark's own height, and inside it take
+ * the height and place of its letters. Words take the wordmark's colors as drawn, its gradient and its dark mode tint
+ * included. A picture keeps its own colors and takes the place of the words when both are
  * there. Off, Pause, safe mode, blank words with no picture and every failure keep the wordmark.
  */
 public final class HomeHeader {
@@ -107,12 +108,12 @@ public final class HomeHeader {
         if (signature.startsWith("picture\n")) {
             Bitmap shown = load(copy);
             // A copy that won't decode leaves the words, if there are any.
-            if (shown != null) return new PictureMark(shown, height, maxWidth);
+            if (shown != null) return new PictureMark(shown, height, maxWidth, look(wordmark));
             SharedPreferences prefs = Settings.preferences;
             String words = clean(prefs == null ? null : prefs.getString(TEXT, ""));
-            return words.isEmpty() ? null : new TextMark(words, height, maxWidth, colors(wordmark));
+            return words.isEmpty() ? null : new TextMark(words, height, maxWidth, look(wordmark));
         }
-        return new TextMark(signature.substring(5), height, maxWidth, colors(wordmark));
+        return new TextMark(signature.substring(5), height, maxWidth, look(wordmark));
     }
 
     /** The saved picture, read again only when the file changed. Null when it's gone or won't decode. Holds marks' lock. */
@@ -218,18 +219,41 @@ public final class HomeHeader {
     }
 
     /**
-     * The wordmark's colors from its left, middle and right thirds, drawn small from a copy of it so the one on screen is
-     * never touched. One color when the thirds match, three for a gradient when they don't, Messenger's blue when nothing
-     * in it is solid enough to read.
+     * How the wordmark looks where it's drawn: its colors, and the band of its height its letters fill. Messenger's
+     * wordmark leaves room above and below its letters, so words or a picture sized to the whole drawable come out far
+     * bigger than the wordmark ever looks.
      */
-    static int[] colors(Drawable wordmark) {
+    static final class Look {
+        static final Look WHOLE = new Look(new int[] {MESSENGER_BLUE}, 0f, 1f, 0f);
+        final int[] colors;
+        /** The top and bottom of the letters, as shares of the wordmark's height. */
+        final float top, bottom;
+        /** The space before the letters, in the wordmark's own pixels. */
+        final float start;
+
+        Look(int[] colors, float top, float bottom, float start) {
+            this.colors = colors;
+            this.top = top;
+            this.bottom = bottom;
+            this.start = start;
+        }
+    }
+
+    /**
+     * The wordmark's look, drawn small from a copy of it so the one on screen is never touched. The copy takes the
+     * wordmark's color filter, the one Messenger tints it with in dark mode, so the colors are the ones on screen. Colors
+     * come from its left, middle and right thirds: one when the thirds match, three for a gradient when they don't,
+     * Messenger's blue when nothing in it is solid enough to read, which also leaves the whole height as the band.
+     */
+    static Look look(Drawable wordmark) {
         int width = wordmark.getIntrinsicWidth(), height = wordmark.getIntrinsicHeight();
-        if (width <= 0 || height <= 0) return new int[] {MESSENGER_BLUE};
+        if (width <= 0 || height <= 0) return Look.WHOLE;
         float scale = Math.min(1f, 48f / height);
         int w = Math.max(3, Math.round(width * scale)), h = Math.max(1, Math.round(height * scale));
         Drawable.ConstantState state = wordmark.getConstantState();
         Drawable copy = state == null ? null : state.newDrawable();
         Drawable drawn = copy != null ? copy.mutate() : wordmark;
+        if (drawn != wordmark) drawn.setColorFilter(wordmark.getColorFilter());
         Rect kept = new Rect(drawn.getBounds());
         Bitmap sample = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         try {
@@ -238,6 +262,7 @@ public final class HomeHeader {
             int[] pixels = new int[w * h];
             sample.getPixels(pixels, 0, w, 0, 0, w, h);
             long[][] sums = new long[3][4];
+            int top = h, bottom = -1, start = w;
             for (int y = 0; y < h; y++) {
                 for (int x = 0; x < w; x++) {
                     int pixel = pixels[y * w + x];
@@ -247,14 +272,18 @@ public final class HomeHeader {
                     third[1] += Color.green(pixel);
                     third[2] += Color.blue(pixel);
                     third[3]++;
+                    top = Math.min(top, y);
+                    bottom = y;
+                    start = Math.min(start, x);
                 }
             }
             long[] all = new long[4];
             for (long[] third : sums) for (int i = 0; i < 4; i++) all[i] += third[i];
-            if (all[3] == 0) return new int[] {MESSENGER_BLUE};
+            if (all[3] == 0) return Look.WHOLE;
             int whole = average(all, all);
             int left = average(sums[0], all), middle = average(sums[1], all), right = average(sums[2], all);
-            return apart(left, right) || apart(left, middle) || apart(middle, right) ? new int[] {left, middle, right} : new int[] {whole};
+            int[] colors = apart(left, right) || apart(left, middle) || apart(middle, right) ? new int[] {left, middle, right} : new int[] {whole};
+            return new Look(colors, top / (float) h, (bottom + 1) / (float) h, start * width / (float) w);
         } finally {
             if (drawn == wordmark) wordmark.setBounds(kept);
             sample.recycle();
@@ -274,33 +303,51 @@ public final class HomeHeader {
     }
 
     /**
-     * The picture at the wordmark's height, its shape kept. One wider than {@link #MAX_WIDTH_SHARE} of the screen gets
-     * smaller. It keeps its own colors, so a filter or tint meant for the wordmark doesn't reach it.
+     * Where a mark sits in bounds the header gives it: its whole slot scaled to fit, centered. Both marks keep the
+     * wordmark's height as their own, so the header scales them the way it scales the wordmark.
+     */
+    private static RectF fitted(Rect bounds, int width, int height, RectF into) {
+        float scale = Math.min(bounds.width() / (float) width, bounds.height() / (float) height);
+        float halfWidth = width * scale / 2f, halfHeight = height * scale / 2f;
+        into.set(bounds.exactCenterX() - halfWidth, bounds.exactCenterY() - halfHeight,
+            bounds.exactCenterX() + halfWidth, bounds.exactCenterY() + halfHeight);
+        return into;
+    }
+
+    /**
+     * The picture as tall as the wordmark's letters and where they sit, its shape kept, in a slot as tall as the
+     * wordmark. One wider than {@link #MAX_WIDTH_SHARE} of the screen gets smaller. It keeps its own colors, so a filter
+     * or tint meant for the wordmark doesn't reach it.
      */
     static final class PictureMark extends Drawable {
         final Bitmap picture;
         private final int width, height;
+        /** The picture's place in the slot, before the header scales it. */
+        final RectF shown;
         private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
-        private final RectF place = new RectF();
+        private final RectF slot = new RectF(), place = new RectF();
 
-        PictureMark(Bitmap picture, int slot, int maxWidth) {
+        PictureMark(Bitmap picture, int height, int maxWidth, Look look) {
             this.picture = picture;
-            int wide = Math.max(1, Math.round(picture.getWidth() * slot / (float) picture.getHeight()));
-            int high = slot;
-            if (maxWidth > 0 && wide > maxWidth) {
-                high = Math.max(1, Math.round(high * maxWidth / (float) wide));
-                wide = maxWidth;
+            this.height = height;
+            float start = look.start;
+            float high = Math.max(1f, (look.bottom - look.top) * height);
+            float wide = picture.getWidth() * high / picture.getHeight();
+            float room = Math.max(1f, maxWidth - start);
+            if (maxWidth > 0 && wide > room) {
+                high = high * room / wide;
+                wide = room;
             }
-            width = wide;
-            height = high;
+            float middle = (look.top + look.bottom) / 2f * height;
+            shown = new RectF(start, middle - high / 2f, start + wide, middle + high / 2f);
+            width = Math.max(1, Math.round(start + wide));
         }
 
         @Override public void draw(Canvas canvas) {
-            Rect bounds = getBounds();
-            float scale = Math.min(bounds.width() / (float) picture.getWidth(), bounds.height() / (float) picture.getHeight());
-            float halfWidth = picture.getWidth() * scale / 2f, halfHeight = picture.getHeight() * scale / 2f;
-            place.set(bounds.exactCenterX() - halfWidth, bounds.exactCenterY() - halfHeight,
-                bounds.exactCenterX() + halfWidth, bounds.exactCenterY() + halfHeight);
+            fitted(getBounds(), width, height, slot);
+            float scale = slot.height() / height;
+            place.set(slot.left + shown.left * scale, slot.top + shown.top * scale,
+                slot.left + shown.right * scale, slot.top + shown.bottom * scale);
             canvas.drawBitmap(picture, null, place, paint);
         }
 
@@ -324,39 +371,44 @@ public final class HomeHeader {
     }
 
     /**
-     * The words at the wordmark's height in bold sans, in the wordmark's color or its gradient from start to end. The
-     * words and a capital H together set the size, so short words without capitals or with descenders still fill the
-     * height the way the wordmark does.
+     * The words in bold sans as tall as the wordmark's letters and where they sit, in a slot as tall as the wordmark, in
+     * its color or its gradient from start to end. The words and a capital H together set the size, so short words
+     * without capitals or with descenders still fill the letters' height the way the wordmark does.
      */
     static final class TextMark extends Drawable {
         final String text;
         final int[] colors;
         private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-        private final Rect ink = new Rect();
+        private final RectF slot = new RectF();
         private final int width, height;
-        private final float inkTop, inkBottom;
+        private final float start, x, y;
         private int alpha = 255;
-        private Rect shaded;
 
-        TextMark(String text, int height, int maxWidth, int[] colors) {
+        TextMark(String text, int height, int maxWidth, Look look) {
             this.text = text;
             this.height = height;
-            this.colors = colors;
+            this.colors = look.colors;
+            start = look.start;
+            float band = Math.max(1f, (look.bottom - look.top) * height);
             paint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
             paint.setColor(colors[0]);
             paint.setTextSize(100f);
             Rect reach = reach();
-            float size = reach.height() > 0 ? 100f * height / reach.height() : height;
+            float size = reach.height() > 0 ? 100f * band / reach.height() : band;
             paint.setTextSize(size);
+            Rect ink = new Rect();
             paint.getTextBounds(text, 0, text.length(), ink);
-            if (maxWidth > 0 && ink.width() > maxWidth) {
-                paint.setTextSize(size * maxWidth / ink.width());
+            float room = Math.max(1f, maxWidth - start);
+            if (maxWidth > 0 && ink.width() > room) {
+                paint.setTextSize(size * room / ink.width());
                 paint.getTextBounds(text, 0, text.length(), ink);
             }
             Rect fitted = reach();
-            inkTop = fitted.top;
-            inkBottom = fitted.bottom;
-            width = Math.max(1, ink.width());
+            width = Math.max(1, Math.round(start + ink.width()));
+            x = start - ink.left;
+            y = (look.top + look.bottom) / 2f * height - (fitted.top + fitted.bottom) / 2f;
+            // The gradient runs the words' width, start to end, in the slot's own pixels.
+            if (colors.length > 1) paint.setShader(new LinearGradient(start, 0, width, 0, colors, null, Shader.TileMode.CLAMP));
         }
 
         /** The words' ink with a capital H's, at the paint's size. */
@@ -370,15 +422,13 @@ public final class HomeHeader {
         }
 
         @Override public void draw(Canvas canvas) {
-            Rect bounds = getBounds();
-            if (colors.length > 1 && !bounds.equals(shaded)) {
-                // The gradient runs the words' width as drawn, start to end, whatever bounds the header gives.
-                paint.setShader(new LinearGradient(bounds.left, 0, bounds.right, 0, colors, null, Shader.TileMode.CLAMP));
-                shaded = new Rect(bounds);
-            }
-            float x = bounds.left + (bounds.width() - width) / 2f - ink.left;
-            float y = bounds.exactCenterY() - (inkTop + inkBottom) / 2f;
+            fitted(getBounds(), width, height, slot);
+            int saved = canvas.save();
+            canvas.translate(slot.left, slot.top);
+            float scale = slot.height() / height;
+            canvas.scale(scale, scale);
             canvas.drawText(text, x, y, paint);
+            canvas.restoreToCount(saved);
         }
 
         @Override public int getIntrinsicWidth() { return width; }
