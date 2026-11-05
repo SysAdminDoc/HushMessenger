@@ -2,6 +2,9 @@ package app.hushmessenger.extension;
 
 import android.content.Context;
 import android.os.Looper;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -358,6 +362,32 @@ public class ChatHidingTest {
         assertEquals("Settings says it, not the chat list", toasts, ShadowToast.shownToastCount());
         assertEquals(Arrays.asList("group=Ana, Ben", "unnamed="), chosen());
         assertEquals(Arrays.asList("club", "plain"), names(ChatHiding.inboxRows(supplier, Rows.of(club, new Summary("plain")))));
+    }
+
+    @Test public void settingsListsAChatHiddenWhileThePageSatBehindTheChatList() {
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            View root = screen.get().getWindow().getDecorView();
+            assertEquals(View.VISIBLE, root.findViewWithTag("hidden_chats_empty").getVisibility());
+            assertNull(root.findViewWithTag("hidden_chats_unhide_club"));
+
+            // The S22 case: settings stays open under Messenger, a chat gets hidden from the list, then Back returns here.
+            screen.pause().stop();
+            Summary club = new Summary("club");
+            club.name = "Book club";
+            assertTrue(ChatHiding.menuTapped(new Menu(club), ChatHiding.ROW_ID));
+            screen.restart().resume();
+
+            Button unhide = root.findViewWithTag("hidden_chats_unhide_club");
+            assertNotNull("Listed when the page comes back", unhide);
+            assertEquals(View.GONE, root.findViewWithTag("hidden_chats_empty").getVisibility());
+            LinearLayout list = root.findViewWithTag("hidden_chats_list");
+            assertEquals("One line and one chat, not a second copy", 2, list.getChildCount());
+
+            unhide.performClick();
+            assertTrue(chosen().isEmpty());
+            assertNull(root.findViewWithTag("hidden_chats_unhide_club"));
+            assertEquals(View.VISIBLE, root.findViewWithTag("hidden_chats_empty").getVisibility());
+        }
     }
 
     @Test public void withNoAccountToSaveUnderTheTapSaysItCouldntHide() throws Exception {

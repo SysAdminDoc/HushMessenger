@@ -74,6 +74,8 @@ public final class SettingsActivity extends Activity {
     };
     private String page = "controls";
     private final List<View> controlRows = new ArrayList<>();
+    /** The rows under Hide chosen chats, or null while the controls page isn't built. */
+    private LinearLayout hiddenChats;
     private final List<String[]> installedControls = new ArrayList<>();
     private final List<LinearLayout> groups = new ArrayList<>();
     private final List<Button> tabs = new ArrayList<>();
@@ -382,6 +384,7 @@ public final class SettingsActivity extends Activity {
     @Override protected void onResume() {
         super.onResume();
         refreshChoices();
+        if (hiddenChats != null) fillHiddenChats();
         updates.syncUpdateChoice(false);
     }
 
@@ -1042,6 +1045,16 @@ public final class SettingsActivity extends Activity {
 
     /** This account's hidden chats, each under its name with Unhide, or a line saying where they'll show up. */
     private void addHiddenChats(LinearLayout content) {
+        hiddenChats = ui.column();
+        hiddenChats.setTag("hidden_chats_list");
+        ui.add(content, hiddenChats, 0);
+        fillHiddenChats();
+    }
+
+    /** Filled again on every return, so a chat hidden while settings sat behind the chat list shows up here too. */
+    private void fillHiddenChats() {
+        LinearLayout content = hiddenChats;
+        content.removeAllViews();
         TextView none = ui.text(text.get("hidden_chats_empty"), 13, ui.muted, false);
         none.setTag("hidden_chats_empty");
         ui.add(content, none, 8);
