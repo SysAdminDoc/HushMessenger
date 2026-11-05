@@ -73,8 +73,9 @@ public final class ChatHiding {
     }
 
     /**
-     * The chat menu's finished rows. Messenger pads the list with empty slots up to its row count, so the row goes in the
-     * first one and the list keeps its size. A list with no empty slot gets no row.
+     * The chat menu's finished rows. Messenger pads the list with empty slots up to the count it expected, but its menu
+     * reads every entry and usually gets a full list, so the row takes the first empty slot when there is one and goes on
+     * the end otherwise.
      */
     public static void menuRows(Object menu, ArrayList<Object> rows) {
         try {
@@ -82,14 +83,15 @@ public final class ChatHiding {
             if (target == null || rows == null || !target.menu.isInstance(menu) || !Settings.wouldUse(KEY)) return;
             int slot = rows.indexOf(null);
             Object summary = target.menuSummary.get(menu);
-            if (slot < 0 || !target.summary.isInstance(summary)) return;
+            if (!target.summary.isInstance(summary)) return;
             boolean shown;
             synchronized (ChatHiding.class) {
                 shown = !asked().containsKey(target.key(summary));
             }
             Object row = target.row(label(shown ? "hidden_chats_hide" : "hidden_chats_show"), shown ? "EYE_CROSS" : "EYE");
             if (row == null) return;
-            rows.set(slot, row);
+            if (slot < 0) rows.add(row);
+            else rows.set(slot, row);
             Settings.enabled(KEY);
         } catch (Throwable error) {
             Settings.hookFailed(KEY, "Can't add Hide from chat list", error);

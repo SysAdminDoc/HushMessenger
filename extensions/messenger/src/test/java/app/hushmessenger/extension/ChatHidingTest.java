@@ -273,10 +273,15 @@ public class ChatHidingTest {
         assertSame(back, ChatHiding.inboxRows(supplier, back));
     }
 
-    @Test public void aMenuWithNoEmptySlotGetsNoRowAndMessengersOwnTapsGoOn() {
-        ArrayList<Object> full = new ArrayList<>(Collections.singletonList(mute));
+    @Test public void aFullMenuGetsTheRowOnTheEndAndMessengersOwnTapsGoOn() {
+        // Messenger's plain long-press menu (Archive, Mark as unread, Delete) comes back full, with no empty slot.
+        ArrayList<Object> full = new ArrayList<>(Arrays.asList(mute, mute));
         ChatHiding.menuRows(new Menu(new Summary("chat")), full);
-        assertEquals(Collections.singletonList(mute), full);
+        assertEquals(3, full.size());
+        assertSame(mute, full.get(1));
+        Built hide = (Built) full.get(2);
+        assertEquals(ChatHiding.ROW_ID, hide.builder.id);
+        assertEquals(text("hidden_chats_hide"), hide.builder.label.toString());
         ArrayList<Object> other = new ArrayList<>(Arrays.asList(mute, null));
         ChatHiding.menuRows(new Object(), other);
         assertNull("Another menu's rows", other.get(1));
