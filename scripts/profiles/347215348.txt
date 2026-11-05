@@ -212,6 +212,7 @@ hook quiet_call_ring LX/BDT;->run()V
 hook recent_media LX/Akd;->A01(LX/5Xx;Lkotlin/jvm/functions/Function0;)V
 hook reels_badge LX/4UE;->A09(LX/4UE;)Z
 hook reply_read LX/AKs;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/5BO;LX/4up;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/DB7;LX/5Et;LX/5BN;LX/D92;LX/5vd;LX/5Xx;LX/5QS;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4uw;Ljava/lang/String;)V
+hook restricted_notify Lcom/facebook/messaging/msys/pushnotifications/protobufparsing/MsysNotificationParser$getThreadLevelResult$2;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 hook save_stories LX/PN4;->onClick(Landroid/view/View;)V
 hook save_voice LX/T9d;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/T9d;LX/T9k;)Landroid/net/Uri;
 hook save_voice_menu LX/63p;->E6x(LX/1Vl;LX/5Hx;LX/DMu;LX/AM6;)V

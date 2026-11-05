@@ -71,6 +71,7 @@
         <meta-data android:name="hush.feature.anonymous_stories" android:value="true" />
         <meta-data android:name="hush.feature.save_stories" android:value="true" />
         <meta-data android:name="hush.feature.blocked_list_pictures" android:value="true" />
+        <meta-data android:name="hush.feature.restricted_notify" android:value="true" />
         <meta-data android:name="hush.feature.material_you" android:value="true" />
         <meta-data android:name="hush.feature.app_icons" android:value="true" />
         <meta-data android:name="hush.feature.app_themes" android:value="true" />

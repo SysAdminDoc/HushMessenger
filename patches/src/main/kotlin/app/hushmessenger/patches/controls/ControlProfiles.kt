@@ -237,6 +237,7 @@ internal val PROFILE_347215348 = ControlProfile(
         "recent_media" to setOf("LX/Akd;->A01(LX/5Xx;Lkotlin/jvm/functions/Function0;)V"),
         "reels_badge" to setOf("LX/4UE;->A09(LX/4UE;)Z"),
         "reply_read" to setOf("LX/AKs;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/5BO;LX/4up;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/DB7;LX/5Et;LX/5BN;LX/D92;LX/5vd;LX/5Xx;LX/5QS;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4uw;Ljava/lang/String;)V"),
+        "restricted_notify" to setOf("Lcom/facebook/messaging/msys/pushnotifications/protobufparsing/MsysNotificationParser\$getThreadLevelResult\$2;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;"),
         "save_stories" to setOf("LX/PN4;->onClick(Landroid/view/View;)V"),
         "save_voice" to setOf("LX/T9d;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/T9d;LX/T9k;)Landroid/net/Uri;"),
         "save_voice_menu" to setOf(
@@ -510,6 +511,7 @@ internal val PROFILE_347215341 = ControlProfile(
         "recent_media" to setOf("LX/AmH;->A01(LX/5YG;Lkotlin/jvm/functions/Function0;)V"),
         "reels_badge" to setOf("LX/4UX;->A09(LX/4UX;)Z"),
         "reply_read" to setOf("LX/AMW;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/5Bh;LX/4v8;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/DAb;LX/5FC;LX/5Bg;LX/D8d;LX/5vu;LX/5YG;LX/5Ql;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4vF;Ljava/lang/String;)V"),
+        "restricted_notify" to setOf("Lcom/facebook/messaging/msys/pushnotifications/protobufparsing/MsysNotificationParser\$getThreadLevelResult\$2;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;"),
         "save_stories" to setOf("LX/PEk;->onClick(Landroid/view/View;)V"),
         "save_voice" to setOf("LX/TEk;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/TEk;LX/TEo;)Landroid/net/Uri;"),
         "save_voice_menu" to setOf(

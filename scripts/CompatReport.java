@@ -212,6 +212,7 @@ public class CompatReport {
         PATCHES.put("Hide the Instants button", List.of("instants_button"));
         PATCHES.put("Hide Your story when sharing", List.of("share_story"));
         PATCHES.put("Hide pictures on the Blocked list", List.of("blocked_list_pictures"));
+        PATCHES.put("Notify for restricted chats", List.of("restricted_notify"));
         PATCHES.put("Use the phone's camera app", List.of("system_camera"));
         PATCHES.put("Open your gallery app", List.of("external_gallery", "gallery_temp_file"));
         PATCHES.put("Put gallery picks in the chat", List.of("gallery_to_chat"));
@@ -6417,6 +6418,115 @@ public class CompatReport {
         return sites == 1 ? List.of(builder) : List.of();
     }
 
+    static final String THREAD_LEVEL_RESULT =
+        "Lcom/facebook/messaging/msys/pushnotifications/protobufparsing/MsysNotificationParser$getThreadLevelResult$2;";
+
+    /** The notification thread check's folder read: the instruction after it, its register, the enum and the compared constants. */
+    record FolderRead(int index, int register, String type, Set<String> compared) {}
+
+    static boolean folderWrites(Instruction i, int r) {
+        var op = i.getOpcode();
+        return op.setsRegister() && i instanceof OneRegisterInstruction o && (o.getRegisterA() == r || (op.setsWideRegister() && o.getRegisterA() + 1 == r));
+    }
+
+    /** By index, the enum field compared with folder at each sget-object of the type straight before an if-eq or if-ne on both. */
+    static TreeMap<Integer, String> folderChecks(List<Instruction> code, int folder, String type) {
+        var checks = new TreeMap<Integer, String>();
+        for (int i = 1; i < code.size(); i++) {
+            if (!(code.get(i) instanceof TwoRegisterInstruction check)) continue;
+            var op = code.get(i).getOpcode();
+            if (op != Opcode.IF_EQ && op != Opcode.IF_NE) continue;
+            int other;
+            if (check.getRegisterA() == folder) other = check.getRegisterB();
+            else if (check.getRegisterB() == folder) other = check.getRegisterA();
+            else continue;
+            var load = code.get(i - 1);
+            if (!(load instanceof ReferenceInstruction ri) || !(ri.getReference() instanceof FieldReference constant)) continue;
+            if (load.getOpcode() != Opcode.SGET_OBJECT || register(load) != other || !type.equals(constant.getDefiningClass()) ||
+                !type.equals(constant.getType())) continue;
+            checks.put(i, constant.getName());
+        }
+        return checks;
+    }
+
+    /**
+     * The one ThreadSummary iget-object in MsysNotificationParser's getThreadLevelResult body whose register is compared
+     * with two or more constants of the field's own type after it, unwritten before the last, and whose next instruction
+     * nothing lands on. Mirrors RestrictedNotify.kt's folderRead.
+     */
+    static FolderRead folderRead(Method method) {
+        if (!THREAD_LEVEL_RESULT.equals(method.getDefiningClass()) || !"invokeSuspend".equals(method.getName()) ||
+            !"Ljava/lang/Object;".equals(method.getReturnType()) || !params(method).equals(List.of("Ljava/lang/Object;")) ||
+            method.getImplementation() == null) return null;
+        var code = instructions(method);
+        var reads = new ArrayList<FolderRead>();
+        for (int at = 0; at < code.size(); at++) {
+            if (code.get(at).getOpcode() != Opcode.IGET_OBJECT) continue;
+            var field = (FieldReference) ((ReferenceInstruction) code.get(at)).getReference();
+            if (!THREAD_SUMMARY_TYPE.equals(field.getDefiningClass()) || !field.getType().startsWith("L")) continue;
+            int folder = register(code.get(at));
+            var checks = folderChecks(code, folder, field.getType()).tailMap(at + 1);
+            if (checks.size() < 2) continue;
+            boolean written = false;
+            for (int i = at + 1; i < checks.lastKey(); i++) if (folderWrites(code.get(i), folder)) written = true;
+            if (!written) reads.add(new FolderRead(at + 1, folder, field.getType(), new HashSet<>(checks.values())));
+        }
+        if (reads.size() != 1) return null;
+        var read = reads.get(0);
+        return read.index() < code.size() && !mediaTargets(method).contains(read.index()) ? read : null;
+    }
+
+    /** An enum's constants by name: each <init>(String, ...) call's name constant and the field the next sput-object fills. */
+    static Map<String, String> enumConstantFields(ClassDef cls) {
+        var constants = new HashMap<String, String>();
+        if (!"Ljava/lang/Enum;".equals(cls.getSuperclass())) return constants;
+        Method init = null;
+        for (var m : cls.getMethods()) if ("<clinit>".equals(m.getName())) { init = m; break; }
+        if (init == null || init.getImplementation() == null) return constants;
+        var held = new HashMap<Integer, String>();
+        String named = null;
+        for (var i : init.getImplementation().getInstructions()) {
+            var reference = i instanceof ReferenceInstruction ri ? ri.getReference() : null;
+            var op = i.getOpcode();
+            if (reference instanceof StringReference s && i instanceof OneRegisterInstruction o) held.put(o.getRegisterA(), s.getString());
+            else if (reference instanceof MethodReference m && (op == Opcode.INVOKE_DIRECT || op == Opcode.INVOKE_DIRECT_RANGE) &&
+                cls.getType().equals(m.getDefiningClass()) && "<init>".equals(m.getName()) && !m.getParameterTypes().isEmpty() &&
+                "Ljava/lang/String;".contentEquals(m.getParameterTypes().get(0))) {
+                var args = bubbleArgs(i);
+                named = args.size() > 1 ? held.get(args.get(1)) : null;
+            } else if (reference instanceof FieldReference f && op == Opcode.SPUT_OBJECT && cls.getType().equals(f.getDefiningClass()) &&
+                cls.getType().equals(f.getType())) {
+                if (named != null) constants.putIfAbsent(named, f.getName());
+                named = null;
+            } else if (i instanceof OneRegisterInstruction o && op.setsRegister()) {
+                held.remove(o.getRegisterA());
+                if (op.setsWideRegister()) held.remove(o.getRegisterA() + 1);
+            }
+        }
+        return constants;
+    }
+
+    /**
+     * restricted_notify: the thread check, when its folder read compares the folder with both the RESTRICTED and the INBOX
+     * constant of the app's one class of the folder's type. Mirrors RestrictedNotify.kt.
+     */
+    static List<Method> restrictedNotify(List<ClassDef> classes) {
+        var gates = new ArrayList<Method>();
+        for (var cls : classes) if (THREAD_LEVEL_RESULT.equals(cls.getType()))
+            for (var m : cls.getMethods()) if ("invokeSuspend".equals(m.getName())) gates.add(m);
+        if (gates.size() != 1) return List.of();
+        var read = folderRead(gates.get(0));
+        if (read == null) return List.of();
+        var folders = new ArrayList<ClassDef>();
+        for (var cls : classes) if (read.type().equals(cls.getType())) folders.add(cls);
+        if (folders.size() != 1) return List.of();
+        var constants = enumConstantFields(folders.get(0));
+        var restricted = constants.get("RESTRICTED");
+        var inbox = constants.get("INBOX");
+        return restricted != null && inbox != null && read.compared().contains(restricted) && read.compared().contains(inbox)
+            ? List.of(gates.get(0)) : List.of();
+    }
+
     static final String HOISTED_SHARE_LOADER ="Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/" +
         "morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;";
     static final String UNHOISTED_SHARE_TRACE = "messaging.sharing.broadcastflow.mutation.loader.sections.morewaystoshare.unhoisted." +
@@ -8158,6 +8268,7 @@ public class CompatReport {
         found.get("landscape_lock").addAll(portraitLock(classes));
         found.get("landscape_media").addAll(mediaOrientation(classes));
         found.get("blocked_list_pictures").addAll(blockedListPictures(classes));
+        found.get("restricted_notify").addAll(restrictedNotify(classes));
         found.get("share_story").addAll(shareStory(classes));
         found.get("avatar_shape").addAll(avatarShape(classes));
         found.get("story_ring").addAll(storyRing(classes));

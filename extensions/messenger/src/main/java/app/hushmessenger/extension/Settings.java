@@ -753,6 +753,36 @@ public final class Settings {
      * Messenger builds for someone it can't look up, with no picture. Off, Pause and safe mode keep the picture.
      */
     public static Object blockedListPicture(Object picture) { return enabled(BLOCKED_LIST_PICTURES) ? null : picture; }
+    static final String RESTRICTED_NOTIFY = "restricted_notify";
+    /** The folder enum's INBOX constant, found once per folder type. */
+    private static volatile Enum<?> inboxFolder;
+    /**
+     * The new-message notification check reads the chat's folder before it decides. A RESTRICTED folder comes back as
+     * INBOX, so the chat gets the same mute and status checks as any other chat. Only that local read changes: the chat
+     * stays in Restricted. Off, Pause and safe mode, and every other folder, keep the folder.
+     */
+    public static Object notificationFolder(Object folder) {
+        if (!(folder instanceof Enum) || !"RESTRICTED".equals(((Enum<?>) folder).name()) || !enabled(RESTRICTED_NOTIFY)) return folder;
+        try {
+            Class<?> type = ((Enum<?>) folder).getDeclaringClass();
+            Enum<?> inbox = inboxFolder;
+            if (inbox == null || inbox.getDeclaringClass() != type) {
+                inbox = null;
+                for (java.lang.reflect.Field field : type.getDeclaredFields()) {
+                    if (!field.isEnumConstant() || field.getType() != type) continue;
+                    field.setAccessible(true);
+                    Enum<?> constant = (Enum<?>) field.get(null);
+                    if ("INBOX".equals(constant.name())) inbox = constant;
+                }
+                if (inbox == null) throw new IllegalStateException("No INBOX folder in " + type.getName());
+                inboxFolder = inbox;
+            }
+            return inbox;
+        } catch (ReflectiveOperationException | RuntimeException error) {
+            hookFailed(RESTRICTED_NOTIFY, "Can't notify for a restricted chat", error);
+            return folder;
+        }
+    }
     static final String AVATAR_SHAPE = "avatar_shape";
     /** Under Square profile pictures: rounds the square's corners. */
     static final String AVATAR_ROUNDED = "avatar_shape_rounded";

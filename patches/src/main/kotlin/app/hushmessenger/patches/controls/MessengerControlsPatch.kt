@@ -202,6 +202,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         LANDSCAPE_LOCK -> validatePortraitLock()
         LANDSCAPE_MEDIA -> validateMediaOrientation()
         BLOCKED_LIST_PICTURES -> validateBlockedListPictures()
+        RESTRICTED_NOTIFY -> validateRestrictedNotify()
         SHARE_STORY -> validateShareStory()
         AVATAR_SHAPE -> validateAvatarShape()
         STORY_RING -> validateStoryRing()
@@ -315,6 +316,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             LANDSCAPE_LOCK -> method.injectPortraitLock()
             LANDSCAPE_MEDIA -> method.injectMediaOrientation()
             BLOCKED_LIST_PICTURES -> method.injectBlockedListPictures()
+            RESTRICTED_NOTIFY -> method.injectRestrictedNotify()
             SHARE_STORY -> method.injectShareStory()
             AVATAR_SHAPE -> method.injectAvatarShape()
             STORY_RING -> method.injectStoryRing()
@@ -700,6 +702,9 @@ val keepUnsentPatch = controlPatch("keep_unsent", "Keep unsent messages", "Keeps
 @Suppress("unused")
 val blockedListPicturesPatch = controlPatch("blocked_list_pictures", "Hide pictures on the Blocked list",
     "Hides people's profile pictures on the list of people you've blocked, under Privacy and safety. Their names and Unblock stay.", "Privacy")
+@Suppress("unused")
+val restrictedNotifyPatch = controlPatch("restricted_notify", "Notify for restricted chats",
+    "Chats with people you've restricted notify you like your other chats. A chat you've muted stays quiet. Restricted people still can't see when you're active or when you've read their messages.", "Privacy")
 @Suppress("unused")
 val unlockAppIconsPatch = controlPatch("app_icons", "Unlock app icons", "Lets you pick any icon in Messenger's App icon setting without a subscription. Messenger still decides whether that setting shows for your account.", "Theme")
 @Suppress("unused")
