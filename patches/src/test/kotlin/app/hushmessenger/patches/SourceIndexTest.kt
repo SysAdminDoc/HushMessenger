@@ -25,7 +25,8 @@ class SourceIndexTest {
                 .forEach { assertContains(description, it.toString()) }
         }
         // #138: Manager hands these to its APK download helper and refuses a picked APK whose code differs.
-        assertEquals(mapOf(SupportedAbi.ARM64_V8A to 347215348), targets.single { it.version == "586.0.0.55.92" }.versionCodes)
+        assertEquals(mapOf(SupportedAbi.ARM64_V8A to 347215348, SupportedAbi.ARMEABI_V7A to 347215341),
+            targets.single { it.version == "586.0.0.55.92" }.versionCodes)
     }
 
     @Test

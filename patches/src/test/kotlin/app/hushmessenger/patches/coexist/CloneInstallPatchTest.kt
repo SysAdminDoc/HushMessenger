@@ -621,12 +621,16 @@ class CloneInstallPatchTest {
 
     @Test fun eachBuildFamilyHasItsOwnPinnedSites() {
         val families = MessengerTarget.VERSION_CODES.map { expectedCloneSitesFor(it.toString()) }.toSet()
-        assertEquals(1, families.size)
+        assertEquals(2, families.size)
         assertTrue(families.all { it.size == 7 && it.count { id -> '@' in id } == 5 })
         assertEquals(setOf("LX/Y7a;-><init>()V", "LX/4NY;->A00(Ljava/lang/String;)Z",
             "LX/391;->A00(Landroid/content/Intent;Landroid/content/Context;)V@1",
             "LX/93D;->A04(Landroid/os/Bundle;)LX/9Xq;@228", "LX/93D;->A04(Landroid/os/Bundle;)LX/9Xq;@323",
             "LX/Cg3;->onClick(Landroid/view/View;)V@83", "LX/Jm8;->onClick(Landroid/view/View;)V@155"), expectedCloneSitesFor("347215348"))
+        assertEquals(setOf("LX/MJk;-><init>()V", "LX/4No;->A00(Ljava/lang/String;)Z",
+            "LX/39H;->A00(Landroid/content/Intent;Landroid/content/Context;)V@1",
+            "LX/947;->A05(Landroid/os/Bundle;)LX/9Z4;@186", "LX/947;->A05(Landroid/os/Bundle;)LX/9Z4;@281",
+            "LX/Cgh;->onClick(Landroid/view/View;)V@83", "LX/Jrm;->onClick(Landroid/view/View;)V@151"), expectedCloneSitesFor("347215341"))
         assertFailsWith<PatchException> { expectedCloneSitesFor("347015062") }
         assertFailsWith<PatchException> { expectedCloneSitesFor("346611999") }
     }

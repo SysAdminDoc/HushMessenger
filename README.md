@@ -191,16 +191,18 @@ With **Hide read receipts** on, a chat you open stays unread on your phone, beca
 | Package | `com.facebook.orca` |
 | Version | `586.0.0.55.92` |
 | Version code, arm64-v8a | `347215348` |
+| Version code, armeabi-v7a | `347215341` |
 | Screen density | 560-640 dpi on APKMirror |
 | Minimum Android version | Android 9 (API 28) |
 | APKMirror download | [586.0.0.55.92](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-586-0-0-55-92-release/) |
 
-APKMirror lists one build for 586.0.0.55.92, for arm64 phones, and HushMessenger takes it. There's no armeabi-v7a build of 586. The patch checks the version code before it changes anything and stops on a build that isn't listed. Older Messenger versions aren't supported by current bundles. v0.28.0 still takes 585.0.0.53.94 (armv7 too), v0.27.0 takes 584.1.0.61.98, v0.26.0 takes 584.0.0.49.98, v0.25.0 takes 583.0.0.29.95 and v0.23.0 takes 582.0.0.61.92.
+HushMessenger takes two builds of 586.0.0.55.92, 347215348 for arm64 phones and 347215341 for 32-bit (armeabi-v7a) ones. The patch checks the version code before it changes anything and stops on a build that isn't listed. Older Messenger versions aren't supported by current bundles. v0.28.0 still takes 585.0.0.53.94 (armv7 too), v0.27.0 takes 584.1.0.61.98, v0.26.0 takes 584.0.0.49.98, v0.25.0 takes 583.0.0.29.95 and v0.23.0 takes 582.0.0.61.92.
 
-SHA-256 of the stock APK the checks ran against:
+SHA-256 of the stock APKs the checks ran against:
 
 ```text
 347215348  ee4bee15fe07eecc933aacfb7ec8d8d3f8ace8f4d7ccf517c6bd1ff0b63aae7e
+347215341  c2a2b65edf52bede0de5b1d5603f332813a7c404784ac8913801a29670190691
 ```
 
 On Windows, compare your file with `Get-FileHash -Algorithm SHA256 .\messenger.apk`. Meta sometimes publishes different APKs under one version name.

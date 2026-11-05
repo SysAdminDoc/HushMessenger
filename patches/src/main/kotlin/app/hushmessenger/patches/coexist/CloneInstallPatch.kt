@@ -9,6 +9,7 @@ import app.hushmessenger.patches.MessengerTarget
 import app.hushmessenger.patches.controls.BASE_PROFILE
 import app.hushmessenger.patches.controls.DEFAULT_STRINGS
 import app.hushmessenger.patches.controls.MANIFEST_STRINGS
+import app.hushmessenger.patches.controls.PROFILE_347215341
 import app.hushmessenger.patches.controls.SETTINGS_LABEL
 import app.hushmessenger.patches.controls.SETTINGS_LABEL_NAME
 import app.hushmessenger.patches.controls.SHORTCUTS_DIRECTORIES
@@ -313,19 +314,21 @@ internal fun findCloneSites(classes: Iterable<ClassDef>, pools: Set<String> = ow
 
 private const val ATTACHMENT_CHECK = "->A00(Ljava/lang/String;)Z"
 private const val BROADCAST = "->A00(Landroid/content/Intent;Landroid/content/Context;)V"
-private const val NOTIFICATION = "->A04(Landroid/os/Bundle;)"
+private const val NOTIFICATION = "(Landroid/os/Bundle;)"
 private const val CLICK = "->onClick(Landroid/view/View;)V"
 
 /**
  * Each build family's backup lookup and attachment check, then every setPackage call that sends Messenger to itself:
  * the in-app broadcast sender, the push notification's click and link intents, the bulk delete link in the inbox and
- * the story link button. 586 has one arm64 build. The native test checks them on every supported build.
+ * the story link button. 586 has an arm64 and an armv7 build. The native test checks them on every supported build.
  */
 internal fun expectedCloneSitesFor(versionCode: String): Set<String> {
     validateVersionCode(versionCode)
     return when (controlProfileFor(versionCode)) {
         BASE_PROFILE -> setOf("LX/Y7a;-><init>()V", "LX/4NY;$ATTACHMENT_CHECK", "LX/391;$BROADCAST@1",
-            "LX/93D;${NOTIFICATION}LX/9Xq;@228", "LX/93D;${NOTIFICATION}LX/9Xq;@323", "LX/Cg3;$CLICK@83", "LX/Jm8;$CLICK@155")
+            "LX/93D;->A04${NOTIFICATION}LX/9Xq;@228", "LX/93D;->A04${NOTIFICATION}LX/9Xq;@323", "LX/Cg3;$CLICK@83", "LX/Jm8;$CLICK@155")
+        PROFILE_347215341 -> setOf("LX/MJk;-><init>()V", "LX/4No;$ATTACHMENT_CHECK", "LX/39H;$BROADCAST@1",
+            "LX/947;->A05${NOTIFICATION}LX/9Z4;@186", "LX/947;->A05${NOTIFICATION}LX/9Z4;@281", "LX/Cgh;$CLICK@83", "LX/Jrm;$CLICK@151")
         else -> fail("version code $versionCode has no checked clone sites")
     }
 }

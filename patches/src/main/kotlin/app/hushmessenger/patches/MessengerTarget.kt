@@ -6,7 +6,7 @@ import app.morphe.patcher.patch.Compatibility
 import app.morphe.patcher.patch.SupportedAbi
 
 /**
- * The stock Messenger builds the patches were checked against. 586 has one, for arm64.
+ * The stock Messenger builds the patches were checked against. 586 has two, one for arm64 and one for armv7.
  *
  * A version name alone is insufficient: Meta publishes several DEX variants with that name. Each
  * build is recorded in scripts/profiles by CompatReport; the APKs themselves are local research
@@ -18,12 +18,13 @@ internal object MessengerTarget {
 
     /** Each supported version name and the version codes of its checked builds. */
     val VERSIONS: Map<String, List<Int>> = mapOf(
-        "586.0.0.55.92" to listOf(347215348),
+        "586.0.0.55.92" to listOf(347215341, 347215348),
     )
     val VERSION_CODES = VERSIONS.values.flatten()
 
     /** The ABI each checked build is for, as its record's APK ships native code for. */
     val ABIS: Map<Int, SupportedAbi> = mapOf(
+        347215341 to SupportedAbi.ARMEABI_V7A,
         347215348 to SupportedAbi.ARM64_V8A,
     )
 
