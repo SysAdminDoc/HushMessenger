@@ -69,6 +69,7 @@
 
 ### Checks
 
+- The How to update step in the release notes lists the version codes the release was checked against, instead of saying any build on APKMirror works. v0.28.0's notes said that, and then APKMirror posted 17 more 585 builds that v0.28.0 doesn't take, newer `nodpi` ones included. Refs #138, #145.
 - `scripts/walk-app.ps1` no longer taps anything on Messenger's chat restore prompt, as its own notes always said. When the prompt turns up in front of a later screen, the walk opens the chat link to get past it and then opens that screen again, the way it already did for the chat list. `-Thread` has to be a chat's numeric user id now, and a walk given `-Serial` without `-OutDir` keeps its steps and receipt in a folder for that phone, so walks on two phones at once don't clear each other's.
 - `scripts/CompatReport.java --save` records a new Messenger build now instead of failing because the build isn't recorded yet. Without `--save` that build still fails. A damaged APK or a broken line in a record gets one line naming the file and exit code 2, not a Java stack trace.
 
