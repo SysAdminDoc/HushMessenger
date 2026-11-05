@@ -304,8 +304,10 @@ public final class Settings {
 
     private static final Object META_AI_TAB = new Object();
 
+    /** Puts the People tab back in the bar on accounts where Messenger no longer builds it. */
+    static final String SHOW_PEOPLE_TAB = "tab_people_show";
     /** Bottom tabs with a switch of their own, held for the run like the Meta AI tab. */
-    static final List<String> BOTTOM_TABS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications"));
+    static final List<String> BOTTOM_TABS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications", SHOW_PEOPLE_TAB));
     /** First answer this process gave for each of {@link #BOTTOM_TABS}, by key, once the bottom bar asked. */
     static final ConcurrentHashMap<String, Boolean> bottomTabs = new ConcurrentHashMap<>();
 
@@ -313,6 +315,12 @@ public final class Settings {
     public static boolean hideNotificationsTab() { return hideBottomTab("tab_notifications"); }
 
     private static boolean hideBottomTab(String key) {
+        boolean hidden = heldBottomTab(key);
+        if (hidden) activeAt.put(key, System.currentTimeMillis());
+        return hidden;
+    }
+
+    private static boolean heldBottomTab(String key) {
         // putIfAbsent keeps whichever answer landed first, so two first askers can't get different answers. wouldUse runs
         // outside the map's lock because it can reach HostScreens.initializeLate, which takes a lock of its own.
         Boolean held = bottomTabs.get(key);
@@ -321,25 +329,29 @@ public final class Settings {
             held = bottomTabs.putIfAbsent(key, answer);
             if (held == null) held = answer;
         }
-        boolean hidden = held;
-        if (hidden) activeAt.put(key, System.currentTimeMillis());
-        return hidden;
+        return held;
     }
 
     /**
      * Messenger's tab list for the bottom bar as it's built. The bar draws only the tabs whose gate let them in, but it
      * marks the open tab by its place in this full list, so a hidden tab ahead of it lit up its neighbor (with People
      * hidden, opening Notifications showed Menu as open). Dropping the hidden tabs here keeps the two in step; every other
-     * tab and its order stay as Messenger built them.
+     * tab and its order stay as Messenger built them. Show People tab puts People back right after Chats when the server
+     * left it out, unless Hide People tab is on too.
      */
     public static <T> List<T> visibleTabs(List<T> tabs) {
         try {
-            List<T> kept = new ArrayList<>(tabs.size());
+            List<T> kept = new ArrayList<>(tabs.size() + 1);
+            boolean hasPeople = false;
             for (T tab : tabs) {
-                String key = tab instanceof Enum ? barTabKey(((Enum<?>) tab).name()) : null;
+                String name = tab instanceof Enum ? ((Enum<?>) tab).name() : null;
+                if ("PEOPLE".equals(name)) hasPeople = true;
+                String key = name == null ? null : barTabKey(name);
                 if (key == null || !("meta_ai".equals(key) ? hideMetaAiTab() : hideBottomTab(key))) kept.add(tab);
             }
-            return kept.size() == tabs.size() ? tabs : kept;
+            boolean added = !hasPeople && heldBottomTab(SHOW_PEOPLE_TAB) && !heldBottomTab("tab_people") && addPeopleTab(kept);
+            if (added) activeAt.put(SHOW_PEOPLE_TAB, System.currentTimeMillis());
+            return added || kept.size() != tabs.size() ? kept : tabs;
         } catch (RuntimeException error) {
             // The one list serves every tab switch, so the failure goes on each switch that's on, never on one that's off.
             boolean blamed = false;
@@ -351,8 +363,28 @@ public final class Settings {
         }
     }
 
-    /** Every switch that takes a tab off the bottom bar, so each one's list goes through {@link #visibleTabs}. */
-    static final List<String> TAB_CONTROLS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications", "meta_ai"));
+    /**
+     * Puts the People constant of the list's own tab enum right after Chats. False, with the list untouched, when the list
+     * has no Chats tab to stand next to or the enum has no People constant.
+     */
+    private static <T> boolean addPeopleTab(List<T> tabs) {
+        for (int i = 0; i < tabs.size(); i++) {
+            T tab = tabs.get(i);
+            if (!(tab instanceof Enum) || !"INBOX".equals(((Enum<?>) tab).name())) continue;
+            for (Object constant : ((Enum<?>) tab).getDeclaringClass().getEnumConstants()) {
+                if (!"PEOPLE".equals(((Enum<?>) constant).name())) continue;
+                @SuppressWarnings("unchecked") T people = (T) constant;
+                tabs.add(i + 1, people);
+                return true;
+            }
+            break;
+        }
+        hookFailed(SHOW_PEOPLE_TAB, "Can't find the People tab", new IllegalStateException("no INBOX and PEOPLE tabs"));
+        return false;
+    }
+
+    /** Every switch that changes the bottom bar's tabs, so each one's list goes through {@link #visibleTabs}. */
+    static final List<String> TAB_CONTROLS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications", "meta_ai", SHOW_PEOPLE_TAB));
 
     /**
      * The switch that hides a bottom tab, by the tab's constant in Messenger's tab enum, or null for a tab with none. MUSE

@@ -401,6 +401,8 @@ final class SettingsText {
         ENGLISH.put("meta_ai_tab_pending_off", "The Meta AI tab comes back after Messenger restarts");
         ENGLISH.put("tab_people_pending_on", "The People tab is hidden after Messenger restarts");
         ENGLISH.put("tab_people_pending_off", "The People tab comes back after Messenger restarts");
+        ENGLISH.put("tab_people_show_pending_on", "The People tab shows after Messenger restarts");
+        ENGLISH.put("tab_people_show_pending_off", "The People tab goes away after Messenger restarts");
         ENGLISH.put("tab_notifications_pending_on", "The Notifications tab is hidden after Messenger restarts");
         ENGLISH.put("tab_notifications_pending_off", "The Notifications tab comes back after Messenger restarts");
         ENGLISH.put("error_now", "Stopped with an error just now. Copy setup on the App tab has details.");
