@@ -177,6 +177,8 @@ internal fun MutableMethod.validateHook(hook: String) {
         INSTANTS_BUTTON -> validateInstantsButton()
         SAVE_VOICE -> validateSaveVoice()
         SAVE_VOICE_MENU -> validateSaveVoiceMenu()
+        MESSAGE_ACTIONS -> validateMessageActions()
+        MESSAGE_ACTIONS_MORE -> validateMessageActionsMore()
         HIDE_READ_RECEIPTS -> validateChatSeen()
         REPLY_READ -> validateReplyRead()
         MARK_READ_BAR, HIDE_CALL_BAR -> validateMarkReadBar()
@@ -295,6 +297,8 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             INSTANTS_BUTTON -> method.injectInstantsButton()
             SAVE_VOICE -> method.injectSaveVoice()
             SAVE_VOICE_MENU -> method.injectSaveVoiceMenu()
+            MESSAGE_ACTIONS -> method.injectMessageActions()
+            MESSAGE_ACTIONS_MORE -> method.injectMessageActionsMore()
             ANALYTICS_UPLOADS -> method.injectAnalyticsUpload()
             ATTRIBUTION_UPLOADS -> method.injectAttributionUpload()
             AD_EVENTS -> method.injectAdEvent()
@@ -616,6 +620,10 @@ val xheAudioPatch = controlPatch("xhe_audio", "Fix videos that won't send",
 @Suppress("unused")
 val disappearingSwipePatch = controlPatch("disappearing_swipe", "Ignore the swipe up for disappearing messages",
     "Swiping up at the bottom of a chat no longer turns on disappearing messages, so a scroll can't set the timer by accident. You can still change it in the chat's settings.", "Conversations")
+@Suppress("unused")
+val messageActionsPatch = controlPatch("message_actions", "Customize message actions",
+    "Lets you choose the order of the actions you get by holding a message, and hide the ones you don't use, separately for messages you sent and messages you got. The first ones show in the row under the message and the rest under More.", "Conversations",
+    MESSAGE_ACTIONS, MESSAGE_ACTIONS_MORE)
 @Suppress("unused")
 val hideRecentMediaPatch = controlPatch("recent_media", "Hide the recent photo card",
     "Stops the card above the message box that offers to send the screenshot, photo or video you just took. You can still send it from the gallery.", "Photos and videos")

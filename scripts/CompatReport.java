@@ -210,6 +210,7 @@ public class CompatReport {
         PATCHES.put("Hide the recent photo card", List.of("recent_media"));
         PATCHES.put("Save voice messages you play", List.of("save_voice"));
         PATCHES.put("Save button for voice messages", List.of("save_voice_menu"));
+        PATCHES.put("Customize message actions", List.of("message_actions", "message_actions_more"));
         PATCHES.put("Hide the Instants button", List.of("instants_button"));
         PATCHES.put("Hide Your story when sharing", List.of("share_story"));
         PATCHES.put("Hide pictures on the Blocked list", List.of("blocked_list_pictures"));
@@ -5318,6 +5319,144 @@ public class CompatReport {
         return sheet.isEmpty() ? List.of() : List.of(rows, tap, sheet.get(0), sheet.get(1));
     }
 
+    static final String ACTIONS_COPY = "Lcom/google/common/collect/ImmutableList;->copyOf(Ljava/util/Collection;)Lcom/google/common/collect/ImmutableList;";
+    static final String ACTIONS_LIST = "Lcom/google/common/collect/ImmutableList;";
+    static final String ACTIONS_LIST_BUILDER = "Lcom/google/common/collect/ImmutableList$Builder;";
+    static final Set<Opcode> ACTIONS_MOVES = EnumSet.of(Opcode.MOVE_OBJECT, Opcode.MOVE_OBJECT_FROM16, Opcode.MOVE_OBJECT_16);
+
+    static Integer actionMoveSource(Instruction i) {
+        return ACTIONS_MOVES.contains(i.getOpcode()) ? ((TwoRegisterInstruction) i).getRegisterB() : null;
+    }
+
+    /** Whether any try block covers the instruction at index. */
+    static boolean actionCovered(Method m, List<Instruction> code, int index) {
+        int address = 0;
+        for (int k = 0; k < index; k++) address += code.get(k).getCodeUnits();
+        for (var b : m.getImplementation().getTryBlocks())
+            if (address >= b.getStartCodeAddress() && address < b.getStartCodeAddress() + b.getCodeUnitCount()) return true;
+        return false;
+    }
+
+    /** A copy of the held message, made straight from its parameter or from one earlier copy of it. */
+    static boolean actionCopiesHeld(List<Instruction> code, int move, int held) {
+        Integer source = actionMoveSource(code.get(move));
+        if (source == null) return false;
+        if (source == held) return true;
+        for (int k = 0; k < code.size(); k++) if (writes(code.get(k), source)) {
+            Integer from = actionMoveSource(code.get(k));
+            return k < move && from != null && from == held;
+        }
+        return false;
+    }
+
+    /**
+     * message_actions: the method that builds a held message's actions, an instance method of (held message, EnumMap) that
+     * names "menuItems", whose only copy measured right away is the full list before the cut, with the message's own sent
+     * flag read off it. Mirrors MessageActions.kt's actionsBarSite.
+     */
+    static boolean messageActionsSite(Method m) {
+        var p = params(m);
+        if (AccessFlags.STATIC.isSet(m.getAccessFlags()) || !m.getReturnType().startsWith("L") || p.size() != 2 || !"Ljava/util/EnumMap;".equals(p.get(1))) return false;
+        var code = instructions(m);
+        boolean marked = false;
+        for (var i : code) if ("menuItems".equals(menuString(i))) marked = true;
+        if (!marked) return false;
+        int copy = -1;
+        for (int i = 0; i + 2 < code.size(); i++) {
+            if (!ACTIONS_COPY.equals(ref(code.get(i))) || code.get(i + 1).getOpcode() != Opcode.MOVE_RESULT_OBJECT) continue;
+            var c = menuCall(code.get(i + 2));
+            if (c == null || !"size".equals(c.getName()) || !"I".equals(c.getReturnType()) || !c.getParameterTypes().isEmpty()) continue;
+            if (copy != -1) return false;
+            copy = i;
+        }
+        if (copy == -1) return false;
+        int list = register(code.get(copy + 1)), at = copy + 2;
+        var size = code.get(at);
+        if (size.getOpcode() != Opcode.INVOKE_VIRTUAL && size.getOpcode() != Opcode.INVOKE_INTERFACE || !callArgs(size).equals(List.of(list))) return false;
+        if (at + 2 >= code.size() || code.get(at + 1).getOpcode() != Opcode.MOVE_RESULT) return false;
+        int scratch = register(code.get(at + 1));
+        if (code.get(at + 2).getOpcode() != Opcode.IF_LE || ((TwoRegisterInstruction) code.get(at + 2)).getRegisterA() != scratch) return false;
+        if (list > 15 || scratch > 15 || list == scratch || actionCovered(m, code, at)) return false;
+        int held = parameterRegister(m, 1);
+        for (var i : code) if (writes(i, held)) return false;
+        var sent = new HashSet<List<String>>();
+        for (int j = 1; j + 3 < code.size(); j++) {
+            if (code.get(j).getOpcode() != Opcode.CHECK_CAST) continue;
+            int cast = register(code.get(j));
+            var type = ref(code.get(j));
+            var field = menuField(code.get(j + 1));
+            var call = menuCall(code.get(j + 2));
+            if (!(code.get(j - 1) instanceof OneRegisterInstruction before) || before.getRegisterA() != cast || !actionCopiesHeld(code, j - 1, held)) continue;
+            if (code.get(j + 1).getOpcode() != Opcode.IGET_OBJECT || ((TwoRegisterInstruction) code.get(j + 1)).getRegisterB() != cast) continue;
+            if (field == null || !field.getDefiningClass().equals(type) || code.get(j + 2).getOpcode() != Opcode.INVOKE_INTERFACE ||
+                call == null || !call.getDefiningClass().equals(field.getType())) continue;
+            if (!"Z".equals(call.getReturnType()) || !call.getParameterTypes().isEmpty() ||
+                !callArgs(code.get(j + 2)).equals(List.of(((TwoRegisterInstruction) code.get(j + 1)).getRegisterA())) ||
+                code.get(j + 3).getOpcode() != Opcode.MOVE_RESULT) continue;
+            sent.add(List.of(type, ref(code.get(j + 1)), ref(code.get(j + 2))));
+        }
+        return sent.size() == 1;
+    }
+
+    /**
+     * message_actions_more: the held message's More sheet, the one method that names MORE_SHEET_TAG, where the sorted list
+     * and the skip past the sort meet at the new row builder. Mirrors MessageActions.kt's actionsMoreSite.
+     */
+    static boolean messageActionsMoreSite(Method m) {
+        if (!"V".equals(m.getReturnType()) || AccessFlags.STATIC.isSet(m.getAccessFlags()) || m.getParameterTypes().size() != 4) return false;
+        var code = instructions(m);
+        boolean tagged = false;
+        for (var i : code) if (MORE_SHEET_TAG.equals(menuString(i))) tagged = true;
+        if (!tagged) return false;
+        int read = -1;
+        for (int k = 0; k < code.size(); k++) {
+            var f = menuField(code.get(k));
+            if (code.get(k).getOpcode() != Opcode.IGET_OBJECT || f == null || !f.getDefiningClass().equals(m.getDefiningClass()) || !ACTIONS_LIST.equals(f.getType())) continue;
+            if (read != -1) return false;
+            read = k;
+        }
+        if (read == -1 || read + 2 >= code.size()) return false;
+        int list = ((TwoRegisterInstruction) code.get(read)).getRegisterA();
+        Integer moved = actionMoveSource(code.get(read + 1));
+        if (moved == null || moved != list) return false;
+        int handed = ((TwoRegisterInstruction) code.get(read + 1)).getRegisterA();
+        var test = code.get(read + 2).getOpcode();
+        if (test != Opcode.IF_EQZ && test != Opcode.IF_NEZ) return false;
+        int at = mediaTarget(code, read + 2);
+        if (at < read + 5 || code.get(at).getOpcode() != Opcode.NEW_INSTANCE) return false;
+        int scratch = register(code.get(at));
+        if (code.get(at - 1).getOpcode() != Opcode.MOVE_RESULT_OBJECT || register(code.get(at - 1)) != list) return false;
+        var built = menuCall(code.get(at - 2));
+        if (code.get(at - 2).getOpcode() != Opcode.INVOKE_STATIC || built == null || !ACTIONS_LIST.equals(built.getReturnType()) ||
+            !refParams(built).equals(List.of(ACTIONS_LIST_BUILDER))) return false;
+        if (list > 15 || scratch > 15 || list == scratch || list == handed || scratch == handed) return false;
+        for (int k = read + 2; k < at; k++) if (writes(code.get(k), handed)) return false;
+        int landings = 0;
+        for (int k = 0; k < code.size(); k++) {
+            var op = code.get(k).getOpcode();
+            if (code.get(k) instanceof OffsetInstruction && op != Opcode.PACKED_SWITCH && op != Opcode.SPARSE_SWITCH && mediaTarget(code, k) == at) landings++;
+        }
+        return landings == 1 && !mediaTargets(m, false).contains(at) && !actionCovered(m, code, at);
+    }
+
+    static List<Method> messageActions(List<ClassDef> classes) {
+        Method found = null;
+        for (var c : classes) for (var m : c.getMethods()) if (messageActionsSite(m)) {
+            if (found != null) return List.of();
+            found = m;
+        }
+        return found == null ? List.of() : List.of(found);
+    }
+
+    static List<Method> messageActionsMore(List<ClassDef> classes) {
+        Method found = null;
+        for (var c : classes) for (var m : c.getMethods()) if (messageActionsMoreSite(m)) {
+            if (found != null) return List.of();
+            found = m;
+        }
+        return found == null ? List.of() : List.of(found);
+    }
+
     static final String SEND_MESSAGE_EVENT = "Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;";
 
     /**
@@ -8250,6 +8389,8 @@ public class CompatReport {
         found.get("instants_button").addAll(instantsButtonAttaches(classes));
         found.get("save_voice").addAll(voiceDownloads(classes));
         found.get("save_voice_menu").addAll(saveVoiceMenu(classes));
+        found.get("message_actions").addAll(messageActions(classes));
+        found.get("message_actions_more").addAll(messageActionsMore(classes));
         found.get("hide_read_receipts").addAll(chatSeenBroadcasts(classes));
         found.get("reply_read").addAll(replyReadDispatches(classes));
         found.get("analytics_uploads").addAll(analyticsUploads(classes));

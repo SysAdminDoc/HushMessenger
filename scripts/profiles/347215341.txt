@@ -173,6 +173,8 @@ hook menu_settings LX/HoZ;->BVX(LX/0Lw;)Ljava/util/ArrayList;
 hook menu_settings LX/QDl;->onClick(Landroid/view/View;)V
 hook menu_settings LX/YzZ;->Djs(LX/4tk;I)V
 hook menu_settings LX/Yza;->A0I(Ljava/util/List;)V
+hook message_actions LX/5Ta;->AYQ(LX/ANk;Ljava/util/EnumMap;)LX/6PO;
+hook message_actions_more LX/64R;->E7C(LX/1WA;LX/5IG;LX/DMc;LX/ANk;)V
 hook message_log Lcom/facebook/messaging/notify/type/NewMessageNotification;-><init>(Lcom/facebook/messaging/accountswitch/model/MessengerAccountType;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/9kZ;LX/5he;Lcom/facebook/messaging/push/flags/ServerMessageAlertFlags;Lcom/facebook/push/constants/PushProperty;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ZZZZZZZ)V
 hook message_log_button LX/2Nt;->Cip()Ljava/util/List;
 hook message_log_click LX/2Nt;->Dn0(Landroid/view/View;Ljava/lang/String;Ljava/lang/String;I)V
