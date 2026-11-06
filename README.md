@@ -189,23 +189,28 @@ With **Hide read receipts** on, a chat you open stays unread on your phone, beca
 
 ## Supported Messenger builds
 
+This table is for the next release. v0.29.0, the current one, doesn't take `347215273`, `347215275` or `347215277` yet.
+
 | Field | Value |
 | --- | --- |
 | Package | `com.facebook.orca` |
 | Version | `586.0.0.55.92` |
-| Version codes, arm64-v8a | `347215257`, `347215330`, `347215343`, `347215344`, `347215348` |
+| Version codes, arm64-v8a | `347215257`, `347215273`, `347215275`, `347215277`, `347215330`, `347215343`, `347215344`, `347215348` |
 | Version code, armeabi-v7a | `347215341` |
-| Icons for every screen density | `347215257`, `347215343` |
-| Icons for one screen density | 120-160 dpi `347215344`. 360-480 dpi `347215330` and the armeabi-v7a build. 560-640 dpi `347215348` |
+| Icons for every screen density | `347215257`, `347215273`, `347215343` |
+| Icons for one screen density | 120-160 dpi `347215344`. 213-240 dpi `347215275`. 360-480 dpi `347215277`, `347215330` and the armeabi-v7a build. 560-640 dpi `347215348` |
 | Minimum Android version | Android 9 (API 28) |
 | APKMirror download | [586.0.0.55.92](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-586-0-0-55-92-release/) |
 
-APKMirror lists three more arm64 builds of 586 (`347215273`, `347215275` and `347215277`). Meta compiled those a little differently, and they aren't supported yet, so pick one from the table. The patch checks the version code before it changes anything and stops on a build that isn't listed. Older Messenger versions aren't supported by current bundles. v0.28.0 takes 585.0.0.53.94 (armv7 too), v0.27.0 takes 584.1.0.61.98, v0.26.0 takes 584.0.0.49.98, v0.25.0 takes 583.0.0.29.95 and v0.23.0 takes 582.0.0.61.92.
+That's every build APKMirror lists for 586. Meta compiled `347215273`, `347215275` and `347215277` a little differently from the rest, and the patches find their way around both kinds. The patch checks the version code before it changes anything and stops on a build that isn't listed. Older Messenger versions aren't supported by current bundles. v0.28.0 takes 585.0.0.53.94 (armv7 too), v0.27.0 takes 584.1.0.61.98, v0.26.0 takes 584.0.0.49.98, v0.25.0 takes 583.0.0.29.95 and v0.23.0 takes 582.0.0.61.92.
 
 SHA-256 of the stock APKs the checks ran against:
 
 ```text
 347215257  d362ca4c12b3df2255cadfe16bad6e6b8e6f7dce28f678ef1c148c50343938a2
+347215273  954a17fafc4e1081becf82bf9e9c80b49fbd83470b52a0f578e0d4e9453da35b
+347215275  204bfaa3da0fd5371ceac595a764d115fe2ca74c5b462db6a86be51c76e80093
+347215277  5eb448e8615f50790414d475af7e4f2cf76813e687848a6ccf06ed00e80721d7
 347215330  503251702dc69d100feba9d56cfa28e96ec1c9ea974cf385bf88d6ee2ed037c1
 347215341  c2a2b65edf52bede0de5b1d5603f332813a7c404784ac8913801a29670190691
 347215343  d6335e5da25effadd6c8f03220750e0990bc17bcd2670275883bfd8dd3605edc
