@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- With `Spoof package version` on, parts of Messenger still saw the raised version number, like its background job check and its crash reports, because they get the app's version info in roundabout ways the patch didn't follow. Now every place Messenger reads a version number asks first whose it is. Messenger's own answers with the build you patched, and other apps keep the number Android gives. Refs #120.
+
 ## 0.29.0 (2026-11-05)
 
 ### New
