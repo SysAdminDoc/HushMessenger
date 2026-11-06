@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- The patches are built with Morphe patcher 2.3.0 now, the one that comes with Morphe Manager 2.5.0 and Morphe Desktop 2.1.0. Manager won't load a bundle made with a newer patcher than its own, so update Manager to 2.5.0 or newer (or Desktop to 2.1.0) before you add the next release.
 - Take Messenger 586's other three arm64 builds (347215273, 347215275 and 347215277). Meta built them from the same code as the others but packed it differently, so a dozen patches couldn't find what they change. Now every patch finds its spot in them too, so all nine 586 builds on APKMirror work. Refs #145.
 - With `Spoof package version` on, parts of Messenger still saw the raised version number, like its background job check and its crash reports, because they get the app's version info in roundabout ways the patch didn't follow. Now every place Messenger reads a version number asks first whose it is. Messenger's own answers with the build you patched, and other apps keep the number Android gives. Refs #120.
 

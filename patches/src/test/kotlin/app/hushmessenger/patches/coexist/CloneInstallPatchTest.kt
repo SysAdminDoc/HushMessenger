@@ -692,7 +692,7 @@ class CloneInstallPatchTest {
                 <category android:name="com.facebook.orca"/></intent-filter>
             </receiver>
         """.trimIndent()
-        for ((name, selection) in listOf<Pair<String, Set<Patch<*>>>>("off" to setOf(menuSettingsPatch), "on" to setOf(menuSettingsPatch, request))) {
+        for ((name, selection) in listOf<Pair<String, Set<Patch>>>("off" to setOf(menuSettingsPatch), "on" to setOf(menuSettingsPatch, request))) {
             val owner = if (name == "on") COPY else "com.facebook.orca"
             val apk = lifecycleApk(temporary.resolve("input-$name"), lifecycleClasses(), permissions, components)
             withLifecycleExtension(extension) { _ ->
