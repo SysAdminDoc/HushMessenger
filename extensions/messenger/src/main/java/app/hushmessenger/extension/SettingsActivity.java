@@ -672,10 +672,14 @@ public final class SettingsActivity extends Activity {
         title.setAutoSizeTextTypeUniformWithConfiguration(14, 20, 1, TypedValue.COMPLEX_UNIT_SP);
         ui.add(wordmarkColumn, title, 0);
         wordmark = title;
-        // Only a preview build says anything under the name, since that's a warning.
+        // Only a preview build or a Root Mount over the wrong build says anything under the name, since those are warnings.
         if (Settings.preview) {
             TextView notice = ui.text(text.get("preview_notice"), 13, ui.warning, false);
             notice.setTag("preview_notice");
+            ui.add(wordmarkColumn, notice, 4);
+        } else if (MountedBuild.find(this) != null) {
+            TextView notice = ui.text(MountedBuild.notice(text), 13, ui.warning, false);
+            notice.setTag("mounted_build_mismatch");
             ui.add(wordmarkColumn, notice, 4);
         }
         bar.addView(wordmarkColumn, new LinearLayout.LayoutParams(0, -2, 1));

@@ -19,6 +19,7 @@ final class SettingsTextZhTw {
         {"settings", "HushMessenger 設定"},
         {"preview_title", "HushMessenger 介面預覽"},
         {"preview_notice", "介面預覽。這些控制項不會變更 Messenger。"},
+        {"mounted_build_mismatch", "此版本是從 Messenger %1$d 修補的，但 Android 安裝的是 %2$d。請修補 %2$d 再使用 Root Mount，否則聊天大頭貼和其他畫面可能會當機。"},
         {"open", "開啟"},
         {"open_messenger", "開啟 Messenger"},
         {"back", "返回"},
