@@ -7,11 +7,16 @@ import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.DexFileFactory
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.Opcodes
+import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
 import com.android.tools.smali.dexlib2.iface.Method
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.RegisterRangeInstruction
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
+import com.android.tools.smali.dexlib2.writer.io.MemoryDataStore
+import com.android.tools.smali.dexlib2.writer.pool.DexPool
+import java.lang.ref.WeakReference
+import java.nio.ByteBuffer
 import java.nio.file.Files
 import java.nio.file.Path
 import org.junit.jupiter.api.Assumptions.assumeTrue
@@ -19,6 +24,8 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 private const val CAR_EXTENDER = "LX/0Qq;"
@@ -158,6 +165,29 @@ class CarMessagesTest {
         validateControls(mirroredControls(carMessagesFixture()), setOf(CAR_MESSAGES, CAR_EXTENSION_GATE))
         assertEquals(setOf(SYNTHETIC_CAR_GATE), SYNTHETIC_PROFILE.hooks.getValue(CAR_EXTENSION_GATE))
         assertEquals(setOf("LX/A7i;->A00(Landroid/graphics/Bitmap;)V"), BASE_PROFILE.hooks.getValue(CAR_EXTENSION_GATE))
+    }
+
+    /** The gate scan on classes read back from a dex file, the way the patcher reads Messenger's. */
+    private fun scanGateInDex(): WeakReference<DexBackedDexFile> {
+        val pool = DexPool(Opcodes.getDefault())
+        carMessagesFixture().forEach { pool.internClass(it) }
+        val store = MemoryDataStore()
+        pool.writeTo(store)
+        val dex = DexBackedDexFile(Opcodes.getDefault(), ByteBuffer.wrap(store.data))
+        val gates = findCarExtensionGate(dex.classes)
+        assertEquals(listOf(SYNTHETIC_CAR_GATE), gates.map { it.hookId() })
+        assertNotNull(gates.single().carExtensionGate())
+        return WeakReference(dex)
+    }
+
+    @Test fun theGateScanLetsGoOfTheDexFileItRead() {
+        val dex = scanGateInDex()
+        var tries = 0
+        while (dex.get() != null && tries++ < 20) {
+            System.gc()
+            Thread.sleep(50)
+        }
+        assertNull(dex.get(), "the gate scan still holds the dex file it read")
     }
 
     @Test fun lookalikeFlagChecksAreNotTheGate() {

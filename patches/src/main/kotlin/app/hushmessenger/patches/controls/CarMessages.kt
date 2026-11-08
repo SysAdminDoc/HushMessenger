@@ -97,7 +97,6 @@ internal const val CAR_EXTENSION_STEP = "add_android_auto_extension"
 internal const val CAR_EXTENSION_CALL = "Lapp/hushmessenger/extension/CarMessages;->carExtension(Z)Z"
 
 private const val CAR_MOBILE_CONFIG = "Lcom/facebook/mobileconfig/factory/MobileConfigUnsafeContext;"
-private val carExtensionStep = StringMatch(CAR_EXTENSION_STEP)
 
 /** Where the flag's answer lands: the move-result right before the branch that skips the car extender, and its register. */
 internal class CarGate(val index: Int, val flag: Int)
@@ -109,6 +108,7 @@ internal class CarGate(val index: Int, val flag: Int)
  */
 internal fun Method.carExtensionGate(): CarGate? {
     val code = implementation?.instructions?.toList() ?: return null
+    val carExtensionStep = StringMatch(CAR_EXTENSION_STEP)
     val step = code.indices.filter { carExtensionStep.matches((code[it] as? ReferenceInstruction)?.reference) }.singleOrNull()
     if (step == null || step < 5) return null
     val branch = code[step - 1] as? OneRegisterInstruction ?: return null
@@ -127,6 +127,7 @@ internal fun Method.carExtensionGate(): CarGate? {
 
 /** The app's only method that logs add_android_auto_extension, when its flag check has that shape. */
 internal fun findCarExtensionGate(classes: Iterable<ClassDef>): List<Method> {
+    val carExtensionStep = StringMatch(CAR_EXTENSION_STEP)
     val steps = classes.flatMap { cls ->
         cls.methods.filter { method ->
             method.implementation?.instructions?.any { carExtensionStep.matches((it as? ReferenceInstruction)?.reference) } == true

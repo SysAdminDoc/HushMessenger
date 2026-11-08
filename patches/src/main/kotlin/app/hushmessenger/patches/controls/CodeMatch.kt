@@ -19,6 +19,9 @@ import java.util.IdentityHashMap
  * the format keeps sorted by UTF-16 code unit (ART refuses a dex file that isn't), and then compare table indexes. A
  * dex file whose tables don't have the id can't reference it, so its instructions are ruled out without a string read.
  * Classes a patch already rebuilt hold plain references, and those are compared by value.
+ *
+ * A matcher keeps every dex file it has looked at, so it lives for one scan, never in a top-level val: a top-level one
+ * kept each APK the patcher or a test loaded alive until the heap ran out.
  */
 
 private fun DexBackedDexFile.stringIndex(value: String) = stringSection.binarySearch(value).coerceAtLeast(-1)
