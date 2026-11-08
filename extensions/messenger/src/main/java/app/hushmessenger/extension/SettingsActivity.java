@@ -529,6 +529,7 @@ public final class SettingsActivity extends Activity {
                 refreshStatus(control);
             }
             for (RadioButton mode : bubbleModes) mode.setChecked(mode.getTag().equals("bubble_" + Settings.selectedBubbleMode()));
+            themeColors.showStyle();
         } finally { binding = false; }
         // Coming back from Android's battery prompt or app info shows what was chosen there.
         if (batteryUse != null) {
@@ -1366,7 +1367,7 @@ public final class SettingsActivity extends Activity {
     /** A row's icon: one its key's words call for, else its section's. Fixed per key, since some rows are rebuilt later. */
     private static String rowIcon(String key) {
         if (WAYS_IN.contains(key) || "hide_drawer_icon".equals(key)) return SettingsIcons.forKey(key, sectionIcon("quick_access"));
-        if ("light".equals(key) || "material_you_black".equals(key) || MaterialYouTheme.LIGHT_KEY.equals(key))
+        if ("light".equals(key) || "material_you_black".equals(key) || MaterialYouTheme.LIGHT_KEY.equals(key) || MaterialYouTheme.LIGHT_GRAYS_KEY.equals(key))
             return SettingsIcons.forKey(key, sectionIcon("appearance"));
         if ("check_updates".equals(key)) return SettingsIcons.forKey(key, sectionIcon("about"));
         // A switch under another one takes that one's section.
@@ -1503,6 +1504,9 @@ public final class SettingsActivity extends Activity {
             ui.add(appearance, controlRow("material_you_black", text.format("material_you_black"), text.format("material_you_black_help"), false), 12);
             ui.rule(appearance, 10);
             ui.add(appearance, controlRow(MaterialYouTheme.LIGHT_KEY, text.format(MaterialYouTheme.LIGHT_KEY), text.format("material_you_light_help"), false), 12);
+            ui.rule(appearance, 10);
+            ui.add(appearance, controlRow(MaterialYouTheme.LIGHT_GRAYS_KEY, text.format(MaterialYouTheme.LIGHT_GRAYS_KEY),
+                text.format("material_you_light_grays_help"), false), 12);
             ui.rule(appearance, 10);
             themeColors.addTo(appearance);
         }
