@@ -227,7 +227,8 @@ public class CompatReport {
         PATCHES.put("Stop live connection logging", List.of("mqtt_telemetry"));
         PATCHES.put("Stop nearby scans", List.of("nearby_scans", "wifi_identity"));
         PATCHES.put("Stop app list and device ID sharing", List.of("phone_id_sync"));
-        PATCHES.put("Keep a message log", List.of("message_log", "unsent_recall", "unsent_clear", "message_log_button", "message_log_click"));
+        PATCHES.put("Keep a message log", List.of("message_log", "unsent_recall", "unsent_clear", "message_log_button", "message_log_click",
+            "quiet_log_check", "quiet_log_drop"));
         PATCHES.put("Auto reply", List.of("auto_reply"));
         PATCHES.put("Quiet incoming calls", List.of("quiet_call_ring", "quiet_call_notification"));
         PATCHES.put("Android Auto messages", List.of("car_messages", "car_extension_gate"));
@@ -3274,6 +3275,119 @@ public class CompatReport {
             }
         }
         return match == null ? List.of() : List.of(match);
+    }
+
+    static final String PARTICIPANT_INFO = "Lcom/facebook/messaging/model/messages/ParticipantInfo;";
+
+    /**
+     * quiet_log_drop: the notification manager's one (session, new-message notification)V method that logs itself as
+     * notifyNewMessageInternal, with room for the drop's four locals, when the message log resolves and every field the
+     * drop reads is one the manager may read: the notification's Message, the Message's thread key, id and "senderInfo"
+     * ParticipantInfo, that person's "name" and SecretString's text. Mirrors QuietChats.kt.
+     */
+    static List<Method> quietLogDrop(List<ClassDef> classes) {
+        ClassDef manager = null, firstNotification = null, firstSecret = null;
+        for (var cls : classes) {
+            if (manager == null && MESSAGES_NOTIFICATION_MANAGER.equals(cls.getType())) manager = cls;
+            if (firstNotification == null && NEW_MESSAGE_NOTIFICATION.equals(cls.getType())) firstNotification = cls;
+            if (firstSecret == null && SECRET_STRING.equals(cls.getType())) firstSecret = cls;
+        }
+        if (manager == null || firstNotification == null || firstSecret == null) return List.of();
+        var drops = new ArrayList<Method>();
+        for (var m : manager.getMethods())
+            if ("V".equals(m.getReturnType()) && !AccessFlags.STATIC.isSet(m.getAccessFlags()) && m.getImplementation() != null &&
+                m.getParameterTypes().stream().map(Object::toString).toList().equals(List.of(BUBBLE_SESSION, NEW_MESSAGE_NOTIFICATION)) &&
+                stringsOf(m).contains("notifyNewMessageInternal")) drops.add(m);
+        if (drops.size() != 1 || drops.get(0).getImplementation().getRegisterCount() < 3 + 4) return List.of();
+        var drop = drops.get(0);
+        // The message log's own contract, as resolveMessageLogContract has it, without the hook's room.
+        String messageId = messageIdField(classes);
+        if (messageId == null || hiddenTextField(classes) == null) return List.of();
+        var ctors = new ArrayList<Method>();
+        for (var m : firstNotification.getMethods()) {
+            var params = m.getParameterTypes();
+            if ("<init>".equals(m.getName()) && "V".equals(m.getReturnType()) && params.size() >= 3 &&
+                MESSENGER_ACCOUNT_TYPE.contentEquals(params.get(0)) && MESSAGE_TYPE.contentEquals(params.get(1)) &&
+                THREAD_SUMMARY_TYPE.contentEquals(params.get(2)) && m.getImplementation() != null) ctors.add(m);
+        }
+        if (ctors.size() != 1 || !messageLogContract(classes, ctors.get(0))) return List.of();
+        String threadKey = objectReads(ctors.get(0), MESSAGE_TYPE, THREAD_KEY).iterator().next();
+        String text = secretTextField(firstSecret);
+        // The drop's own fields, from the last class of each type, as associateBy keeps it.
+        var byType = new HashMap<String, ClassDef>();
+        for (var cls : classes) byType.put(cls.getType(), cls);
+        var message = byType.get(MESSAGE_TYPE);
+        var notification = byType.get(NEW_MESSAGE_NOTIFICATION);
+        var participant = byType.get(PARTICIPANT_INFO);
+        var secret = byType.get(SECRET_STRING);
+        if (text == null || message == null || participant == null) return List.of();
+        var reads = objectReads(drop, NEW_MESSAGE_NOTIFICATION, MESSAGE_TYPE);
+        var senders = new LinkedHashSet<String>();
+        for (var cls : classes) for (var m : cls.getMethods())
+            if ("Lorg/json/JSONObject;".equals(m.getReturnType()) &&
+                m.getParameterTypes().stream().map(Object::toString).toList().contains(MESSAGE_TYPE)) senders.addAll(keyedObjectReads(m, "senderInfo"));
+        var names = new LinkedHashSet<String>();
+        for (var cls : classes) {
+            if (!PARTICIPANT_INFO.equals(cls.getType())) continue;
+            for (var m : cls.getMethods()) {
+                if (!"toString".equals(m.getName()) || !m.getParameterTypes().isEmpty() || !"Ljava/lang/String;".equals(m.getReturnType())) continue;
+                var code = instructions(m);
+                for (int at = 0; at + 1 < code.size(); at++) {
+                    var load = code.get(at);
+                    if ((load.getOpcode() != Opcode.CONST_STRING && load.getOpcode() != Opcode.CONST_STRING_JUMBO) || !"name".equals(text(load))) continue;
+                    if (code.get(at + 1).getOpcode() == Opcode.IGET_OBJECT && ((ReferenceInstruction) code.get(at + 1)).getReference() instanceof FieldReference f &&
+                        PARTICIPANT_INFO.equals(f.getDefiningClass()) && SECRET_STRING.equals(f.getType())) names.add(fieldId(f));
+                }
+            }
+        }
+        if (reads.size() != 1 || senders.size() != 1 || names.size() != 1) return List.of();
+        String reader = MESSAGES_NOTIFICATION_MANAGER;
+        return readableFrom(notification, reads.iterator().next(), reader) && readableFrom(message, senders.iterator().next(), reader) &&
+            readableFrom(message, threadKey, reader) && readableFrom(message, messageId, reader) &&
+            readableFrom(participant, names.iterator().next(), reader) && readableFrom(secret, text, reader) ? List.of(drop) : List.of();
+    }
+
+    /** Message ParticipantInfo fields read straight after `const-string key` and put into a JSONObject under it, on the same registers. */
+    static Set<String> keyedObjectReads(Method method, String key) {
+        var out = new LinkedHashSet<String>();
+        var code = instructions(method);
+        for (int at = 0; at + 2 < code.size(); at++) {
+            var load = code.get(at);
+            if ((load.getOpcode() != Opcode.CONST_STRING && load.getOpcode() != Opcode.CONST_STRING_JUMBO) || !key.equals(text(load))) continue;
+            var read = code.get(at + 1);
+            if (read.getOpcode() != Opcode.IGET_OBJECT || !(((ReferenceInstruction) read).getReference() instanceof FieldReference f) ||
+                !MESSAGE_TYPE.equals(f.getDefiningClass()) || !PARTICIPANT_INFO.equals(f.getType())) continue;
+            if (!(code.get(at + 2) instanceof FiveRegisterInstruction put) || !JSON_PUT.equals(ref(code.get(at + 2))) || put.getRegisterCount() != 3 ||
+                put.getRegisterD() != register(load) || put.getRegisterE() != ((TwoRegisterInstruction) read).getRegisterA()) continue;
+            out.add(fieldId(f));
+        }
+        return out;
+    }
+
+    /** The String field SecretString's one (String) constructor fills from its argument, or null. Mirrors resolveMessageLogContract. */
+    static String secretTextField(ClassDef secret) {
+        var ctors = new ArrayList<Method>();
+        for (var m : secret.getMethods())
+            if ("<init>".equals(m.getName()) && m.getImplementation() != null &&
+                m.getParameterTypes().stream().map(Object::toString).toList().equals(List.of("Ljava/lang/String;"))) ctors.add(m);
+        if (ctors.size() != 1) return null;
+        int argument = ctors.get(0).getImplementation().getRegisterCount() - 1;
+        var texts = new LinkedHashSet<String>();
+        for (var i : instructions(ctors.get(0)))
+            if (i instanceof ReferenceInstruction r && r.getReference() instanceof FieldReference f && SECRET_STRING.equals(f.getDefiningClass()) &&
+                "Ljava/lang/String;".equals(f.getType()) && i instanceof TwoRegisterInstruction t && t.getRegisterA() == argument) texts.add(fieldId(f));
+        return texts.size() == 1 ? texts.iterator().next() : null;
+    }
+
+    /** Whether cls declares the field where code in reader can read it: public, or non-private in the reader's package. */
+    static boolean readableFrom(ClassDef cls, String id, String reader) {
+        for (var f : cls.getFields()) {
+            if (!(cls.getType() + "->" + f.getName() + ":" + f.getType()).equals(id)) continue;
+            String pkg = cls.getType().substring(0, cls.getType().lastIndexOf('/'));
+            return AccessFlags.PUBLIC.isSet(f.getAccessFlags()) || (!AccessFlags.PRIVATE.isSet(f.getAccessFlags()) &&
+                pkg.equals(reader.substring(0, reader.lastIndexOf('/'))));
+        }
+        return false;
     }
 
     static final String SECRET_STRING = "Lcom/facebook/secure/secrettypes/SecretString;";
@@ -6967,6 +7081,50 @@ public class CompatReport {
             ? List.of(gates.get(0)) : List.of();
     }
 
+    static final String NOTIFICATION_SETTING = "Lcom/facebook/messaging/model/threads/NotificationSetting;";
+
+    /** quiet_log_check: the restricted_notify thread check, when it also has the mute check. Mirrors QuietChats.kt. */
+    static List<Method> quietLogCheck(List<ClassDef> classes) {
+        var gates = restrictedNotify(classes);
+        return gates.size() == 1 && muteCheck(gates.get(0)) ? gates : List.of();
+    }
+
+    /**
+     * QuietChats.kt's muteCheck: one ThreadSummary ()NotificationSetting call whose result is asked a ()Z straight after
+     * and branched on, the result in a 4-bit register, no jump onto the branch, one ThreadKey field of the check read,
+     * and the check's own register never written.
+     */
+    static boolean muteCheck(Method method) {
+        if (!THREAD_LEVEL_RESULT.equals(method.getDefiningClass()) || !"invokeSuspend".equals(method.getName()) ||
+            AccessFlags.STATIC.isSet(method.getAccessFlags()) || method.getImplementation() == null ||
+            !method.getParameterTypes().stream().map(Object::toString).toList().equals(List.of("Ljava/lang/Object;"))) return false;
+        var code = instructions(method);
+        int sites = 0, branch = -1, result = -1;
+        for (int at = 0; at < code.size() - 4; at++) {
+            if (code.get(at).getOpcode() != Opcode.INVOKE_VIRTUAL || !(((ReferenceInstruction) code.get(at)).getReference() instanceof MethodReference get) ||
+                !THREAD_SUMMARY_TYPE.equals(get.getDefiningClass()) || !NOTIFICATION_SETTING.equals(get.getReturnType()) ||
+                !get.getParameterTypes().isEmpty()) continue;
+            if (code.get(at + 1).getOpcode() != Opcode.MOVE_RESULT_OBJECT) continue;
+            int setting = register(code.get(at + 1));
+            if (code.get(at + 2).getOpcode() != Opcode.INVOKE_VIRTUAL ||
+                !(((ReferenceInstruction) code.get(at + 2)).getReference() instanceof MethodReference ask) ||
+                !NOTIFICATION_SETTING.equals(ask.getDefiningClass()) || !"Z".equals(ask.getReturnType()) || !ask.getParameterTypes().isEmpty() ||
+                ((FiveRegisterInstruction) code.get(at + 2)).getRegisterC() != setting) continue;
+            if (code.get(at + 3).getOpcode() != Opcode.MOVE_RESULT) continue;
+            int answer = register(code.get(at + 3));
+            var jump = code.get(at + 4);
+            if ((jump.getOpcode() != Opcode.IF_EQZ && jump.getOpcode() != Opcode.IF_NEZ) || register(jump) != answer) continue;
+            sites++;
+            branch = at + 4;
+            result = answer;
+        }
+        if (sites != 1 || result > 15 || mediaTargets(method).contains(branch)) return false;
+        if (objectReads(method, THREAD_LEVEL_RESULT, THREAD_KEY).size() != 1) return false;
+        int self = method.getImplementation().getRegisterCount() - 2;
+        for (var i : code) if (writes(i, self)) return false;
+        return true;
+    }
+
     static final String HOISTED_SHARE_LOADER ="Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/" +
         "morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;";
     static final String UNHOISTED_SHARE_TRACE = "messaging.sharing.broadcastflow.mutation.loader.sections.morewaystoshare.unhoisted." +
@@ -8981,6 +9139,8 @@ public class CompatReport {
         found.get("auto_reply").addAll(messageLogHooks(classes));
         found.get("unsent_recall").addAll(unsentRecall(classes));
         found.get("unsent_clear").addAll(unsentClear(classes));
+        found.get("quiet_log_check").addAll(quietLogCheck(classes));
+        found.get("quiet_log_drop").addAll(quietLogDrop(classes));
         found.get("chat_channel_keep").addAll(chatChannelKeep(classes));
         found.get("chat_channel_raise").addAll(chatChannelRaise(classes));
         found.get("system_camera").addAll(systemCameraLaunches(classes));

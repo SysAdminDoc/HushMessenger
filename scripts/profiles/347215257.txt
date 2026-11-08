@@ -213,6 +213,8 @@ hook pinned_chats LX/STf;->onCompletion(Ljava/lang/Object;)V
 hook pinned_chats Lcom/facebook/messaging/modularsync/networkfetcher/MessengerMsysDbNetworkFetcher;->A0M(LX/8Z2;LX/204;LX/5VR;)Ljava/lang/Object;
 hook quiet_call_notification Lcom/facebook/rtc/notification/RtcNotificationForegroundService;->A00(Landroid/app/Notification;Landroid/content/Context;LX/BZK;LX/BnO;LX/BF1;Lcom/facebook/rtc/notification/RtcNotificationForegroundService;LX/NFV;Ljava/lang/Integer;Ljava/lang/String;IZZZ)V
 hook quiet_call_ring LX/BDT;->run()V
+hook quiet_log_check Lcom/facebook/messaging/msys/pushnotifications/protobufparsing/MsysNotificationParser$getThreadLevelResult$2;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
+hook quiet_log_drop Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0H(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V
 hook recent_media LX/Akd;->A01(LX/5Xx;Lkotlin/jvm/functions/Function0;)V
 hook reels_badge LX/4UE;->A09(LX/4UE;)Z
 hook reply_read LX/AKs;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/5BO;LX/4up;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/DB7;LX/5Et;LX/5BN;LX/D92;LX/5vd;LX/5Xx;LX/5QS;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4uw;Ljava/lang/String;)V

@@ -110,6 +110,7 @@ internal val settingsExtension = bytecodePatch(description = "Load HushMessenger
         logoLongPressSites = emptyList()
         menuTitleLongPressSites = emptyList()
         messageLogContract = null
+        quietChatContract = null
         readReceiptThreadFields = emptyMap()
         markReadRecipe = null
         messageLogButtonRecipe = null
@@ -229,6 +230,8 @@ internal fun MutableMethod.validateHook(hook: String) {
         MESSAGE_LOG_CLICK -> validateMessageLogClick()
         UNSENT_RECALL -> validateUnsentRecall()
         UNSENT_CLEAR -> validateUnsentClear()
+        QUIET_LOG_CHECK -> validateQuietLogCheck()
+        QUIET_LOG_DROP -> validateQuietLogDrop()
         "original_photo" -> validateOriginalPhoto()
         ORIGINAL_VIDEO -> validateOriginalVideo()
         SYSTEM_CAMERA -> validateSystemCamera()
@@ -350,6 +353,8 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             MESSAGE_LOG_CLICK -> method.injectMessageLogClick()
             UNSENT_RECALL -> method.injectUnsentRecall()
             UNSENT_CLEAR -> method.injectUnsentClear()
+            QUIET_LOG_CHECK -> method.injectQuietLogCheck()
+            QUIET_LOG_DROP -> method.injectQuietLogDrop()
             AUTO_REPLY -> method.injectAutoReply()
             "original_photo" -> method.injectOriginalPhoto()
             ORIGINAL_VIDEO -> method.injectOriginalVideo()
@@ -658,8 +663,8 @@ val hideShareStoryPatch = controlPatch("share_story", "Hide Your story when shar
     SHARE_STORY, SHARE_STORY_TARGET)
 @Suppress("unused")
 val keepMessageLogPatch = controlPatch("message_log", "Keep a message log",
-    "Saves each message when its notification arrives, so you can still read it if it's unsent, and marks the ones that were. Works in end-to-end encrypted chats too. Stays on your phone. A clock next to the new message button in Chats can open the log too.", "Privacy",
-    MESSAGE_LOG, UNSENT_RECALL, UNSENT_CLEAR, MESSAGE_LOG_BUTTON, MESSAGE_LOG_CLICK)
+    "Saves each message when its notification arrives, so you can still read it if it's unsent, and marks the ones that were. Works in end-to-end encrypted chats too. Stays on your phone. A clock next to the new message button in Chats can open the log too. Log chats that don't notify, under it, adds muted and restricted chats without notifying you.", "Privacy",
+    MESSAGE_LOG, UNSENT_RECALL, UNSENT_CLEAR, MESSAGE_LOG_BUTTON, MESSAGE_LOG_CLICK, QUIET_LOG_CHECK, QUIET_LOG_DROP)
 @Suppress("unused")
 val autoReplyPatch = controlPatch("auto_reply", "Auto reply",
     "Answers messages with replies you write in HushMessenger settings, when they have words you pick or any message at all. Replies go out through Messenger's own notification reply, encrypted chats too, at most once every five minutes per chat.", "Conversations")

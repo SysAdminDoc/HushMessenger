@@ -495,6 +495,8 @@ final class SettingsText {
         ENGLISH.put("message_log_restore_failed", "Couldn't put the log back");
         ENGLISH.put("message_log_now", "Just now");
         ENGLISH.put("message_log_ago", "%s ago");
+        ENGLISH.put("message_log_quiet_chats", "Log chats that don't notify");
+        ENGLISH.put("message_log_quiet_chats_help", "Also logs messages from muted chats and from chats you restricted, with no notification. Restricted encrypted chats send your phone nothing, so those still only show up when you search for the person.");
         ENGLISH.put("message_log_save_expiring", "Save messages before they're removed");
         ENGLISH.put("message_log_save_expiring_help", "Right before the log removes a message, it's added to a text file in Download/Messenger, one file a month. That file isn't encrypted, so apps that can read your files can read it.");
         ENGLISH.put("message_log_search", "Search messages and names");

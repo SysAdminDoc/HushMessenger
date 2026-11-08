@@ -407,6 +407,8 @@ final class SettingsTextViVN {
         {"message_log_restore_failed", "Không thể khôi phục nhật ký tin nhắn"},
         {"message_log_now", "Vừa xong"},
         {"message_log_ago", "Cách đây %s"},
+        {"message_log_quiet_chats", "Ghi lại các đoạn chat không thông báo"},
+        {"message_log_quiet_chats_help", "Ghi lại cả tin nhắn từ các đoạn chat đã tắt thông báo và các đoạn chat bạn đã hạn chế, mà không báo cho bạn. Đoạn chat mã hóa bạn đã hạn chế không gửi gì đến điện thoại, nên chỉ thấy được khi bạn tìm tên người đó."},
         {"message_log_save_expiring", "Lưu tin nhắn trước khi bị xóa"},
         {"message_log_save_expiring_help", "Ngay trước khi nhật ký xóa một tin nhắn, tin nhắn đó được thêm vào một tệp văn bản trong Download/Messenger, mỗi tháng một tệp. Tệp này không được mã hóa nên các ứng dụng đọc được tệp của bạn cũng đọc được nó."},
         {"message_log_search", "Tìm tin nhắn và tên"},

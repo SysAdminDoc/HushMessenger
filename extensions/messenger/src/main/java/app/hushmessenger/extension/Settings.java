@@ -426,6 +426,7 @@ public final class Settings {
         for (String keep : KEEP_BADGES.values()) owners.put(keep, TAB_BADGES);
         owners.put(QuietCalls.CHOSEN_ONLY, QuietCalls.KEY);
         owners.put(MessageLog.SAVE_EXPIRING, MessageLog.KEY);
+        owners.put(QuietChats.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.MENU_KEY, MessageLog.KEY);
         SUB_SWITCHES = Collections.unmodifiableMap(owners);
@@ -873,12 +874,18 @@ public final class Settings {
     /** The folder enum's INBOX constant, found once per folder type. */
     private static volatile Enum<?> inboxFolder;
     /**
-     * The new-message notification check reads the chat's folder before it decides. A RESTRICTED folder comes back as
-     * INBOX, so the chat gets the same mute and status checks as any other chat. Only that local read changes: the chat
-     * stays in Restricted. Off, Pause and safe mode, and every other folder, keep the folder.
+     * The new-message notification check reads the chat's folder before it decides. With Notify for restricted chats on,
+     * a RESTRICTED folder comes back as INBOX, so the chat gets the same mute and status checks as any other chat. With it
+     * off and Log chats that don't notify on, it comes back as INBOX too, marked so the message goes to the log with no
+     * notification. Only that local read changes: the chat stays in Restricted. Off, Pause and safe mode, and every other
+     * folder, keep the folder.
      */
     public static Object notificationFolder(Object folder) {
-        if (!(folder instanceof Enum) || !"RESTRICTED".equals(((Enum<?>) folder).name()) || !enabled(RESTRICTED_NOTIFY)) return folder;
+        boolean restricted = folder instanceof Enum && "RESTRICTED".equals(((Enum<?>) folder).name());
+        boolean notify = restricted && enabled(RESTRICTED_NOTIFY);
+        boolean forLog = restricted && !notify && QuietChats.wanted();
+        QuietChats.restrictedForLog(forLog);
+        if (!notify && !forLog) return folder;
         try {
             Class<?> type = ((Enum<?>) folder).getDeclaringClass();
             Enum<?> inbox = inboxFolder;
@@ -895,9 +902,34 @@ public final class Settings {
             }
             return inbox;
         } catch (ReflectiveOperationException | RuntimeException error) {
-            hookFailed(RESTRICTED_NOTIFY, "Can't notify for a restricted chat", error);
+            QuietChats.restrictedForLog(false);
+            if (notify) hookFailed(RESTRICTED_NOTIFY, "Can't notify for a restricted chat", error);
+            else hookFailed(MessageLog.KEY, "Can't log a restricted chat", error);
             return folder;
         }
+    }
+
+    /**
+     * The notification check's mute check, for a muted chat. With Log chats that don't notify on, the message goes on as
+     * if the chat notified, so the log gets it, and its notification is dropped before it goes up. Off, Pause and safe
+     * mode keep Messenger's: the message stops here.
+     */
+    public static boolean quietChat(Object thread) { return QuietChats.muted(thread); }
+
+    /** The same check for a chat that notifies. A restricted chat let on only for the log still counts as quiet. */
+    public static void loudChat(Object thread) { QuietChats.notifies(thread); }
+
+    /** The notification manager asks this before it reads anything off a new message. */
+    public static boolean logQuietChats() { return QuietChats.wanted(); }
+
+    /**
+     * A new message's notification, right before it goes up. True drops it, since its chat was let on only for the log.
+     * The sender's name goes to the log now: there's no notification to read it from later.
+     */
+    public static boolean dropQuiet(Object thread, String id, String sender) {
+        if (!QuietChats.isQuiet(thread)) return false;
+        MessageLog.noteSender(String.valueOf(thread), id, sender);
+        return true;
     }
     static final String AVATAR_SHAPE = "avatar_shape";
     /** Under Square profile pictures: rounds the square's corners. */
@@ -1141,8 +1173,14 @@ public final class Settings {
     /** The same notification hook asks this for an auto reply: on, not paused, and with at least one reply written. */
     public static boolean autoReplyWanted() { return AutoReply.wanted(); }
 
-    /** Hands an incoming message to the auto reply, which answers it off this thread. */
-    public static void autoReplyTo(String text, String thread) { AutoReply.received(text, thread, takeIncomingMessageId()); }
+    /**
+     * Hands an incoming message to the auto reply, which answers it off this thread. A chat that doesn't notify gets no
+     * answer: it only reaches here for the log, and auto reply answers through a notification it won't have.
+     */
+    public static void autoReplyTo(String text, String thread) {
+        String id = takeIncomingMessageId();
+        if (!QuietChats.isQuiet(thread)) AutoReply.received(text, thread, id);
+    }
 
     /**
      * The chat camera button's intent, right before Messenger starts it. With the switch on it opens the capture screen,

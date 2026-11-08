@@ -407,6 +407,8 @@ final class SettingsTextZhTw {
         {"message_log_restore_failed", "無法還原訊息紀錄"},
         {"message_log_now", "剛剛"},
         {"message_log_ago", "%s前"},
+        {"message_log_quiet_chats", "記錄不會通知的聊天室"},
+        {"message_log_quiet_chats_help", "也會記錄已關閉通知和你已限制的聊天室訊息，但不會通知你。你已限制的加密聊天室不會傳送任何內容到手機，所以只能搜尋對方名字來查看。"},
         {"message_log_save_expiring", "在訊息被移除前先儲存"},
         {"message_log_save_expiring_help", "記錄移除訊息之前，會先把訊息加入 Download/Messenger 裡的文字檔，每個月一個檔案。這個檔案沒有加密，能讀取你檔案的應用程式都能看到它。"},
         {"message_log_search", "搜尋訊息和名稱"},

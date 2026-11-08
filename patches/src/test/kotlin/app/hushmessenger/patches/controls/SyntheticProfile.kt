@@ -124,6 +124,8 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     AUTO_REPLY to setOf(newMessageNotificationCtor("LX/5qJ;", "LX/5Yc;")),
     UNSENT_RECALL to setOf("LX/98W;->A00(Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z"),
     UNSENT_CLEAR to setOf(SYNTHETIC_UNSENT_CLEAR),
+    QUIET_LOG_CHECK to setOf(SYNTHETIC_RESTRICTED_NOTIFY),
+    QUIET_LOG_DROP to setOf(SYNTHETIC_QUIET_DROP),
     EMOJI_SEARCH to setOf("LX/7TX;->A8Y(Landroid/text/Editable;Z)V"),
     TAB_BADGES to setOf(SYNTHETIC_TAB_BADGES),
     FACEBOOK_BADGE to setOf(SYNTHETIC_FACEBOOK_BADGE),

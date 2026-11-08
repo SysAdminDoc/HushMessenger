@@ -12,12 +12,12 @@ internal object ExpectedTotals {
     /** Controls declared through controlPatch, whose injection HookInjectionReplayTest replays on the real builds. */
     const val REPLAYED_CONTROLS = 76
     /** Hook methods per 586 build. Seven of them read the emoji drawer flag and one the search icon flag (585: six and five). */
-    const val HOOKS_586 = 261
+    const val HOOKS_586 = 263
     /**
      * Hook methods in 347215273, 347215275 and 347215277. Their Redex pass inlined the emoji drawer flag into one reader
      * and split the Roboto font lookup into three.
      */
-    const val HOOKS_586_FAMILY_B = 257
+    const val HOOKS_586_FAMILY_B = 259
     /** The complete synthetic discovery fixture, one method per expected hook. */
-    const val DISCOVERY_FIXTURE_HOOKS = 250
+    const val DISCOVERY_FIXTURE_HOOKS = 252
 }
