@@ -258,6 +258,7 @@ internal val PROFILE_347215348 = ControlProfile(
             "LX/PQ0;->A8Y()V",
             "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V",
         ),
+        "share_story_target" to setOf("LX/7TG;->onActivityCreated(Landroid/os/Bundle;)V"),
         "stories" to setOf("LX/1zy;->A00()Z"),
         "story_hold" to setOf("LX/NRP;->DpM()V"),
         "story_ring" to setOf(
@@ -535,6 +536,7 @@ internal val PROFILE_347215341 = ControlProfile(
             "LX/Mg5;->A8X()V",
             "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V",
         ),
+        "share_story_target" to setOf("LX/7UA;->onActivityCreated(Landroid/os/Bundle;)V"),
         "stories" to setOf("LX/20N;->A00()Z"),
         "story_hold" to setOf("LX/NRa;->Dpl()V"),
         "story_ring" to setOf(
@@ -811,6 +813,7 @@ internal val PROFILE_347215273 = ControlProfile(
             "LX/PCi;->A8U()V",
             "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V",
         ),
+        "share_story_target" to setOf("LX/7QY;->onActivityCreated(Landroid/os/Bundle;)V"),
         "stories" to setOf("LX/1zz;->A00()Z"),
         "story_hold" to setOf("LX/W6q;->Dpc()V"),
         "story_ring" to setOf(

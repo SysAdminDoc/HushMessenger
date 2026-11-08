@@ -213,7 +213,7 @@ public class CompatReport {
         PATCHES.put("Save button for voice messages", List.of("save_voice_menu"));
         PATCHES.put("Customize message actions", List.of("message_actions", "message_actions_more"));
         PATCHES.put("Hide the Instants button", List.of("instants_button"));
-        PATCHES.put("Hide Your story when sharing", List.of("share_story"));
+        PATCHES.put("Hide Your story when sharing", List.of("share_story", "share_story_target"));
         PATCHES.put("Hide pictures on the Blocked list", List.of("blocked_list_pictures"));
         PATCHES.put("Notify for restricted chats", List.of("restricted_notify"));
         PATCHES.put("Use the phone's camera app", List.of("system_camera"));
@@ -7081,6 +7081,66 @@ public class CompatReport {
         return hoisted == 1 ? creators : List.of();
     }
 
+    static final String STORY_SHARE_ACTIVITY = "com.facebook.messenger.intents.MediaEditShareIntentHandler";
+    static final List<String> STORY_TOGGLE_PARAMETERS = List.of("Landroid/content/Context;", "Ljava/lang/String;", "Z");
+
+    /**
+     * The one load of the Your story share activity's name in this fragment's onActivityCreated, handed straight on as the
+     * name to a static (Context, String, boolean) toggle of the same class, with nothing landing on the call. The index of
+     * the call, or -1. Mirrors ShareStory.kt.
+     */
+    static int storyTargetCall(Method method) {
+        if (!"onActivityCreated".equals(method.getName()) || !"V".equals(method.getReturnType()) ||
+            AccessFlags.STATIC.isSet(method.getAccessFlags()) || !params(method).equals(List.of("Landroid/os/Bundle;"))) return -1;
+        var code = instructions(method);
+        int at = -1;
+        for (int i = 0; i < code.size(); i++) {
+            if (!STORY_SHARE_ACTIVITY.equals(text(code.get(i)))) continue;
+            if (at >= 0) return -1;
+            at = i;
+        }
+        if (at < 0 || at + 1 >= code.size()) return -1;
+        int loaded = register(code.get(at));
+        var call = code.get(at + 1);
+        if (call.getOpcode() != Opcode.INVOKE_STATIC || !(call instanceof FiveRegisterInstruction args) ||
+            !(((ReferenceInstruction) call).getReference() instanceof MethodReference toggle)) return -1;
+        var types = new ArrayList<String>();
+        for (var t : toggle.getParameterTypes()) types.add(t.toString());
+        if (!toggle.getDefiningClass().equals(method.getDefiningClass()) || !"V".equals(toggle.getReturnType()) ||
+            !types.equals(STORY_TOGGLE_PARAMETERS) || args.getRegisterCount() != 3 || args.getRegisterD() != loaded ||
+            args.getRegisterE() == loaded || args.getRegisterE() == args.getRegisterC()) return -1;
+        return mediaTargets(method).contains(at + 1) ? -1 : at + 1;
+    }
+
+    /**
+     * share_story_target: the one onActivityCreated that turns Messenger's Your story share target on or off, whose toggle
+     * sets a component's enabled state. Mirrors ShareStory.kt.
+     */
+    static List<Method> shareStoryTarget(List<ClassDef> classes) {
+        ClassDef owner = null;
+        Method site = null;
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (storyTargetCall(method) < 0) continue;
+            if (site != null) return List.of();
+            owner = cls;
+            site = method;
+        }
+        if (site == null) return List.of();
+        var toggle = (MethodReference) ((ReferenceInstruction) instructions(site).get(storyTargetCall(site))).getReference();
+        Method body = null;
+        for (var method : owner.getMethods()) {
+            if (!method.getName().equals(toggle.getName()) || !"V".equals(method.getReturnType()) ||
+                !AccessFlags.STATIC.isSet(method.getAccessFlags()) || !params(method).equals(STORY_TOGGLE_PARAMETERS)) continue;
+            if (body != null) return List.of();
+            body = method;
+        }
+        if (body == null) return List.of();
+        for (var i : instructions(body))
+            if ("Landroid/content/pm/PackageManager;->setComponentEnabledSetting(Landroid/content/ComponentName;II)V".equals(ref(i)))
+                return List.of(site);
+        return List.of();
+    }
+
     /** The register holding parameter n, counting this as 0 on an instance method. */
     static int parameterSlot(Method method, int n) {
         int words = AccessFlags.STATIC.isSet(method.getAccessFlags()) ? 0 : 1;
@@ -8762,6 +8822,7 @@ public class CompatReport {
         found.get("blocked_list_pictures").addAll(blockedListPictures(classes));
         found.get("restricted_notify").addAll(restrictedNotify(classes));
         found.get("share_story").addAll(shareStory(classes));
+        found.get("share_story_target").addAll(shareStoryTarget(classes));
         found.get("avatar_shape").addAll(avatarShape(classes));
         found.get("story_ring").addAll(storyRing(classes));
         found.get("quiet_call_ring").addAll(quietCallRing(classes));

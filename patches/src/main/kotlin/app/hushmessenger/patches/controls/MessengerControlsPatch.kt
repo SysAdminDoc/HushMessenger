@@ -209,6 +209,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         BLOCKED_LIST_PICTURES -> validateBlockedListPictures()
         RESTRICTED_NOTIFY -> validateRestrictedNotify()
         SHARE_STORY -> validateShareStory()
+        SHARE_STORY_TARGET -> validateShareStoryTarget()
         AVATAR_SHAPE -> validateAvatarShape()
         STORY_RING -> validateStoryRing()
         QUIET_CALL_RING -> validateQuietCallRing()
@@ -326,6 +327,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             BLOCKED_LIST_PICTURES -> method.injectBlockedListPictures()
             RESTRICTED_NOTIFY -> method.injectRestrictedNotify()
             SHARE_STORY -> method.injectShareStory()
+            SHARE_STORY_TARGET -> method.injectShareStoryTarget()
             AVATAR_SHAPE -> method.injectAvatarShape()
             STORY_RING -> method.injectStoryRing()
             QUIET_CALL_RING -> method.injectQuietCallRing()
@@ -640,7 +642,8 @@ val saveVoiceMenuPatch = controlPatch("save_voice_menu", "Save button for voice 
     "Adds Save voice message to the menu you get by holding a voice message, for saving just that one. It goes in the same folder as Save voice messages you play, and that switch can stay off.", "Photos and videos")
 @Suppress("unused")
 val hideShareStoryPatch = controlPatch("share_story", "Hide Your story when sharing",
-    "When you share a photo, video or link into Messenger from another app, the Send to list no longer offers Your story, so a tap on Add can't post it by mistake. Your chats and groups are still there.", "Photos and videos")
+    "When you share a photo, video or link into Messenger from another app, your phone's share menu no longer offers Messenger's Your story, so it goes straight to Chats. The Send to list drops Your story too, so a tap on Add can't post it by mistake. Your chats and groups are still there.", "Photos and videos",
+    SHARE_STORY, SHARE_STORY_TARGET)
 @Suppress("unused")
 val keepMessageLogPatch = controlPatch("message_log", "Keep a message log",
     "Saves each message when its notification arrives, so you can still read it if it's unsent, and marks the ones that were. Works in end-to-end encrypted chats too. Stays on your phone. A clock next to the new message button in Chats can open the log too.", "Privacy",

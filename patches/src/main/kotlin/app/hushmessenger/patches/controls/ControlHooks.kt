@@ -205,6 +205,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(BLOCKED_LIST_PICTURES).addAll(findBlockedListPictures(classes))
     found.getValue(RESTRICTED_NOTIFY).addAll(findRestrictedNotify(classes))
     found.getValue(SHARE_STORY).addAll(findShareStory(classes))
+    found.getValue(SHARE_STORY_TARGET).addAll(findShareStoryTarget(classes))
     found.getValue(AVATAR_SHAPE).addAll(findAvatarShape(classes))
     found.getValue(STORY_RING).addAll(findStoryRing(classes))
     found.getValue(QUIET_CALL_RING).addAll(findQuietCallRing(classes))

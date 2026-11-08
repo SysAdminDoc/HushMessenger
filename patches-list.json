@@ -1242,7 +1242,7 @@
         },
         {
             "name": "Hide Your story when sharing",
-            "description": "When you share a photo, video or link into Messenger from another app, the Send to list no longer offers Your story, so a tap on Add can't post it by mistake. Your chats and groups are still there. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "When you share a photo, video or link into Messenger from another app, your phone's share menu no longer offers Messenger's Your story, so it goes straight to Chats. The Send to list drops Your story too, so a tap on Add can't post it by mistake. Your chats and groups are still there. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Photos and videos",
             "dependencies": [

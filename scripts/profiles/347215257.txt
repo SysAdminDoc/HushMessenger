@@ -227,6 +227,7 @@ hook screenshot_viewers Lcom/facebook/messaging/media/ephemeralmedia/viewer/Ephe
 hook screenshot_viewers Lcom/facebook/messaging/quicksnap/consumption/viewer/MsgrQuicksnapViewerFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;
 hook share_story LX/PQ0;->A8Y()V
 hook share_story Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V
+hook share_story_target LX/7TG;->onActivityCreated(Landroid/os/Bundle;)V
 hook stories LX/1zy;->A00()Z
 hook story_hold LX/NRP;->DpM()V
 hook story_ring LX/2oZ;->onCreateMountContent(Landroid/content/Context;)Ljava/lang/Object;

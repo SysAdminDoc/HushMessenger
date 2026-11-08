@@ -779,6 +779,40 @@ public final class Settings {
     public static Object shareStorySection(Object state, Object skip) {
         return state != skip && enabled(SHARE_STORY) ? skip : state;
     }
+    /** The activity behind Messenger's Your story choice in other apps' share sheets, beside its Chats one. */
+    static final String STORY_SHARE_ACTIVITY = "com.facebook.messenger.intents.MediaEditShareIntentHandler";
+    /** Messenger's own last answer for that share target in this process, or null before the chat list has given one. */
+    static volatile Boolean storyTargetWanted;
+    /**
+     * Each time the chat list opens, Messenger turns its Your story share target on or off with this answer, non-zero
+     * meaning on. With the switch on the answer is off, so a share from the gallery goes straight to Chats instead of
+     * asking which one. Off, Pause and safe mode give Messenger's answer back.
+     */
+    public static boolean storyShareTarget(int wanted) {
+        storyTargetWanted = wanted != 0;
+        return wanted != 0 && !enabled(SHARE_STORY);
+    }
+
+    /**
+     * Puts the Your story share target where the switch wants it now, without waiting for the chat list: off while the
+     * switch is in effect, otherwise Messenger's own last answer. Before Messenger has given one, its next answer
+     * settles it.
+     */
+    static void syncStoryShareTarget(Context context) {
+        if (!installed.contains(SHARE_STORY)) return;
+        Boolean wanted = wouldUse(SHARE_STORY) ? Boolean.FALSE : storyTargetWanted;
+        if (wanted == null) return;
+        PackageManager packages = context.getPackageManager();
+        android.content.ComponentName target = new android.content.ComponentName(context, STORY_SHARE_ACTIVITY);
+        int state = wanted ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+        try {
+            if (packages.getComponentEnabledSetting(target) != state) {
+                packages.setComponentEnabledSetting(target, state, PackageManager.DONT_KILL_APP);
+            }
+        } catch (IllegalArgumentException | SecurityException error) {
+            hookFailed(SHARE_STORY, "Can't change the Your story share target", error);
+        }
+    }
     static final String BLOCKED_LIST_PICTURES = "blocked_list_pictures";
     /**
      * The blocked people list hands over each blocked person's picture before it goes on their row. Null gives the row

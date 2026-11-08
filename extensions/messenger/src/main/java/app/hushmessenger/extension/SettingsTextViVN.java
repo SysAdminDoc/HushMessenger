@@ -626,7 +626,7 @@ final class SettingsTextViVN {
         {"save_voice_menu.title", "Nút lưu cho tin nhắn thoại"},
         {"save_voice_menu.description", "Nhấn giữ một tin nhắn thoại rồi chọn Thêm: Lưu tin nhắn thoại là mục trên cùng, để chỉ lưu riêng tin đó. Tệp nằm cùng thư mục với Lưu tin nhắn thoại bạn phát, và công tắc đó có thể để tắt."},
         {"share_story.title", "Ẩn tin của bạn khi chia sẻ"},
-        {"share_story.description", "Khi chia sẻ ảnh, video hoặc liên kết từ các ứng dụng khác sang Messenger, danh sách 'Gửi tới' sẽ không còn hiển thị tin của bạn nữa, tránh việc vô tình nhấn 'Thêm' để đăng. Các phòng chat và nhóm của bạn vẫn sẽ hiển thị."},
+        {"share_story.description", "Khi chia sẻ ảnh, video hoặc liên kết từ các ứng dụng khác sang Messenger, menu chia sẻ của điện thoại sẽ không còn hiển thị mục tin của bạn của Messenger, nên sẽ vào thẳng 'Đoạn chat'. Danh sách 'Gửi tới' cũng không còn hiển thị tin của bạn, tránh việc vô tình nhấn 'Thêm' để đăng. Các phòng chat và nhóm của bạn vẫn sẽ hiển thị."},
         {"system_camera.title", "Sử dụng ứng dụng máy ảnh của điện thoại"},
         {"system_camera.description", "Nút máy ảnh trong phòng chat sẽ mở ứng dụng máy ảnh của điện thoại. Ảnh chụp sẽ mở trong trình chỉnh sửa của Messenger để bạn gửi. Chỉ hỗ trợ ảnh."},
         {"external_gallery.title", "Mở ứng dụng thư viện của điện thoại"},

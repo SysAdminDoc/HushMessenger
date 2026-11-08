@@ -191,7 +191,7 @@ public final class SettingsActivity extends Activity {
         {"recent_media", "Hide the recent photo card", "Opening a chat right after you take a screenshot, photo or video no longer shows a card above the message box offering to send it. You can still pick it from the gallery.", "photos_videos"},
         {"save_voice", "Save voice messages you play", "Each voice message you play is also saved to Recordings/Messenger on your phone (Music/Messenger on Android 10 and 11), where a file manager or another player can open it. Playing it again doesn't save another copy.", "photos_videos"},
         {"save_voice_menu", "Save button for voice messages", "Hold a voice message and tap More: Save voice message is the top row there, for saving just that one. It goes in the same folder as Save voice messages you play, and that switch can stay off.", "photos_videos"},
-        {"share_story", "Hide Your story when sharing", "When you share a photo, video or link into Messenger from another app, the Send to list no longer offers Your story, so a tap on Add can't post it by mistake. Your chats and groups are still there.", "photos_videos"},
+        {"share_story", "Hide Your story when sharing", "When you share a photo, video or link into Messenger from another app, your phone's share menu no longer offers Messenger's Your story, so it goes straight to Chats. The Send to list drops Your story too, so a tap on Add can't post it by mistake. Your chats and groups are still there.", "photos_videos"},
         {"system_camera", "Use the phone's camera app", "The camera button in a chat opens your phone's camera app. The photo opens in Messenger's editor, ready to send. Photos only.", "photos_videos"},
         {"external_gallery", "Open your gallery app", "The gallery button in a chat opens your phone's own gallery app. One photo or video opens in Messenger's editor for that chat, ready to send. Pick several and Messenger's Send to sheet opens with all of them and that chat at the top.", "photos_videos"},
         {"gallery_to_chat", "Put gallery picks in the chat", "With Open your gallery app on, what you pick goes into the chat's message box like Messenger's own gallery, instead of the editor or the Send to sheet. Nothing sends until you tap Send. A chat that was already open needs opening again.", "photos_videos"},
@@ -963,6 +963,7 @@ public final class SettingsActivity extends Activity {
             }
             refreshChoices();
             feedback(text.get(paused ? "safe_mode_cleared" : "changes_resumed"), Toast.LENGTH_SHORT);
+            Settings.syncStoryShareTarget(this);
         });
         ui.add(setup, safeModeAction, 8);
         ui.rule(setup, 8);
@@ -1313,6 +1314,8 @@ public final class SettingsActivity extends Activity {
             feedback("paused".equals(key) ? text.get(checked ? "changes_paused" : "changes_resumed")
                 : text.get(checked ? "choice_on" : "choice_off", title), Toast.LENGTH_SHORT);
             if ("hide_drawer_icon".equals(key)) applyDrawerIcon(this, checked);
+            // Another app's share sheet reads the Your story target as it opens, so it follows the switch and Pause now.
+            if (Settings.SHARE_STORY.equals(key) || "paused".equals(key)) Settings.syncStoryShareTarget(this);
             // The icon shortcuts follow their switch now, and stand in when another way in goes while they're hidden.
             if (Settings.HIDE_ICON_SHORTCUTS.equals(key) || (Settings.HIDE_LOGO_PRESS.equals(key) || "hide_drawer_icon".equals(key))
                     && Settings.preferences.getBoolean(Settings.HIDE_ICON_SHORTCUTS, false)) HostScreens.refreshShortcuts(this, () -> runOnUiThread(() -> {
