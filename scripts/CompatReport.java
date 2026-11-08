@@ -183,6 +183,7 @@ public class CompatReport {
         PATCHES.put("Hide Mark as read", List.of("mark_read_action"));
         PATCHES.put("Pin more chats", List.of("pinned_chats", "pin_rows", "pin_ask", "pin_drop", "pin_full", "pin_list"));
         PATCHES.put("Hide chosen chats", List.of("hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
+        PATCHES.put("Hide chat menu items", List.of("chat_menu_items"));
         PATCHES.put("Hide Facebook shortcuts", List.of("facebook", "facebook_profile", "facebook_profile_header"));
         PATCHES.put("Hide Meta AI", List.of("ai_menu", "ai_fab", "ai_toolbar", "ai_tab", "ai_muse_tab", "ai_search", "ai_search_chip", "ai_mentions", "ai_commands", "ai_search_hint", "ai_search_screen_hint", "ai_mention_rows", "ai_summary", "tab_config"));
         PATCHES.put("Hide Chat Moments", List.of("moments"));
@@ -6493,7 +6494,10 @@ public class CompatReport {
         return texts.size() == 1;
     }
 
-    /** The chat list menu: the one class built right after its plugin's "MenuItems" check, with one row list and one tap. */
+    /**
+     * The chat list menu: the one class built right after its plugin's "MenuItems" check, with one row list and one tap.
+     * Hide chat menu items hooks the same row list and needs everything but the eye icons.
+     */
     static Map<String, List<Method>> hiddenChats(List<ClassDef> classes, Map<String, ClassDef> byType) {
         var built = new LinkedHashSet<String>();
         for (var cls : classes)
@@ -6509,10 +6513,12 @@ public class CompatReport {
         var hooks = new LinkedHashMap<String, List<Method>>();
         hooks.put("hidden_chat_row", List.of());
         hooks.put("hidden_chat_tap", List.of());
+        hooks.put("chat_menu_items", List.of());
         if (menus.size() != 1) return hooks;
         var row = hiddenMenuMethods(menus.get(0), true).get(0);
         var tap = hiddenMenuMethods(menus.get(0), false).get(0);
-        if (hiddenRowProved(row, byType)) hooks.put("hidden_chat_row", List.of(row));
+        if (hiddenRowProved(row, byType, true)) hooks.put("hidden_chat_row", List.of(row));
+        if (hiddenRowProved(row, byType, false)) hooks.put("chat_menu_items", List.of(row));
         if (hiddenTapProved(tap)) hooks.put("hidden_chat_tap", List.of(tap));
         return hooks;
     }
@@ -6540,9 +6546,9 @@ public class CompatReport {
     /**
      * The row list hands back one plain register with a second free beside it, and builds its rows through one builder
      * class: a factory, an int id, a String description, a CharSequence title, an icon whose enum has both eye icons, and
-     * a static build that takes the builder and a name.
+     * a static build that takes the builder and a name. The eye icons count only when [eyes] is set.
      */
-    static boolean hiddenRowProved(Method row, Map<String, ClassDef> byType) {
+    static boolean hiddenRowProved(Method row, Map<String, ClassDef> byType, boolean eyes) {
         var impl = row.getImplementation();
         if (impl == null) return false;
         var code = instructions(row);
@@ -6577,6 +6583,7 @@ public class CompatReport {
             }
         }
         if (icons.size() != 1 || factories.size() != 1 || titles.size() != 1 || ids.size() != 1 || descriptions.size() != 1) return false;
+        if (!eyes) return true;
         var iconType = byType.get(icons.values().iterator().next().getParameterTypes().get(0).toString());
         if (iconType == null || !AccessFlags.ENUM.isSet(iconType.getAccessFlags())) return false;
         var names = new HashSet<String>();

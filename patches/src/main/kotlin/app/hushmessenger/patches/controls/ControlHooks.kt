@@ -194,7 +194,9 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(AD_EVENTS).addAll(findAdEvents(classes))
     found.getValue(MQTT_TELEMETRY).addAll(findMqttTelemetry(classes))
     findPinnedChats(classes).forEach { (hook, methods) -> found.getValue(hook).addAll(methods) }
-    findHiddenChats(classes).forEach { (hook, methods) -> found.getValue(hook).addAll(methods) }
+    val hiddenChats = findHiddenChats(classes)
+    hiddenChats.forEach { (hook, methods) -> found.getValue(hook).addAll(methods) }
+    found.getValue(CHAT_MENU_ITEMS).addAll(chatMenuRows(hiddenChats))
     found.getValue(NEARBY_SCANS).addAll(patchStage("Find nearby scans") { findNearbyScans(classes) })
     found.getValue(WIFI_IDENTITY).addAll(patchStage("Find Wi-Fi identity reads") { findWifiIdentityReads(classes) })
     found.getValue(PHONE_ID_SYNC).addAll(findPhoneIdSync(classes))

@@ -84,6 +84,7 @@ hook chat_fragment LX/1r9;-><init>()V
 hook chat_inbox LX/1pn;-><init>()V
 hook chat_jump LX/1r9;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook chat_legacy LX/1r6;->onCreateAnimation(IZI)Landroid/view/animation/Animation;
+hook chat_menu_items LX/HrM;->BtC()Ljava/util/ArrayList;
 hook chat_preview Lcom/facebook/messaging/threadlist/plugins/core/clickhandler/DefaultThreadListClickHandler;->A02()V
 hook chat_preview_size Lcom/facebook/messaging/threadlist/threaditemmenu/preview/InboxThreadPreviewDialogFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;
 hook chat_promotions LX/HpI;->A0E()Z
