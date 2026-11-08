@@ -182,6 +182,7 @@ final class SettingsTextViVN {
         {"tab_badges_keep_menu", "Giữ huy hiệu menu"},
         {"tab_badges_keep_facebook", "Giữ huy hiệu nút Facebook"},
         {"experimental", "Tính năng thử nghiệm"},
+        {"new_setting", "Mới"},
         {"choice_on", "'%s' đã được bật"},
         {"choice_off", "'%s' đã bị tắt"},
         {"appearance", "Giao diện"},

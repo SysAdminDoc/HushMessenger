@@ -182,6 +182,7 @@ final class SettingsTextZhTw {
         {"tab_badges_keep_menu", "保留選單標記"},
         {"tab_badges_keep_facebook", "保留 Facebook 按鈕標記"},
         {"experimental", "實驗性功能"},
+        {"new_setting", "新功能"},
         {"choice_on", "「%s」已啟用"},
         {"choice_off", "「%s」已停用"},
         {"appearance", "外觀"},

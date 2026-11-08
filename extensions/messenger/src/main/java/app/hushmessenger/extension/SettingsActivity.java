@@ -83,6 +83,8 @@ public final class SettingsActivity extends Activity {
     private final List<String[]> installedControls = new ArrayList<>();
     private final List<LinearLayout> groups = new ArrayList<>();
     private final List<Button> tabs = new ArrayList<>();
+    /** The dots on switches added since settings were last opened (#149), or null when its store can't be read. */
+    private NewRowDots dots;
     /**
      * HushFacebook's accordion: every section starts closed, and the ones a person opens stay open, a restart included.
      * Kept in a store of its own, so opening one isn't a settings change and never reaches a backup.
@@ -253,6 +255,7 @@ public final class SettingsActivity extends Activity {
         super.onCreate(state);
         text = new SettingsText(this);
         ui = new SettingsUi(this, light);
+        dots = NewRowDots.create(this);
         setTitle(text.get(Settings.preview ? "preview_title" : "settings"));
         // Hosted in a stock Messenger screen, recents would otherwise label this task "Messenger".
         if (HostScreens.hosted(this)) setTaskDescription(new android.app.ActivityManager.TaskDescription(getTitle().toString()));
@@ -352,6 +355,7 @@ public final class SettingsActivity extends Activity {
         appScroll = scrollPage(appPage);
         appContent = pageContent(appScroll);
         buildApp(appContent);
+        paintNewSections();
         search.setText(state == null ? "" : state.getString("query", ""));
         if (state != null) {
             int length = search.length();
@@ -400,6 +404,11 @@ public final class SettingsActivity extends Activity {
         // Coming back from an Android screen measures the list again, and a focused search then pulls it back up to its
         // cursor. One scrolled out of sight lets go, so the list stays where it was.
         if (search != null && search.hasFocus() && !inList(search)) search.clearFocus();
+        // Before the window hides: what's on show now has been seen.
+        if (dots != null) {
+            dots.markShown();
+            dots.save();
+        }
         super.onPause();
     }
 
@@ -1233,6 +1242,8 @@ public final class SettingsActivity extends Activity {
         TextView titleView = ui.text(text.display(title), 16, ui.text, true);
         titleView.setLineSpacing(0, 1);
         if (!available) titleView.setAlpha(0.38f);
+        boolean fresh = dots != null && dots.fresh(key);
+        if (fresh) dots.mark(titleView, key, ui.accent);
         titleLine.addView(titleView, new LinearLayout.LayoutParams(-2, -2));
         if (EXPERIMENTAL.contains(key)) {
             TextView badge = ui.text(text.get("experimental"), 11, ui.warning, false);
@@ -1269,7 +1280,8 @@ public final class SettingsActivity extends Activity {
         // The row's icon sits in this 38 dp: 24 dp of icon and 14 dp before the title.
         labelSpace.setMarginStart(ui.dp(38));
         row.addView(labels, labelSpace);
-        Switch control = ui.toggle(key, text.display(title), text.display((EXPERIMENTAL.contains(key) ? text.format("experimental") + ". " : "") + description), Settings.preferences.getBoolean(key, false));
+        Switch control = ui.toggle(key, text.display(title), text.display((fresh ? text.format("new_setting") + ". " : "")
+            + (EXPERIMENTAL.contains(key) ? text.format("experimental") + ". " : "") + description), Settings.preferences.getBoolean(key, false));
         LinearLayout.LayoutParams switchParams = new LinearLayout.LayoutParams(ui.dp(48), -2);
         // Normal-size App descriptions span the panel. Large text reserves a separate switch column.
         switchParams.setMarginStart(ui.dp(overlay ? -48 : 12));
@@ -1821,7 +1833,8 @@ public final class SettingsActivity extends Activity {
                 info.setHeading(true);
                 // A label of its own: read from the children, TalkBack said "Collapsed, Button" before the section's name.
                 CharSequence tally = count.getContentDescription();
-                info.setContentDescription(tally == null ? text.get(id) : text.get(id) + ". " + tally);
+                String name = NewRowDots.dotted(title) ? text.get(id) + ". " + text.get("new_setting") : text.get(id);
+                info.setContentDescription(tally == null ? name : name + ". " + tally);
                 info.addAction(sectionShown(id) ? android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_COLLAPSE
                     : android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_EXPAND);
             }
@@ -1853,6 +1866,7 @@ public final class SettingsActivity extends Activity {
     }
 
     private void toggleSection(String id) {
+        if (dots != null) dots.markShown();
         LinearLayout[] parts = sections.get(id);
         if (searching && parts != null && groups.contains(parts[0])) {
             if (!searchClosed.remove(id)) searchClosed.add(id);
@@ -1880,6 +1894,7 @@ public final class SettingsActivity extends Activity {
 
     /** The list switch's tap: every Controls section opens, or they all fold. During a search only the search's view changes. */
     private void flipSectionView() {
+        if (dots != null) dots.markShown();
         boolean list = !listView();
         for (LinearLayout group : groups) {
             String id = (String) group.getTag();
@@ -1910,6 +1925,25 @@ public final class SettingsActivity extends Activity {
         ((android.graphics.drawable.LayerDrawable) viewToggle.getBackground()).setDrawable(1, icon);
     }
 
+    /** A section with a new switch in it gets a dot after its heading, and so does the tab of its page (#149). */
+    private void paintNewSections() {
+        if (dots == null) return;
+        // A first open stores every switch it built as seen.
+        dots.save();
+        android.content.res.ColorStateList accent = android.content.res.ColorStateList.valueOf(ui.accent);
+        for (LinearLayout[] parts : sections.values()) {
+            if (NewRowDots.anyDot(parts[0].getChildAt(1))) NewRowDots.paint((TextView) parts[1].getChildAt(0), accent);
+        }
+        // The selected tab is filled with the accent, so its dot takes the tab's text color.
+        android.content.res.ColorStateList tabDot = new android.content.res.ColorStateList(
+            new int[][] {{android.R.attr.state_selected}, {}}, new int[] {ui.selectedText, ui.accent});
+        for (Button tab : tabs) {
+            if (!NewRowDots.anyDot("tab_app".equals(tab.getTag()) ? appPage : controlsPage)) continue;
+            NewRowDots.paint(tab, tabDot);
+            tab.setContentDescription(tab.getText() + ". " + text.get("new_setting"));
+        }
+    }
+
     private void bindSection(String id) {
         LinearLayout[] parts = sections.get(id);
         if (parts == null) return;
@@ -1923,6 +1957,7 @@ public final class SettingsActivity extends Activity {
     }
 
     private void showPage(String name) {
+        if (dots != null) dots.markShown();
         if ("app".equals(name) && search.hasFocus()) {
             search.clearFocus();
             ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(search.getWindowToken(), 0);
@@ -1968,6 +2003,7 @@ public final class SettingsActivity extends Activity {
     }
 
     private void filterControls(String query) {
+        if (dots != null) dots.markShown();
         // Every word typed, in any order, with accents and case ignored (SettingsSearch).
         List<String> terms = SettingsSearch.terms(query);
         clearQuery.setVisibility(query.isEmpty() ? View.GONE : View.VISIBLE);

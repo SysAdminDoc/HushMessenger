@@ -268,6 +268,7 @@ final class SettingsText {
         ENGLISH.put("tab_badges_keep_menu", "Keep the Menu badge");
         ENGLISH.put("tab_badges_keep_facebook", "Keep the Facebook button's badge");
         ENGLISH.put("experimental", "Experimental");
+        ENGLISH.put("new_setting", "New");
         ENGLISH.put("choice_on", "%s is on");
         ENGLISH.put("choice_off", "%s is off");
         ENGLISH.put("appearance", "Appearance");
