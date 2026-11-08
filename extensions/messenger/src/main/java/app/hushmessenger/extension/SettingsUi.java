@@ -132,6 +132,9 @@ final class SettingsUi {
                 LayoutParams params = (LayoutParams) badge.getLayoutParams();
                 params.setMarginStart(fits ? gap : 0);
                 params.topMargin = fits ? 0 : gap / 2;
+                // The badge's start margin was already resolved to a left or right one on its first measure, and
+                // LinearLayout lays out with that, so a line first measured stacked would put the badge against the title.
+                params.resolveLayoutDirection(getLayoutDirection());
             }
             super.onMeasure(widthSpec, heightSpec);
         }

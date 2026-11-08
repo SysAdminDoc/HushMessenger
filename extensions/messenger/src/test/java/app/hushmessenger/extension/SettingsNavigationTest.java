@@ -330,6 +330,12 @@ public class SettingsNavigationTest {
             assertFalse(width + " dp stacked again", wasBeside && !beside);
             wasBeside = beside;
         }
+        // Narrowing it again puts the badge back under the title at the line's start, not indented by the old gap.
+        line.measure(View.MeasureSpec.makeMeasureSpec(ui.dp(120), View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        line.layout(0, 0, line.getMeasuredWidth(), line.getMeasuredHeight());
+        assertFalse(badgeSitsWhole("120 dp again", line, badge));
+        assertEquals(0, badge.getLeft());
         // Large text keeps its own layout: the badge always under the title, at the line's start.
         RuntimeEnvironment.setFontScale(1.5f);
         SettingsUi large = new SettingsUi(RuntimeEnvironment.getApplication(), false);
@@ -353,7 +359,10 @@ public class SettingsNavigationTest {
         assertTrue(what + " badge spills past its line", badge.getRight() <= line.getWidth());
         if (line.sideBySide()) {
             assertEquals(what, 1, title.getLayout().getLineCount());
-            assertTrue(what, badge.getLeft() >= title.getRight());
+            // Beside it, the badge keeps an 8 dp gap from the title, even on a line that was stacked before.
+            int gap = (int) (8 * line.getResources().getDisplayMetrics().density);
+            assertTrue(what + " badge " + (badge.getLeft() - title.getRight()) + " px from its title",
+                badge.getLeft() - title.getRight() >= gap);
             return true;
         }
         assertTrue(what, badge.getTop() >= title.getBottom());
