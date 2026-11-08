@@ -210,6 +210,9 @@ internal fun MutableMethod.validateHook(hook: String) {
         RESTRICTED_NOTIFY -> validateRestrictedNotify()
         SHARE_STORY -> validateShareStory()
         SHARE_STORY_TARGET -> validateShareStoryTarget()
+        FLOATING_TAB_BAR -> validateFloatingTabBar()
+        TAB_BAR_OVERLAY -> validateTabBarOverlay()
+        TAB_BAR_SCROLL_AWAY -> validateTabBarScrollAway()
         AVATAR_SHAPE -> validateAvatarShape()
         STORY_RING -> validateStoryRing()
         QUIET_CALL_RING -> validateQuietCallRing()
@@ -328,6 +331,9 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             RESTRICTED_NOTIFY -> method.injectRestrictedNotify()
             SHARE_STORY -> method.injectShareStory()
             SHARE_STORY_TARGET -> method.injectShareStoryTarget()
+            FLOATING_TAB_BAR -> method.injectFloatingTabBar()
+            TAB_BAR_OVERLAY -> method.injectTabBarOverlay()
+            TAB_BAR_SCROLL_AWAY -> method.injectTabBarScrollAway()
             AVATAR_SHAPE -> method.injectAvatarShape()
             STORY_RING -> method.injectStoryRing()
             QUIET_CALL_RING -> method.injectQuietCallRing()
@@ -585,6 +591,12 @@ val hideNotificationsTabPatch = controlPatch("tab_notifications", "Hide Notifica
 @Suppress("unused")
 val hideTabBadgesPatch = controlPatch("tab_badges", "Hide tab badges", "Hides the red dots and counts on the tabs at the bottom and on the Facebook button at the top. Turn on Keep for any you still want. Restart Messenger to see the change.",
     "Navigation", TAB_BADGES, FACEBOOK_BADGE)
+@Suppress("unused")
+val tabBarScrollAwayPatch = controlPatch("tab_bar_scroll_away", "Hide the tab bar while scrolling", "Slides the tab bar at the bottom out of the way as you scroll down your chats and brings it back when you scroll up. Restart Messenger to see the change.",
+    "Navigation", TAB_BAR_SCROLL_AWAY, TAB_BAR_OVERLAY)
+@Suppress("unused")
+val floatingTabBarPatch = controlPatch("floating_tab_bar", "Floating tab bar", "Switches the tab bar at the bottom to the floating style Messenger is trying out, which sits over your chats instead of below them. Messenger may keep its usual bar on some screens. Restart Messenger to see the change.",
+    "Navigation", FLOATING_TAB_BAR)
 @Suppress("unused")
 val holdStoriesPatch = controlPatch("story_hold", "Hold stories at the end", "Keeps a story on screen when it ends instead of moving on to the next one, so you go on with a tap or a swipe. Photos and videos both wait, and the last story stays open until you close it.", "Navigation")
 @Suppress("unused")

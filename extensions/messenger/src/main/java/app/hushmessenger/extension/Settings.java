@@ -616,7 +616,8 @@ public final class Settings {
             return shape < 0 || shape == now ? null : now == AVATAR_CIRCLE;
         }
         Boolean held = "meta_ai".equals(key) ? metaAiTab : "emoji_drawer".equals(key) ? oldEmojiDrawer
-            : SEARCH_BAR.equals(key) ? keptSearchBar : LANDSCAPE.equals(key) ? landscape : OwnFont.KEY.equals(key) ? customFont : CallRecording.KEY.equals(key) ? CallRecording.heldPlayout() : bottomTabs.get(key);
+            : SEARCH_BAR.equals(key) ? keptSearchBar : LANDSCAPE.equals(key) ? landscape : OwnFont.KEY.equals(key) ? customFont : CallRecording.KEY.equals(key) ? CallRecording.heldPlayout()
+            : FLOATING_TAB_BAR.equals(key) ? floatingBar : TAB_BAR_SCROLL_AWAY.equals(key) ? scrollAwayBar : bottomTabs.get(key);
         return held == null || held == wouldUse(key) ? null : held;
     }
 
@@ -812,6 +813,55 @@ public final class Settings {
         } catch (IllegalArgumentException | SecurityException error) {
             hookFailed(SHARE_STORY, "Can't change the Your story share target", error);
         }
+    }
+    static final String FLOATING_TAB_BAR = "floating_tab_bar";
+    static final String TAB_BAR_SCROLL_AWAY = "tab_bar_scroll_away";
+    /** First answers this process gave for the two tab bar switches, or null before the home screen asked. */
+    static volatile Boolean floatingBar, scrollAwayBar;
+    private static final Object TAB_BAR_LOCK = new Object();
+
+    /** A switch's first answer for this run, so every home screen built before a restart lays the tab bar out alike. */
+    private static boolean heldTabBar(String key) {
+        Boolean held = FLOATING_TAB_BAR.equals(key) ? floatingBar : scrollAwayBar;
+        if (held == null) {
+            if (!HostScreens.started) HostScreens.initializeLate();
+            synchronized (TAB_BAR_LOCK) {
+                if (FLOATING_TAB_BAR.equals(key)) {
+                    if (floatingBar == null) floatingBar = wouldUse(key);
+                    held = floatingBar;
+                } else {
+                    if (scrollAwayBar == null) scrollAwayBar = wouldUse(key);
+                    held = scrollAwayBar;
+                }
+            }
+        }
+        if (held) activeAt.put(key, System.currentTimeMillis());
+        return held;
+    }
+
+    /**
+     * The home screen asks Messenger's floating tab bar flag as it builds its frame, non-zero meaning yes. With the switch
+     * on the answer is yes, so the bar takes Messenger's floating style. Messenger's own yes has nothing to hold. Off,
+     * Pause and safe mode keep Messenger's answer from the next restart on.
+     */
+    public static boolean floatingTabBar(int stock) { return stock != 0 || heldTabBar(FLOATING_TAB_BAR); }
+
+    /**
+     * Then it asks whether to lay the tab bar over the page, where it can slide away, instead of under it. With Hide the
+     * tab bar while scrolling on the answer is yes, held for the run like the floating one.
+     */
+    public static boolean tabBarOverlay(int stock) { return stock != 0 || heldTabBar(TAB_BAR_SCROLL_AWAY); }
+
+    /**
+     * The Chats page's answer on whether the tab bar slides away while its list scrolls. It follows the overlay's held
+     * answer, or the switch itself when Messenger chose the overlay on its own and never asked.
+     */
+    public static boolean tabBarScrollAway(int stock) {
+        if (stock != 0) return true;
+        Boolean held = scrollAwayBar;
+        if (held == null) return enabled(TAB_BAR_SCROLL_AWAY);
+        if (held) activeAt.put(TAB_BAR_SCROLL_AWAY, System.currentTimeMillis());
+        return held;
     }
     static final String BLOCKED_LIST_PICTURES = "blocked_list_pictures";
     /**

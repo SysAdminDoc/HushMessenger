@@ -190,6 +190,8 @@ public class CompatReport {
         PATCHES.put("Show People tab", List.of("tab_config"));
         PATCHES.put("Hide Notifications tab", List.of("tab_notifications", "tab_config"));
         PATCHES.put("Hide tab badges", List.of("tab_badges", "facebook_badge"));
+        PATCHES.put("Hide the tab bar while scrolling", List.of("tab_bar_scroll_away", "tab_bar_overlay"));
+        PATCHES.put("Floating tab bar", List.of("floating_tab_bar"));
         PATCHES.put("Hold stories at the end", List.of("story_hold"));
         PATCHES.put("Hide AI sticker tools", List.of("ai_stickers", "ai_sticker_cell", "ai_sticker_grid"));
         PATCHES.put("Hide avatar stickers", List.of("avatar_stickers", "avatar_tabs"));
@@ -7141,6 +7143,131 @@ public class CompatReport {
         return List.of();
     }
 
+    static final long FLOATING_TAB_BAR_FLAG = 0x0101055400014313L;
+    static final long CHATS_SCROLL_AWAY_FLAG = 0x0101039400033264L;
+    static final List<String> TAB_BAR_BUILDER_PARAMETERS =
+        List.of("Landroid/content/Context;", "Lcom/facebook/auth/usersession/FbUserSession;", "Z");
+
+    static boolean tabBarBuilder(Method method) {
+        return !AccessFlags.STATIC.isSet(method.getAccessFlags()) && method.getReturnType().startsWith("L") &&
+            params(method).equals(TAB_BAR_BUILDER_PARAMETERS);
+    }
+
+    /**
+     * The floating pill's gate in the tab bar builder: its flag loaded once, read through Messenger's config with only a
+     * move or a cast in between, then an if-eqz on the answer jumping forward, with nothing landing on it. The if-eqz's
+     * index, or -1. Mirrors TabBar.kt.
+     */
+    static int floatingTabBarGate(Method method) {
+        if (!tabBarBuilder(method)) return -1;
+        var code = instructions(method);
+        int at = -1;
+        for (int i = 0; i < code.size(); i++) {
+            if (code.get(i).getOpcode() != Opcode.CONST_WIDE || !Long.valueOf(FLOATING_TAB_BAR_FLAG).equals(wide(code.get(i)))) continue;
+            if (at >= 0) return -1;
+            at = i;
+        }
+        if (at < 0) return -1;
+        int flag = register(code.get(at));
+        int read = -1;
+        for (int i = at + 1; i <= at + 3 && i < code.size(); i++) if (code.get(i).getOpcode() == Opcode.INVOKE_INTERFACE) { read = i; break; }
+        if (read < 0 || read + 2 >= code.size()) return -1;
+        for (int i = at + 1; i < read; i++) {
+            var op = code.get(i).getOpcode();
+            if (op != Opcode.MOVE_OBJECT && op != Opcode.MOVE_OBJECT_FROM16 && op != Opcode.CHECK_CAST) return -1;
+            int written = register(code.get(i));
+            if (written == flag || written == flag + 1) return -1;
+        }
+        if (!(((ReferenceInstruction) code.get(read)).getReference() instanceof MethodReference call)) return -1;
+        var types = new ArrayList<String>();
+        for (var t : call.getParameterTypes()) types.add(t.toString());
+        var args = reads(code.get(read));
+        if (!"Lcom/facebook/mobileconfig/factory/MobileConfigUnsafeContext;".equals(call.getDefiningClass()) ||
+            !"Z".equals(call.getReturnType()) || !types.equals(List.of("J")) || args.size() != 3 || args.get(1) != flag ||
+            args.get(2) != flag + 1) return -1;
+        int answer = register(code.get(read + 1));
+        int gate = read + 2;
+        if (code.get(read + 1).getOpcode() != Opcode.MOVE_RESULT || answer > 15 || code.get(gate).getOpcode() != Opcode.IF_EQZ ||
+            register(code.get(gate)) != answer || mediaTarget(code, gate) <= gate) return -1;
+        return mediaTargets(method).contains(gate) ? -1 : gate;
+    }
+
+    /**
+     * The overlay's gate in the same builder, after the floating flag's read: an if-nez on another register, then a
+     * one-argument static boolean check whose if-nez goes to the same place. The second if-nez's index, or -1. Mirrors
+     * TabBar.kt.
+     */
+    static int tabBarOverlayGate(Method method) {
+        if (!tabBarBuilder(method)) return -1;
+        var code = instructions(method);
+        int flag = -1;
+        for (int i = 0; i < code.size() && flag < 0; i++)
+            if (code.get(i).getOpcode() == Opcode.CONST_WIDE && Long.valueOf(FLOATING_TAB_BAR_FLAG).equals(wide(code.get(i)))) flag = i;
+        if (flag < 0) return -1;
+        int site = -1;
+        for (int at = flag + 2; at < code.size() - 2; at++) {
+            if (code.get(at - 1).getOpcode() != Opcode.IF_NEZ || code.get(at).getOpcode() != Opcode.INVOKE_STATIC ||
+                !(((ReferenceInstruction) code.get(at)).getReference() instanceof MethodReference check)) continue;
+            if (!"Z".equals(check.getReturnType()) || check.getParameterTypes().size() != 1 ||
+                !check.getParameterTypes().get(0).toString().startsWith("L") || reads(code.get(at)).size() != 1) continue;
+            if (code.get(at + 1).getOpcode() != Opcode.MOVE_RESULT || code.get(at + 2).getOpcode() != Opcode.IF_NEZ ||
+                register(code.get(at + 2)) != register(code.get(at + 1)) || register(code.get(at - 1)) == register(code.get(at + 1))) continue;
+            int target = mediaTarget(code, at + 2);
+            if (mediaTarget(code, at - 1) != target || target <= at + 2) continue;
+            if (site >= 0) return -1;
+            site = at;
+        }
+        if (site < 0 || register(code.get(site + 1)) > 15) return -1;
+        return mediaTargets(method).contains(site + 2) ? -1 : site + 2;
+    }
+
+    /** floating_tab_bar or tab_bar_overlay: the one tab bar builder with that gate. Mirrors TabBar.kt. */
+    static List<Method> tabBarBuilders(List<ClassDef> classes, boolean floating) {
+        Method found = null;
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (!tabBarBuilder(method) || (floating ? floatingTabBarGate(method) : tabBarOverlayGate(method)) < 0) continue;
+            if (found != null) return List.of();
+            found = method;
+        }
+        return found == null ? List.of() : List.of(found);
+    }
+
+    /**
+     * The Chats page's scroll-away answer: an instance method with no parameters ending in its flag, a static
+     * (Object, long) boolean check of it and a return of that answer, with nothing landing on the return. The return's
+     * index, or -1. Mirrors TabBar.kt.
+     */
+    static int tabBarScrollAwayReturn(Method method) {
+        if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || !method.getParameterTypes().isEmpty() || !"Z".equals(method.getReturnType())) return -1;
+        var code = instructions(method);
+        int end = code.size() - 1;
+        if (end < 3 || code.get(end).getOpcode() != Opcode.RETURN) return -1;
+        var load = code.get(end - 3);
+        if (load.getOpcode() != Opcode.CONST_WIDE || !Long.valueOf(CHATS_SCROLL_AWAY_FLAG).equals(wide(load))) return -1;
+        int flag = register(load);
+        var call = code.get(end - 2);
+        if (call.getOpcode() != Opcode.INVOKE_STATIC || !(((ReferenceInstruction) call).getReference() instanceof MethodReference check)) return -1;
+        var types = new ArrayList<String>();
+        for (var t : check.getParameterTypes()) types.add(t.toString());
+        var args = reads(call);
+        if (!"Z".equals(check.getReturnType()) || !types.equals(List.of("Ljava/lang/Object;", "J")) || args.size() != 3 ||
+            args.get(1) != flag || args.get(2) != flag + 1) return -1;
+        int answer = register(code.get(end - 1));
+        if (code.get(end - 1).getOpcode() != Opcode.MOVE_RESULT || register(code.get(end)) != answer || answer > 15) return -1;
+        return mediaTargets(method).contains(end) ? -1 : end;
+    }
+
+    /** tab_bar_scroll_away: the one page whose scroll-away answer reads the Chats flag. Mirrors TabBar.kt. */
+    static List<Method> tabBarScrollAway(List<ClassDef> classes) {
+        Method found = null;
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (!"Z".equals(method.getReturnType()) || !method.getParameterTypes().isEmpty() || tabBarScrollAwayReturn(method) < 0) continue;
+            if (found != null) return List.of();
+            found = method;
+        }
+        return found == null ? List.of() : List.of(found);
+    }
+
     /** The register holding parameter n, counting this as 0 on an instance method. */
     static int parameterSlot(Method method, int n) {
         int words = AccessFlags.STATIC.isSet(method.getAccessFlags()) ? 0 : 1;
@@ -8823,6 +8950,9 @@ public class CompatReport {
         found.get("restricted_notify").addAll(restrictedNotify(classes));
         found.get("share_story").addAll(shareStory(classes));
         found.get("share_story_target").addAll(shareStoryTarget(classes));
+        found.get("floating_tab_bar").addAll(tabBarBuilders(classes, true));
+        found.get("tab_bar_overlay").addAll(tabBarBuilders(classes, false));
+        found.get("tab_bar_scroll_away").addAll(tabBarScrollAway(classes));
         found.get("avatar_shape").addAll(avatarShape(classes));
         found.get("story_ring").addAll(storyRing(classes));
         found.get("quiet_call_ring").addAll(quietCallRing(classes));

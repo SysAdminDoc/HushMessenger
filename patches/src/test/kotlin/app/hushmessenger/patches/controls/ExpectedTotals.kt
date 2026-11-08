@@ -6,18 +6,18 @@ package app.hushmessenger.patches.controls
  */
 internal object ExpectedTotals {
     /** Settings controls, each its own patch. */
-    const val CONTROLS = 79
+    const val CONTROLS = 81
     /** Controls whose description sends people to HushMessenger settings > Controls. */
-    const val DIRECTED_CONTROLS = 78
+    const val DIRECTED_CONTROLS = 80
     /** Controls declared through controlPatch, whose injection HookInjectionReplayTest replays on the real builds. */
-    const val REPLAYED_CONTROLS = 74
+    const val REPLAYED_CONTROLS = 76
     /** Hook methods per 586 build. Seven of them read the emoji drawer flag and one the search icon flag (585: six and five). */
-    const val HOOKS_586 = 258
+    const val HOOKS_586 = 261
     /**
      * Hook methods in 347215273, 347215275 and 347215277. Their Redex pass inlined the emoji drawer flag into one reader
      * and split the Roboto font lookup into three.
      */
-    const val HOOKS_586_FAMILY_B = 254
+    const val HOOKS_586_FAMILY_B = 257
     /** The complete synthetic discovery fixture, one method per expected hook. */
-    const val DISCOVERY_FIXTURE_HOOKS = 247
+    const val DISCOVERY_FIXTURE_HOOKS = 250
 }

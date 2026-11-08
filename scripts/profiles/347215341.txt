@@ -130,6 +130,7 @@ hook facebook_profile LX/Juj;->A06()Z
 hook facebook_profile LX/Juk;->A06()Z
 hook facebook_profile LX/Jul;->A06()Z
 hook facebook_profile_header LX/Aod;->A0q(LX/1WA;)LX/1H9;
+hook floating_tab_bar LX/1un;->A01(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;Z)LX/1vD;
 hook font_by_name LX/Q4n;->A00(Landroid/content/Context;Ljava/lang/String;I)Landroid/graphics/Typeface;
 hook font_input LX/5Sn;->A05(Landroid/content/res/ColorStateList;Landroid/content/res/ColorStateList;Landroid/graphics/Typeface;Landroid/graphics/drawable/Drawable;Landroid/text/TextUtils$TruncateAt;Landroid/text/method/MovementMethod;Landroid/widget/EditText;LX/53O;Ljava/lang/CharSequence;Ljava/lang/CharSequence;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;[Ljava/lang/String;IIIIIIIIIIIZZZZ)V
 hook font_input LX/O47;->A04(Landroid/content/res/ColorStateList;Landroid/content/res/ColorStateList;Landroid/graphics/Typeface;Landroid/text/Layout$Alignment;Landroid/text/TextUtils$TruncateAt;Landroid/widget/EditText;Landroid/widget/TextView$OnEditorActionListener;Ljava/lang/CharSequence;Ljava/lang/CharSequence;Ljava/util/List;FFFFIIIIIIIIIIIIIIZZ)V
@@ -243,6 +244,8 @@ hook system_camera LX/5pf;->A00(Landroid/content/Context;Landroid/os/Bundle;Land
 hook system_camera LX/5yW;->DSm(Landroid/os/Bundle;LX/5YG;)Z
 hook system_camera LX/7Wx;->FCS(Lcom/facebook/messaging/montage/composer/model/MontageComposerFragmentParams;Lcom/facebook/messaging/send/trigger/NavigationTrigger;)V
 hook tab_badges LX/1rJ;->A00(Ljava/lang/String;)LX/38F;
+hook tab_bar_overlay LX/1un;->A01(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;Z)LX/1vD;
+hook tab_bar_scroll_away LX/1zJ;->F7j()Z
 hook tab_config LX/1sr;->A02(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)LX/1t6;
 hook tab_notifications LX/1rI;->A09(LX/1rI;)Z
 hook tab_people LX/1rI;->A0E(LX/1rI;)Z
