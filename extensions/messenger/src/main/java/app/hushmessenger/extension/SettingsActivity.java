@@ -1222,13 +1222,13 @@ public final class SettingsActivity extends Activity {
         LinearLayout row = ui.row();
         LinearLayout labels = ui.column();
         labels.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-        LinearLayout titleLine = ui.row();
+        SettingsUi.TitleLine titleLine = ui.titleLine();
+        titleLine.setTag("title_line_" + key);
         LinearLayout.LayoutParams titleSpace = new LinearLayout.LayoutParams(-1, -2);
         // A margin, since relative padding set before the row is attached stays on the right in a mirrored layout.
         if (overlay) titleSpace.setMarginEnd(ui.dp(60));
         // As tall as the switch track beside it, so the description starts under the track.
         if (overlay) titleLine.setMinimumHeight(ui.dp(24));
-        if (ui.largeText) titleLine.setOrientation(LinearLayout.VERTICAL);
         // HushGram's row type: a 16 sp medium title over a 13 sp summary, both wrapping, an unusable row's dimmed.
         TextView titleView = ui.text(text.display(title), 16, ui.text, true);
         titleView.setLineSpacing(0, 1);
@@ -1238,9 +1238,8 @@ public final class SettingsActivity extends Activity {
             TextView badge = ui.text(text.get("experimental"), 11, ui.warning, false);
             badge.setBackground(ui.shape(ui.warningSurface, 0, 4));
             badge.setPadding(ui.dp(6), ui.dp(3), ui.dp(6), ui.dp(3));
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-2, -2);
-            params.setMarginStart(ui.dp(ui.largeText ? 0 : 8));
-            titleLine.addView(badge, params);
+            badge.setTag("badge_" + key);
+            titleLine.badge(badge);
         }
         labels.addView(titleLine, titleSpace);
         if (!description.isEmpty()) {
