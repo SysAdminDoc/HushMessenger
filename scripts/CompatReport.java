@@ -228,7 +228,7 @@ public class CompatReport {
         PATCHES.put("Keep a message log", List.of("message_log", "unsent_recall", "unsent_clear", "message_log_button", "message_log_click"));
         PATCHES.put("Auto reply", List.of("auto_reply"));
         PATCHES.put("Quiet incoming calls", List.of("quiet_call_ring", "quiet_call_notification"));
-        PATCHES.put("Android Auto messages", List.of("car_messages"));
+        PATCHES.put("Android Auto messages", List.of("car_messages", "car_extension_gate"));
         PATCHES.put("Search saved messages", List.of("local_chat_search"));
         PATCHES.put("Jump to the first message or a date", List.of("chat_jump"));
         PATCHES.put("Allow landscape", List.of("landscape_lock", "landscape_media"));
@@ -7532,6 +7532,39 @@ public class CompatReport {
         return List.of(method);
     }
 
+    static final long CAR_EXTENSION_FLAG = 0x0081027700011858L;
+    static final String CAR_EXTENSION_STEP = "add_android_auto_extension";
+
+    /**
+     * car_extension_gate: the app's only method logging add_android_auto_extension, where const-wide the flag's id,
+     * check-cast, an invoke-interface (J)Z MobileConfig getter, move-result and an if-eqz on that result lead straight into
+     * the step, and nothing jumps to the branch. Mirrors carExtensionGate in CarMessages.kt.
+     */
+    static List<Method> carExtensionGate(List<ClassDef> classes) {
+        var steps = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            for (var i : instructions(method)) if (CAR_EXTENSION_STEP.equals(text(i))) { steps.add(method); break; }
+        }
+        if (steps.size() != 1) return List.of();
+        var method = steps.get(0);
+        var code = instructions(method);
+        var at = new ArrayList<Integer>();
+        for (int i = 0; i < code.size(); i++) if (CAR_EXTENSION_STEP.equals(text(code.get(i)))) at.add(i);
+        if (at.size() != 1 || at.get(0) < 5) return List.of();
+        int step = at.get(0);
+        var branch = code.get(step - 1); var result = code.get(step - 2); var read = code.get(step - 3); var id = code.get(step - 5);
+        if (branch.getOpcode() != Opcode.IF_EQZ || result.getOpcode() != Opcode.MOVE_RESULT || register(branch) != register(result)) return List.of();
+        if (read.getOpcode() != Opcode.INVOKE_INTERFACE || !(read instanceof FiveRegisterInstruction call) || call.getRegisterCount() != 3 ||
+            !(((ReferenceInstruction) read).getReference() instanceof MethodReference getter) ||
+            !"Lcom/facebook/mobileconfig/factory/MobileConfigUnsafeContext;".equals(getter.getDefiningClass()) ||
+            !"Z".equals(getter.getReturnType()) || getter.getParameterTypes().size() != 1 ||
+            !"J".equals(getter.getParameterTypes().get(0).toString())) return List.of();
+        if (code.get(step - 4).getOpcode() != Opcode.CHECK_CAST || id.getOpcode() != Opcode.CONST_WIDE ||
+            ((WideLiteralInstruction) id).getWideLiteral() != CAR_EXTENSION_FLAG || register(id) != call.getRegisterD()) return List.of();
+        if (mediaTargets(method).contains(step - 1) || register(result) > 0xff) return List.of();
+        return List.of(method);
+    }
+
     static final String LOCAL_SEARCH_LIST = "message_search_thread_message_list_fragment";
     static final String LOCAL_THREAD_SUMMARY = "Lcom/facebook/messaging/model/threads/ThreadSummary;";
     static final String LOCAL_THREAD_KEY = "Lcom/facebook/messaging/model/threadkey/ThreadKey;";
@@ -8734,6 +8767,7 @@ public class CompatReport {
         found.get("quiet_call_ring").addAll(quietCallRing(classes));
         found.get("quiet_call_notification").addAll(quietCallNotification(classes));
         found.get("car_messages").addAll(carMessages(classes));
+        found.get("car_extension_gate").addAll(carExtensionGate(classes));
         found.get("local_chat_search").addAll(localChatSearch(classes));
         found.get("call_recording").addAll(callRecording(classes));
         found.get("home_header").addAll(homeHeader(classes));

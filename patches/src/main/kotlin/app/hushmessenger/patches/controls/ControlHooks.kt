@@ -210,6 +210,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(QUIET_CALL_RING).addAll(findQuietCallRing(classes))
     found.getValue(QUIET_CALL_NOTIFICATION).addAll(findQuietCallNotification(classes))
     found.getValue(CAR_MESSAGES).addAll(findCarMessages(classes))
+    found.getValue(CAR_EXTENSION_GATE).addAll(findCarExtensionGate(classes))
     found.getValue(LOCAL_CHAT_SEARCH).addAll(findLocalChatSearch(classes))
     found.getValue(CALL_RECORDING).addAll(findCallRecording(classes))
     found.getValue(HOME_HEADER).addAll(findHomeHeader(classes))

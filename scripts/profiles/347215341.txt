@@ -75,6 +75,7 @@ hook call_recording LX/D2B;->run()V
 hook call_recording Lcom/facebook/rsys/overlayconfigmanager/OverlayConfigManagerHolder;-><init>(Ljava/util/ArrayList;)V
 hook call_recording Lorg/webrtc/voiceengine/WebRtcAudioTrack;->startPlayout()Z
 hook call_recording Lorg/webrtc/voiceengine/WebRtcAudioTrack;->stopPlayout()Z
+hook car_extension_gate LX/A9M;->A00(Landroid/graphics/Bitmap;)V
 hook car_messages LX/0Qt;->Aia(LX/0MB;)V
 hook chat_animation Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;
 hook chat_channel_keep LX/1tb;->A09(Landroid/app/NotificationChannel;Lcom/facebook/auth/usersession/FbUserSession;LX/1tb;Ljava/lang/String;IZ)Ljava/lang/String;
