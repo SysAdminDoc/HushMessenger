@@ -556,6 +556,8 @@ final class SettingsTextZhTw {
         {"inbox_search_bar.description", "當 Messenger 把聊天清單頂端的搜尋列換成搜尋圖示時，把搜尋列找回來。重新啟動 Messenger 後生效。若你尚未取得搜尋圖示，則不會有任何變更。"},
         {"chat_preview.title", "長按預覽聊天室"},
         {"chat_preview.description", "長按聊天室，就能在 Messenger 內建的預覽中快速看一眼，下方附上聊天室選單，不必開啟聊天室。"},
+        {"chat_preview_size.title", "放大聊天室預覽"},
+        {"chat_preview_size.description", "長按聊天室時，讓預覽中的聊天內容有更多空間，並可在預覽中往回捲動查看。下方的選單維持固定高度，項目較多時可以捲動。"},
         {"mark_read_action.title", "隱藏「標示為已讀」"},
         {"mark_read_action.description", "在長按聊天清單中的聊天室所顯示的選單中，隱藏「標示為已讀」，避免誤將聊天室標示為已讀。「標示為未讀」仍會保留。"},
         {"pinned_chats.title", "置頂更多聊天室"},

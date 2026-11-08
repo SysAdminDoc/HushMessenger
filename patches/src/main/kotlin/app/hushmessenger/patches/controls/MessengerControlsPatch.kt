@@ -205,6 +205,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         PHONE_ID_SYNC -> validatePhoneIdSync()
         STORY_HOLD -> validateStoryHold()
         CHAT_PREVIEW -> validateChatPreview()
+        CHAT_PREVIEW_SIZE -> validateChatPreviewSize()
         LANDSCAPE_LOCK -> validatePortraitLock()
         LANDSCAPE_MEDIA -> validateMediaOrientation()
         BLOCKED_LIST_PICTURES -> validateBlockedListPictures()
@@ -328,6 +329,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             PHONE_ID_SYNC -> method.injectPhoneIdSync()
             STORY_HOLD -> method.injectStoryHold()
             CHAT_PREVIEW -> method.injectChatPreview()
+            CHAT_PREVIEW_SIZE -> method.injectChatPreviewSize()
             LANDSCAPE_LOCK -> method.injectPortraitLock()
             LANDSCAPE_MEDIA -> method.injectMediaOrientation()
             BLOCKED_LIST_PICTURES -> method.injectBlockedListPictures()
@@ -575,6 +577,9 @@ val hideMarkReadPatch = controlPatch("mark_read_action", "Hide Mark as read", "H
 @Suppress("unused")
 val previewChatsPatch = controlPatch("chat_preview", "Preview chats on long press",
     "Pressing and holding a chat opens Messenger's own preview of it, with the chat's menu underneath, so you can peek at a chat without opening it.", "Inbox")
+@Suppress("unused")
+val biggerChatPreviewPatch = controlPatch("chat_preview_size", "Bigger chat preview",
+    "Gives the chat more room in the preview you get when you press and hold a chat, and lets you scroll back through it there. The menu under it keeps a set height and scrolls when it has more items.", "Inbox")
 @Suppress("unused")
 val pinMoreChatsPatch = controlPatch("pinned_chats", "Pin more chats", "Lets you pin chats past Messenger's limit and puts Pin back on chats that don't offer it. Pins past the limit stay on this phone, so they won't show on your other devices.", "Inbox", PINNED_CHATS, PIN_ROWS, PIN_ASK, PIN_DROP, PIN_FULL, PIN_LIST)
 @Suppress("unused")

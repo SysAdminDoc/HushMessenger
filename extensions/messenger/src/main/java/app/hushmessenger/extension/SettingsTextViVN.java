@@ -556,6 +556,8 @@ final class SettingsTextViVN {
         {"inbox_search_bar.description", "Đưa thanh tìm kiếm trở lại đầu danh sách trò chuyện khi Messenger đã thay nó bằng biểu tượng tìm kiếm. Có hiệu lực sau khi khởi động lại Messenger. Nếu bạn chưa nhận được biểu tượng đó, sẽ không có thay đổi nào xảy ra."},
         {"chat_preview.title", "Xem trước phòng chat khi nhấn giữ"},
         {"chat_preview.description", "Nhấn giữ một phòng chat để xem nhanh trong bản xem trước của chính Messenger, kèm menu của phòng chat ở bên dưới, mà không cần mở phòng chat."},
+        {"chat_preview_size.title", "Bản xem trước phòng chat lớn hơn"},
+        {"chat_preview_size.description", "Cho phòng chat thêm chỗ trong bản xem trước hiện ra khi nhấn giữ phòng chat, và cho phép cuộn lại để xem tin nhắn cũ ngay trong đó. Menu bên dưới giữ chiều cao cố định và cuộn được khi có nhiều mục."},
         {"mark_read_action.title", "Ẩn 'Đánh dấu là đã đọc'"},
         {"mark_read_action.description", "Ẩn 'Đánh dấu là đã đọc' trong menu hiển thị khi nhấn giữ phòng chat trong danh sách trò chuyện, tránh việc vô tình đánh dấu phòng chat là đã đọc. 'Đánh dấu là chưa đọc' sẽ vẫn được giữ lại."},
         {"pinned_chats.title", "Ghim nhiều cuộc trò chuyện hơn"},

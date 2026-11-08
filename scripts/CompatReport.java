@@ -179,6 +179,7 @@ public class CompatReport {
         PATCHES.put("Hide inbox tabs", List.of("subtabs"));
         PATCHES.put("Keep the search bar", List.of("inbox_search_bar"));
         PATCHES.put("Preview chats on long press", List.of("chat_preview"));
+        PATCHES.put("Bigger chat preview", List.of("chat_preview_size"));
         PATCHES.put("Hide Mark as read", List.of("mark_read_action"));
         PATCHES.put("Pin more chats", List.of("pinned_chats", "pin_rows", "pin_ask", "pin_drop", "pin_full", "pin_list"));
         PATCHES.put("Hide chosen chats", List.of("hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
@@ -6811,6 +6812,96 @@ public class CompatReport {
         return previews == 1 && encrypted > 0 ? List.of(builder) : List.of();
     }
 
+    static final String PREVIEW_TAP_TAG = "InboxThreadPreviewDialogFragment.preview_tap";
+    static final String PREVIEW_VIEW_CALL = "onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;";
+
+    /** The int field of the stack's own class that the iput at [at] writes from a register into [stack], or null. */
+    static FieldReference previewSize(List<Instruction> code, int at, int stack, String type) {
+        if (code.get(at).getOpcode() != Opcode.IPUT || !(((ReferenceInstruction) code.get(at)).getReference() instanceof FieldReference f)) return null;
+        return ((TwoRegisterInstruction) code.get(at)).getRegisterB() == stack && f.getDefiningClass().equals(type) && "I".equals(f.getType()) ? f : null;
+    }
+
+    /**
+     * The preview stack's new-instance at [at], its LinearLayout(Context) constructor, the most and the chat's height
+     * written to two int fields, Math.min of the height and one other register, and that answer written to a third int
+     * field, with three distinct fields and three distinct registers no higher than v15.
+     */
+    static boolean previewStackAt(List<Instruction> code, int at) {
+        if (code.get(at).getOpcode() != Opcode.NEW_INSTANCE || at + 6 >= code.size()) return false;
+        int stack = register(code.get(at));
+        String type = ((TypeReference) ((ReferenceInstruction) code.get(at)).getReference()).getType();
+        var init = code.get(at + 1);
+        if (init.getOpcode() != Opcode.INVOKE_DIRECT || !"Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V".equals(ref(init)) ||
+            bubbleArgs(init).isEmpty() || bubbleArgs(init).get(0) != stack) return false;
+        var most = previewSize(code, at + 2, stack, type);
+        var height = previewSize(code, at + 3, stack, type);
+        var least = previewSize(code, at + 6, stack, type);
+        if (most == null || height == null || least == null) return false;
+        int mostRegister = register(code.get(at + 2)), heightRegister = register(code.get(at + 3));
+        var min = code.get(at + 4);
+        var operands = bubbleArgs(min);
+        if (min.getOpcode() != Opcode.INVOKE_STATIC || !"Ljava/lang/Math;->min(II)I".equals(ref(min)) ||
+            operands.stream().filter(r -> r == heightRegister).count() != 1) return false;
+        int leastRegister = operands.get(0) == heightRegister ? operands.get(1) : operands.get(0);
+        if (code.get(at + 5).getOpcode() != Opcode.MOVE_RESULT || register(code.get(at + 6)) != register(code.get(at + 5))) return false;
+        if (new HashSet<>(List.of(most.getName(), height.getName(), least.getName())).size() != 3) return false;
+        var registers = List.of(mostRegister, heightRegister, leastRegister);
+        return new HashSet<>(registers).size() == 3 && registers.stream().allMatch(r -> r <= 15);
+    }
+
+    /**
+     * The preview's tap layer: its tag as a const-string at [at], setTag on the layer with that register, then the first
+     * iput-object of the layer into a View field of the fragment within 16 instructions, before anything overwrites the
+     * layer. The store's index, or -1.
+     */
+    static int tapLayerAt(List<Instruction> code, int at) {
+        var tag = code.get(at);
+        if ((tag.getOpcode() != Opcode.CONST_STRING && tag.getOpcode() != Opcode.CONST_STRING_JUMBO) ||
+            !(((ReferenceInstruction) tag).getReference() instanceof StringReference s) || !PREVIEW_TAP_TAG.equals(s.getString()) || at + 1 >= code.size()) return -1;
+        var tagged = code.get(at + 1);
+        var operands = bubbleArgs(tagged);
+        if (tagged.getOpcode() != Opcode.INVOKE_VIRTUAL || !"Landroid/view/View;->setTag(Ljava/lang/Object;)V".equals(ref(tagged)) ||
+            operands.size() != 2 || operands.get(1) != register(tag)) return -1;
+        int layer = operands.get(0);
+        for (int i = at + 2; i <= Math.min(at + 16, code.size() - 1); i++) {
+            var step = code.get(i);
+            if (step.getOpcode() == Opcode.IPUT_OBJECT && register(step) == layer && ((ReferenceInstruction) step).getReference() instanceof FieldReference f &&
+                f.getDefiningClass().equals(CHAT_PREVIEW_FRAGMENT) && "Landroid/view/View;".equals(f.getType())) return i;
+            if (mediaWrites(step, layer)) return -1;
+        }
+        return -1;
+    }
+
+    /**
+     * InboxThreadPreviewDialogFragment's onCreateView, when it builds the stack once (previewStackAt) and stores its tap
+     * layer once (tapLayerAt), the stack first, with nothing jumping onto the stack's new-instance or just past the store.
+     */
+    static boolean chatPreviewSizeSite(Method method) {
+        if (method.getImplementation() == null || !CHAT_PREVIEW_FRAGMENT.equals(method.getDefiningClass()) ||
+            !PREVIEW_VIEW_CALL.equals(method.getName() + "(" + String.join("", method.getParameterTypes()) + ")" + method.getReturnType())) return false;
+        var code = instructions(method);
+        int stack = -1, stacks = 0, tapLayer = -1, layers = 0;
+        for (int at = 0; at < code.size(); at++) {
+            if (previewStackAt(code, at)) { stack = at; stacks++; }
+            int stored = tapLayerAt(code, at);
+            if (stored >= 0) { tapLayer = stored; layers++; }
+        }
+        if (stacks != 1 || layers != 1) return false;
+        var targets = mediaTargets(method);
+        return tapLayer > stack && tapLayer + 1 < code.size() && !targets.contains(stack) && !targets.contains(tapLayer + 1);
+    }
+
+    /** chat_preview_size: the first InboxThreadPreviewDialogFragment class's methods that pass chatPreviewSizeSite. Mirrors ChatPreviewSize.kt. */
+    static List<Method> chatPreviewSize(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) {
+            if (!cls.getType().equals(CHAT_PREVIEW_FRAGMENT)) continue;
+            for (var method : cls.getMethods()) if (chatPreviewSizeSite(method)) found.add(method);
+            break;
+        }
+        return found;
+    }
+
     static final String FB_FRAGMENT_ACTIVITY = "Lcom/facebook/base/activity/FbFragmentActivity;";
     static final long LANDSCAPE_FLAG = 0x8105f000002c01L;
     static final String MEDIA_ORIENTATION_OPTION = "allowOrientationChanges";
@@ -9102,6 +9193,7 @@ public class CompatReport {
         found.get("phone_id_sync").addAll(phoneIdSync(classes));
         found.get("story_hold").addAll(storyHold(classes));
         found.get("chat_preview").addAll(chatPreview(classes));
+        found.get("chat_preview_size").addAll(chatPreviewSize(classes));
         found.get("landscape_lock").addAll(portraitLock(classes));
         found.get("landscape_media").addAll(mediaOrientation(classes));
         found.get("blocked_list_pictures").addAll(blockedListPictures(classes));
