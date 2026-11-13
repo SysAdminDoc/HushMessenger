@@ -712,7 +712,7 @@ val callConfirmPatch = controlPatch("call_confirm", "Ask before a call",
     "Tapping the audio or video call button in a chat's top bar asks first, so a stray tap doesn't ring anyone. Call starts it, Cancel doesn't. Calls coming in aren't affected.", "Calls", HIDE_CALL_BAR)
 @Suppress("unused")
 val systemCameraPatch = controlPatch("system_camera", "Use the phone's camera app",
-    "The camera button in a chat opens your phone's own camera app. The photo then opens in Messenger's editor, ready to send. Photos only.", "Photos and videos",
+    "The camera button in a chat opens your phone's own camera app. The photo then opens in Messenger's editor, ready to send. Its Ask photo or video option records videos too.", "Photos and videos",
     manifest = { addSystemCamera() })
 @Suppress("unused")
 val externalGalleryPatch = controlPatch("external_gallery", "Open your gallery app",

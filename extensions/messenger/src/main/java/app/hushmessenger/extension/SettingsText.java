@@ -466,6 +466,10 @@ final class SettingsText {
         ENGLISH.put("camera_missing", "No camera app found that can take photos.");
         ENGLISH.put("camera_failed", "Can't open your camera app. Try again.");
         ENGLISH.put("camera_permission", "Allow the camera permission in Messenger's app info.");
+        ENGLISH.put("camera_photo", "Photo");
+        ENGLISH.put("camera_video", "Video");
+        ENGLISH.put("system_camera_ask", "Ask photo or video");
+        ENGLISH.put("system_camera_ask_help", "The camera button asks whether you want a photo or a video, then opens your camera app for it.");
         ENGLISH.put("gallery_missing", "No gallery app found that can pick photos.");
         ENGLISH.put("gallery_failed", "Your gallery couldn't finish the selection. Try again.");
         ENGLISH.put("message_log_clear", "Clear log");

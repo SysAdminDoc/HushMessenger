@@ -198,7 +198,7 @@ public final class SettingsActivity extends Activity {
         {"save_voice", "Save voice messages you play", "Each voice message you play is also saved to Recordings/Messenger on your phone (Music/Messenger on Android 10 and 11), where a file manager or another player can open it. Playing it again doesn't save another copy.", "photos_videos"},
         {"save_voice_menu", "Save button for voice messages", "Hold a voice message and tap More: Save voice message is the top row there, for saving just that one. It goes in the same folder as Save voice messages you play, and that switch can stay off.", "photos_videos"},
         {"share_story", "Hide Your story when sharing", "When you share a photo, video or link into Messenger from another app, your phone's share menu no longer offers Messenger's Your story, so it goes straight to Chats. The Send to list drops Your story too, so a tap on Add can't post it by mistake. Your chats and groups are still there.", "photos_videos"},
-        {"system_camera", "Use the phone's camera app", "The camera button in a chat opens your phone's camera app. The photo opens in Messenger's editor, ready to send. Photos only.", "photos_videos"},
+        {"system_camera", "Use the phone's camera app", "The camera button in a chat opens your phone's camera app. The photo opens in Messenger's editor, ready to send. Turn on Ask photo or video to record videos too.", "photos_videos"},
         {"external_gallery", "Open your gallery app", "The gallery button in a chat opens your phone's own gallery app. One photo or video opens in Messenger's editor for that chat, ready to send. Pick several and Messenger's Send to sheet opens with all of them and that chat at the top.", "photos_videos"},
         {"gallery_to_chat", "Put gallery picks in the chat", "With Open your gallery app on, what you pick goes into the chat's message box like Messenger's own gallery, instead of the editor or the Send to sheet. Nothing sends until you tap Send. A chat that was already open needs opening again.", "photos_videos"},
         {"external_browser", "Open web links externally", "Opens web links (http and https) in your default browser. Other link types work as before.", "links_bubbles"},
@@ -999,7 +999,7 @@ public final class SettingsActivity extends Activity {
             if ("bubbles".equals(spec[0]) || "facebook".equals(spec[0]) || Settings.TAB_BADGES.equals(spec[0]) || OwnFont.KEY.equals(spec[0])
                     || MessageLog.KEY.equals(spec[0]) || AutoReply.KEY.equals(spec[0]) || Settings.AVATAR_SHAPE.equals(spec[0])
                     || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0]) || ChatHiding.KEY.equals(spec[0])
-                    || MessageActions.KEY.equals(spec[0]) || ChatMenuItems.KEY.equals(spec[0])) {
+                    || MessageActions.KEY.equals(spec[0]) || ChatMenuItems.KEY.equals(spec[0]) || CameraActivity.KEY.equals(spec[0])) {
                 // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
                 ui.add(wrapper, row, 0);
@@ -1008,6 +1008,8 @@ public final class SettingsActivity extends Activity {
                     text.format("facebook_keep_profile"), text.format("facebook_keep_profile_help"), false), 8);
                 else if (Settings.AVATAR_SHAPE.equals(spec[0])) ui.add(wrapper, controlRow(Settings.AVATAR_ROUNDED,
                     text.format(Settings.AVATAR_ROUNDED), text.format("avatar_shape_rounded_help"), false), 8);
+                else if (CameraActivity.KEY.equals(spec[0])) ui.add(wrapper, controlRow(CameraActivity.ASK,
+                    text.format(CameraActivity.ASK), text.format("system_camera_ask_help"), false), 8);
                 else if (Settings.TAB_BADGES.equals(spec[0])) {
                     for (String keep : Settings.KEEP_BADGES.values()) ui.add(wrapper, controlRow(keep, text.format(keep), "", false), 8);
                 }
@@ -1382,6 +1384,7 @@ public final class SettingsActivity extends Activity {
         // A switch under another one takes that one's section.
         String parent = Settings.KEEP_FACEBOOK_PROFILE.equals(key) ? "facebook"
             : Settings.AVATAR_ROUNDED.equals(key) ? Settings.AVATAR_SHAPE
+            : CameraActivity.ASK.equals(key) ? CameraActivity.KEY
             : Settings.KEEP_BADGES.containsValue(key) ? Settings.TAB_BADGES
             : MessageLogButton.KEY.equals(key) || MessageLogButton.MENU_KEY.equals(key) || MessageLog.SAVE_EXPIRING.equals(key)
                 || QuietChats.KEY.equals(key) ? MessageLog.KEY
@@ -2039,6 +2042,7 @@ public final class SettingsActivity extends Activity {
             String inside = "facebook".equals(spec[0]) ? text.get("facebook_keep_profile") + " " + text.get("facebook_keep_profile_help") : "";
             if (Settings.TAB_BADGES.equals(spec[0])) for (String keep : Settings.KEEP_BADGES.values()) inside += " " + text.get(keep);
             if (Settings.AVATAR_SHAPE.equals(spec[0])) inside = text.get(Settings.AVATAR_ROUNDED) + " " + text.get("avatar_shape_rounded_help");
+            if (CameraActivity.KEY.equals(spec[0])) inside = text.get(CameraActivity.ASK) + " " + text.get("system_camera_ask_help");
             if (HomeHeader.KEY.equals(spec[0])) inside = text.get("home_header_words") + " " + text.get("home_header_choose") + " "
                 + text.get("home_header_help", HomeHeaderPicture.MAX_MEGABYTES);
             if (QuietCalls.KEY.equals(spec[0])) {

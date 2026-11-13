@@ -125,7 +125,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Send photos at original quality | With HD on, a JPEG photo up to 20 MB goes out at its full size instead of Messenger's smaller copy. Location and camera details are stripped, as Messenger does. |
 | Send videos without re-encoding | A video up to 25 MB goes out as it is. |
 | Fix videos that won't send | A video whose only sound is xHE-AAC gets that sound converted to regular AAC, and a Samsung screen recording loses the tag Samsung's recorder adds when Messenger's media check rejects it, so neither ends in "Unable to send". Works for videos shared in from another app and ones picked in a chat. |
-| Use the phone's camera app | A chat's camera button opens your own camera app. Photos only. |
+| Use the phone's camera app | A chat's camera button opens your own camera app. Ask photo or video lets it record videos too. |
 | Open your gallery app | A chat's gallery button opens your own gallery app. One pick opens in Messenger's editor, and several open the Send to sheet with that chat at the top. |
 | Put gallery picks in the chat | Goes with Open your gallery app. What you pick lands above the chat's message box, the way Messenger's own gallery puts it there, one item or several. Nothing goes out until you tap Send. Experimental. |
 | Open web links externally | Opens http and https links in your default browser. |

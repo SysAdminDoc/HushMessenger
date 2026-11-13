@@ -5026,7 +5026,7 @@
         },
         {
             "name": "Use the phone's camera app",
-            "description": "The camera button in a chat opens your phone's own camera app. The photo then opens in Messenger's editor, ready to send. Photos only. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "The camera button in a chat opens your phone's own camera app. The photo then opens in Messenger's editor, ready to send. Its Ask photo or video option records videos too. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Photos and videos",
             "dependencies": [
