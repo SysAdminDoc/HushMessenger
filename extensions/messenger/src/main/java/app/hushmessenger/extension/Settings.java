@@ -307,7 +307,7 @@ public final class Settings {
     /** Puts the People tab back in the bar on accounts where Messenger no longer builds it. */
     static final String SHOW_PEOPLE_TAB = "tab_people_show";
     /** Bottom tabs with a switch of their own, held for the run like the Meta AI tab. */
-    static final List<String> BOTTOM_TABS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications", SHOW_PEOPLE_TAB));
+    static final List<String> BOTTOM_TABS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications", "tab_stories", SHOW_PEOPLE_TAB));
     /** First answer this process gave for each of {@link #BOTTOM_TABS}, by key, once the bottom bar asked. */
     static final ConcurrentHashMap<String, Boolean> bottomTabs = new ConcurrentHashMap<>();
 
@@ -384,16 +384,17 @@ public final class Settings {
     }
 
     /** Every switch that changes the bottom bar's tabs, so each one's list goes through {@link #visibleTabs}. */
-    static final List<String> TAB_CONTROLS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications", "meta_ai", SHOW_PEOPLE_TAB));
+    static final List<String> TAB_CONTROLS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications", "tab_stories", "meta_ai", SHOW_PEOPLE_TAB));
 
     /**
      * The switch that hides a bottom tab, by the tab's constant in Messenger's tab enum, or null for a tab with none. MUSE
-     * is the AI agent tab some accounts get in Meta AI's place, so Hide Meta AI takes it too.
+     * is the AI agent tab some accounts get in Meta AI's place, so Hide Meta AI takes it too. MONTAGE is the Stories tab.
      */
     static String barTabKey(String name) {
         switch (name) {
             case "PEOPLE": return "tab_people";
             case "JEWEL": return "tab_notifications";
+            case "MONTAGE": return "tab_stories";
             case "AI":
             case "MUSE": return "meta_ai";
             default: return null;

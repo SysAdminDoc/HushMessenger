@@ -605,6 +605,8 @@ val showPeopleTabPatch = controlPatch("tab_people_show", "Show People tab", "Put
 @Suppress("unused")
 val hideNotificationsTabPatch = controlPatch("tab_notifications", "Hide Notifications tab", "Hides the Notifications tab in the bar at the bottom. Restart Messenger to see the tab go.", "Navigation", TAB_NOTIFICATIONS, TAB_CONFIG)
 @Suppress("unused")
+val hideStoriesTabPatch = controlPatch("tab_stories", "Hide Stories tab", "Hides the Stories tab in the bar at the bottom. Restart Messenger to see the tab go.", "Navigation", TAB_CONFIG)
+@Suppress("unused")
 val hideTabBadgesPatch = controlPatch("tab_badges", "Hide tab badges", "Hides the red dots and counts on the tabs at the bottom and on the Facebook button at the top. Turn on Keep for any you still want. Restart Messenger to see the change.",
     "Navigation", TAB_BADGES, FACEBOOK_BADGE)
 @Suppress("unused")

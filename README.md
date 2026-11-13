@@ -80,6 +80,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Hide People tab | Hides the People tab in the bottom bar. Restart Messenger to see it go. |
 | Show People tab | Brings the People tab back to the bottom bar, right after Chats, on accounts where Messenger dropped it. Restart Messenger to see it. |
 | Hide Notifications tab | Hides the Notifications tab in the bottom bar. Restart Messenger to see it go. |
+| Hide Stories tab | Hides the Stories tab in the bottom bar. Restart Messenger to see it go. |
 | Hide tab badges | Hides the red dots and counts on the bottom tabs and on the Facebook button at the top. The Keep switches under it bring back the ones you want. Takes effect after a restart. |
 | Hide Facebook shortcuts | Removes Facebook toolbar, profile and sharing shortcuts, and the "Also from Meta" and "Subscriptions" sections in the Menu tab. Keep the Profile button, right under it, leaves the chat details Profile button and the View profile button at the top of a new chat in place. |
 | Hide Meta AI | Hides the Meta AI button, tab and menu entries, the "Ask Meta AI" search button, the AI suggestions when you type @ in a chat and the offer to summarize unread messages. Existing AI chats stay. The tab changes after a restart. |

@@ -191,6 +191,7 @@ public class CompatReport {
         PATCHES.put("Hide People tab", List.of("tab_people", "tab_config"));
         PATCHES.put("Show People tab", List.of("tab_config"));
         PATCHES.put("Hide Notifications tab", List.of("tab_notifications", "tab_config"));
+        PATCHES.put("Hide Stories tab", List.of("tab_config"));
         PATCHES.put("Hide tab badges", List.of("tab_badges", "facebook_badge"));
         PATCHES.put("Hide the tab bar while scrolling", List.of("tab_bar_scroll_away", "tab_bar_overlay"));
         PATCHES.put("Floating tab bar", List.of("floating_tab_bar"));

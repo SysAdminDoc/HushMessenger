@@ -435,6 +435,8 @@ final class SettingsText {
         ENGLISH.put("tab_people_show_pending_off", "The People tab goes away after Messenger restarts");
         ENGLISH.put("tab_notifications_pending_on", "The Notifications tab is hidden after Messenger restarts");
         ENGLISH.put("tab_notifications_pending_off", "The Notifications tab comes back after Messenger restarts");
+        ENGLISH.put("tab_stories_pending_on", "The Stories tab is hidden after Messenger restarts");
+        ENGLISH.put("tab_stories_pending_off", "The Stories tab comes back after Messenger restarts");
         ENGLISH.put("error_now", "Stopped with an error just now. Copy setup on the App tab has details.");
         ENGLISH.put("error_ago", "Stopped with an error %s ago. Copy setup on the App tab has details.");
         ENGLISH.put("changes_paused", "Changes paused");

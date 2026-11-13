@@ -20,6 +20,7 @@
         <meta-data android:name="hush.feature.tab_people" android:value="true" />
         <meta-data android:name="hush.feature.tab_people_show" android:value="true" />
         <meta-data android:name="hush.feature.tab_notifications" android:value="true" />
+        <meta-data android:name="hush.feature.tab_stories" android:value="true" />
         <meta-data android:name="hush.feature.tab_badges" android:value="true" />
         <meta-data android:name="hush.feature.tab_bar_scroll_away" android:value="true" />
         <meta-data android:name="hush.feature.floating_tab_bar" android:value="true" />
