@@ -433,6 +433,8 @@ public final class Settings {
         owners.put(MessageLogButton.MENU_KEY, MessageLog.KEY);
         owners.put(MessageLogButton.CHAT_KEY, MessageLog.KEY);
         owners.put(StoryEye.KEY, StoryEye.OWNER);
+        owners.put(CallCaptions.SPEAK, CallCaptions.KEY);
+        owners.put(CallCaptions.DUCK, CallCaptions.KEY);
         SUB_SWITCHES = Collections.unmodifiableMap(owners);
     }
 
@@ -620,8 +622,10 @@ public final class Settings {
             // Square to rounded and back takes effect after a restart; only going back to circles stays in effect.
             return shape < 0 || shape == now ? null : now == AVATAR_CIRCLE;
         }
+        // Record calls and Live captions share the one audio choice native makes per run.
+        if (CallRecording.KEY.equals(key) || CallCaptions.KEY.equals(key)) return CallRecording.heldPlayout(key);
         Boolean held = "meta_ai".equals(key) ? metaAiTab : "emoji_drawer".equals(key) ? oldEmojiDrawer
-            : SEARCH_BAR.equals(key) ? keptSearchBar : LANDSCAPE.equals(key) ? landscape : OwnFont.KEY.equals(key) ? customFont : CallRecording.KEY.equals(key) ? CallRecording.heldPlayout()
+            : SEARCH_BAR.equals(key) ? keptSearchBar : LANDSCAPE.equals(key) ? landscape : OwnFont.KEY.equals(key) ? customFont
             : FLOATING_TAB_BAR.equals(key) ? floatingBar : TAB_BAR_SCROLL_AWAY.equals(key) ? scrollAwayBar : bottomTabs.get(key);
         return held == null || held == wouldUse(key) ? null : held;
     }
@@ -1437,6 +1441,8 @@ public final class Settings {
         if (VoiceMessages.KEY.equals(key) || SaveVoiceMenu.KEY.equals(key) || CallRecording.KEY.equals(key)) return Build.VERSION.SDK_INT >= 29;
         // Windows blur what's behind them from Android 12.
         if (MenuBlur.KEY.equals(key)) return Build.VERSION.SDK_INT >= 31;
+        // An app can feed the phone's recognizer its own sound from Android 13.
+        if (CallCaptions.KEY.equals(key)) return Build.VERSION.SDK_INT >= 33;
         if (!"bubbles".equals(key)) return true;
         if (Build.VERSION.SDK_INT < 30) return false;
         if (!HostScreens.started) HostScreens.initializeLate();

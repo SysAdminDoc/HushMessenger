@@ -715,6 +715,10 @@ val allowLandscapePatch = controlPatch("landscape", "Allow landscape",
 val callRecordingPatch = controlPatch("call_recording", "Record calls",
     "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it. Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first.", "Calls")
 @Suppress("unused")
+val callCaptionsPatch = controlPatch("call_captions", "Live captions on calls",
+    "Shows what the other people say during a call as captions over Messenger. Your phone makes them itself, and it can translate them into your language and read them aloud. It needs Android 13 or newer with speech recognition on the phone. While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it.", "Calls",
+    CALL_RECORDING, manifest = { addSpeechQueries() })
+@Suppress("unused")
 val hideCallButtonsPatch = controlPatch("hide_call_buttons", "Hide call buttons",
     "Takes the audio and video call buttons out of a chat's top bar, so you can't tap one by accident. Calls still ring, and you can still join one that's going.", "Calls", HIDE_CALL_BAR)
 @Suppress("unused")

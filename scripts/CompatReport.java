@@ -241,6 +241,7 @@ public class CompatReport {
         PATCHES.put("Jump to the first message or a date", List.of("chat_jump"));
         PATCHES.put("Allow landscape", List.of("landscape_lock", "landscape_media"));
         PATCHES.put("Record calls", List.of("call_recording"));
+        PATCHES.put("Live captions on calls", List.of("call_recording"));
         PATCHES.put("Hide call buttons", List.of("hide_call_bar"));
         PATCHES.put("Ask before a call", List.of("hide_call_bar"));
         PATCHES.put("Allow screenshots", List.of("allow_screenshot", "screenshot_viewers"));

@@ -68,6 +68,7 @@ public final class SettingsActivity extends Activity {
     private final HomeHeaderRow homeHeader = new HomeHeaderRow(this);
     private final MessageActionsRow messageActions = new MessageActionsRow(this);
     private final ChatMenuItemsRow chatMenuItems = new ChatMenuItemsRow(this);
+    private final CallCaptionsRow callCaptions = new CallCaptionsRow(this);
     private final SpecialContactsRow specialContacts = new SpecialContactsRow(this);
     private final SharedPreferences.OnSharedPreferenceChangeListener preferenceListener = (preferences, key) -> {
         if (key == null || "paused".equals(key) || Settings.SUB_SWITCHES.containsKey(key) || Settings.installed.contains(key))
@@ -139,7 +140,7 @@ public final class SettingsActivity extends Activity {
     /** Switches whose effect hasn't been confirmed on a phone. Each shows the Experimental badge. */
     /** The switches that take a way into these settings away, each with a reason when it can't turn on. */
     static final Set<String> WAYS_IN = Set.of("hide_menu_row", Settings.HIDE_ICON_SHORTCUTS, Settings.HIDE_LOGO_PRESS);
-    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", "chat_menu_items", "quiet_calls", "save_voice", "gallery_to_chat", InstantGallery.KEY, "call_recording", "inbox_search_bar", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY);
+    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", "chat_menu_items", "quiet_calls", "save_voice", "gallery_to_chat", InstantGallery.KEY, "call_recording", "inbox_search_bar", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY, CallCaptions.KEY);
     static final String[][] CONTROLS = {
         {"people", "Hide People You May Know", "Hides suggested people in chats, search and stories, and on the People and Notifications tabs. Good if you only want people you know.", "inbox"},
         {"friend_requests", "Hide friend request cards", "Hides friend request cards in your chat list. It doesn't accept or decline anyone.", "inbox"},
@@ -191,6 +192,7 @@ public final class SettingsActivity extends Activity {
         {"landscape", "Allow landscape", "Lets Messenger turn sideways with your phone, for a wider keyboard and bigger photos and videos. It follows your phone's auto-rotate setting. Calls, the camera, payments and a few other screens stay upright. Restart Messenger after you change it.", "conversations"},
         {"quiet_calls", "Quiet incoming calls", "Calls still come in, but Messenger doesn't ring, vibrate or pop the call up over your screen. The call waits in the notification shade with Answer and Decline. A call you miss still shows in the chat. Only chosen chats keeps this to the chats you pick, and every other call rings. If the Facebook app is on your phone, it can still ring for the same call.", "calls"},
         {"call_recording", "Record calls", "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it. Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first.", "calls"},
+        {"call_captions", "Live captions on calls", "Shows what the other people say during a call as captions over Messenger. Your phone makes them itself, and it can translate them into your language and read them aloud. It needs Android 13 or newer with speech recognition on the phone. While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it.", "calls"},
         {"hide_call_buttons", "Hide call buttons", "Takes the audio and video call buttons out of a chat's top bar, so you can't tap one by accident. Calls still ring, and you can still join one that's going.", "calls"},
         {"call_confirm", "Ask before a call", "Tapping the audio or video call button in a chat's top bar asks first, so a stray tap doesn't ring anyone. Call starts it, Cancel doesn't. Calls coming in aren't affected.", "calls"},
         {"original_photo", "Send photos at original quality", "With HD on, sends JPEG photos at their full size, not a smaller copy. Location is still removed. Photos over 20 MB are still made smaller.", "photos_videos"},
@@ -1009,7 +1011,7 @@ public final class SettingsActivity extends Activity {
                     || MessageLog.KEY.equals(spec[0]) || AutoReply.KEY.equals(spec[0]) || Settings.AVATAR_SHAPE.equals(spec[0])
                     || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0]) || ChatHiding.KEY.equals(spec[0])
                     || MessageActions.KEY.equals(spec[0]) || ChatMenuItems.KEY.equals(spec[0]) || CameraActivity.KEY.equals(spec[0])
-                    || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0])) {
+                    || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])) {
                 // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
                 ui.add(wrapper, row, 0);
@@ -1032,6 +1034,11 @@ public final class SettingsActivity extends Activity {
                 else if (HomeHeader.KEY.equals(spec[0])) homeHeader.addTo(wrapper);
                 else if (MessageActions.KEY.equals(spec[0])) messageActions.addTo(wrapper);
                 else if (ChatMenuItems.KEY.equals(spec[0])) chatMenuItems.addTo(wrapper);
+                else if (CallCaptions.KEY.equals(spec[0])) {
+                    callCaptions.addTo(wrapper);
+                    ui.add(wrapper, controlRow(CallCaptions.SPEAK, text.format(CallCaptions.SPEAK), text.format("call_captions_speak_help"), false), 8);
+                    ui.add(wrapper, controlRow(CallCaptions.DUCK, text.format(CallCaptions.DUCK), text.format("call_captions_duck_help"), false), 8);
+                }
                 else if (AutoReply.KEY.equals(spec[0])) autoReplies.addAutoReplyActions(wrapper);
                 else {
                     messageLog.addMessageLogActions(wrapper);
@@ -1258,6 +1265,7 @@ public final class SettingsActivity extends Activity {
             : GalleryPicker.KEY.equals(key) ? "gallery_unsupported"
             : LocalChatSearch.KEY.equals(key) ? "local_search_unsupported"
             : CallRecording.KEY.equals(key) ? "call_recording_unsupported"
+            : CallCaptions.KEY.equals(key) ? "call_captions_unsupported"
             : WAYS_IN.contains(key) ? wayReason(key)
             : "bubbles".equals(key) && Build.VERSION.SDK_INT >= 30 ? "bubble_unsupported" : "unavailable");
         LinearLayout row = ui.row();
@@ -1401,6 +1409,7 @@ public final class SettingsActivity extends Activity {
             : Settings.AVATAR_ROUNDED.equals(key) ? Settings.AVATAR_SHAPE
             : CameraActivity.ASK.equals(key) ? CameraActivity.KEY
             : StoryEye.KEY.equals(key) ? StoryEye.OWNER
+            : CallCaptions.SPEAK.equals(key) || CallCaptions.DUCK.equals(key) ? CallCaptions.KEY
             : Settings.KEEP_BADGES.containsValue(key) ? Settings.TAB_BADGES
             : MessageLogButton.KEY.equals(key) || MessageLogButton.MENU_KEY.equals(key) || MessageLogButton.CHAT_KEY.equals(key)
                 || MessageLog.SAVE_EXPIRING.equals(key)
@@ -2062,6 +2071,9 @@ public final class SettingsActivity extends Activity {
             if (Settings.AVATAR_SHAPE.equals(spec[0])) inside = text.get(Settings.AVATAR_ROUNDED) + " " + text.get("avatar_shape_rounded_help");
             if (CameraActivity.KEY.equals(spec[0])) inside = text.get(CameraActivity.ASK) + " " + text.get("system_camera_ask_help");
             if (StoryEye.OWNER.equals(spec[0])) inside = text.get(StoryEye.KEY) + " " + text.get("story_seen_button_help");
+            if (CallCaptions.KEY.equals(spec[0])) inside = text.get("call_captions_heard_title") + " " + text.get("call_captions_shown_title") + " "
+                + text.get(CallCaptions.SPEAK) + " " + text.get("call_captions_speak_help") + " " + text.get(CallCaptions.DUCK) + " "
+                + text.get("call_captions_duck_help");
             if (HomeHeader.KEY.equals(spec[0])) inside = text.get("home_header_words") + " " + text.get("home_header_choose") + " "
                 + text.get("home_header_help", HomeHeaderPicture.MAX_MEGABYTES);
             if (QuietCalls.KEY.equals(spec[0])) {

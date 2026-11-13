@@ -45,6 +45,9 @@ public class ToastLengthTest {
         check(cut, "auto_reply_saved", words.get("auto_reply_saved", 12));
         check(cut, "call_recording_saved", words.get("call_recording_saved", "Recordings/" + CallRecording.FOLDER));
         check(cut, "save_voice_menu_saved", words.get("save_voice_menu_saved", "Recordings/" + VoiceMessages.FOLDER));
+        check(cut, "call_captions_picked", words.get("call_captions_picked", CallCaptions.name("zh-TW")));
+        check(cut, "call_captions_picked untranslated", words.get("call_captions_picked", words.get("call_captions_untranslated_choice")));
+        check(cut, "call_captions_downloading_now", words.get("call_captions_downloading_now", CallCaptions.name("zh-TW")));
         // A restored or lifted pause adds its own sentence to the restore toast.
         for (String paused : new String[] {" " + words.get("changes_paused") + ".", " " + words.get("changes_resumed") + "."}) {
             for (int count : new int[] {1, 12}) check(cut, "imported", words.count("imported", count) + paused);

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Opens settings and restart on installs whose manifest changes never reached PackageManager, such as
@@ -51,7 +52,9 @@ public final class HostScreens {
             Log.e("HushMessenger", "Can't watch for chats opening", error);
         }
         try {
-            if (app != null && Settings.bundled(bundledControls()).contains(CallRecording.KEY)) CallRecording.register(app);
+            Set<String> bundled = app == null ? null : Settings.bundled(bundledControls());
+            // Live captions put their box on the call screen through the same watcher.
+            if (bundled != null && (bundled.contains(CallRecording.KEY) || bundled.contains(CallCaptions.KEY))) CallRecording.register(app);
         } catch (RuntimeException | LinkageError error) {
             Log.e("HushMessenger", "Can't watch for calls", error);
         }
