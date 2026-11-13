@@ -7,6 +7,7 @@
 - `Hide Stories tab` is a new switch under Navigation. It takes the Stories tab out of the bottom bar after a restart, like the People and Notifications switches do. Refs #170.
 - `Use the phone's camera app` has a new `Ask photo or video` option. The camera button asks which one you want and opens your camera app for it, so you can record videos too. Refs #168.
 - The settings screen is in Turkish now. Refs #160.
+- The settings screen is in Thai now, translated by MangaThatsFine. Refs #166.
 - With `Spoof package version` on, parts of Messenger still saw the raised version number, like its background job check and its crash reports, because they get the app's version info in roundabout ways the patch didn't follow. Now every place Messenger reads a version number asks first whose it is. Messenger's own answers with the build you patched, and other apps keep the number Android gives. Refs #120.
 - `Hide call buttons` and the call confirmation work on Messenger 586 again. 586 wraps a chat's audio and video call buttons in another button, and the patch was looking at the wrapper. Refs #146.
 - On 586 a call crashed as it started when `Record calls` was on. The recording setup now takes its size from Messenger's own instead of 585's. Refs #146.
