@@ -1516,15 +1516,39 @@ internal fun MutableMethod.validateStorySeen(): Int {
     return cache
 }
 
+/**
+ * The gate hands the handler, the card and its flag to the extension, which keeps them for the Mark as seen button
+ * (#169) and says whether to skip the send. A tap replays this same handler, which the gate then lets through.
+ */
 internal fun MutableMethod.injectStorySeen() {
     val cache = validateStorySeen()
     addInstructionsWithLabels(1, """
-        invoke-static {}, $SETTINGS->viewStoriesAnonymously()Z
+        invoke-static/range {p0 .. p2}, $SETTINGS->holdStorySeen(Ljava/lang/Object;Ljava/lang/Object;I)Z
         move-result v0
         if-eqz v0, :stock_behavior
         const/4 v0, 0x0
         goto/16 :local_seen
     """.trimIndent(), ExternalLabel("stock_behavior", getInstruction(1)), ExternalLabel("local_seen", getInstruction(cache)))
+}
+
+internal const val STORY_EYE = "Lapp/hushmessenger/extension/StoryEye;"
+internal const val STORY_VIEWER_CREATED = "$MONTAGE_VIEWER->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"
+
+/** The story viewer's own onViewCreated, where the Mark as seen button joins the viewer's window. */
+internal fun ClassDef.storyViewerCreated(): Method {
+    val created = methods.filter { it.hookId() == STORY_VIEWER_CREATED }
+    val method = created.singleOrNull()
+    if (method == null || AccessFlags.STATIC.isSet(method.accessFlags) || method.implementation == null) {
+        throw PatchException("Messenger controls: the story viewer has no onViewCreated of its own to add the Mark as seen button in")
+    }
+    return method
+}
+
+internal fun MutableMethod.injectStoryViewerCreated() {
+    if (hookId() != STORY_VIEWER_CREATED || AccessFlags.STATIC.isSet(accessFlags)) {
+        throw PatchException("Messenger controls: ${hookId()} isn't the story viewer's onViewCreated")
+    }
+    addInstructions(0, "invoke-static/range {p0 .. p1}, $STORY_EYE->viewerCreated(Ljava/lang/Object;Landroid/view/View;)V")
 }
 
 internal const val FB_USER_SESSION = "Lcom/facebook/auth/usersession/FbUserSession;"

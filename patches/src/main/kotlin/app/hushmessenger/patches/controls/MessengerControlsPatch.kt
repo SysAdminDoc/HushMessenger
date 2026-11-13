@@ -804,11 +804,15 @@ val anonymousStoriesPatch = bytecodePatch(
         val readSet = readSetClass.validateStoryReadSet(handler.storyReadSetAdd())
         val previewClass = mutableClassDefBy(MONTAGE_BUCKET_PREVIEW)
         val ring = previewClass.validateStoryRing()
+        val viewerClass = mutableClassDefBy(MONTAGE_VIEWER)
+        val viewerCreated = viewerClass.storyViewerCreated().let { found -> viewerClass.methods.single { it.hookId() == found.hookId() } }
         injectControl("anonymous_stories", mapOf("anonymous_stories" to listOf(handler)))
         readSetClass.methods.single { it.hookId() == readSet.add }.injectStoryReadSetAdd(readSet)
         readSetClass.methods.single { it.name == "<init>" }.injectStoryReadSetSeed(readSet)
         // The chat list's ring reads the preview, which Messenger fills from the server's seen state alone (#35).
         previewClass.injectStoryRing(ring, readSet.cardId)
+        // The Mark as seen button rides on the story viewer's window (#169).
+        viewerCreated.injectStoryViewerCreated()
         recordControl("anonymous_stories")
         anonymousStoriesApplied = true
     }

@@ -623,6 +623,11 @@ final class SettingsText {
         ENGLISH.put("mark_read", "Mark as read");
         ENGLISH.put("mark_read_done", "Marked as read");
         ENGLISH.put("mark_read_nothing", "Nothing new to mark as read");
+        ENGLISH.put("story_seen_button", "Mark as seen button");
+        ENGLISH.put("story_seen_button_help", "Puts an eye button on stories you open. Tap it when you want that person to see you viewed the story on screen. The eye has a slash until you do.");
+        ENGLISH.put("story_seen", "Mark as seen");
+        ENGLISH.put("story_seen_done", "Marked as seen");
+        ENGLISH.put("story_seen_nothing", "Nothing to mark as seen");
         ENGLISH.put("call_confirm_audio", "Start a voice call?");
         ENGLISH.put("call_confirm_video", "Start a video call?");
         ENGLISH.put("call_confirm_call", "Call");

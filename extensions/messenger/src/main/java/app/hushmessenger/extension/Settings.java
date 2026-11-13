@@ -431,6 +431,7 @@ public final class Settings {
         owners.put(QuietChats.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.MENU_KEY, MessageLog.KEY);
+        owners.put(StoryEye.KEY, StoryEye.OWNER);
         SUB_SWITCHES = Collections.unmodifiableMap(owners);
     }
 
@@ -1511,6 +1512,20 @@ public final class Settings {
     }
     public static boolean keepUnsent() { return wouldUse("keep_unsent"); }
     public static boolean viewStoriesAnonymously() { return enabled("anonymous_stories"); }
+
+    /**
+     * View stories anonymously's gate in the story mark-read handler: true keeps the seen from going out. The card it
+     * held goes to the Mark as seen button (#169), whose tap runs the same handler while this lets it through.
+     */
+    public static boolean holdStorySeen(Object handler, Object card, int flag) {
+        if (StoryEye.replaying() || !viewStoriesAnonymously()) return false;
+        try {
+            StoryEye.hold(handler, card, flag != 0);
+        } catch (RuntimeException error) {
+            hookFailed("anonymous_stories", "Can't keep the story for the Mark as seen button", error);
+        }
+        return true;
+    }
     public static boolean saveAnyStory() { return enabled("save_stories"); }
 
     /** Story cards read on this phone, as "account:card:time kept". A story is up for a day; each entry lasts two. */
