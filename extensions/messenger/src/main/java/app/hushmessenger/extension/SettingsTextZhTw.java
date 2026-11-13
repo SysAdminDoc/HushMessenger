@@ -287,7 +287,7 @@ final class SettingsTextZhTw {
         {"quick_privacy", "隱私"},
         {"quick_privacy_help", "停止上傳會向 Meta 透露你如何使用 Messenger 的資料，包括你的廣告 ID。"},
         {"quick_iphone", "iPhone 外觀"},
-        {"quick_iphone_help", "在聊天室清單頂端以「聊天室」標題取代文字標誌，並保留下方的搜尋列，就像 iPhone 上的 Messenger。重新啟動 Messenger 即可看到。"},
+        {"quick_iphone_help", "在聊天室清單頂端以「聊天室」標題取代文字標誌，保留下方的搜尋列，並讓選單背後的畫面變模糊（Android 12 以上），就像 iPhone 上的 Messenger。重新啟動 Messenger 即可看到。"},
         {"quick_iphone_words", "聊天室"},
         {"quick_defaults", "還原預設設定"},
         {"quick_defaults_help", "停用所有控制項。暫停狀態與主題維持不變。"},
@@ -743,3 +743,5 @@ final class SettingsTextZhTw {
         {"custom_font.description", "以手機字型取代 Meta 字型來顯示 Messenger 文字，也可使用下方選取的 .ttf 或 .otf 字型檔案，並調整大小或上下位置。表情符號不受影響。重新啟動 Messenger 後即可看到變更。"},
     };
 }
+        {"menu_blur.title", "選單背景模糊"},
+        {"menu_blur.description", "長按聊天室時跳出的選單，以及 Messenger 其他的彈出選單和面板，背後的畫面會像 iPhone 一樣變模糊。需要 Android 12 以上。如果手機關閉了模糊效果（省電模式可能會關閉），畫面會像以前一樣變暗。"},

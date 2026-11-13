@@ -176,6 +176,7 @@ hook mark_read_action LX/Jgw;->A0P()Z
 hook mark_read_bar LX/7Nx;->FDi(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/74D;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V
 hook mark_read_bar LX/AJ2;->A03(Landroid/content/Context;LX/0XT;Lcom/facebook/auth/usersession/FbUserSession;LX/0LH;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/50E;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/6eW;Lcom/google/common/collect/ImmutableList$Builder;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIZZZZZZ)Ljava/lang/Object;
 hook mark_read_click LX/CeA;->onClick(Landroid/view/View;)V
+hook menu_blur LX/0AL;->onStart()V
 hook menu_settings LX/8wE;->A1j()V
 hook menu_settings LX/TGL;->BYp(LX/0Lz;)Ljava/util/ArrayList;
 hook menu_settings LX/VMY;->onClick(Landroid/view/View;)V

@@ -242,6 +242,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         EXTERNAL_GALLERY -> validateExternalGallery()
         INSTANT_GALLERY -> validateInstantGallery()
         SPECIAL_CONTACTS -> validateSpecialContacts()
+        MENU_BLUR -> validateMenuBlur()
         GALLERY_TEMP_FILE -> validateGalleryTempFile()
         GALLERY_TO_CHAT -> validateGalleryToChat()
         in CUSTOM_FONT_HOOKS -> validateCustomFont(hook)
@@ -370,6 +371,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             EXTERNAL_GALLERY -> method.injectExternalGallery()
             INSTANT_GALLERY -> method.injectInstantGallery()
             SPECIAL_CONTACTS -> method.injectSpecialContacts()
+            MENU_BLUR -> method.injectMenuBlur()
             GALLERY_TEMP_FILE -> method.injectGalleryTempFile()
             GALLERY_TO_CHAT -> method.injectGalleryToChat()
             in CUSTOM_FONT_HOOKS -> method.injectCustomFont(hook)
@@ -783,6 +785,10 @@ val customFontPatch = controlPatch("custom_font", "Use your own font",
     "Shows Messenger's text in your phone's font instead of Meta's, or in a .ttf or .otf file you pick in HushMessenger settings. Emoji don't change. Restart Messenger after changing it.",
     "Theme", "font_layout", "font_repository", "font_roboto", "font_by_name", "font_input")
 private var anonymousStoriesApplied = false
+@Suppress("unused")
+val menuBlurPatch = controlPatch("menu_blur", "Blur behind menus",
+    "Blurs the screen behind the menu you get when you press and hold a chat, and behind Messenger's other pop-up menus and sheets, like on an iPhone. Needs Android 12 or newer. When your phone has blur off, the screen darkens like it always did.",
+    "Theme", MENU_BLUR)
 
 private val anonymousStoriesResources = resourcePatch(description = "Record HushMessenger capability: anonymous_stories") {
     dependsOn(settingsResources)

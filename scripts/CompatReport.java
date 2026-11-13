@@ -252,6 +252,7 @@ public class CompatReport {
         PATCHES.put("Square profile pictures", List.of("avatar_shape", "story_ring"));
         PATCHES.put("Your own home header", List.of("home_header"));
         PATCHES.put("Use your own font", List.of("font_layout", "font_repository", "font_roboto", "font_by_name", "font_input"));
+        PATCHES.put("Blur behind menus", List.of("menu_blur"));
         PATCHES.put("View stories anonymously", List.of("anonymous_stories"));
         PATCHES.put("Save any story", List.of("save_stories"));
         PATCHES.put("Slide chats in and out", List.of("chat_animation", "chat_fragment", "chat_inbox", "chat_legacy"));
@@ -4395,6 +4396,56 @@ public class CompatReport {
     static final List<String> PRESENCE_ITEM_PARAMS = List.of("Lcom/facebook/user/model/UserKey;", "Ljava/lang/Long;", "Ljava/lang/Long;", "Ljava/lang/String;",
         "Ljava/lang/String;", "I", "J", "Z");
     static final String PRESENCE_INT_EXTRA = "Landroid/content/Intent;->getIntExtra(Ljava/lang/String;I)I";
+
+    static final String ANDROIDX_FRAGMENT = "Landroidx/fragment/app/Fragment;";
+    static final Set<String> DIALOG_FRAGMENT_LISTENERS =
+        Set.of("Landroid/content/DialogInterface$OnDismissListener;", "Landroid/content/DialogInterface$OnCancelListener;");
+
+    /** androidx's DialogFragment: a Fragment that listens for both dismiss and cancel and keeps its dialog in mDialog. */
+    static boolean dialogFragment(ClassDef cls) {
+        if (!ANDROIDX_FRAGMENT.equals(cls.getSuperclass())) return false;
+        var listeners = new HashSet<String>();
+        for (var i : cls.getInterfaces()) listeners.add(i.toString());
+        if (!listeners.equals(DIALOG_FRAGMENT_LISTENERS)) return false;
+        for (Field f : cls.getFields())
+            if (f.getName().equals("mDialog") && f.getType().equals("Landroid/app/Dialog;") && !AccessFlags.STATIC.isSet(f.getAccessFlags())) return true;
+        return false;
+    }
+
+    /** Right after onStart's one Dialog.show(), on what it last read from its own mDialog, or -1. Mirrors MenuBlur.kt's menuBlurSite. */
+    static int menuBlurSite(Method method) {
+        if (!method.getName().equals("onStart") || !"V".equals(method.getReturnType()) || method.getParameterTypes().size() != 0
+            || AccessFlags.STATIC.isSet(method.getAccessFlags())) return -1;
+        var code = instructions(method);
+        int at = -1;
+        for (int i = 0; i < code.size(); i++) {
+            if (code.get(i).getOpcode() != Opcode.INVOKE_VIRTUAL || !"Landroid/app/Dialog;->show()V".equals(ref(code.get(i)))) continue;
+            if (at >= 0) return -1;
+            at = i;
+        }
+        if (at < 0 || at + 1 >= code.size() || mediaTargets(method).contains(at + 1)) return -1;
+        int dialog = ((FiveRegisterInstruction) code.get(at)).getRegisterC();
+        int read = -1;
+        for (int i = at - 1; i >= 0; i--) if (mediaWrites(code.get(i), dialog)) { read = i; break; }
+        if (read < 0 || code.get(read).getOpcode() != Opcode.IGET_OBJECT) return -1;
+        int self = parameterRegister(method, 0);
+        if (!(code.get(read) instanceof TwoRegisterInstruction get) || get.getRegisterB() != self) return -1;
+        if (!(((ReferenceInstruction) code.get(read)).getReference() instanceof FieldReference field)
+            || !field.getDefiningClass().equals(method.getDefiningClass()) || !field.getName().equals("mDialog")
+            || !field.getType().equals("Landroid/app/Dialog;")) return -1;
+        for (int i = 0; i < read; i++) if (mediaWrites(code.get(i), self)) return -1;
+        return at + 1;
+    }
+
+    /** menu_blur: DialogFragment's onStart, while exactly one class has the DialogFragment shape. Mirrors MenuBlur.kt. */
+    static List<Method> menuBlur(List<ClassDef> classes) {
+        var fragments = new ArrayList<ClassDef>();
+        for (var cls : classes) if (dialogFragment(cls)) fragments.add(cls);
+        if (fragments.size() != 1) return List.of();
+        var sites = new ArrayList<Method>();
+        for (var method : fragments.get(0).getMethods()) if (menuBlurSite(method) >= 0) sites.add(method);
+        return sites.size() == 1 ? sites : List.of();
+    }
 
     /**
      * Special contacts: PresenceItem's constructor, when it's plain (no try, no landing, one return-void last, no
@@ -9650,6 +9701,7 @@ public class CompatReport {
         found.get("gallery_to_chat").addAll(galleryToChatHooks(classes));
         found.get("instant_gallery").addAll(instantGallery(classes));
         found.get("special_contacts").addAll(specialContacts(classes));
+        found.get("menu_blur").addAll(menuBlur(classes));
         customFontHooks(classes).forEach((key, methods) -> found.get(key).addAll(methods));
         // Every viewer method with an entry point's name is checked, whatever its signature, and one that doesn't match
         // leaves the control unresolved, as findControls in ControlHooks.kt clears it then.

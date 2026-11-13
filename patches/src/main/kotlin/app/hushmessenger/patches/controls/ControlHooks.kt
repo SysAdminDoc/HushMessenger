@@ -247,6 +247,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(EXTERNAL_GALLERY).addAll(findExternalGallery(classes))
     found.getValue(INSTANT_GALLERY).addAll(findInstantGallery(classes))
     found.getValue(SPECIAL_CONTACTS).addAll(findSpecialContacts(classes))
+    found.getValue(MENU_BLUR).addAll(findMenuBlur(classes))
     found.getValue(GALLERY_TEMP_FILE).addAll(findGalleryTempFile(classes))
     found.getValue(GALLERY_TO_CHAT).addAll(findGalleryToChat(classes))
     for ((hook, methods) in findCustomFont(classes)) found.getValue(hook).addAll(methods)

@@ -382,7 +382,7 @@ final class SettingsText {
         ENGLISH.put("quick_privacy", "Privacy");
         ENGLISH.put("quick_privacy_help", "Stops the uploads that tell Meta how you use Messenger, your advertising ID included.");
         ENGLISH.put("quick_iphone", "iPhone look");
-        ENGLISH.put("quick_iphone_help", "Puts a Chats title at the top of your chat list in place of the wordmark and keeps the search bar under it, the way Messenger looks on an iPhone. Restart Messenger to see it.");
+        ENGLISH.put("quick_iphone_help", "Puts a Chats title at the top of your chat list in place of the wordmark, keeps the search bar under it and blurs the screen behind menus (Android 12 or newer), the way Messenger looks on an iPhone. Restart Messenger to see it.");
         ENGLISH.put("quick_iphone_words", "Chats");
         ENGLISH.put("quick_defaults", "Back to defaults");
         ENGLISH.put("quick_defaults_help", "Turns every control off. Pause and the theme stay as they are.");

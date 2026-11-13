@@ -200,6 +200,7 @@ internal val PROFILE_347415354 = ControlProfile(
             "LX/AJ2;->A03(Landroid/content/Context;LX/0XT;Lcom/facebook/auth/usersession/FbUserSession;LX/0LH;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/50E;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/6eW;Lcom/google/common/collect/ImmutableList\$Builder;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIZZZZZZ)Ljava/lang/Object;",
         ),
         "mark_read_click" to setOf("LX/CeA;->onClick(Landroid/view/View;)V"),
+        "menu_blur" to setOf("LX/0AL;->onStart()V"),
         "menu_settings" to setOf(
             "LX/8wE;->A1j()V", "LX/TGN;->BYp(LX/0Lz;)Ljava/util/ArrayList;", "LX/VMa;->onClick(Landroid/view/View;)V",
             "LX/cSh;->DqM(LX/4n7;I)V", "LX/cSj;->A0J(Ljava/util/List;)V",
@@ -497,6 +498,7 @@ internal val PROFILE_347415280 = ControlProfile(
             "LX/AJ7;->A03(Landroid/content/Context;LX/0XS;Lcom/facebook/auth/usersession/FbUserSession;LX/0LG;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/4zZ;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/6fE;Lcom/google/common/collect/ImmutableList\$Builder;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIZZZZZZ)Ljava/lang/Object;",
         ),
         "mark_read_click" to setOf("LX/CeK;->onClick(Landroid/view/View;)V"),
+        "menu_blur" to setOf("LX/0AL;->onStart()V"),
         "menu_settings" to setOf(
             "LX/8x0;->A1j()V", "LX/HUo;->BYt(LX/0Ly;)Ljava/util/ArrayList;", "LX/HWE;->onClick(Landroid/view/View;)V",
             "LX/TDX;->DqT(LX/4mS;I)V", "LX/TDg;->A0J(Ljava/util/List;)V",
@@ -794,6 +796,7 @@ internal val PROFILE_347415302 = ControlProfile(
             "LX/AJ2;->A03(Landroid/content/Context;LX/0XT;Lcom/facebook/auth/usersession/FbUserSession;LX/0LH;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/50E;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/6eW;Lcom/google/common/collect/ImmutableList\$Builder;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIZZZZZZ)Ljava/lang/Object;",
         ),
         "mark_read_click" to setOf("LX/CeA;->onClick(Landroid/view/View;)V"),
+        "menu_blur" to setOf("LX/0AL;->onStart()V"),
         "menu_settings" to setOf(
             "LX/8wE;->A1j()V", "LX/TGL;->BYp(LX/0Lz;)Ljava/util/ArrayList;", "LX/VMY;->onClick(Landroid/view/View;)V",
             "LX/cSh;->DqM(LX/4n7;I)V", "LX/cSj;->A0J(Ljava/util/List;)V",
@@ -1091,6 +1094,7 @@ internal val PROFILE_347415262 = ControlProfile(
             "LX/AL1;->A03(Landroid/content/Context;LX/0Xc;Lcom/facebook/auth/usersession/FbUserSession;LX/0LM;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/50k;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/6fg;Lcom/google/common/collect/ImmutableList\$Builder;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIZZZZZZ)Ljava/lang/Object;",
         ),
         "mark_read_click" to setOf("LX/Ch1;->onClick(Landroid/view/View;)V"),
+        "menu_blur" to setOf("LX/0AL;->onStart()V"),
         "menu_settings" to setOf(
             "LX/8xZ;->A1j()V", "LX/T3F;->BYv(LX/0M4;)Ljava/util/ArrayList;", "LX/TDa;->Dqm(LX/4nd;I)V",
             "LX/TDl;->A0J(Ljava/util/List;)V", "LX/VAW;->onClick(Landroid/view/View;)V",

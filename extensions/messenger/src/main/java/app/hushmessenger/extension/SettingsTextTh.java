@@ -287,7 +287,7 @@ final class SettingsTextTh {
         {"quick_privacy", "โหมดความเป็นส่วนตัว (Privacy)"},
         {"quick_privacy_help", "หยุดการอัปโหลดข้อมูลที่บอก Meta ว่าคุณใช้งาน Messenger อย่างไร รวมถึง Advertising ID ของคุณ"},
         {"quick_iphone", "หน้าตาแบบ iPhone"},
-        {"quick_iphone_help", "แสดงหัวข้อ \"แชท\" ที่ด้านบนแทนโลโก้ Messenger และคงแถบค้นหาไว้ด้านล่างเหมือนหน้าตาของ Messenger บน iPhone ต้องเริ่มต้น Messenger ใหม่"},
+        {"quick_iphone_help", "แสดงหัวข้อ \"แชท\" ที่ด้านบนแทนโลโก้ Messenger คงแถบค้นหาไว้ด้านล่าง และเบลอหน้าจอด้านหลังเมนู (Android 12 ขึ้นไป) เหมือนหน้าตาของ Messenger บน iPhone ต้องเริ่มต้น Messenger ใหม่"},
         {"quick_iphone_words", "แชท"},
         {"quick_defaults", "คืนค่าเริ่มต้น"},
         {"quick_defaults_help", "ปิดการควบคุมทุกตัว สถานะหยุดชั่วคราวและธีมจะคงเดิม"},
@@ -743,3 +743,5 @@ final class SettingsTextTh {
         {"custom_font.description", "แทนที่ฟอนต์ของ Meta ด้วยฟอนต์ของโทรศัพท์คุณ หรือไฟล์ฟอนต์ .ttf หรือ .otf ที่คุณเลือก พร้อมการปรับขนาดและตำแหน่ง เริ่มต้น Messenger ใหม่หลังจากเปลี่ยน"},
     };
 }
+        {"menu_blur.title", "เบลอด้านหลังเมนู"},
+        {"menu_blur.description", "ทำให้หน้าจอด้านหลังเมนูที่ขึ้นมาเมื่อกดค้างที่แชท รวมถึงเมนูและแผ่นป๊อปอัปอื่นๆ ของ Messenger เบลอ เหมือนบน iPhone ต้องใช้ Android 12 ขึ้นไป หากโทรศัพท์ปิดการเบลออยู่ (โหมดประหยัดแบตเตอรี่อาจปิดได้) หน้าจอจะมืดลงเหมือนเดิม"},

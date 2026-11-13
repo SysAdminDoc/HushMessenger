@@ -87,6 +87,7 @@
         <meta-data android:name="hush.feature.avatar_shape" android:value="true" />
         <meta-data android:name="hush.feature.home_header" android:value="true" />
         <meta-data android:name="hush.feature.custom_font" android:value="true" />
+        <meta-data android:name="hush.feature.menu_blur" android:value="true" />
         <provider android:name="app.hushmessenger.extension.SettingsProvider" android:authorities="${applicationId}.hush.settings" android:exported="false" />
         <activity android:name="app.hushmessenger.extension.SettingsActivity" android:icon="@android:drawable/ic_menu_preferences" android:exported="true" android:excludeFromRecents="true" />
         <provider android:name="app.hushmessenger.extension.CameraProvider" android:authorities="${applicationId}.hush.camera" android:exported="false" android:grantUriPermissions="true" />

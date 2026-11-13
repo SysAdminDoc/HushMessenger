@@ -287,7 +287,7 @@ final class SettingsTextTr {
         {"quick_privacy", "Gizlilik"},
         {"quick_privacy_help", "Messenger'ı nasıl kullandığını Meta'ya bildiren yüklemeleri, reklam kimliğin de dahil, durdurur."},
         {"quick_iphone", "iPhone görünümü"},
-        {"quick_iphone_help", "Sohbet listenin üstüne yazı logosu yerine Sohbetler başlığı koyar ve arama çubuğunu altında tutar, tıpkı Messenger'ın iPhone'daki görünümü gibi. Görmek için Messenger'ı yeniden başlat."},
+        {"quick_iphone_help", "Sohbet listenin üstüne yazı logosu yerine Sohbetler başlığı koyar, arama çubuğunu altında tutar ve menülerin arkasındaki ekranı bulanıklaştırır (Android 12 veya daha yenisi), tıpkı Messenger'ın iPhone'daki görünümü gibi. Görmek için Messenger'ı yeniden başlat."},
         {"quick_iphone_words", "Sohbetler"},
         {"quick_defaults", "Varsayılanlara dön"},
         {"quick_defaults_help", "Tüm kontrolleri kapatır. Duraklatma ve tema olduğu gibi kalır."},
@@ -743,3 +743,5 @@ final class SettingsTextTr {
         {"custom_font.description", "Messenger'ın metnini Meta'nın yazı tipi yerine telefonunun yazı tipiyle ya da aşağıdan seçtiğin bir .ttf veya .otf yazı tipi dosyasıyla gösterir. Bu yazı tipini büyütüp küçültebilir, yukarı veya aşağı taşıyabilirsin. Emojiler değişmez. Değişikliği görmek için Messenger'ı yeniden başlat."},
     };
 }
+        {"menu_blur.title", "Menülerin arkasını bulanıklaştır"},
+        {"menu_blur.description", "Bir sohbete basılı tuttuğunda açılan menünün ve Messenger'ın diğer açılır menülerinin ve sayfalarının arkasındaki ekranı iPhone'daki gibi bulanıklaştırır. Android 12 veya daha yenisi gerekir. Telefonunda bulanıklık kapalıysa (pil tasarrufu bunu kapatabilir) ekran eskisi gibi kararır."},
