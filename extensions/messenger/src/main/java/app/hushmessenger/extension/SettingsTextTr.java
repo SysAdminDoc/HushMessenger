@@ -473,6 +473,8 @@ final class SettingsTextTr {
         {"message_log_button_help", "Yeni mesaj düğmesinin yanına bir saat koyar. Kaydı açmak için ona dokun."},
         {"message_log_menu_row", "Menü sekmesinde satır"},
         {"message_log_menu_row_help", "Messenger'ın Menü sekmesinde Ayarlar'ın altına Mesaj kaydı satırını ekler. Kaydı açmak için ona dokun."},
+        {"message_log_chat_row", "Sohbet menüsünde satır"},
+        {"message_log_chat_row_help", "Bir sohbete basılı tuttuğunda açılan menüye Mesaj kaydı satırını ekler. Kaydı yalnızca o sohbetle açmak için ona dokun."},
         {"auto_reply_edit", "Yanıtları düzenle"},
         {"auto_reply_title", "Otomatik yanıtlar"},
         {"auto_reply_hint", "Yanıtlar yukarıdan aşağıya denenir. Eşleşen ilk yanıt gönderilir."},
@@ -741,7 +743,7 @@ final class SettingsTextTr {
         {"home_header.description", "Sohbet listesinin üstüne, Messenger'ın yazı logosu yerine kendi yazını veya resmini koyar. Yazıyı yaz veya resmi aşağıdan seç. İkisi de yoksa yazı logosu kalır. Değişikliği görmek için Messenger'ı yeniden başlat."},
         {"custom_font.title", "Kendi yazı tipini kullan"},
         {"custom_font.description", "Messenger'ın metnini Meta'nın yazı tipi yerine telefonunun yazı tipiyle ya da aşağıdan seçtiğin bir .ttf veya .otf yazı tipi dosyasıyla gösterir. Bu yazı tipini büyütüp küçültebilir, yukarı veya aşağı taşıyabilirsin. Emojiler değişmez. Değişikliği görmek için Messenger'ı yeniden başlat."},
-    };
-}
         {"menu_blur.title", "Menülerin arkasını bulanıklaştır"},
         {"menu_blur.description", "Bir sohbete basılı tuttuğunda açılan menünün ve Messenger'ın diğer açılır menülerinin ve sayfalarının arkasındaki ekranı iPhone'daki gibi bulanıklaştırır. Android 12 veya daha yenisi gerekir. Telefonunda bulanıklık kapalıysa (pil tasarrufu bunu kapatabilir) ekran eskisi gibi kararır."},
+    };
+}

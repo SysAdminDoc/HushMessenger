@@ -685,8 +685,9 @@ val hideShareStoryPatch = controlPatch("share_story", "Hide Your story when shar
     SHARE_STORY, SHARE_STORY_TARGET)
 @Suppress("unused")
 val keepMessageLogPatch = controlPatch("message_log", "Keep a message log",
-    "Saves each message when its notification arrives, so you can still read it if it's unsent, and marks the ones that were. Works in end-to-end encrypted chats too. Stays on your phone. A clock next to the new message button in Chats can open the log too. Log chats that don't notify, under it, adds muted and restricted chats without notifying you.", "Privacy",
-    MESSAGE_LOG, UNSENT_RECALL, UNSENT_CLEAR, MESSAGE_LOG_BUTTON, MESSAGE_LOG_CLICK, QUIET_LOG_CHECK, QUIET_LOG_DROP)
+    "Saves each message when its notification arrives, so you can still read it if it's unsent, and marks the ones that were. Works in end-to-end encrypted chats too. Stays on your phone. A clock next to the new message button in Chats can open the log too, and so can a row in the menu you get when you press and hold a chat, which opens just that chat's messages. Log chats that don't notify, under it, adds muted and restricted chats without notifying you.", "Privacy",
+    MESSAGE_LOG, UNSENT_RECALL, UNSENT_CLEAR, MESSAGE_LOG_BUTTON, MESSAGE_LOG_CLICK, QUIET_LOG_CHECK, QUIET_LOG_DROP,
+    HIDDEN_CHAT_LIST, HIDDEN_CHAT_ROW, HIDDEN_CHAT_TAP)
 @Suppress("unused")
 val autoReplyPatch = controlPatch("auto_reply", "Auto reply",
     "Answers messages with replies you write in HushMessenger settings, when they have words you pick or any message at all. Replies go out through Messenger's own notification reply, encrypted chats too, at most once every five minutes per chat.", "Conversations")
@@ -784,11 +785,11 @@ val homeHeaderPatch = controlPatch("home_header", "Your own home header",
 val customFontPatch = controlPatch("custom_font", "Use your own font",
     "Shows Messenger's text in your phone's font instead of Meta's, or in a .ttf or .otf file you pick in HushMessenger settings. Emoji don't change. Restart Messenger after changing it.",
     "Theme", "font_layout", "font_repository", "font_roboto", "font_by_name", "font_input")
-private var anonymousStoriesApplied = false
 @Suppress("unused")
 val menuBlurPatch = controlPatch("menu_blur", "Blur behind menus",
     "Blurs the screen behind the menu you get when you press and hold a chat, and behind Messenger's other pop-up menus and sheets, like on an iPhone. Needs Android 12 or newer. When your phone has blur off, the screen darkens like it always did.",
     "Theme", MENU_BLUR)
+private var anonymousStoriesApplied = false
 
 private val anonymousStoriesResources = resourcePatch(description = "Record HushMessenger capability: anonymous_stories") {
     dependsOn(settingsResources)

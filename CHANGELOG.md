@@ -12,6 +12,7 @@
 - `Blur behind menus` is a new switch under Theme. When you press and hold a chat, the chat list behind the menu blurs like it does on an iPhone, and so does the screen behind Messenger's other pop-up menus and sheets. It needs Android 12 or newer, and a phone with blur turned off (battery saver does that on some) just darkens the screen like before. The `iPhone look` quick setup turns it on too. Experimental, and it starts off. Refs #162.
 - The switches for the menu you get when you press and hold a chat moved out of Inbox into their own Chat menu group, both in HushMessenger settings and in Morphe's patch list. Inbox had gotten long.
 - The message log keeps up to 20,000 messages now, up from 5,000. Refs #172.
+- `Row in the chat menu`, under `Keep a message log`, adds Message log to the menu you get when you press and hold a chat. Tap it and the log opens on just that chat's messages, and `All chats` takes you back to everything. It starts off. Refs #172.
 - The settings screen is in Turkish now. Refs #160.
 - The settings screen is in Thai now, translated by MangaThatsFine. Refs #166.
 - With `Spoof package version` on, parts of Messenger still saw the raised version number, like its background job check and its crash reports, because they get the app's version info in roundabout ways the patch didn't follow. Now every place Messenger reads a version number asks first whose it is. Messenger's own answers with the build you patched, and other apps keep the number Android gives. Refs #120.

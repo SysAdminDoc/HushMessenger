@@ -570,6 +570,8 @@ final class SettingsText {
         ENGLISH.put("message_log_button_help", "Puts a clock next to the new message button. Tap it to open the log.");
         ENGLISH.put("message_log_menu_row", "Row in the Menu tab");
         ENGLISH.put("message_log_menu_row_help", "Adds Message log under Settings in Messenger's Menu tab. Tap it to open the log.");
+        ENGLISH.put("message_log_chat_row", "Row in the chat menu");
+        ENGLISH.put("message_log_chat_row_help", "Adds Message log to the menu you get when you press and hold a chat. Tap it to open the log on just that chat.");
         ENGLISH.put("auto_reply_edit", "Edit replies");
         ENGLISH.put("auto_reply_title", "Auto replies");
         ENGLISH.put("auto_reply_hint", "Replies are tried from top to bottom. The first matching reply is sent.");

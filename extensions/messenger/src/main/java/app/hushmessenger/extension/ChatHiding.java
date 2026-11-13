@@ -74,7 +74,7 @@ public final class ChatHiding {
     }
 
     /**
-     * The chat menu's finished rows, which also carry Special contacts' Track this person. Messenger pads the list with
+     * The chat menu's finished rows, which also carry Special contacts' Track this person and the Message log row. Messenger pads the list with
      * empty slots up to the count it expected, but its menu reads every entry and usually gets a full list, so each row
      * takes the first empty slot when there is one and goes on the end otherwise.
      */
@@ -106,6 +106,7 @@ public final class ChatHiding {
             }
         }
         SpecialContacts.menuRow(target, summary, rows);
+        MessageLogButton.chatRow(target, summary, rows);
     }
 
     /** A row of ours in the first empty slot, or on the end of a full menu. */
@@ -123,6 +124,15 @@ public final class ChatHiding {
                 if (target != null) SpecialContacts.menuTapped(target, menu);
             } catch (Throwable error) {
                 Settings.hookFailed(SpecialContacts.KEY, "Can't track this person", error);
+            }
+            return true;
+        }
+        if (id == MessageLogButton.CHAT_ROW_ID) {
+            try {
+                Route target = route();
+                if (target != null) MessageLogButton.chatTapped(target, menu);
+            } catch (Throwable error) {
+                Settings.hookFailed(MessageLog.KEY, "Can't open the message log", error);
             }
             return true;
         }

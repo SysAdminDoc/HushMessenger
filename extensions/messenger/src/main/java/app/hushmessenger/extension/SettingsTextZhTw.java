@@ -473,6 +473,8 @@ final class SettingsTextZhTw {
         {"message_log_button_help", "在新訊息按鈕旁放一個時鐘，點一下就能開啟紀錄。"},
         {"message_log_menu_row", "「選單」分頁中的項目"},
         {"message_log_menu_row_help", "在 Messenger「選單」分頁的設定下方加入訊息紀錄，點一下就能開啟紀錄。"},
+        {"message_log_chat_row", "聊天室選單中的項目"},
+        {"message_log_chat_row_help", "在長按聊天室時跳出的選單中加入訊息紀錄，點一下就能開啟該聊天室的紀錄。"},
         {"auto_reply_edit", "編輯回覆"},
         {"auto_reply_title", "自動回覆"},
         {"auto_reply_hint", "依序由上至下比對回覆規則，傳送第一則符合條件的回覆。"},
@@ -741,7 +743,7 @@ final class SettingsTextZhTw {
         {"home_header.description", "以你自己的文字或圖片取代聊天清單頂端的 Messenger 字標。在下方輸入文字或選擇圖片。兩者都沒有時，會保留原本的字標。重新啟動 Messenger 後即可看到變更。"},
         {"custom_font.title", "使用自訂字型"},
         {"custom_font.description", "以手機字型取代 Meta 字型來顯示 Messenger 文字，也可使用下方選取的 .ttf 或 .otf 字型檔案，並調整大小或上下位置。表情符號不受影響。重新啟動 Messenger 後即可看到變更。"},
-    };
-}
         {"menu_blur.title", "選單背景模糊"},
         {"menu_blur.description", "長按聊天室時跳出的選單，以及 Messenger 其他的彈出選單和面板，背後的畫面會像 iPhone 一樣變模糊。需要 Android 12 以上。如果手機關閉了模糊效果（省電模式可能會關閉），畫面會像以前一樣變暗。"},
+    };
+}

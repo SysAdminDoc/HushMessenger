@@ -91,7 +91,7 @@ public class ChatHidingTest {
         }
     }
 
-    public enum Icons { MUTE, EYE, EYE_CROSS, STAR, STAR_CROSS }
+    public enum Icons { MUTE, EYE, EYE_CROSS, STAR, STAR_CROSS, CLOCK }
 
     /** Messenger's row builder: a factory, an id, an icon, a title and a description, then a static build. */
     public static final class Builder {

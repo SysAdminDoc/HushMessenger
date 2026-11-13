@@ -278,11 +278,13 @@ class HideChatsTest {
         assertEquals(before, code.drop(6))
     }
 
-    // Hide chosen chats and Special contacts both take the walk, the menu's rows and its tap; whichever patches first puts them in.
+    // Hide chosen chats, Special contacts and the message log's chat menu row (#172) all take the walk, the menu's rows
+    // and its tap; whichever patches first puts them in.
     @Test fun hideChosenChatsAndSpecialContactsShareTheirHooksAndEachGoesInOnce() {
         val shared = setOf(HIDDEN_CHAT_LIST, HIDDEN_CHAT_ROW, HIDDEN_CHAT_TAP)
         assertEquals(shared, controlHooks.getValue(HIDDEN_CHATS))
         assertEquals(shared + SPECIAL_CONTACTS, controlHooks.getValue(SPECIAL_CONTACTS))
+        assertTrue(controlHooks.getValue("message_log").containsAll(shared + MESSAGE_LOG))
         val classes = hiddenChatsFixture()
         val route = resolveHiddenChatRoute(classes.method(INBOX_ITEMS_HOOK), classes.method(SYNTHETIC_HIDDEN_ROW), classes.method(SYNTHETIC_HIDDEN_TAP), classes.classOf())
         val methods = mapOf(HIDDEN_CHAT_LIST to listOf(walkItems()), HIDDEN_CHAT_ROW to listOf(hiddenRow()), HIDDEN_CHAT_TAP to listOf(hiddenTap()))
@@ -291,6 +293,9 @@ class HideChatsTest {
         stub.writeHiddenChatRoute(route)
         val first = methods.mapValues { (_, m) -> m.single().code() } + (HIDDEN_CHAT_ROUTE to stub.code())
         injectControl(SPECIAL_CONTACTS, methods)
+        stub.writeHiddenChatRoute(route)
+        assertEquals(first, methods.mapValues { (_, m) -> m.single().code() } + (HIDDEN_CHAT_ROUTE to stub.code()))
+        injectControl("message_log", methods)
         stub.writeHiddenChatRoute(route)
         assertEquals(first, methods.mapValues { (_, m) -> m.single().code() } + (HIDDEN_CHAT_ROUTE to stub.code()))
         for ((hook, call) in listOf(HIDDEN_CHAT_LIST to HIDDEN_ROWS_CALL, HIDDEN_CHAT_ROW to HIDE_ROW_CALL, HIDDEN_CHAT_TAP to HIDE_TAP_CALL)) {

@@ -431,6 +431,7 @@ public final class Settings {
         owners.put(QuietChats.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.MENU_KEY, MessageLog.KEY);
+        owners.put(MessageLogButton.CHAT_KEY, MessageLog.KEY);
         owners.put(StoryEye.KEY, StoryEye.OWNER);
         SUB_SWITCHES = Collections.unmodifiableMap(owners);
     }
@@ -1434,9 +1435,9 @@ public final class Settings {
         if (HIDE_ICON_SHORTCUTS.equals(key) || HIDE_LOGO_PRESS.equals(key)) return anotherWayIn(key);
         // Android 9 lets no app add to the shared Recordings or Music folders without the storage permission.
         if (VoiceMessages.KEY.equals(key) || SaveVoiceMenu.KEY.equals(key) || CallRecording.KEY.equals(key)) return Build.VERSION.SDK_INT >= 29;
-        if (!"bubbles".equals(key)) return true;
         // Windows blur what's behind them from Android 12.
         if (MenuBlur.KEY.equals(key)) return Build.VERSION.SDK_INT >= 31;
+        if (!"bubbles".equals(key)) return true;
         if (Build.VERSION.SDK_INT < 30) return false;
         if (!HostScreens.started) HostScreens.initializeLate();
         return !HostScreens.failed && bubbleRoutes;

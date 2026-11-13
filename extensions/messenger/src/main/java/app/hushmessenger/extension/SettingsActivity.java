@@ -389,8 +389,12 @@ public final class SettingsActivity extends Activity {
             else if (state.getBoolean("message_log_open")) root.post(messageLog::showMessageLog);
         }
         messageLog.adopt(getLastNonConfigurationInstance(), root);
-        // The top bar's message log button opens straight into the log. Coming back from a rotation or a restart keeps whatever was showing.
-        if (state == null && getIntent().getBooleanExtra(MessageLogSheet.OPEN_EXTRA, false)) root.post(messageLog::showMessageLog);
+        // The top bar's message log button opens straight into the log, and a chat menu's row into that chat's part of it.
+        // Coming back from a rotation or a restart keeps whatever was showing.
+        if (state == null && getIntent().getBooleanExtra(MessageLogSheet.OPEN_EXTRA, false)) {
+            String thread = getIntent().getStringExtra(MessageLogSheet.THREAD_EXTRA);
+            root.post(() -> messageLog.showMessageLog(thread));
+        }
     }
 
     @Override public Object onRetainNonConfigurationInstance() { return messageLog.retained(); }
@@ -1034,6 +1038,8 @@ public final class SettingsActivity extends Activity {
                     ui.add(wrapper, controlRow(MessageLogButton.KEY, text.format(MessageLogButton.KEY), text.format("message_log_button_help"), false), 8);
                     if (Settings.installed.contains("menu_row")) ui.add(wrapper, controlRow(MessageLogButton.MENU_KEY,
                         text.format(MessageLogButton.MENU_KEY), text.format("message_log_menu_row_help"), false), 8);
+                    ui.add(wrapper, controlRow(MessageLogButton.CHAT_KEY, text.format(MessageLogButton.CHAT_KEY),
+                        text.format("message_log_chat_row_help"), false), 8);
                     ui.add(wrapper, controlRow(QuietChats.KEY, text.format(QuietChats.KEY), text.format("message_log_quiet_chats_help"), false), 8);
                     if (Build.VERSION.SDK_INT >= 29) ui.add(wrapper, controlRow(MessageLog.SAVE_EXPIRING,
                         text.format(MessageLog.SAVE_EXPIRING), text.format("message_log_save_expiring_help"), false), 8);
@@ -1396,7 +1402,8 @@ public final class SettingsActivity extends Activity {
             : CameraActivity.ASK.equals(key) ? CameraActivity.KEY
             : StoryEye.KEY.equals(key) ? StoryEye.OWNER
             : Settings.KEEP_BADGES.containsValue(key) ? Settings.TAB_BADGES
-            : MessageLogButton.KEY.equals(key) || MessageLogButton.MENU_KEY.equals(key) || MessageLog.SAVE_EXPIRING.equals(key)
+            : MessageLogButton.KEY.equals(key) || MessageLogButton.MENU_KEY.equals(key) || MessageLogButton.CHAT_KEY.equals(key)
+                || MessageLog.SAVE_EXPIRING.equals(key)
                 || QuietChats.KEY.equals(key) ? MessageLog.KEY
             : QuietCalls.CHOSEN_ONLY.equals(key) || key.startsWith(QuietCalls.CHAT_PREFIX) ? QuietCalls.KEY : key;
         String section = "";
@@ -2067,6 +2074,7 @@ public final class SettingsActivity extends Activity {
                 inside += " " + text.get(MessageLogButton.KEY) + " " + text.get("message_log_button_help");
                 if (Settings.installed.contains("menu_row"))
                     inside += " " + text.get(MessageLogButton.MENU_KEY) + " " + text.get("message_log_menu_row_help");
+                inside += " " + text.get(MessageLogButton.CHAT_KEY) + " " + text.get("message_log_chat_row_help");
                 inside += " " + text.get(QuietChats.KEY) + " " + text.get("message_log_quiet_chats_help");
                 if (Build.VERSION.SDK_INT >= 29) inside += " " + text.get(MessageLog.SAVE_EXPIRING) + " " + text.get("message_log_save_expiring_help");
             }

@@ -2996,7 +2996,7 @@
         },
         {
             "name": "Keep a message log",
-            "description": "Saves each message when its notification arrives, so you can still read it if it's unsent, and marks the ones that were. Works in end-to-end encrypted chats too. Stays on your phone. A clock next to the new message button in Chats can open the log too. Log chats that don't notify, under it, adds muted and restricted chats without notifying you. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "Saves each message when its notification arrives, so you can still read it if it's unsent, and marks the ones that were. Works in end-to-end encrypted chats too. Stays on your phone. A clock next to the new message button in Chats can open the log too, and so can a row in the menu you get when you press and hold a chat, which opens just that chat's messages. Log chats that don't notify, under it, adds muted and restricted chats without notifying you. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Privacy",
             "dependencies": [

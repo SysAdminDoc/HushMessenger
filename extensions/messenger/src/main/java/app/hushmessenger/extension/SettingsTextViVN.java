@@ -473,6 +473,8 @@ final class SettingsTextViVN {
         {"message_log_button_help", "Thêm một đồng hồ cạnh nút tin nhắn mới. Chạm vào để mở nhật ký."},
         {"message_log_menu_row", "Mục trong tab 'Menu'"},
         {"message_log_menu_row_help", "Thêm mục Nhật ký tin nhắn dưới Cài đặt trong tab 'Menu' của Messenger. Chạm vào để mở nhật ký."},
+        {"message_log_chat_row", "Mục trong menu đoạn chat"},
+        {"message_log_chat_row_help", "Thêm mục Nhật ký tin nhắn vào menu hiện ra khi bạn nhấn giữ một đoạn chat. Chạm vào để mở nhật ký của riêng đoạn chat đó."},
         {"auto_reply_edit", "Chỉnh sửa phản hồi"},
         {"auto_reply_title", "Phản hồi tự động"},
         {"auto_reply_hint", "So khớp các quy tắc phản hồi theo thứ tự từ trên xuống dưới, gửi phản hồi đầu tiên đáp ứng điều kiện."},
@@ -741,7 +743,7 @@ final class SettingsTextViVN {
         {"home_header.description", "Đặt chữ hoặc ảnh của riêng bạn ở đầu danh sách đoạn chat, thay cho logo chữ của Messenger. Nhập chữ hoặc chọn ảnh bên dưới. Nếu không có cả hai, logo chữ vẫn được giữ. Khởi động lại Messenger để thấy thay đổi."},
         {"custom_font.title", "Sử dụng phông chữ tùy chỉnh"},
         {"custom_font.description", "Thay thế phông chữ Meta bằng phông chữ điện thoại để hiển thị văn bản Messenger, hoặc bạn có thể sử dụng tệp phông chữ .ttf hoặc .otf được chọn bên dưới, đồng thời điều chỉnh kích thước hoặc vị trí lên xuống. Biểu tượng cảm xúc không bị ảnh hưởng. Có thể thấy thay đổi sau khi khởi động lại Messenger."},
-    };
-}
         {"menu_blur.title", "Làm mờ phía sau menu"},
         {"menu_blur.description", "Làm mờ màn hình phía sau menu hiện ra khi bạn nhấn giữ một đoạn chat, cùng các menu và bảng bật lên khác của Messenger, giống như trên iPhone. Cần Android 12 trở lên. Nếu điện thoại đang tắt hiệu ứng làm mờ (chế độ tiết kiệm pin có thể tắt nó), màn hình sẽ tối đi như trước."},
+    };
+}
