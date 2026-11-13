@@ -390,7 +390,7 @@ final class SettingsTextZhTw {
         {"message_log_title", "訊息紀錄"},
         {"message_log_hint", "只儲存在此手機上。最新訊息列在最前面。"},
         {"message_log_hint_by_chat", "只儲存在此手機上。有最新訊息的聊天室列在最前面。"},
-        {"message_log_retention", "停用訊息紀錄後，將停止新增紀錄。已儲存的訊息會保留到你清除紀錄或超過你選擇的時間為止。紀錄最多保留 5,000 則。"},
+        {"message_log_retention", "停用訊息紀錄後，將停止新增紀錄。已儲存的訊息會保留到你清除紀錄或超過你選擇的時間為止。紀錄最多保留 20,000 則。"},
         {"message_log_loading", "載入中…"},
         {"message_log_empty", "尚未儲存任何訊息。"},
         {"message_log_empty_on", "通知中含有文字的新訊息會顯示在這裡。聊天室中的既有訊息不會加入紀錄。"},

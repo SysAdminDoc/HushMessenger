@@ -33,7 +33,7 @@ import java.util.function.Function;
 final class MessageLogSheet {
     /** Opens the log's sheet over settings, for the shortcut beside Messenger's new-chat button. */
     static final String OPEN_EXTRA = "hush_open_message_log";
-    /** Cards built at a time. A full log is 5,000 of them, and building 500 at once froze the screen for two seconds. */
+    /** Cards built at a time. A full log is 20,000 of them, and building 500 at once froze the screen for two seconds. */
     static final int MESSAGE_LOG_PAGE = 20;
     /** The All, Direct and Groups buttons, in MessageLogSearch's order. */
     private static final String[] KINDS = {"message_log_kind_all", "message_log_kind_direct", "message_log_kind_groups"};

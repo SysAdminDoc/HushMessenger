@@ -390,7 +390,7 @@ final class SettingsTextTr {
         {"message_log_title", "Mesaj kaydı"},
         {"message_log_hint", "Yalnızca bu telefonda saklanır. En yeniler önce."},
         {"message_log_hint_by_chat", "Yalnızca bu telefonda saklanır. En son mesajı olan sohbetler önce."},
-        {"message_log_retention", "Kaydı kapatmak yeni girişleri durdurur. Kayıtlı mesajlar sen temizleyene veya seçtiğin süre dolana kadar kalır. Kayıt en fazla 5.000 mesaj tutar."},
+        {"message_log_retention", "Kaydı kapatmak yeni girişleri durdurur. Kayıtlı mesajlar sen temizleyene veya seçtiğin süre dolana kadar kalır. Kayıt en fazla 20.000 mesaj tutar."},
         {"message_log_loading", "Yükleniyor..."},
         {"message_log_empty", "Henüz saklanan mesaj yok."},
         {"message_log_empty_on", "Bildirim metni olan yeni mesajlar burada görünür. Sohbetlerinde zaten olan mesajlar eklenmez."},

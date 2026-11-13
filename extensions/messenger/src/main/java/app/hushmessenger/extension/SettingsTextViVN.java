@@ -390,7 +390,7 @@ final class SettingsTextViVN {
         {"message_log_title", "Nhật ký tin nhắn"},
         {"message_log_hint", "Chỉ được lưu trên điện thoại này. Tin nhắn mới nhất được liệt kê ở đầu."},
         {"message_log_hint_by_chat", "Chỉ được lưu trên điện thoại này. Cuộc trò chuyện có tin nhắn mới nhất được liệt kê ở đầu."},
-        {"message_log_retention", "Sau khi tắt nhật ký tin nhắn, việc thêm nhật ký mới sẽ dừng lại. Tin nhắn đã lưu sẽ được giữ lại cho đến khi bạn xóa nhật ký hoặc quá thời gian bạn đã chọn. Nhật ký giữ tối đa 5.000 tin nhắn."},
+        {"message_log_retention", "Sau khi tắt nhật ký tin nhắn, việc thêm nhật ký mới sẽ dừng lại. Tin nhắn đã lưu sẽ được giữ lại cho đến khi bạn xóa nhật ký hoặc quá thời gian bạn đã chọn. Nhật ký giữ tối đa 20.000 tin nhắn."},
         {"message_log_loading", "Đang tải…"},
         {"message_log_empty", "Chưa có tin nhắn nào được lưu."},
         {"message_log_empty_on", "Tin nhắn mới có chứa văn bản trong thông báo sẽ được hiển thị ở đây. Các tin nhắn hiện có trong phòng chat sẽ không được thêm vào nhật ký."},

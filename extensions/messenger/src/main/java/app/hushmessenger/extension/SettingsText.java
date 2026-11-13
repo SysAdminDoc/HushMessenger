@@ -487,7 +487,7 @@ final class SettingsText {
         ENGLISH.put("message_log_title", "Message log");
         ENGLISH.put("message_log_hint", "Saved only on this phone. Newest first.");
         ENGLISH.put("message_log_hint_by_chat", "Saved only on this phone. Chats with the latest message first.");
-        ENGLISH.put("message_log_retention", "Turning the log off stops new entries. Saved messages stay until you clear them or they pass the time you picked. The log keeps up to 5,000.");
+        ENGLISH.put("message_log_retention", "Turning the log off stops new entries. Saved messages stay until you clear them or they pass the time you picked. The log keeps up to 20,000.");
         ENGLISH.put("message_log_loading", "Loading...");
         ENGLISH.put("message_log_empty", "No messages kept yet.");
         ENGLISH.put("message_log_empty_on", "New messages with notification text will appear here. Messages already in your chats aren't added.");
