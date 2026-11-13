@@ -239,6 +239,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         ORIGINAL_VIDEO -> validateOriginalVideo()
         SYSTEM_CAMERA -> validateSystemCamera()
         EXTERNAL_GALLERY -> validateExternalGallery()
+        INSTANT_GALLERY -> validateInstantGallery()
         GALLERY_TEMP_FILE -> validateGalleryTempFile()
         GALLERY_TO_CHAT -> validateGalleryToChat()
         in CUSTOM_FONT_HOOKS -> validateCustomFont(hook)
@@ -365,6 +366,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             ORIGINAL_VIDEO -> method.injectOriginalVideo()
             SYSTEM_CAMERA -> method.injectSystemCamera()
             EXTERNAL_GALLERY -> method.injectExternalGallery()
+            INSTANT_GALLERY -> method.injectInstantGallery()
             GALLERY_TEMP_FILE -> method.injectGalleryTempFile()
             GALLERY_TO_CHAT -> method.injectGalleryToChat()
             in CUSTOM_FONT_HOOKS -> method.injectCustomFont(hook)
@@ -721,6 +723,10 @@ val externalGalleryPatch = controlPatch("external_gallery", "Open your gallery a
 @Suppress("unused")
 val galleryToChatPatch = controlPatch("gallery_to_chat", "Put gallery picks in the chat",
     "With Open your gallery app on, what you pick goes into the chat's message box the way Messenger's own gallery puts it there, instead of the editor or the Send to sheet. Nothing goes out until you tap Send.", "Photos and videos")
+@Suppress("unused")
+val instantGalleryPatch = controlPatch("instant_gallery", "Send Instants from your gallery",
+    "Tapping the shutter in Instants opens your phone's gallery app instead of taking a photo. The photo you pick goes out as the Instant, cut to the camera's shape. Back out of the gallery and nothing is sent.", "Photos and videos",
+    manifest = { addInstantGallery() })
 @Suppress("unused")
 val stopAnalyticsUploadsPatch = controlPatch("analytics_uploads", "Stop analytics uploads",
     "Stops the background services Messenger uses to upload usage statistics. It still records them on your phone, and they can upload after you turn this off.", "Privacy")

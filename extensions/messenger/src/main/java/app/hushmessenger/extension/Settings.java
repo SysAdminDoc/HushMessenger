@@ -1420,6 +1420,11 @@ public final class Settings {
             Context context = appContext;
             return context == null || GalleryPicker.screenIntent(context) != null;
         }
+        // The same for the Instants pick screen.
+        if (InstantGallery.KEY.equals(key)) {
+            Context context = appContext;
+            return context == null || InstantGallery.screenIntent(context) != null;
+        }
         // A Root Mount install keeps the stock manifest, with no search screen.
         if (LocalChatSearch.KEY.equals(key)) {
             Context context = appContext;

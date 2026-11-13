@@ -163,6 +163,7 @@ hook inbox_search_bar LX/1u9;->A0D(Landroid/view/ViewGroup;)V
 hook inbox_search_bar LX/23z;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
 hook inbox_search_bar LX/2LK;->A0L()Z
 hook inbox_search_bar LX/2dK;->render(LX/28H;)LX/1FW;
+hook instant_gallery LX/MNd;->EKq(LX/2rp;)V
 hook instants_button LX/1u9;->A0G(LX/1u9;)V
 hook instants_button LX/Yxa;->A0Z(LX/Yxa;)V
 hook keep_unsent LX/Xaj;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V

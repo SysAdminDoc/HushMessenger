@@ -7,6 +7,7 @@
 - `Hide Stories tab` is a new switch under Navigation. It takes the Stories tab out of the bottom bar after a restart, like the People and Notifications switches do. Refs #170.
 - `Use the phone's camera app` has a new `Ask photo or video` option. The camera button asks which one you want and opens your camera app for it, so you can record videos too. Refs #168.
 - `Mark as seen button` is a new switch under `View stories anonymously`. Stories you open get an eye with a slash through it while you're watching anonymously. Tap it and you show up in that story's viewer list, the way you would without the patch. The next story stays anonymous. Refs #169.
+- `Send Instants from your gallery` is a new switch under Photos and videos. Tapping the shutter in Instants opens your gallery app, and the photo you pick goes out as the Instant, cut to the camera's shape. Back out of the gallery and nothing is sent. Refs #161.
 - The settings screen is in Turkish now. Refs #160.
 - The settings screen is in Thai now, translated by MangaThatsFine. Refs #166.
 - With `Spoof package version` on, parts of Messenger still saw the raised version number, like its background job check and its crash reports, because they get the app's version info in roundabout ways the patch didn't follow. Now every place Messenger reads a version number asks first whose it is. Messenger's own answers with the build you patched, and other apps keep the number Android gives. Refs #120.

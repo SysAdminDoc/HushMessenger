@@ -49,6 +49,7 @@
         <meta-data android:name="hush.feature.system_camera" android:value="true" />
         <meta-data android:name="hush.feature.external_gallery" android:value="true" />
         <meta-data android:name="hush.feature.gallery_to_chat" android:value="true" />
+        <meta-data android:name="hush.feature.instant_gallery" android:value="true" />
         <meta-data android:name="hush.feature.text_style" android:value="true" />
         <meta-data android:name="hush.feature.quiet_calls" android:value="true" />
         <meta-data android:name="hush.feature.car_messages" android:value="true" />
@@ -90,6 +91,7 @@
         <provider android:name="app.hushmessenger.extension.CameraProvider" android:authorities="${applicationId}.hush.camera" android:exported="false" android:grantUriPermissions="true" />
         <activity android:name="app.hushmessenger.extension.CameraActivity" android:exported="false" android:excludeFromRecents="true" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden" />
         <activity android:name="app.hushmessenger.extension.GalleryActivity" android:exported="false" android:excludeFromRecents="true" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden" />
+        <activity android:name="app.hushmessenger.extension.InstantPickActivity" android:exported="false" android:excludeFromRecents="true" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden" />
         <activity android:name="app.hushmessenger.extension.LocalSearchActivity" android:exported="false" android:excludeFromRecents="true" android:process=":hushsearch" android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden" android:windowSoftInputMode="adjustResize" />
         <activity android:name="app.hushmessenger.extension.RestartActivity" android:exported="false" android:excludeFromRecents="true" android:noHistory="true" android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity android:name="app.hushmessenger.extension.TextStyleActivity" android:exported="false" android:excludeFromRecents="true" android:theme="@android:style/Theme.Translucent.NoTitleBar" />

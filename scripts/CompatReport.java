@@ -224,6 +224,7 @@ public class CompatReport {
         PATCHES.put("Use the phone's camera app", List.of("system_camera"));
         PATCHES.put("Open your gallery app", List.of("external_gallery", "gallery_temp_file"));
         PATCHES.put("Put gallery picks in the chat", List.of("gallery_to_chat"));
+        PATCHES.put("Send Instants from your gallery", List.of("instant_gallery"));
         PATCHES.put("Stop analytics uploads", List.of("analytics_uploads"));
         PATCHES.put("Stop ad attribution uploads", List.of("attribution_uploads"));
         PATCHES.put("Stop inbox and ad link logging", List.of("ad_events"));
@@ -4386,6 +4387,101 @@ public class CompatReport {
         if (editors.size() != 1) return List.of();
         var tray = trayGate(classes);
         return tray == null ? List.of() : List.of(items, editors.get(0), tray);
+    }
+
+    /** What the Instants capture callback logs when copying the photo runs out of memory, and the recipe it builds. */
+    static final String INSTANT_PHOTO_COPY = "photo_copy";
+    static final String INSTANT_CAPTURE_RECIPE = "Lcom/facebook/messaging/quicksnap/creation/engine/model/MsgrQuicksnapCaptureRecipe;";
+
+    /**
+     * The Instants camera's capture callback, when every one found has its photo reads where Send Instants from your
+     * gallery swaps them: 1 to 4 reads, none a landing, each read and the instruction after it inside one try that
+     * catches Exception, nothing landing on the first instruction, and three locals for the entry check. Mirrors
+     * findInstantGallery and validateInstantGallery in InstantGallery.kt.
+     */
+    static List<Method> instantGallery(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) for (var m : cls.getMethods()) if (isInstantCapture(m)) found.add(m);
+        for (var m : found) if (!instantProved(m)) return List.of();
+        return found;
+    }
+
+    static boolean isInstantCapture(Method m) {
+        if (AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"V".equals(m.getReturnType()) || m.getParameterTypes().size() != 1 ||
+            !m.getParameterTypes().get(0).toString().startsWith("L") || m.getImplementation() == null) return false;
+        boolean copy = false, recipe = false;
+        for (var i : m.getImplementation().getInstructions()) {
+            if (!(i instanceof ReferenceInstruction r)) continue;
+            if (r.getReference() instanceof StringReference s && INSTANT_PHOTO_COPY.equals(s.getString())) copy = true;
+            if (r.getReference() instanceof MethodReference mr && INSTANT_CAPTURE_RECIPE.equals(mr.getDefiningClass()) &&
+                "<init>".equals(mr.getName())) recipe = true;
+        }
+        return copy && recipe;
+    }
+
+    static List<Integer> instantArguments(Instruction i) {
+        var out = new ArrayList<Integer>();
+        if (i instanceof RegisterRangeInstruction range)
+            for (int r = range.getStartRegister(); r < range.getStartRegister() + range.getRegisterCount(); r++) out.add(r);
+        else if (i instanceof FiveRegisterInstruction five) {
+            int[] all = {five.getRegisterC(), five.getRegisterD(), five.getRegisterE(), five.getRegisterF(), five.getRegisterG()};
+            for (int k = 0; k < five.getRegisterCount(); k++) out.add(all[k]);
+        }
+        return out;
+    }
+
+    /**
+     * Where each photo read ends: a static getter handed only the result that returns a Bitmap, or (armv7) the result's
+     * own no-argument Object getter cast to a Bitmap in the register it moved into.
+     */
+    static List<Integer> instantFrameReads(Method m) {
+        var code = instructions(m);
+        int result = parameterRegister(m, 1);
+        String resultType = m.getParameterTypes().get(0).toString();
+        var reads = new ArrayList<Integer>();
+        for (int i = 0; i + 1 < code.size(); i++) {
+            var call = code.get(i);
+            if (!(call instanceof ReferenceInstruction r) || !(r.getReference() instanceof MethodReference mr)) continue;
+            if (!instantArguments(call).equals(List.of(result)) || code.get(i + 1).getOpcode() != Opcode.MOVE_RESULT_OBJECT) continue;
+            int moved = register(code.get(i + 1));
+            var op = call.getOpcode();
+            if ((op == Opcode.INVOKE_STATIC || op == Opcode.INVOKE_STATIC_RANGE) && "Landroid/graphics/Bitmap;".equals(mr.getReturnType()) &&
+                refParams(mr).equals(List.of(resultType))) {
+                reads.add(i + 2);
+                continue;
+            }
+            boolean instance = op == Opcode.INVOKE_VIRTUAL || op == Opcode.INVOKE_VIRTUAL_RANGE || op == Opcode.INVOKE_INTERFACE ||
+                op == Opcode.INVOKE_INTERFACE_RANGE;
+            if (!instance || !resultType.equals(mr.getDefiningClass()) || !mr.getParameterTypes().isEmpty() ||
+                !"Ljava/lang/Object;".equals(mr.getReturnType())) continue;
+            if (i + 2 < code.size() && code.get(i + 2).getOpcode() == Opcode.CHECK_CAST && register(code.get(i + 2)) == moved &&
+                "Landroid/graphics/Bitmap;".equals(typeOf(code.get(i + 2)))) reads.add(i + 3);
+        }
+        return reads;
+    }
+
+    static boolean instantProved(Method m) {
+        var impl = m.getImplementation();
+        if (impl.getRegisterCount() - 2 < 3) return false;
+        var reads = instantFrameReads(m);
+        if (reads.isEmpty() || reads.size() > 4) return false;
+        var code = instructions(m);
+        int[] addresses = new int[code.size() + 1];
+        for (int i = 0; i < code.size(); i++) addresses[i + 1] = addresses[i] + code.get(i).getCodeUnits();
+        var landings = mediaTargets(m);
+        if (landings.contains(0)) return false;
+        for (int at : reads) {
+            if (landings.contains(at) || at >= code.size()) return false;
+            boolean caught = false;
+            for (var block : impl.getTryBlocks()) {
+                int start = block.getStartCodeAddress(), end = start + block.getCodeUnitCount();
+                boolean inside = addresses[at - 1] >= start && addresses[at - 1] < end && addresses[at] >= start && addresses[at] < end;
+                if (inside && block.getExceptionHandlers().stream().anyMatch(h ->
+                    h.getExceptionType() == null || "Ljava/lang/Exception;".equals(h.getExceptionType()))) caught = true;
+            }
+            if (!caught) return false;
+        }
+        return true;
     }
 
     static final String COROUTINE_STEP = "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;";
@@ -9487,6 +9583,7 @@ public class CompatReport {
         found.get("external_gallery").addAll(externalGalleryHooks(classes, stringTables));
         found.get("gallery_temp_file").addAll(galleryTempFileHooks(classes));
         found.get("gallery_to_chat").addAll(galleryToChatHooks(classes));
+        found.get("instant_gallery").addAll(instantGallery(classes));
         customFontHooks(classes).forEach((key, methods) -> found.get(key).addAll(methods));
         // Every viewer method with an entry point's name is checked, whatever its signature, and one that doesn't match
         // leaves the control unresolved, as findControls in ControlHooks.kt clears it then.
@@ -10053,7 +10150,7 @@ public class CompatReport {
      */
     static final Set<String> NEEDS_A_LOCAL = Set.of("ad_events", "ai_commands", "ai_fab", "ai_mention_rows", "ai_menu", "ai_search",
         "ai_search_chip", "ai_summary", "allow_screenshot", "analytics_uploads", "app_icons", "app_themes", "attribution_uploads", "bubbles", "call_recording", "delta_unsent",
-        "disappearing_swipe", "external_gallery", "facebook", "facebook_profile", "font_by_name", "font_repository", "growth_notes", "growth_story_card", "instants_button", "keep_unsent",
+        "disappearing_swipe", "external_gallery", "facebook", "facebook_profile", "font_by_name", "font_repository", "growth_notes", "growth_story_card", "instant_gallery", "instants_button", "keep_unsent",
         "mqtt_telemetry", "nearby_scans", "original_photo", "people_story", "phone_id_sync", "people_tab", "recent_media", "stories", "system_camera",
         "tab_badges", "typing", "unsent_indicator", "unsent_recall");
 

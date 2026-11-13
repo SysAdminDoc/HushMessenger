@@ -481,6 +481,7 @@ final class SettingsText {
         ENGLISH.put("system_camera_ask_help", "The camera button asks whether you want a photo or a video, then opens your camera app for it.");
         ENGLISH.put("gallery_missing", "No gallery app found that can pick photos.");
         ENGLISH.put("gallery_failed", "Your gallery couldn't finish the selection. Try again.");
+        ENGLISH.put("instant_gallery_shutter", "Tap the shutter to send your photo.");
         ENGLISH.put("message_log_clear", "Clear log");
         ENGLISH.put("message_log_close", "Close");
         ENGLISH.put("message_log_title", "Message log");
