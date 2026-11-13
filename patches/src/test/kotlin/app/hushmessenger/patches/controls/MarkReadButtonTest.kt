@@ -580,7 +580,10 @@ class MarkReadButtonTest {
             val code = apk.fileName.toString().substringBeforeLast(".apk").substringAfterLast('-')
             activeProfile = controlProfileFor(code)
             val dex = DexFileFactory.loadDexContainer(apk.toFile(), Opcodes.forApi(35))
-            val (bars, clicks) = findMarkReadButton(dex.dexEntryNames.flatMap { dex.getEntry(it)!!.dexFile.classes })
+            val classes = dex.dexEntryNames.flatMap { dex.getEntry(it)!!.dexFile.classes }
+            // The 280 family loads the button's strings from Redex tables, which findControls reads before any finder runs.
+            activeStringTables = redexStringTables(classes)
+            val (bars, clicks) = findMarkReadButton(classes)
             assertEquals(activeProfile.hooks.getValue(MARK_READ_BAR), bars.map { it.hookId() }.toSet(), code)
             assertEquals(activeProfile.hooks.getValue(MARK_READ_CLICK), clicks.map { it.hookId() }.toSet(), code)
             val recipe = markReadRecipe!!

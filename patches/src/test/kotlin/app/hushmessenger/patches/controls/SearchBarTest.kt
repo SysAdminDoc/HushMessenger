@@ -376,13 +376,28 @@ class SearchBarTest {
             val check = searchIconCheck(readers) { type -> classes.firstOrNull { it.type == type } }
             searchIconReader(searchIconStub(), check)
             val sites = readers.associate { it.hookId() to assertSearchBarInjected(it, "$code ${it.hookId()}") }
-            // The chat list's builder is also where Hide joined community chats edits, by instruction index. It asks the
-            // shared getter, so it carries no flag read of its own and the two edits never meet.
+            // The chat list's builder is also where Hide joined community chats edits, by instruction index.
             val contract = assertNotNull(findCommunityInbox(classes), code)
-            assertTrue(contract.render.hookId() !in sites, code)
-            // 348 and 341 read the list at 60. Family B inlines the section builder's helpers, which puts the read at 76.
-            assertEquals(if (contract.render.implementation!!.registerCount == 22) 76 else 60,
-                MutableMethod(contract.render).communityReadSite(contract.capturedScope), code)
+            val render = contract.render
+            val read = MutableMethod(render).communityReadSite(contract.capturedScope)
+            // 587 reads the list at 63 in its 21-register builder, and at 76 where the section builder's helpers are inlined.
+            assertEquals(if (render.implementation!!.registerCount == 22) 76 else 63, read, code)
+            fun community(method: MutableMethod) =
+                injectCommunityInbox(contract, method, communityStub(JOINED_COMMUNITY_ROW), communityStub(MAIN_INBOX_SCOPE))
+            if (render.hookId() in sites) {
+                // Where the builder reads the icon flag itself, the swap keeps every index and the community edit goes in
+                // after the list read, so the two land the same in either order.
+                val searchFirst = MutableMethod(render).apply { injectSearchBar() }
+                assertEquals(read, searchFirst.communityReadSite(contract.capturedScope), code)
+                community(searchFirst)
+                val communityFirst = MutableMethod(render)
+                community(communityFirst)
+                assertEquals(sites.getValue(render.hookId()), communityFirst.searchIconSites().size, code)
+                communityFirst.injectSearchBar()
+                fun Instruction.kind() = if (opcode == Opcode.GOTO_16 || opcode == Opcode.GOTO_32) Opcode.GOTO else opcode
+                fun Instruction.named() = kind() to (this as? ReferenceInstruction)?.reference?.toString()
+                assertEquals(searchFirst.code().map { it.named() }, communityFirst.code().map { it.named() }, code)
+            }
         }
     }
 }
