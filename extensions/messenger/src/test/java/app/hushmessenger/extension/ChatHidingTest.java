@@ -91,7 +91,7 @@ public class ChatHidingTest {
         }
     }
 
-    public enum Icons { MUTE, EYE, EYE_CROSS }
+    public enum Icons { MUTE, EYE, EYE_CROSS, STAR, STAR_CROSS }
 
     /** Messenger's row builder: a factory, an id, an icon, a title and a description, then a static build. */
     public static final class Builder {
@@ -157,7 +157,8 @@ public class ChatHidingTest {
     private static final String SUMMARY = TEST + "Summary;";
     private static final String BUILDER = TEST + "Builder;";
     private static final String SUPPLIER = TEST + "Supplier;";
-    private static final String ROUTE = String.join("|",
+    /** Also Special contacts' route: its menu row and tap ride on these same hooks. */
+    static final String ROUTE = String.join("|",
         SUMMARY + "->key:" + TEST + "Key;",
         SUMMARY + "->name:Ljava/lang/String;",
         SUMMARY + "->people:" + TEST + "Rows;",

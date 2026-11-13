@@ -8,6 +8,8 @@
 - `Use the phone's camera app` has a new `Ask photo or video` option. The camera button asks which one you want and opens your camera app for it, so you can record videos too. Refs #168.
 - `Mark as seen button` is a new switch under `View stories anonymously`. Stories you open get an eye with a slash through it while you're watching anonymously. Tap it and you show up in that story's viewer list, the way you would without the patch. The next story stays anonymous. Refs #169.
 - `Send Instants from your gallery` is a new switch under Photos and videos. Tapping the shutter in Instants opens your gallery app, and the photo you pick goes out as the Instant, cut to the camera's shape. Back out of the gallery and nothing is sent. Refs #161.
+- `Special contacts` is a new switch under Chat menu. Press and hold a chat with one person and tap Track this person. From then on HushMessenger writes down when they come online, go offline, type to you and change their name, using only what Messenger already shows you. Settings lists everyone you track with the last thing seen, their history, and buttons to clear it or stop tracking. You can track up to 50 people per account, and it all stays on this phone. It's experimental and starts off. Refs #163.
+- The switches for the menu you get when you press and hold a chat moved out of Inbox into their own Chat menu group, both in HushMessenger settings and in Morphe's patch list. Inbox had gotten long.
 - The message log keeps up to 20,000 messages now, up from 5,000. Refs #172.
 - The settings screen is in Turkish now. Refs #160.
 - The settings screen is in Thai now, translated by MangaThatsFine. Refs #166.

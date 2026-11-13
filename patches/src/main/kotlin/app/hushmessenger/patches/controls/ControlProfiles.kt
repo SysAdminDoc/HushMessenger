@@ -271,6 +271,11 @@ internal val PROFILE_347415354 = ControlProfile(
             "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V",
         ),
         "share_story_target" to setOf("LX/4Dk;->onActivityCreated(Landroid/os/Bundle;)V"),
+        "special_contacts" to setOf(
+            "Lcom/facebook/presence/DefaultPresenceManager;->A0F(Landroid/content/Intent;Lcom/facebook/presence/DefaultPresenceManager;)V",
+            "Lcom/facebook/presence/PresenceManagerV2;->A0B(Landroid/content/Intent;Lcom/facebook/presence/PresenceManagerV2;)V",
+            "Lcom/facebook/presence/model/PresenceItem;-><init>(Lcom/facebook/user/model/UserKey;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;IJZ)V",
+        ),
         "stories" to setOf("LX/1ut;->A00()Z"),
         "story_hold" to setOf("LX/TAY;->DwC()V"),
         "story_ring" to setOf(
@@ -563,6 +568,11 @@ internal val PROFILE_347415280 = ControlProfile(
             "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V",
         ),
         "share_story_target" to setOf("LX/4D6;->onActivityCreated(Landroid/os/Bundle;)V"),
+        "special_contacts" to setOf(
+            "Lcom/facebook/presence/DefaultPresenceManager;->A0F(Landroid/content/Intent;Lcom/facebook/presence/DefaultPresenceManager;)V",
+            "Lcom/facebook/presence/PresenceManagerV2;->A0B(Landroid/content/Intent;Lcom/facebook/presence/PresenceManagerV2;)V",
+            "Lcom/facebook/presence/model/PresenceItem;-><init>(Lcom/facebook/user/model/UserKey;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;IJZ)V",
+        ),
         "stories" to setOf("LX/1ut;->A00()Z"),
         "story_hold" to setOf("LX/Mdd;->DwJ()V"),
         "story_ring" to setOf(
@@ -855,6 +865,11 @@ internal val PROFILE_347415302 = ControlProfile(
             "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V",
         ),
         "share_story_target" to setOf("LX/4Dk;->onActivityCreated(Landroid/os/Bundle;)V"),
+        "special_contacts" to setOf(
+            "Lcom/facebook/presence/DefaultPresenceManager;->A0F(Landroid/content/Intent;Lcom/facebook/presence/DefaultPresenceManager;)V",
+            "Lcom/facebook/presence/PresenceManagerV2;->A0B(Landroid/content/Intent;Lcom/facebook/presence/PresenceManagerV2;)V",
+            "Lcom/facebook/presence/model/PresenceItem;-><init>(Lcom/facebook/user/model/UserKey;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;IJZ)V",
+        ),
         "stories" to setOf("LX/1ut;->A00()Z"),
         "story_hold" to setOf("LX/TAW;->DwC()V"),
         "story_ring" to setOf(
@@ -1147,6 +1162,11 @@ internal val PROFILE_347415262 = ControlProfile(
             "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V",
         ),
         "share_story_target" to setOf("LX/4ED;->onActivityCreated(Landroid/os/Bundle;)V"),
+        "special_contacts" to setOf(
+            "Lcom/facebook/presence/DefaultPresenceManager;->A0F(Landroid/content/Intent;Lcom/facebook/presence/DefaultPresenceManager;)V",
+            "Lcom/facebook/presence/PresenceManagerV2;->A0B(Landroid/content/Intent;Lcom/facebook/presence/PresenceManagerV2;)V",
+            "Lcom/facebook/presence/model/PresenceItem;-><init>(Lcom/facebook/user/model/UserKey;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;IJZ)V",
+        ),
         "stories" to setOf("LX/1vJ;->A00()Z"),
         "story_hold" to setOf("LX/Sxp;->Dwc()V"),
         "story_ring" to setOf(

@@ -32,6 +32,7 @@ public class ToastLengthTest {
         "settings_open_failed", "settings_open_instead", "message_log_restored", "message_log_restore_failed",
         "import_same", "save_voice_menu_failed", "home_header_saved", "home_header_removed", "home_header_remove_failed",
         "home_header_not_picture", "home_header_unreadable", "home_header_not_saved", "home_header_busy", "home_header_timeout",
+        "special_contacts_tracked", "special_contacts_untracked", "special_contacts_full", "special_contacts_failed", "special_contacts_cleared",
     };
 
     @Test public void everyToastFitsOnTwoLines() {

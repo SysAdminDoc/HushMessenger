@@ -77,6 +77,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Hide Mark as read | Takes Mark as read out of the menu you get when you press and hold a chat, so you can't mark one read by accident. Mark as unread stays. |
 | Pin more chats | Lets you pin chats past Messenger's limit and puts Pin back on chats that don't offer it. Pins past the limit stay on this phone, so they won't show on your other devices. Experimental. |
 | Hide chosen chats | Adds Hide from chat list to the menu you get when you press and hold a chat. A hidden chat stays off your list when new messages come in, search still finds it, and you can unhide it in HushMessenger settings. Hiding stays on this phone and doesn't silence anything, so mute the chat in Messenger if you want it quiet. Experimental. |
+| Special contacts | Adds Track this person to the menu you get when you press and hold a chat with one person. HushMessenger then keeps a history of when they come online, go offline, type to you and change their name, from what Messenger already shows you. It stays on this phone, and you read it in HushMessenger settings. Experimental. |
 | Hide People tab | Hides the People tab in the bottom bar. Restart Messenger to see it go. |
 | Show People tab | Brings the People tab back to the bottom bar, right after Chats, on accounts where Messenger dropped it. Restart Messenger to see it. |
 | Hide Notifications tab | Hides the Notifications tab in the bottom bar. Restart Messenger to see it go. |

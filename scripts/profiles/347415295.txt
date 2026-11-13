@@ -237,6 +237,9 @@ hook screenshot_viewers Lcom/facebook/messaging/quicksnap/consumption/viewer/Msg
 hook share_story LX/OyU;->A8j()V
 hook share_story Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V
 hook share_story_target LX/4ED;->onActivityCreated(Landroid/os/Bundle;)V
+hook special_contacts Lcom/facebook/presence/DefaultPresenceManager;->A0F(Landroid/content/Intent;Lcom/facebook/presence/DefaultPresenceManager;)V
+hook special_contacts Lcom/facebook/presence/PresenceManagerV2;->A0B(Landroid/content/Intent;Lcom/facebook/presence/PresenceManagerV2;)V
+hook special_contacts Lcom/facebook/presence/model/PresenceItem;-><init>(Lcom/facebook/user/model/UserKey;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;IJZ)V
 hook stories LX/1vJ;->A00()Z
 hook story_hold LX/Sxp;->Dwc()V
 hook story_ring LX/33g;->onCreateMountContent(Landroid/content/Context;)Ljava/lang/Object;

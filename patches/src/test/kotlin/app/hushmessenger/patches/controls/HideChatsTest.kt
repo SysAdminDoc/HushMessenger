@@ -278,6 +278,29 @@ class HideChatsTest {
         assertEquals(before, code.drop(6))
     }
 
+    // Hide chosen chats and Special contacts both take the walk, the menu's rows and its tap; whichever patches first puts them in.
+    @Test fun hideChosenChatsAndSpecialContactsShareTheirHooksAndEachGoesInOnce() {
+        val shared = setOf(HIDDEN_CHAT_LIST, HIDDEN_CHAT_ROW, HIDDEN_CHAT_TAP)
+        assertEquals(shared, controlHooks.getValue(HIDDEN_CHATS))
+        assertEquals(shared + SPECIAL_CONTACTS, controlHooks.getValue(SPECIAL_CONTACTS))
+        val classes = hiddenChatsFixture()
+        val route = resolveHiddenChatRoute(classes.method(INBOX_ITEMS_HOOK), classes.method(SYNTHETIC_HIDDEN_ROW), classes.method(SYNTHETIC_HIDDEN_TAP), classes.classOf())
+        val methods = mapOf(HIDDEN_CHAT_LIST to listOf(walkItems()), HIDDEN_CHAT_ROW to listOf(hiddenRow()), HIDDEN_CHAT_TAP to listOf(hiddenTap()))
+        val stub = fixtureMethod(HIDDEN_CHAT_ROUTE, "const-string v0, \"\"\nreturn-object v0", 1, AccessFlags.STATIC.value)
+        injectControl(HIDDEN_CHATS, methods)
+        stub.writeHiddenChatRoute(route)
+        val first = methods.mapValues { (_, m) -> m.single().code() } + (HIDDEN_CHAT_ROUTE to stub.code())
+        injectControl(SPECIAL_CONTACTS, methods)
+        stub.writeHiddenChatRoute(route)
+        assertEquals(first, methods.mapValues { (_, m) -> m.single().code() } + (HIDDEN_CHAT_ROUTE to stub.code()))
+        for ((hook, call) in listOf(HIDDEN_CHAT_LIST to HIDDEN_ROWS_CALL, HIDDEN_CHAT_ROW to HIDE_ROW_CALL, HIDDEN_CHAT_TAP to HIDE_TAP_CALL)) {
+            assertEquals(1, methods.getValue(hook).single().code().count { (it as? ReferenceInstruction)?.reference?.toString() == call }, hook)
+        }
+        assertEquals(route.toString(), (stub.code()[0] as ReferenceInstruction).reference.toString())
+        // A stub that already holds some other route means the two halves disagree, so the patch stops.
+        assertFailsWith<PatchException> { stub.writeHiddenChatRoute(route.copy(key = "LX/0;->x:I")) }
+    }
+
     @Test fun aWalkRowListOrTapItCantUseIsRefusedBeforeAnyEdit() {
         val cases = mapOf(
             "the walk's list not a client filter's" to (HIDDEN_CHAT_LIST to walkItems(WALK_BODY.replace("invoke-interface {v4, v5, v1, v2}, $FILTER_CALL",

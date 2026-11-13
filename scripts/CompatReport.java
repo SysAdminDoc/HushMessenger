@@ -225,6 +225,7 @@ public class CompatReport {
         PATCHES.put("Open your gallery app", List.of("external_gallery", "gallery_temp_file"));
         PATCHES.put("Put gallery picks in the chat", List.of("gallery_to_chat"));
         PATCHES.put("Send Instants from your gallery", List.of("instant_gallery"));
+        PATCHES.put("Special contacts", List.of("special_contacts", "hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
         PATCHES.put("Stop analytics uploads", List.of("analytics_uploads"));
         PATCHES.put("Stop ad attribution uploads", List.of("attribution_uploads"));
         PATCHES.put("Stop inbox and ad link logging", List.of("ad_events"));
@@ -4387,6 +4388,70 @@ public class CompatReport {
         if (editors.size() != 1) return List.of();
         var tray = trayGate(classes);
         return tray == null ? List.of() : List.of(items, editors.get(0), tray);
+    }
+
+    static final String PRESENCE_ITEM = "Lcom/facebook/presence/model/PresenceItem;";
+    static final Set<String> PRESENCE_MANAGERS = Set.of("Lcom/facebook/presence/DefaultPresenceManager;", "Lcom/facebook/presence/PresenceManagerV2;");
+    static final List<String> PRESENCE_ITEM_PARAMS = List.of("Lcom/facebook/user/model/UserKey;", "Ljava/lang/Long;", "Ljava/lang/Long;", "Ljava/lang/String;",
+        "Ljava/lang/String;", "I", "J", "Z");
+    static final String PRESENCE_INT_EXTRA = "Landroid/content/Intent;->getIntExtra(Ljava/lang/String;I)I";
+
+    /**
+     * Special contacts: PresenceItem's constructor, when it's plain (no try, no landing, one return-void last, no
+     * parameter written), and each presence manager's typing handler, at least one, one per manager, none landing on its
+     * first instruction. Mirrors findSpecialContacts in SpecialContacts.kt.
+     */
+    static List<Method> specialContacts(List<ClassDef> classes) {
+        var presence = new ArrayList<Method>();
+        var typing = new ArrayList<Method>();
+        for (var cls : classes) {
+            if (!PRESENCE_ITEM.equals(cls.getType()) && !PRESENCE_MANAGERS.contains(cls.getType())) continue;
+            for (var m : cls.getMethods()) {
+                if (isPresenceItemInit(m)) presence.add(m);
+                if (isTypingHandler(m)) typing.add(m);
+            }
+        }
+        if (presence.size() != 1 || presenceReturn(presence.get(0)) < 0 || typing.isEmpty()) return List.of();
+        var managers = new HashSet<String>();
+        for (var m : typing) if (!managers.add(m.getDefiningClass()) || mediaTargets(m).contains(0)) return List.of();
+        var out = new ArrayList<Method>(presence);
+        out.addAll(typing);
+        return out;
+    }
+
+    static boolean isPresenceItemInit(Method m) {
+        if (!PRESENCE_ITEM.equals(m.getDefiningClass()) || !"<init>".equals(m.getName()) || !"V".equals(m.getReturnType()) ||
+            m.getImplementation() == null || AccessFlags.STATIC.isSet(m.getAccessFlags())) return false;
+        var params = new ArrayList<String>();
+        for (var p : m.getParameterTypes()) params.add(p.toString());
+        return params.equals(PRESENCE_ITEM_PARAMS);
+    }
+
+    /** The index of the constructor's one return-void when it's the last instruction and the code is plain, else -1. */
+    static int presenceReturn(Method m) {
+        var code = instructions(m);
+        if (code.isEmpty() || !m.getImplementation().getTryBlocks().isEmpty() || !mediaTargets(m).isEmpty()) return -1;
+        int last = code.size() - 1;
+        if (code.get(last).getOpcode() != Opcode.RETURN_VOID) return -1;
+        for (var i : code) if (i != code.get(last) && i.getOpcode() == Opcode.RETURN_VOID) return -1;
+        int first = parameterRegister(m, 1);
+        for (var i : code) for (int r = first; r < first + 9; r++) if (mediaWrites(i, r)) return -1;
+        return last;
+    }
+
+    static boolean isTypingHandler(Method m) {
+        if (!PRESENCE_MANAGERS.contains(m.getDefiningClass()) || !AccessFlags.STATIC.isSet(m.getAccessFlags()) ||
+            !"V".equals(m.getReturnType()) || m.getImplementation() == null) return false;
+        var params = new ArrayList<String>();
+        for (var p : m.getParameterTypes()) params.add(p.toString());
+        if (!params.equals(List.of("Landroid/content/Intent;", m.getDefiningClass()))) return false;
+        boolean state = false, user = false;
+        for (var i : instructions(m)) {
+            if (!(i instanceof ReferenceInstruction r)) continue;
+            if (i.getOpcode() == Opcode.INVOKE_VIRTUAL && PRESENCE_INT_EXTRA.equals(r.getReference().toString())) state = true;
+            if (i.getOpcode() == Opcode.CHECK_CAST && HIDDEN_USER_KEY.equals(r.getReference().toString())) user = true;
+        }
+        return state && user;
     }
 
     /** What the Instants capture callback logs when copying the photo runs out of memory, and the recipe it builds. */
@@ -9584,6 +9649,7 @@ public class CompatReport {
         found.get("gallery_temp_file").addAll(galleryTempFileHooks(classes));
         found.get("gallery_to_chat").addAll(galleryToChatHooks(classes));
         found.get("instant_gallery").addAll(instantGallery(classes));
+        found.get("special_contacts").addAll(specialContacts(classes));
         customFontHooks(classes).forEach((key, methods) -> found.get(key).addAll(methods));
         // Every viewer method with an entry point's name is checked, whatever its signature, and one that doesn't match
         // leaves the control unresolved, as findControls in ControlHooks.kt clears it then.
