@@ -528,7 +528,8 @@ class ExternalGalleryTest {
             activeProfile = controlProfileFor(code)
             val dex = DexFileFactory.loadDexContainer(apk.toFile(), Opcodes.forApi(35))
             val classes = dex.dexEntryNames.flatMap { dex.getEntry(it)!!.dexFile.classes }
-            val found = findExternalGallery(classes)
+            // The build's own string tables, as findControls hands them over: armv7 looks the gallery event up by key.
+            val found = findExternalGallery(classes, redexStringTables(classes))
             assertEquals(activeProfile.hooks.getValue(EXTERNAL_GALLERY), found.map { it.hookId() }.toSet(), code)
             validateControls(mapOf(EXTERNAL_GALLERY to found), setOf(EXTERNAL_GALLERY))
             // The composer plugin a chat's gallery button goes through, the older by-name handler, the launcher's start,
