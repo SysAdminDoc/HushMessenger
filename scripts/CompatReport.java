@@ -260,6 +260,7 @@ public class CompatReport {
         PATCHES.put("Bold and italic text", List.of("text_style"));
         PATCHES.put("Open settings from menu", List.of("menu_settings"));
         PATCHES.put("Keep chat pop-ups", List.of("chat_channel_keep", "chat_channel_raise"));
+        PATCHES.put("Fix videos in chat heads", List.of("chat_head_video"));
     }
 
     static final Set<String> ORIGINAL_PHOTO_HOOKS = Set.of(
@@ -4436,6 +4437,73 @@ public class CompatReport {
             || !field.getType().equals("Landroid/app/Dialog;")) return -1;
         for (int i = 0; i < read; i++) if (mediaWrites(code.get(i), self)) return -1;
         return at + 1;
+    }
+
+    static final Set<Opcode> CHAT_HEAD_MOVES = EnumSet.of(Opcode.MOVE_OBJECT, Opcode.MOVE_OBJECT_FROM16, Opcode.MOVE_OBJECT_16);
+
+    /**
+     * The video player's TextureView boolean: the only boolean its (Context, view, config) constructor reads from the
+     * config, tested by the next instruction, read from the parameter or its one copy. Mirrors ChatHeadVideo.kt.
+     */
+    static FieldReference chatHeadVideoFlag(Method method) {
+        if (!"<init>".equals(method.getName()) || !"V".equals(method.getReturnType()) ||
+            AccessFlags.STATIC.isSet(method.getAccessFlags()) || method.getImplementation() == null) return null;
+        var params = method.getParameterTypes().stream().map(CharSequence::toString).toList();
+        if (params.size() != 3 || !"Landroid/content/Context;".equals(params.get(0)) || !params.get(2).startsWith("L") ||
+            params.get(2).startsWith("Ljava/")) return null;
+        if (method.getImplementation().getRegisterCount() - 4 < 3) return null;
+        var code = instructions(method);
+        // The video library's shared default settings, a class Redex leaves unrenamed.
+        String settings = "Lcom/facebook/video/heroplayer/setting/HeroPlayerSetting;";
+        boolean player = false;
+        for (var i : code) {
+            if (i.getOpcode() == Opcode.SGET_OBJECT && i instanceof ReferenceInstruction r && r.getReference() instanceof FieldReference f &&
+                settings.equals(f.getDefiningClass()) && settings.equals(f.getType())) player = true;
+        }
+        if (!player) return null;
+        int read = -1;
+        for (int k = 0; k < code.size(); k++) {
+            if (code.get(k).getOpcode() == Opcode.IGET_BOOLEAN && code.get(k) instanceof ReferenceInstruction r &&
+                r.getReference() instanceof FieldReference f && params.get(2).equals(f.getDefiningClass())) {
+                if (read >= 0) return null;
+                read = k;
+            }
+        }
+        if (read < 0 || read + 1 >= code.size()) return null;
+        var get = (TwoRegisterInstruction) code.get(read);
+        var test = code.get(read + 1);
+        if (test.getOpcode() != Opcode.IF_EQZ || register(test) != get.getRegisterA()) return null;
+        int config = parameterRegister(method, 3), holder = get.getRegisterB();
+        if (!chatHeadWrites(code, read, config).isEmpty()) return null;
+        if (holder != config) {
+            var copies = chatHeadWrites(code, read, holder);
+            if (copies.size() != 1) return null;
+            var copy = code.get(copies.get(0));
+            if (!CHAT_HEAD_MOVES.contains(copy.getOpcode()) || ((TwoRegisterInstruction) copy).getRegisterB() != config) return null;
+        }
+        return (FieldReference) ((ReferenceInstruction) get).getReference();
+    }
+
+    static List<Integer> chatHeadWrites(List<Instruction> code, int before, int register) {
+        var at = new ArrayList<Integer>();
+        for (int k = 0; k < before; k++) if (writes(code.get(k), register)) at.add(k);
+        return at;
+    }
+
+    /** chat_head_video: the player's constructor, while exactly one has the shape and the config's boolean is writable. */
+    static List<Method> chatHeadVideo(List<ClassDef> classes) {
+        var players = new ArrayList<Method>();
+        for (var cls : classes) for (var m : cls.getMethods()) if ("<init>".equals(m.getName()) && chatHeadVideoFlag(m) != null) players.add(m);
+        if (players.size() != 1) return List.of();
+        var flag = chatHeadVideoFlag(players.get(0));
+        ClassDef config = null;
+        for (var cls : classes) if (cls.getType().equals(flag.getDefiningClass())) { config = cls; break; }
+        if (config == null) return List.of();
+        var fields = new ArrayList<Field>();
+        for (var f : config.getFields()) if (f.getName().equals(flag.getName()) && "Z".equals(f.getType())) fields.add(f);
+        if (fields.size() != 1) return List.of();
+        int locked = AccessFlags.STATIC.getValue() | AccessFlags.FINAL.getValue() | AccessFlags.PRIVATE.getValue();
+        return (fields.get(0).getAccessFlags() & locked) != 0 ? List.of() : players;
     }
 
     /** menu_blur: DialogFragment's onStart, while exactly one class has the DialogFragment shape. Mirrors MenuBlur.kt. */
@@ -9703,6 +9771,7 @@ public class CompatReport {
         found.get("instant_gallery").addAll(instantGallery(classes));
         found.get("special_contacts").addAll(specialContacts(classes));
         found.get("menu_blur").addAll(menuBlur(classes));
+        found.get("chat_head_video").addAll(chatHeadVideo(classes));
         customFontHooks(classes).forEach((key, methods) -> found.get(key).addAll(methods));
         // Every viewer method with an entry point's name is checked, whatever its signature, and one that doesn't match
         // leaves the control unresolved, as findControls in ControlHooks.kt clears it then.

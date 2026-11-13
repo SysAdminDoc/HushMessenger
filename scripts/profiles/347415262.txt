@@ -81,6 +81,7 @@ hook chat_animation Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Land
 hook chat_channel_keep LX/1ln;->A09(Landroid/app/NotificationChannel;Lcom/facebook/auth/usersession/FbUserSession;LX/1ln;Ljava/lang/String;IZ)Ljava/lang/String;
 hook chat_channel_raise LX/80g;->run()V
 hook chat_fragment LX/1i9;-><init>()V
+hook chat_head_video LX/bUY;-><init>(Landroid/content/Context;LX/bJT;LX/Za6;)V
 hook chat_inbox LX/1fH;-><init>()V
 hook chat_jump LX/1i9;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook chat_legacy LX/1i3;->onCreateAnimation(IZI)Landroid/view/animation/Animation;

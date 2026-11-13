@@ -741,6 +741,50 @@
             "options": []
         },
         {
+            "name": "Fix videos in chat heads",
+            "description": "Draws videos in a chat head like the rest of the chat instead of on a separate layer, which some phones showed as a black box that stayed on screen after the chat head closed. Videos in the app itself are left as they are.",
+            "default": true,
+            "category": "Fixes",
+            "dependencies": [
+                {
+                    "type": "BytecodePatch",
+                    "name": null,
+                    "description": "Load HushMessenger runtime controls",
+                    "dependencies": [
+                        {
+                            "type": "ResourcePatch",
+                            "name": null,
+                            "description": "Install HushMessenger settings",
+                            "dependencies": []
+                        }
+                    ]
+                }
+            ],
+            "compatiblePackages": [
+                {
+                    "packageName": "com.facebook.orca",
+                    "name": "Messenger",
+                    "description": null,
+                    "apkFileType": "APK",
+                    "appIconColor": "#0084FF",
+                    "signatures": [
+                        "911d604446084ca7f4760b775bfc160fa8702441240a7258645d7a72c4312d27",
+                        "e3f9e1e0cf99d0e56a055ba65e241b3399f7cea524326b0cdd6ec1327ed0fdc1"
+                    ],
+                    "targets": [
+                        {
+                            "version": "587.0.0.54.96",
+                            "versionCodes": null,
+                            "isExperimental": false,
+                            "minSdk": 28,
+                            "description": "Stock builds 347415262, 347415267, 347415268, 347415280, 347415281, 347415284, 347415285, 347415295, 347415299, 347415301, 347415302, 347415333, 347415337, 347415348, 347415350, 347415351, 347415352, 347415354 and 347415355; checked again during patching"
+                        }
+                    ]
+                }
+            ],
+            "options": []
+        },
+        {
             "name": "Fix videos that won't send",
             "description": "Messenger stops two kinds of video with \"Unable to send\". One is a video whose only sound is xHE-AAC, which Facebook and Instagram now use. The other is a Samsung screen recording whose recorder tag Messenger's media check rejects. Whether you share one into Messenger from another app or pick it in a chat, the sound is converted to regular AAC, or the tag is dropped, so it sends. The picture isn't touched. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
