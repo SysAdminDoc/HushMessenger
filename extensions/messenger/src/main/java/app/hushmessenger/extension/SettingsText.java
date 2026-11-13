@@ -50,6 +50,15 @@ final class SettingsText {
 
     String get(String id, Object... arguments) { return display(format(id, arguments)); }
 
+    /**
+     * A section heading in capitals. A translated heading takes its own language's capitals (a Turkish "Gizlilik" is
+     * "GİZLİLİK"), and English keeps English ones on every phone, so a Turkish or Azerbaijani phone never dots its I.
+     */
+    String heading(String id) {
+        String shown = get(id);
+        return shown.toUpperCase(translated.containsKey(id) ? locale : Locale.ROOT);
+    }
+
     /** The id's text with its arguments, without the pseudo-locale markers, for text placed inside other text. */
     String format(String id, Object... arguments) {
         try {

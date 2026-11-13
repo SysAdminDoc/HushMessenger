@@ -1834,7 +1834,7 @@ public final class SettingsActivity extends Activity {
         header.setPadding(ui.dp(4), ui.dp(20), ui.dp(4), ui.dp(8));
         header.setClickable(true);
         header.setFocusable(true);
-        TextView title = ui.heading(text.get(id));
+        TextView title = ui.heading(text.heading(id));
         header.addView(title, new LinearLayout.LayoutParams(0, -2, 1));
         TextView count = ui.text("", 12, ui.muted, false);
         LinearLayout.LayoutParams countParams = new LinearLayout.LayoutParams(-2, -2);

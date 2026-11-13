@@ -125,13 +125,29 @@ public class SettingsNavigationTest {
         }
     }
 
-    /** The headings are English on every phone, so a Turkish phone's own capitals (a dotted İ) never reach them. */
-    @Test @org.robolectric.annotation.Config(qualifiers = "tr-rTR") public void headingsUseEnglishCapitalsOnATurkishPhone() {
+    /** English headings keep English capitals on a phone whose own would dot the I, here Azerbaijani, which has no table. */
+    @Test @org.robolectric.annotation.Config(qualifiers = "az-rAZ") public void headingsUseEnglishCapitalsOnATurkishPhone() {
         try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
-            android.widget.LinearLayout group = screen.get().getWindow().getDecorView().findViewWithTag("links_bubbles");
-            android.widget.LinearLayout heading = (android.widget.LinearLayout) group.getChildAt(0);
-            assertEquals("LINKS AND BUBBLES", ((TextView) heading.getChildAt(0)).getText().toString());
+            assertEquals("LINKS AND BUBBLES", heading(screen.get(), "links_bubbles"));
+            assertEquals("PRIVACY", heading(screen.get(), "privacy"));
         }
+    }
+
+    /** Turkish headings take Turkish capitals: the i in Gizlilik keeps its dot. */
+    @Test @org.robolectric.annotation.Config(qualifiers = "tr-rTR") public void turkishHeadingsUseTurkishCapitals() {
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            assertEquals("BAĞLANTILAR VE BALONLAR", heading(screen.get(), "links_bubbles"));
+            assertEquals("G" + DOTTED_I + "ZL" + DOTTED_I + "L" + DOTTED_I + "K", heading(screen.get(), "privacy"));
+        }
+    }
+
+    /** Turkish capital dotted I, written by number so the source stays plain. */
+    private static final char DOTTED_I = (char) 0x0130;
+
+    private static String heading(SettingsActivity activity, String section) {
+        android.widget.LinearLayout group = activity.getWindow().getDecorView().findViewWithTag(section);
+        android.widget.LinearLayout heading = (android.widget.LinearLayout) group.getChildAt(0);
+        return ((TextView) heading.getChildAt(0)).getText().toString();
     }
 
     private static boolean inside(View view, View group) {
