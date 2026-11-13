@@ -172,7 +172,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 - **`INSTALL_FAILED_DUPLICATE_PERMISSION`.** Another app, usually a Facebook patched with a different key, owns a permission Messenger declares too. Messenger isn't the problem here, so leave it installed and patch with the same key as that app. The [install check](#verify-a-download) tells this apart from a Messenger signer mismatch and names the app.
 - **`INSTALL_FAILED_VERSION_DOWNGRADE ... older than current 2147483647`.** Another patch set raised Messenger's version code to Android's maximum, and Android remembers it even after an uninstall that kept data. Don't uninstall or clear data to get past it. An in-place update needs the same signing key and a version code at least that high, so patch with **Spoof package version** selected at that number.
 - **`INSTALL_FAILED_VERSION_DOWNGRADE: Downgrade detected on app uninstalled with DELETE_KEEP_DATA`.** Messenger was uninstalled with its data kept, or Android archived it, and the number after "older than current" is that copy's version code. Android won't put a lower version over it. It won't take one signed with another key either, even with a higher number, so a patched APK can't replace a leftover Messenger from the Play Store. Select **Clone install under another package name** (Morphe Manager shows it in Expert mode) to install next to it without touching it. If you don't need what that copy kept, uninstall it in Android's Settings > Apps or with `adb uninstall com.facebook.orca`, then install the patched APK. The [install check](#verify-a-download) spots a leftover copy before you install.
-- **Root Mount crashes when chat heads or other screens open.** Root Mount keeps the Messenger Android already has and lays the patched one over it, so both have to be the same build, down to the version code. Several builds share one version name (586.0.0.55.92 comes in a few), and mixing them crashes. HushMessenger warns about it under the name in settings and on the **Mounted build** line of **Copy setup**. The warning names the build Android has, so patch that exact one, or install the patched APK normally.
+- **Root Mount crashes when chat heads or other screens open.** Root Mount keeps the Messenger Android already has and lays the patched one over it, so both have to be the same build, down to the version code. Several builds share one version name (587.0.0.54.96 comes in nineteen), and mixing them crashes. HushMessenger warns about it under the name in settings and on the **Mounted build** line of **Copy setup**. The warning names the build Android has, so patch that exact one, or install the patched APK normally.
 - **Uninstalling the settings icon removes Messenger.** Both icons belong to one app. Hide the icon with **App > Hide app drawer icon** instead.
 - **A cloned Messenger brings back the settings icon.** A clone made by your phone's dual apps or app cloner keeps its own copy of the settings. Open the clone's settings icon and turn on **App > Hide app drawer icon** there too.
 - **Messages or calls stop popping up.** Check that `Quiet incoming calls` is off and that **Allow chat bubbles** is on Stock. A reinstall resets your phone's own notification permissions, and Xiaomi, Redmi and POCO phones also want **Floating notifications** on for each Messenger category plus **Display pop-up windows while running in the background** under Other permissions for calls. **App > Report a problem** then lists any notification channel that still can't pop up.
@@ -195,33 +195,43 @@ With **Hide read receipts** on, a chat you open stays unread on your phone, beca
 
 ## Supported Messenger builds
 
-This table is for the next release. v0.29.0, the current one, doesn't take `347215273`, `347215275` or `347215277` yet.
+This table is for the next release. v0.29.0, the current one, takes 586.0.0.55.92.
 
 | Field | Value |
 | --- | --- |
 | Package | `com.facebook.orca` |
-| Version | `586.0.0.55.92` |
-| Version codes, arm64-v8a | `347215257`, `347215273`, `347215275`, `347215277`, `347215330`, `347215343`, `347215344`, `347215348` |
-| Version code, armeabi-v7a | `347215341` |
-| Icons for every screen density | `347215257`, `347215273`, `347215343` |
-| Icons for one screen density | 120-160 dpi `347215344`. 213-240 dpi `347215275`. 360-480 dpi `347215277`, `347215330` and the armeabi-v7a build. 560-640 dpi `347215348` |
+| Version | `587.0.0.54.96` |
+| Version codes, arm64-v8a | `347415267`, `347415268`, `347415280`, `347415281`, `347415284`, `347415285`, `347415299`, `347415301`, `347415302`, `347415333`, `347415337`, `347415350`, `347415351`, `347415352`, `347415354`, `347415355` |
+| Version codes, armeabi-v7a | `347415262`, `347415295`, `347415348` |
+| Icons for every screen density (nodpi) | `347415280`, `347415333`, `347415350` |
+| Icons for one screen density | 120-160 dpi `347415281`, `347415351`. 213-240 dpi `347415299`, `347415352`. 280-320 dpi `347415267`. 360-480 dpi `347415268`, `347415284`, `347415301`, `347415337`, `347415354` and the armeabi-v7a builds. 560-640 dpi `347415285`, `347415302`, `347415355` |
 | Minimum Android version | Android 9 (API 28) |
-| APKMirror download | [586.0.0.55.92](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-586-0-0-55-92-release/) |
+| APKMirror download | [587.0.0.54.96](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-587-0-0-54-96-release/) |
 
-That's every build APKMirror lists for 586. Meta compiled `347215273`, `347215275` and `347215277` a little differently from the rest, and the patches find their way around both kinds. The patch checks the version code before it changes anything and stops on a build that isn't listed. Older Messenger versions aren't supported by current bundles. v0.28.0 takes 585.0.0.53.94 (armv7 too), v0.27.0 takes 584.1.0.61.98, v0.26.0 takes 584.0.0.49.98, v0.25.0 takes 583.0.0.29.95 and v0.23.0 takes 582.0.0.61.92.
+That's every build APKMirror lists for 587. Meta compiled `347415280`, `347415281`, `347415284` and `347415285` a little differently from the rest, and the patches find their way around both kinds. The patch checks the version code before it changes anything and stops on a build that isn't listed. APKMirror says the armeabi-v7a builds run on Android 8, but the patches are only checked on Android 9 and up. Older Messenger versions aren't supported by current bundles. v0.29.0 takes 586.0.0.55.92, v0.28.0 takes 585.0.0.53.94 (armv7 too), v0.27.0 takes 584.1.0.61.98, v0.26.0 takes 584.0.0.49.98, v0.25.0 takes 583.0.0.29.95 and v0.23.0 takes 582.0.0.61.92.
 
 SHA-256 of the stock APKs the checks ran against:
 
 ```text
-347215257  d362ca4c12b3df2255cadfe16bad6e6b8e6f7dce28f678ef1c148c50343938a2
-347215273  954a17fafc4e1081becf82bf9e9c80b49fbd83470b52a0f578e0d4e9453da35b
-347215275  204bfaa3da0fd5371ceac595a764d115fe2ca74c5b462db6a86be51c76e80093
-347215277  5eb448e8615f50790414d475af7e4f2cf76813e687848a6ccf06ed00e80721d7
-347215330  503251702dc69d100feba9d56cfa28e96ec1c9ea974cf385bf88d6ee2ed037c1
-347215341  c2a2b65edf52bede0de5b1d5603f332813a7c404784ac8913801a29670190691
-347215343  d6335e5da25effadd6c8f03220750e0990bc17bcd2670275883bfd8dd3605edc
-347215344  2049f4d122994249ddb69d9dca718bd1aafebc7b0c3ccd24866f0a3e33f15e23
-347215348  ee4bee15fe07eecc933aacfb7ec8d8d3f8ace8f4d7ccf517c6bd1ff0b63aae7e
+347415262  f24997a80ddca389d1b2bdac21e3296f13d1ca759dfefc49662de0f1f0406aab
+347415267  9dca666ae5807390598c8eeebb522edc9e3b9a7334493f214cc15ade8e7bc9d5
+347415268  62455a09871d11e08564c5e898754e637fd72be34ee97f7448e51852e34bd70d
+347415280  b6fa2d062ba631eb27356e23cdd13781dffe223d346675ad362ff9d844538e89
+347415281  d1ea300b2210c5ce750f6a90f15aab043317262b9a6a540c0194c409b005b3cc
+347415284  f83349a8151359b02487494dc5f4f49b30407c990bc4a2f820dc93fce47a00cc
+347415285  f8d499c6c8240be690b98897315797fb4a30f65e7ded0dc534d81e4faa3fb9a3
+347415295  44e0f95e7008e37a55bbba2b9c601f73acd240e08b50827555864691d9001599
+347415299  53aae93bc7be9bdaa027e33ca88a46425ff8108ab59347d86f1a08447a3042cd
+347415301  136e96d187ff10d79e4e5f5720f2b7db8d0e4d9eff13e3826dcddf38b5ee4506
+347415302  0da233955e845976a1d7681e552d7a52702ae6e0d1c70a1992410ab66243c0ec
+347415333  ab3cabbd30d7a3fc6dd96aa48326e2fc6b03d973e631d99fecc8bf7bab48f59f
+347415337  1913f85b20cc2fea75e79ae364807470f53816c6b670ffb736261b6d31161317
+347415348  20d3c4d3a3503496b4f3ade47261066ebfd415470a75bad207bec52c964bd96f
+347415350  944ba7792c2591ea5e90e36a019f3cb3e6d71cb80746315f908a670a64c49f3e
+347415351  f31f887a26bb639b88ea152e737f42aba3760aa5abc3116922429b23748d475d
+347415352  ae829413175779f1863bbab56383760fde07808987182ca47aa02c7765e73dff
+347415354  f9c05885753c65857cf8556f7fb280827a0b9842ece1957d9b48bf3949059bd3
+347415355  a9afd2584cd65e6077c89baf41cc1590bd9f9c87fda5f04ba62cc5ccb6f47a24
 ```
 
 On Windows, compare your file with `Get-FileHash -Algorithm SHA256 .\messenger.apk`. Meta sometimes publishes different APKs under one version name.
@@ -265,7 +275,7 @@ $env:GITHUB_TOKEN = gh auth token
 python -m unittest discover -s scripts/tests -v
 ```
 
-The bundle lands in `patches/build/libs/`, and clean builds from the same source give the same checksum. `:patches:check` wants the exact stock APK of every supported build in a folder named by `HUSH_NATIVE_FIXTURES`, each file named with its version code after the last dash, like `messenger-586.0-347215348.apk`. `:patches:test` runs without them and skips the tests that replay on those APKs.
+The bundle lands in `patches/build/libs/`, and clean builds from the same source give the same checksum. `:patches:check` wants the exact stock APK of every supported build in a folder named by `HUSH_NATIVE_FIXTURES`, each file named with its version code after the last dash, like `messenger-587.0-347415354.apk`. `:patches:test` runs without them and skips the tests that replay on those APKs.
 
 The development bundle names its discovery stages in the patch log and reports their elapsed time. To compare Wi-Fi finder time, allocation and heap peaks against the previous implementation on one stock APK, run `:patches:benchmarkWifiIdentity -PapkPath=<apk>`.
 

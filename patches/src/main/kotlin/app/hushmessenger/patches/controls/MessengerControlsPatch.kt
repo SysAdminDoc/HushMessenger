@@ -121,6 +121,7 @@ internal val settingsExtension = bytecodePatch(description = "Load HushMessenger
         galleryChatRoute = null
         pinLimitGetters = emptySet()
         metaAiFlagGetters = emptySet()
+        monospaceMakers = emptySet()
         aiStickerCells = emptyList()
     }
 }

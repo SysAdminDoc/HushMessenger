@@ -3,7 +3,7 @@
 ## Unreleased
 
 - The patches are built with Morphe patcher 2.3.0 now, the one that comes with Morphe Manager 2.5.0 and Morphe Desktop 2.1.0. Manager won't load a bundle made with a newer patcher than its own, so update Manager to 2.5.0 or newer (or Desktop to 2.1.0) before you add the next release.
-- Take Messenger 586's other three arm64 builds (347215273, 347215275 and 347215277). Meta built them from the same code as the others but packed it differently, so a dozen patches couldn't find what they change. Now every patch finds its spot in them too, so all nine 586 builds on APKMirror work. Refs #145.
+- The patches now take Messenger 587.0.0.54.96 and drop 586. All 19 of 587's builds on APKMirror are covered. Refs #145.
 - With `Spoof package version` on, parts of Messenger still saw the raised version number, like its background job check and its crash reports, because they get the app's version info in roundabout ways the patch didn't follow. Now every place Messenger reads a version number asks first whose it is. Messenger's own answers with the build you patched, and other apps keep the number Android gives. Refs #120.
 - `Hide call buttons` and the call confirmation work on Messenger 586 again. 586 wraps a chat's audio and video call buttons in another button, and the patch was looking at the wrapper. Refs #146.
 - On 586 a call crashed as it started when `Record calls` was on. The recording setup now takes its size from Messenger's own instead of 585's. Refs #146.

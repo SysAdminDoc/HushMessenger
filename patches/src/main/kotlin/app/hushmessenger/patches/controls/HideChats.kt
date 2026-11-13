@@ -166,14 +166,17 @@ private fun List<Instruction>.rowBuilder(): HiddenRowBuilder? {
     }.distinctBy { it.toString() }.singleOrNull() ?: return null
     val owner = built.definingClass
     val icon = filter { it.opcode == Opcode.INVOKE_VIRTUAL }.mapNotNull { it.methodRef() }.filter { m ->
-        m.definingClass == owner && m.returnType == "V" && m.parameterTypes.size == 1 && m.parameterTypes[0].toString().let { it.startsWith("L") && it != CHAR_SEQUENCE }
+        m.definingClass == owner && m.returnType == "V" && m.parameterTypes.size == 1 && m.parameterTypes[0].toString().let { it.startsWith("L") && it != CHAR_SEQUENCE && it != STRING }
     }.distinctBy { it.toString() }.singleOrNull() ?: return null
     return HiddenRowBuilder(
         calls(Opcode.INVOKE_STATIC) { it.definingClass == owner && it.parameterTypes.isEmpty() && it.returnType == owner } ?: return null,
         writes(Opcode.IPUT, owner, "I") ?: return null,
         icon.toString(), icon.parameterTypes[0].toString(),
         calls(Opcode.INVOKE_VIRTUAL) { it.definingClass == owner && it.returnType == "V" && it.parameterTypes.map { p -> p.toString() } == listOf(CHAR_SEQUENCE) } ?: return null,
-        writes(Opcode.IPUT_OBJECT, owner, STRING) ?: return null,
+        // 587 fills the description through a setter instead of writing the field, and the extension calls that.
+        writes(Opcode.IPUT_OBJECT, owner, STRING)
+            ?: calls(Opcode.INVOKE_VIRTUAL) { it.definingClass == owner && it.returnType == "V" && it.parameterTypes.map { p -> p.toString() } == listOf(STRING) }
+            ?: return null,
         built.toString())
 }
 

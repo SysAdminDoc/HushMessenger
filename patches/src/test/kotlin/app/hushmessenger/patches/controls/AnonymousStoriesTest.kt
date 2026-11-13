@@ -223,7 +223,7 @@ class AnonymousStoriesTest {
             val handler = MutableMethod(discovered.getValue("anonymous_stories").single { it.definingClass == handlerType })
             val readSet = byType.getValue(handler.storyReadSetAdd().definingClass).validateStoryReadSet(handler.storyReadSetAdd())
             // 586's 273 family keeps the card's ID in A0L; every other build keeps it in A0K.
-            val cardId = if (activeProfile === PROFILE_347215273) "$MONTAGE_CARD->A0L:Ljava/lang/String;" else readCardId
+            val cardId = if (activeProfile === PROFILE_347415280) "$MONTAGE_CARD->A0L:Ljava/lang/String;" else readCardId
             assertEquals(cardId, readSet.cardId, code)
             val ring = preview.validateStoryRing()
             assertEquals(STORY_PREVIEW_INIT, ring.constructor, code)

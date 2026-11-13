@@ -233,7 +233,7 @@ public final class ChatHiding {
      * What the patch proved, as "|"-joined parts: the chat's key, name and people, each person's info, account key and
      * id, the info's name and the text inside it, the menu's chat, then the row builder's factory, id, icon, title,
      * description and build, and the chat list's "subscribe|listed". Fields are "Lowner;->name:type" and calls
-     * "Lowner;->name(params)return".
+     * "Lowner;->name(params)return". The description is its field, or the setter 587's builder fills it through.
      */
     static final class Route {
         final Class<?> summary;
@@ -251,12 +251,12 @@ public final class ChatHiding {
         final Field id;
         final Method icon;
         final Method title;
-        final Field description;
+        final Setter description;
         final Method build;
         final String refresh;
         private final Method copyOf;
 
-        private Route(Field[] fields, Method[] calls, String refresh) throws NoSuchMethodException {
+        private Route(Field[] fields, Setter description, Method[] calls, String refresh) throws NoSuchMethodException {
             key = fields[0];
             name = fields[1];
             participants = fields[2];
@@ -267,7 +267,7 @@ public final class ChatHiding {
             secretText = fields[7];
             menuSummary = fields[8];
             id = fields[9];
-            description = fields[10];
+            this.description = description;
             factory = calls[0];
             icon = calls[1];
             title = calls[2];
@@ -285,12 +285,39 @@ public final class ChatHiding {
         static Route of(String text, ClassLoader loader) throws ReflectiveOperationException {
             String[] parts = text.split("\\|", -1);
             if (parts.length != 17) throw shape();
-            Field[] fields = new Field[11];
+            Field[] fields = new Field[10];
             for (int i = 0; i < 9; i++) fields[i] = field(parts[i], loader);
             fields[9] = field(parts[10], loader);
-            fields[10] = field(parts[13], loader);
             Method[] calls = {method(parts[9], loader), method(parts[11], loader), method(parts[12], loader), method(parts[14], loader)};
-            return new Route(fields, calls, parts[15] + "|" + parts[16]);
+            return new Route(fields, Setter.of(parts[13], loader), calls, parts[15] + "|" + parts[16]);
+        }
+
+        /** A String the builder keeps: its field, or a one-String setter that returns nothing. */
+        static final class Setter {
+            private final Field field;
+            private final Method method;
+
+            private Setter(Field field, Method method) {
+                this.field = field;
+                this.method = method;
+            }
+
+            static Setter of(String reference, ClassLoader loader) throws ReflectiveOperationException {
+                if (reference.indexOf('(') < 0) {
+                    Field field = field(reference, loader);
+                    if (field.getType() != String.class) throw shape();
+                    return new Setter(field, null);
+                }
+                Method method = method(reference, loader);
+                if (Modifier.isStatic(method.getModifiers()) || method.getReturnType() != void.class
+                        || method.getParameterTypes().length != 1 || method.getParameterTypes()[0] != String.class) throw shape();
+                return new Setter(null, method);
+            }
+
+            void set(Object builder, String text) throws Throwable {
+                if (field != null) field.set(builder, text);
+                else call(method, builder, text);
+            }
         }
 
         String key(Object chat) throws IllegalAccessException {

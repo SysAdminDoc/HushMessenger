@@ -236,6 +236,7 @@ class MarkReadButtonTest {
     @AfterTest fun reset() {
         activeProfile = SYNTHETIC_PROFILE
         markReadRecipe = null
+        activeStringTables = emptyMap()
     }
 
     private fun found(classes: List<MutableClass>) = mirroredControls(classes).let { hooks ->
@@ -282,6 +283,29 @@ class MarkReadButtonTest {
         // A cap moved down from another register before the cut, as 585's bars had it, no longer counts.
         val moved = BAR_BODY.replace("const/4 v5, 0x3", "move v5, v9")
         assertTrue(found(markReadFixture(bar(moved))).isEmpty())
+    }
+
+    // 587's family B bar loads the video call tag from a Redex string table by key, not as a literal.
+    @Test fun aCallTagLookedUpInAStringTableStillCounts() {
+        val looked = bar(BAR_BODY.replace("const-string v8, \"video_call_button\"",
+            "const/16 v8, 0x3f7\ninvoke-static {v8}, LX/MrStrings;->A00(I)Ljava/lang/String;\nmove-result-object v8"))
+        fun table(name: String) = fixtureClass("LX/MrStrings;", listOf(fixtureMethod("LX/MrStrings;->A00(I)Ljava/lang/String;", """
+            packed-switch p0, :cases
+            const/4 v0, 0x0
+            return-object v0
+            :name
+            const-string v0, "$name"
+            return-object v0
+            :cases
+            .packed-switch 0x3f7
+                :name
+            .end packed-switch
+        """.trimIndent(), 2, STATIC)))
+        assertEquals(listOf(SYNTHETIC_MARK_READ_BAR, SYNTHETIC_MARK_READ_FACTORY, SYNTHETIC_MARK_READ_CLICK),
+            found(markReadFixture(looked) + table("video_call_button")))
+        // No table, or one that answers the key with another tag, leaves the control out.
+        assertTrue(found(markReadFixture(looked)).isEmpty())
+        assertTrue(found(markReadFixture(looked) + table("audio_call_button")).isEmpty())
     }
 
     // 585's factory is an instance method whose early returns hand back other lists, and builds the button list through a

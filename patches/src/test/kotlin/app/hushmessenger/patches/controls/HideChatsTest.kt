@@ -34,6 +34,7 @@ private const val ROW_ID = "$ROW->A00:I"
 private const val ROW_ICON = "$ROW->A08($ICONS)V"
 private const val ROW_TITLE = "$ROW->A09(Ljava/lang/CharSequence;)V"
 private const val ROW_DESCRIPTION = "$ROW->A06:Ljava/lang/String;"
+private const val ROW_DESCRIBE = "$ROW->A0A(Ljava/lang/String;)V"
 private const val ROW_BUILD = "$ROW->A02(${ROW}Ljava/lang/String;)$BUILT_ROW"
 private const val CHAT_KEY = "$THREAD_SUMMARY->A0e:$THREAD_KEY_TYPE"
 private const val CHAT_PEOPLE = "$THREAD_SUMMARY->A16:$IMMUTABLE_LIST"
@@ -109,6 +110,9 @@ private val ROW_BODY = """
     :done
     return-object v3
 """.trimIndent()
+
+/** 587's builder fills the description through a setter, as it does the title. */
+private val ROW_BODY_587 = ROW_BODY.replace("iput-object v2, v1, $ROW_DESCRIPTION", "invoke-virtual {v1, v2}, $ROW_DESCRIBE")
 
 private val TAP_BODY = """
     iget-object v0, p0, $MENU_CHAT
@@ -192,6 +196,21 @@ class HideChatsTest {
         val route = resolveHiddenChatRoute(classes.method(INBOX_ITEMS_HOOK), classes.method(SYNTHETIC_HIDDEN_ROW), classes.method(SYNTHETIC_HIDDEN_TAP), classes.classOf())
         assertEquals(listOf(CHAT_KEY, CHAT_NAME, CHAT_PEOPLE, PERSON_INFO, PERSON_USER, USER_ID, PERSON_NAME, SECRET_TEXT, MENU_CHAT,
             ROW_FACTORY, ROW_ID, ROW_ICON, ROW_TITLE, ROW_DESCRIPTION, ROW_BUILD, INBOX_ROUTE.toString()).joinToString("|"), route.toString())
+    }
+
+    @Test fun the587RowListThatSetsItsDescriptionThroughASetterIsFoundAndRoutesTheSetter() {
+        val classes = hiddenChatsFixture(menu = hiddenChatsMenuFixture(row = hiddenRow(ROW_BODY_587)))
+        val found = mirroredControls(classes)
+        assertEquals(listOf(SYNTHETIC_HIDDEN_ROW), found.getValue(HIDDEN_CHAT_ROW).map { it.hookId() })
+        validateControls(found, setOf(HIDDEN_CHAT_ROW))
+        val route = resolveHiddenChatRoute(classes.method(INBOX_ITEMS_HOOK), classes.method(SYNTHETIC_HIDDEN_ROW), classes.method(SYNTHETIC_HIDDEN_TAP), classes.classOf())
+        assertEquals(ROW_ICON, route.icon)
+        assertEquals(ROW_DESCRIBE, route.description)
+        // A second String setter leaves the description unknown.
+        val twoSetters = hiddenRow(ROW_BODY_587.replace("invoke-virtual {v1, v2}, $ROW_DESCRIBE", "invoke-virtual {v1, v2}, $ROW_DESCRIBE\ninvoke-virtual {v1, v2}, $ROW->A0B(Ljava/lang/String;)V"))
+        val before = twoSetters.code()
+        assertFailsWith<PatchException> { injectControl(HIDDEN_CHAT_ROW, mapOf(HIDDEN_CHAT_ROW to listOf(twoSetters))) }
+        assertEquals(before, twoSetters.code())
     }
 
     @Test fun theWalkGoesOverTheListTheExtensionHandsBackAndABranchOntoItStillLandsFirst() {
