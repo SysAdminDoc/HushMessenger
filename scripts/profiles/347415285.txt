@@ -157,6 +157,8 @@ hook hidden_chat_row LX/JRt;->Bwv()Ljava/util/ArrayList;
 hook hidden_chat_tap LX/JRt;->EEc(I)V
 hook hide_call_bar LX/7Oj;->FDl(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/74z;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V
 hook hide_call_bar LX/AJ7;->A03(Landroid/content/Context;LX/0XS;Lcom/facebook/auth/usersession/FbUserSession;LX/0LG;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/4zZ;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/6fE;Lcom/google/common/collect/ImmutableList$Builder;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIZZZZZZ)Ljava/lang/Object;
+hook hide_call_lists LX/4zZ;->A00(LX/0XS;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/4zZ;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;)Lcom/google/common/collect/ImmutableList;
+hook hide_call_lists LX/Ol0;->A00(LX/Ol0;)V
 hook hide_read_receipts LX/4hH;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4hH;Ljava/lang/String;)V
 hook home_header LX/2ME;->render(LX/27r;)LX/1F6;
 hook inbox_promotions LX/21e;->A0I()Z

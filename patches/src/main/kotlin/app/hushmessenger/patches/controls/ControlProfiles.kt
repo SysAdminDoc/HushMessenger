@@ -182,6 +182,10 @@ internal val PROFILE_347415354 = ControlProfile(
             "LX/7Nx;->FDi(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/74D;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
             "LX/AJ2;->A03(Landroid/content/Context;LX/0XT;Lcom/facebook/auth/usersession/FbUserSession;LX/0LH;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/50E;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/6eW;Lcom/google/common/collect/ImmutableList\$Builder;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIZZZZZZ)Ljava/lang/Object;",
         ),
+        "hide_call_lists" to setOf(
+            "LX/50E;->A00(LX/0XT;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/50E;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;)Lcom/google/common/collect/ImmutableList;",
+            "LX/Okr;->A00(LX/Okr;)V",
+        ),
         "hide_read_receipts" to setOf("LX/4hw;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4hw;Ljava/lang/String;)V"),
         "home_header" to setOf("LX/2MF;->render(LX/27r;)LX/1F6;"),
         "inbox_promotions" to setOf("LX/21e;->A0I()Z", "LX/21e;->A0J()Z"),
@@ -487,6 +491,10 @@ internal val PROFILE_347415280 = ControlProfile(
         "hide_call_bar" to setOf(
             "LX/7Oj;->FDl(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/74z;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
             "LX/AJ7;->A03(Landroid/content/Context;LX/0XS;Lcom/facebook/auth/usersession/FbUserSession;LX/0LG;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/4zZ;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/6fE;Lcom/google/common/collect/ImmutableList\$Builder;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIZZZZZZ)Ljava/lang/Object;",
+        ),
+        "hide_call_lists" to setOf(
+            "LX/4zZ;->A00(LX/0XS;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/4zZ;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;)Lcom/google/common/collect/ImmutableList;",
+            "LX/Ol0;->A00(LX/Ol0;)V",
         ),
         "hide_read_receipts" to setOf("LX/4hH;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4hH;Ljava/lang/String;)V"),
         "home_header" to setOf("LX/2ME;->render(LX/27r;)LX/1F6;"),
@@ -794,6 +802,10 @@ internal val PROFILE_347415302 = ControlProfile(
             "LX/7Nx;->FDi(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/74D;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
             "LX/AJ2;->A03(Landroid/content/Context;LX/0XT;Lcom/facebook/auth/usersession/FbUserSession;LX/0LH;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/50E;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/6eW;Lcom/google/common/collect/ImmutableList\$Builder;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIZZZZZZ)Ljava/lang/Object;",
         ),
+        "hide_call_lists" to setOf(
+            "LX/50E;->A00(LX/0XT;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/50E;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;)Lcom/google/common/collect/ImmutableList;",
+            "LX/Okq;->A00(LX/Okq;)V",
+        ),
         "hide_read_receipts" to setOf("LX/4hw;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4hw;Ljava/lang/String;)V"),
         "home_header" to setOf("LX/2MF;->render(LX/27r;)LX/1F6;"),
         "inbox_promotions" to setOf("LX/21e;->A0I()Z", "LX/21e;->A0J()Z"),
@@ -1099,6 +1111,10 @@ internal val PROFILE_347415262 = ControlProfile(
         "hide_call_bar" to setOf(
             "LX/7PJ;->FEG(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/75Z;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
             "LX/AL1;->A03(Landroid/content/Context;LX/0Xc;Lcom/facebook/auth/usersession/FbUserSession;LX/0LM;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/50k;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/6fg;Lcom/google/common/collect/ImmutableList\$Builder;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIZZZZZZ)Ljava/lang/Object;",
+        ),
+        "hide_call_lists" to setOf(
+            "LX/50k;->A00(LX/0Xc;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/50k;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;)Lcom/google/common/collect/ImmutableList;",
+            "LX/OiQ;->A00(LX/OiQ;)V",
         ),
         "hide_read_receipts" to setOf("LX/4iS;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/4iS;Ljava/lang/String;)V"),
         "home_header" to setOf("LX/2Mf;->render(LX/28H;)LX/1FW;"),

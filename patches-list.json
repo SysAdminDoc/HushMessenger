@@ -232,7 +232,7 @@
         },
         {
             "name": "Ask before a call",
-            "description": "Tapping the audio or video call button in a chat's top bar asks first, so a stray tap doesn't ring anyone. Call starts it, Cancel doesn't. Calls coming in aren't affected. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "Tapping an audio or video call button asks first, so a stray tap doesn't ring anyone. That covers a chat's top bar, business chats and the New message screen. Call starts it, Cancel doesn't. Calls coming in aren't affected. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Calls",
             "dependencies": [
@@ -1812,7 +1812,7 @@
         },
         {
             "name": "Hide call buttons",
-            "description": "Takes the audio and video call buttons out of a chat's top bar, so you can't tap one by accident. Calls still ring, and you can still join one that's going. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "Takes the audio and video call buttons out of a chat's top bar, business chats and the New message screen, so you can't tap one by accident. Calls still ring, and you can still join one that's going. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Calls",
             "dependencies": [

@@ -242,7 +242,7 @@ public class CompatReport {
         PATCHES.put("Allow landscape", List.of("landscape_lock", "landscape_media"));
         PATCHES.put("Record calls", List.of("call_recording"));
         PATCHES.put("Live captions on calls", List.of("call_recording"));
-        PATCHES.put("Hide call buttons", List.of("hide_call_bar"));
+        PATCHES.put("Hide call buttons", List.of("hide_call_bar", "hide_call_lists"));
         PATCHES.put("Ask before a call", List.of("hide_call_bar", "call_button_built"));
         PATCHES.put("Allow screenshots", List.of("allow_screenshot", "screenshot_viewers"));
         PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read"));
@@ -4579,6 +4579,87 @@ public class CompatReport {
         if (wrapperClass == null || baseClass == null || !base.equals(wrapperClass.getSuperclass()) ||
             !AccessFlags.ABSTRACT.isSet(baseClass.getAccessFlags()) || AccessFlags.INTERFACE.isSet(baseClass.getAccessFlags())) return List.of();
         return List.of(a, v);
+    }
+
+    static final String CALL_LIST_COPY = IMMUTABLE_LIST + "->copyOf(Ljava/util/Collection;)" + IMMUTABLE_LIST;
+
+    /** The register a method returns its ImmutableList in: its only return, which nothing jumps to. -1 otherwise. Mirrors CallButtonLists.kt. */
+    static int callListReturn(Method m) {
+        if (!IMMUTABLE_LIST.equals(m.getReturnType()) || m.getImplementation() == null) return -1;
+        var code = instructions(m);
+        int at = -1;
+        for (int k = 0; k < code.size(); k++) if (code.get(k).getOpcode() == Opcode.RETURN_OBJECT) {
+            if (at >= 0) return -1;
+            at = k;
+        }
+        if (at < 0 || mediaTargets(m).contains(at)) return -1;
+        int returned = register(code.get(at));
+        return returned <= 255 ? returned : -1;
+    }
+
+    /**
+     * The move-result that takes the List a filled array of element (any object type when null) goes straight into, through
+     * a static call taking an Object array. -1 unless there's exactly one such site and nothing jumps into it or onto the
+     * instruction after it. Mirrors CallButtonLists.kt.
+     */
+    static int callListArray(Method m, String element) {
+        if (m.getImplementation() == null) return -1;
+        var code = instructions(m);
+        int site = -1;
+        for (int i = 0; i + 3 < code.size(); i++) {
+            var fill = code.get(i);
+            if (fill.getOpcode() != Opcode.FILLED_NEW_ARRAY && fill.getOpcode() != Opcode.FILLED_NEW_ARRAY_RANGE) continue;
+            if (!(fill instanceof ReferenceInstruction fr) || !(fr.getReference() instanceof TypeReference filled)) continue;
+            String type = filled.getType();
+            if (!type.startsWith("[L") || (element != null && !type.equals("[" + element))) continue;
+            var array = code.get(i + 1);
+            var call = code.get(i + 2);
+            var list = code.get(i + 3);
+            if (array.getOpcode() != Opcode.MOVE_RESULT_OBJECT || list.getOpcode() != Opcode.MOVE_RESULT_OBJECT) continue;
+            if (call.getOpcode() != Opcode.INVOKE_STATIC && call.getOpcode() != Opcode.INVOKE_STATIC_RANGE) continue;
+            if (!(call instanceof ReferenceInstruction cr) || !(cr.getReference() instanceof MethodReference made)) continue;
+            if (!made.getParameterTypes().stream().map(CharSequence::toString).toList().equals(List.of("[Ljava/lang/Object;")) ||
+                !"Ljava/util/List;".equals(made.getReturnType()) || !callArgs(call).equals(List.of(register(array)))) continue;
+            if (site >= 0) return -1;
+            site = i + 3;
+        }
+        if (site < 0 || site + 1 >= code.size()) return -1;
+        var targets = mediaTargets(m);
+        for (int k = site - 2; k <= site + 1; k++) if (targets.contains(k)) return -1;
+        return site;
+    }
+
+    /**
+     * hide_call_lists: the business chat's call bar and the New message screen, the methods that call both call button
+     * builders and either return an ImmutableList or pack the buttons' base type into an array for a List, exactly one of
+     * each, while Messenger's ImmutableList can copy a collection. Mirrors CallButtonLists.kt.
+     */
+    static List<Method> callButtonLists(List<ClassDef> classes, List<Method> builders) {
+        if (builders.size() != 2) return List.of();
+        var ids = new HashSet<String>();
+        for (var b : builders) ids.add(hookId(b));
+        String base = callButtonBase(builders.get(0));
+        var lists = new ArrayList<Method>();
+        var arrays = new ArrayList<Method>();
+        for (var cls : classes) for (var m : cls.getMethods()) {
+            if (m.getImplementation() == null) continue;
+            var called = new HashSet<String>();
+            for (var i : instructions(m)) if (i instanceof ReferenceInstruction ri && ri.getReference() instanceof MethodReference r) {
+                String id = methodId(r);
+                if (ids.contains(id)) called.add(id);
+            }
+            if (!called.equals(ids)) continue;
+            if (callListReturn(m) >= 0) lists.add(m);
+            if (callListArray(m, base) >= 0) arrays.add(m);
+        }
+        if (lists.size() != 1 || arrays.size() != 1 || lists.get(0) == arrays.get(0)) return List.of();
+        ClassDef immutable = null;
+        for (var cls : classes) if (cls.getType().equals(IMMUTABLE_LIST)) { immutable = cls; break; }
+        if (immutable == null) return List.of();
+        boolean copies = false;
+        for (var m : immutable.getMethods()) if (hookId(m).equals(CALL_LIST_COPY) &&
+            AccessFlags.STATIC.isSet(m.getAccessFlags()) && AccessFlags.PUBLIC.isSet(m.getAccessFlags())) copies = true;
+        return copies ? List.of(lists.get(0), arrays.get(0)) : List.of();
     }
 
     /** menu_blur: DialogFragment's onStart, while exactly one class has the DialogFragment shape. Mirrors MenuBlur.kt. */
@@ -9943,7 +10024,9 @@ public class CompatReport {
         found.get("special_contacts").addAll(specialContacts(classes));
         found.get("menu_blur").addAll(menuBlur(classes));
         found.get("chat_head_video").addAll(chatHeadVideo(classes));
-        found.get("call_button_built").addAll(callButtonBuilt(classes, stringTables));
+        var callButtonBuilders = callButtonBuilt(classes, stringTables);
+        found.get("call_button_built").addAll(callButtonBuilders);
+        found.get("hide_call_lists").addAll(callButtonLists(classes, callButtonBuilders));
         customFontHooks(classes).forEach((key, methods) -> found.get(key).addAll(methods));
         // Every viewer method with an entry point's name is checked, whatever its signature, and one that doesn't match
         // leaves the control unresolved, as findControls in ControlHooks.kt clears it then.

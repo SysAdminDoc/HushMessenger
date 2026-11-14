@@ -52,7 +52,7 @@ internal fun Method.callButtonTag(tables: Map<String, Map<Int, String>>): String
 }
 
 /** The base type the wrapper's constructor takes the built button as, its first parameter. */
-private fun Method.callButtonBase(): String {
+internal fun Method.callButtonBase(): String {
     val code = implementation!!.instructions.toList()
     val init = code[code.indexOfFirst { it.opcode == Opcode.RETURN_OBJECT } - 1]
     return ((init as ReferenceInstruction).reference as MethodReference).parameterTypes.first().toString()
