@@ -21,6 +21,7 @@ final class SettingsTextTh {
         {"preview_title", "ตัวอย่างหน้าตา HushMessenger"},
         {"preview_notice", "ตัวอย่างหน้าตา UI ตัวควบคุมเหล่านี้จะไม่เปลี่ยนแปลง Messenger จริง"},
         {"mounted_build_mismatch", "เวอร์ชันนี้ได้รับการแพตช์จาก Messenger %1$d แต่ใน Android ติดตั้งเวอร์ชัน %2$d ไว้ โปรดแพตช์เวอร์ชัน %2$d สำหรับ Root Mount มิฉะนั้นฟองสบู่แชทและหน้าจออื่นๆ อาจขัดข้องได้"},
+        {"gmscore_without_microg", "แพตช์ GmsCore support ไว้แล้ว แต่ไม่ได้ติดตั้ง microG-RE หรือปิดไว้อยู่ Messenger จึงรับการแจ้งเตือนผ่านบริการพุชของ Google ไม่ได้ ติดตั้ง microG-RE หรือแพตช์ใหม่โดยไม่เลือก GmsCore support"},
         {"open", "เปิด"},
         {"open_messenger", "เปิด Messenger"},
         {"back", "ย้อนกลับ"},

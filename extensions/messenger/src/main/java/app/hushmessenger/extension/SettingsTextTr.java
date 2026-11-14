@@ -21,6 +21,7 @@ final class SettingsTextTr {
         {"preview_title", "HushMessenger arayüz önizlemesi"},
         {"preview_notice", "Arayüz önizlemesi. Bu kontroller Messenger'ı değiştirmez."},
         {"mounted_build_mismatch", "Bu, Messenger %1$d sürümünden yamalandı ama Android'de %2$d yüklü. Root Mount için %2$d sürümünü yamala, yoksa sohbet balonları ve diğer ekranlar çökebilir."},
+        {"gmscore_without_microg", "GmsCore support yamalı ama microG-RE yüklü değil ya da kapalı. Messenger bu yüzden Google'ın anlık bildirim hizmetinden bildirim alamaz. microG-RE'yi yükle ya da GmsCore support olmadan yeniden yamala."},
         {"open", "Aç"},
         {"open_messenger", "Messenger'ı aç"},
         {"back", "Geri"},

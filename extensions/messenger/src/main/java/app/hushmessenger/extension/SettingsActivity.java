@@ -49,7 +49,7 @@ public final class SettingsActivity extends Activity {
     private LinearLayout controlsPage, appPage;
     private LinearLayout header, brand, controlsContent, appContent, pageHeader;
     private ScrollView controlsScroll, appScroll;
-    private TextView reminder, wordmark, headerName;
+    private TextView reminder, wordmark, headerName, gmsCoreNotice;
     /** The bar title's visibility as last set here, so it changes only when what it should show does. */
     private int barTitleShown = -1;
     private EditText search;
@@ -416,6 +416,11 @@ public final class SettingsActivity extends Activity {
         chatMenuItems.fill(null);
         specialContacts.fill(null);
         updates.syncUpdateChoice(false);
+        showGmsCoreNotice();
+    }
+
+    private void showGmsCoreNotice() {
+        if (gmsCoreNotice != null) gmsCoreNotice.setVisibility(GmsCore.withoutPush(this) ? View.VISIBLE : View.GONE);
     }
 
     @Override protected void onPause() {
@@ -691,7 +696,8 @@ public final class SettingsActivity extends Activity {
         title.setAutoSizeTextTypeUniformWithConfiguration(14, 20, 1, TypedValue.COMPLEX_UNIT_SP);
         ui.add(wordmarkColumn, title, 0);
         wordmark = title;
-        // Only a preview build or a Root Mount over the wrong build says anything under the name, since those are warnings.
+        // Only a preview build, a Root Mount over the wrong build or GmsCore support without microG-RE says anything
+        // under the name, since those are warnings.
         if (Settings.preview) {
             TextView notice = ui.text(text.get("preview_notice"), 13, ui.warning, false);
             notice.setTag("preview_notice");
@@ -700,6 +706,13 @@ public final class SettingsActivity extends Activity {
             TextView notice = ui.text(MountedBuild.notice(text), 13, ui.warning, false);
             notice.setTag("mounted_build_mismatch");
             ui.add(wordmarkColumn, notice, 4);
+        } else if (GmsCore.patchedIn(this)) {
+            // Added whenever the patch is in and shown only while microG-RE is missing, so installing it and coming
+            // back clears the warning (onResume).
+            gmsCoreNotice = ui.text(text.get("gmscore_without_microg"), 13, ui.warning, false);
+            gmsCoreNotice.setTag("gmscore_without_microg");
+            ui.add(wordmarkColumn, gmsCoreNotice, 4);
+            showGmsCoreNotice();
         }
         bar.addView(wordmarkColumn, new LinearLayout.LayoutParams(0, -2, 1));
         brand.addView(bar, new LinearLayout.LayoutParams(ui.largeText ? -1 : 0, -2, ui.largeText ? 0 : 1));

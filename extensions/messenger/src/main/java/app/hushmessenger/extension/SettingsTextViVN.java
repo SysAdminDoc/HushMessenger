@@ -21,6 +21,7 @@ final class SettingsTextViVN {
         {"preview_title", "Xem trước giao diện HushMessenger"},
         {"preview_notice", "Xem trước giao diện. Các điều khiển này sẽ không làm thay đổi Messenger."},
         {"mounted_build_mismatch", "Bản này được vá từ Messenger %1$d, nhưng Android đang cài bản %2$d. Hãy vá bản %2$d để dùng Root Mount, nếu không bong bóng chat và các màn hình khác có thể bị lỗi."},
+        {"gmscore_without_microg", "Bản này đã vá GmsCore support, nhưng microG-RE chưa được cài hoặc đang bị tắt. Vì vậy Messenger không nhận được thông báo qua dịch vụ đẩy của Google. Hãy cài microG-RE, hoặc vá lại mà không chọn GmsCore support."},
         {"open", "Mở"},
         {"open_messenger", "Mở Messenger"},
         {"back", "Quay lại"},

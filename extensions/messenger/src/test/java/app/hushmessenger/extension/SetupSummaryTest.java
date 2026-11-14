@@ -70,7 +70,7 @@ public class SetupSummaryTest {
             assertTrue(text.contains("\nAndroid API: " + Build.VERSION.SDK_INT + "\nPaused: false\nSafe mode: false\n"));
             assertTrue(text.contains("people: installed=true, selected=true, active=true,"));
             assertTrue(text.contains("stories: installed=false, selected=true, active=false,"));
-            assertTrue(text.matches("(?s).*\nLate start: (not needed|\\d+ ms on [^\n]+)\nMounted build: matches\nAnalytics stores: none\nFacebook caller checks: trusted=\\d+, signer_differs=\\d+, meta_signed_build=\\d+, not_family=\\d+, error=\\d+\n"));
+            assertTrue(text.matches("(?s).*\nLate start: (not needed|\\d+ ms on [^\n]+)\nMounted build: matches\nAnalytics stores: none\nFacebook caller checks: trusted=\\d+, signer_differs=\\d+, meta_signed_build=\\d+, not_family=\\d+, error=\\d+\nPush: none, no Google Play services\n"));
             assertEquals(ExpectedTotals.SETUP_LINES, text.split("\n").length);
             assertFalse(text.contains("private-"));
             assertFalse(text.contains("account-secret"));
@@ -238,7 +238,7 @@ public class SetupSummaryTest {
             assertEquals("Used just now", ((android.widget.TextView) root.findViewWithTag("active_people")).getText().toString());
             String text = copiedSetup(root);
             String time = ", \\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ\n";
-            assertTrue(text, text.matches("(?s).*\nFacebook caller checks: [^\n]*\nHook errors:\n"
+            assertTrue(text, text.matches("(?s).*\nFacebook caller checks: [^\n]*\nPush: [^\n]*\nHook errors:\n"
                 + "avatar_stickers: java\\.lang\\.UnsupportedOperationException at Settings\\.removeAvatarTabs:\\d+" + time
                 + "menu_row: java\\.lang\\.IllegalStateException at SetupSummaryTest\\.aFailedHookShowsInCopySetupAndOnItsSwitchWithoutTheExceptionMessage:\\d+" + time));
             assertEquals(ExpectedTotals.SETUP_LINES_WITH_ERRORS, text.split("\n").length);
