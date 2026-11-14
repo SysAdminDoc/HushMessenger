@@ -525,6 +525,8 @@ function Invoke-WalkApp {
         $deviceModel = @((Invoke-WalkAdb @('shell', 'getprop', 'ro.product.model')).Stdout)[0]
         $deviceSdk = 0
         [void][int]::TryParse(([string]@((Invoke-WalkAdb @('shell', 'getprop', 'ro.build.version.sdk')).Stdout)[0]).Trim(), [ref]$deviceSdk)
+        # A device left at a large text size makes lists longer and buttons wrap, so the receipt says which size it walked.
+        $deviceFontScale = ([string]@((Invoke-WalkAdb @('shell', 'settings', 'get', 'system', 'font_scale')).Stdout)[0]).Trim()
         if ($reportedSerial -cne $Serial -or $deviceModel -cne $ExpectedModel) {
             throw "$Serial answers as $reportedSerial, model $deviceModel, not the expected $ExpectedModel. Nothing was changed on it."
         }
@@ -593,20 +595,31 @@ function Invoke-WalkApp {
                 Start-Sleep -Seconds 5
             }
         }
-        # Scrolls the Controls list to the top, then down until -Text shows, and taps it.
+        # Finds -Text on the Controls list and taps it. The section open already scrolled near the button, so the
+        # search starts where it landed, goes down to the end of the list, then back up to the top. A direction ends
+        # when a swipe moves nothing (same words in the same places), so a list stretched by a large font scale is
+        # searched to its end. The screen signature can't tell that: it leaves out words and positions, so one
+        # scrolled list of alike rows reads the same as the next.
         function Invoke-WalkFindAndTap([string]$Text) {
-            $before = ''
-            for ($i = 0; $i -lt 15; $i++) {
-                $shape = Get-WalkScreenSignature -Xml (Read-WalkScreen '')
-                if ($shape -ceq $before) { break }
-                $before = $shape
-                [void](Invoke-WalkAdb @('shell', 'input', 'swipe', [string]($width / 2), [string]([int]($height * 0.35)), [string]($width / 2), [string]([int]($height * 0.8)), '400'))
-                Start-Sleep -Milliseconds 700
-            }
-            for ($i = 0; $i -lt 40; $i++) {
-                if (Invoke-WalkTap $Text) { return $true }
-                [void](Invoke-WalkAdb @('shell', 'input', 'swipe', [string]($width / 2), [string]([int]($height * 0.75)), [string]($width / 2), [string]([int]($height * 0.4)), '400'))
-                Start-Sleep -Milliseconds 700
+            foreach ($down in $true, $false) {
+                $from, $to = if ($down) { 0.75, 0.4 } else { 0.35, 0.8 }
+                $before = $null
+                for ($i = 0; $i -lt 150; $i++) {
+                    Close-WalkKeyboard
+                    [string]$screen = Read-WalkScreen ''
+                    $center = Find-WalkNodeCenter -Xml $screen -Text $Text
+                    if ($null -ne $center) {
+                        [void](Invoke-WalkAdb @('shell', 'input', 'tap', [string]$center[0], [string]$center[1]))
+                        return $true
+                    }
+                    if ($screen) {
+                        $mark = (@([regex]::Matches($screen, '\b(?:text|content-desc|bounds)="[^"]*"') | ForEach-Object { $_.Value }) -join '|')
+                        if ($mark -ceq $before) { break }
+                        $before = $mark
+                    }
+                    [void](Invoke-WalkAdb @('shell', 'input', 'swipe', [string]($width / 2), [string]([int]($height * $from)), [string]($width / 2), [string]([int]($height * $to)), '400'))
+                    Start-Sleep -Milliseconds 700
+                }
             }
             return $false
         }
@@ -746,7 +759,7 @@ function Invoke-WalkApp {
 
         $full = $skips.Count -eq 0 -and $problems.Count -eq 0
         $result = Resolve-WalkOutcome -Screens $screens -Crashes $fatal.Count -Problems ([string[]]$problems) -Full $full
-        $receipt = New-WalkReceipt -Result $result -Full $full -Serial $Serial -Device $deviceModel -Sdk $deviceSdk `
+        $receipt = New-WalkReceipt -Result $result -Full $full -Serial $Serial -Device $deviceModel -Sdk $deviceSdk -FontScale $deviceFontScale `
             -AppVersion ([string]$appVersion) -BundleSha256 $bundleSha256 -PatchedApkSha256 $patchedSha -InstalledApkSha256 $installedSha `
             -Started $started -Finished ([DateTimeOffset]::UtcNow) -AppliedPatches $applied -Steps $stepRecords.ToArray() `
             -Crashes $fatal.Count -Problems ([string[]]$problems)

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Checks
+
+- For developers, the release walk finds the message log and auto reply buttons on a phone set to large text. It used to give up after a fixed number of swipes, and at 200% text the Controls list ran longer than that. It now searches down to the end of the list and back up, and the walk receipt records the phone's text size.
+
 ## 0.30.0 (2026-11-14)
 
 ### New
