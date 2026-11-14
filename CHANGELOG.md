@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.30.0 (2026-11-14)
 
 ### New
 
@@ -23,22 +23,22 @@
 
 ### Changed and fixed
 
-- The patches are built with Morphe patcher 2.3.0 now, the one that comes with Morphe Manager 2.5.0 and Morphe Desktop 2.1.0. Manager won't load a bundle made with a newer patcher than its own, so update Manager to 2.5.0 or newer (or Desktop to 2.1.0) before you add the next release.
+- The patches are built with Morphe patcher 2.3.0 now, the one that comes with Morphe Manager 2.5.0 and Morphe Desktop 2.1.0. Manager won't load a bundle made with a newer patcher than its own, so update Manager to 2.5.0 or newer (or Desktop to 2.1.0) before you add this release.
 - The patches now take Messenger 587.0.0.54.96 and drop 586. All 19 of 587's builds on APKMirror are covered. Refs #145.
 - Videos in chat heads play like the rest of the chat now. On some phones Messenger 587 draws videos on a layer of their own, and a chat head could show that layer as a black box that stayed on screen after the chat head closed. In a chat head, or a bubble on Android 12 and newer, the video is drawn inside the chat instead. Videos in the app itself are unchanged. Refs #104.
 - The switches for the menu you get when you press and hold a chat moved out of Inbox into their own Chat menu group, both in HushMessenger settings and in Morphe's patch list. Inbox had gotten long.
 - The message log keeps up to 20,000 messages now, up from 5,000. Refs #172.
 - `Keep unsent messages` works in encrypted chats too. When someone unsends a message there, it stays in the chat marked [unsent], as long as Messenger already showed you its words (in the chat or a notification) and hasn't restarted since. Refs #172.
 - With `Spoof package version` on, parts of Messenger still saw the raised version number, like its background job check and its crash reports, because they get the app's version info in roundabout ways the patch didn't follow. Now every place Messenger reads a version number asks first whose it is. Messenger's own answers with the build you patched, and other apps keep the number Android gives. Refs #120.
-- `Hide call buttons` and the call confirmation work on Messenger 586 again. 586 wraps a chat's audio and video call buttons in another button, and the patch was looking at the wrapper. Refs #146.
-- `Ask before a call` asks on every call button now, not only the ones in a chat's top bar. A business chat and the New message screen build their own call buttons, so a tap there used to start the call right away. Refs #172.
+- `Hide call buttons` and the call confirmation work again. Messenger 586 started wrapping a chat's audio and video call buttons in another button, and the patch was looking at the wrapper. Refs #146.
+- `Ask before a call` asks on every call button now, including the ones outside a chat's top bar. A business chat and the New message screen build their own call buttons, so a tap there used to start the call right away. Refs #172.
 - `Hide call buttons` takes the call buttons off business chats and the New message screen too. Those two screens build their own, so they used to stay. Refs #146, #172.
 - On 586 a call crashed as it started when `Record calls` was on. The recording setup now takes its size from Messenger's own instead of 585's. Refs #146.
 - The Experimental badge stays on one line. A long title used to squeeze it into a tall strip of one or two letters per line. Now it sits under the title when the two don't fit side by side. Refs #157.
 - When a Meta-signed Messenger was uninstalled with its data kept, the install check told you to patch a higher version, which can't work for a build Meta signed. It points you at `Clone install` now, or at removing the leftover if you don't need its data. Refs #156.
 - Patching goes faster. The code that finds where each patch goes had grown too big for Java to compile, so it ran slowly. It's split into smaller pieces now, and the slowest step takes about half as long on a computer. Refs #148, #150.
 - `Android Auto messages` also works on accounts where Messenger leaves the car part out of its notifications. Messenger only adds it when a setting on Meta's side says so, and the switch turns that on. Refs #75.
-- `Report a problem` reads Messenger 586's notification channels right. 586 adds a code to the end of each channel's name, so the report listed every one of them as unknown. Refs #158.
+- `Report a problem` reads Messenger's notification channels right again. Messenger 586 started adding a code to the end of each channel's name, so the report listed every one of them as unknown. Refs #158.
 - A Root Mount over a different Messenger build now gets a warning instead of a mystery crash. Several builds share one version name, and mounting a patch made from one over another crashed chat heads. HushMessenger names the build Android has installed in a toast, under the name in settings and in `Copy setup`, so you know which one to patch. Refs #158.
 - `Hide Your story when sharing` now also stops the "Chats or Your story" question some phones ask on every share. Xiaomi's share sheet groups an app's targets, and Messenger switched its story target back on at every launch, so you had to pick each time. With the switch on, sharing a photo goes straight to Chats. Refs #147.
 - `Log chats that don't notify`, under `Keep a message log`, also saves messages from muted and restricted chats that aren't end-to-end encrypted, without a notification. Those chats used to stop before the log could see the message. Now they go through to the log and the notification is dropped right before it would show. Unsends still get marked, and auto reply leaves those chats alone. Refs #143.
