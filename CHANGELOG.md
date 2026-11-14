@@ -19,6 +19,7 @@
 - The settings screen is in Thai now, translated by MangaThatsFine. Refs #166.
 - With `Spoof package version` on, parts of Messenger still saw the raised version number, like its background job check and its crash reports, because they get the app's version info in roundabout ways the patch didn't follow. Now every place Messenger reads a version number asks first whose it is. Messenger's own answers with the build you patched, and other apps keep the number Android gives. Refs #120.
 - `Hide call buttons` and the call confirmation work on Messenger 586 again. 586 wraps a chat's audio and video call buttons in another button, and the patch was looking at the wrapper. Refs #146.
+- `Ask before a call` asks on every call button now, not only the ones in a chat's top bar. A business chat and the New message screen build their own call buttons, so a tap there used to start the call right away. Refs #172.
 - On 586 a call crashed as it started when `Record calls` was on. The recording setup now takes its size from Messenger's own instead of 585's. Refs #146.
 - The Experimental badge stays on one line. A long title used to squeeze it into a tall strip of one or two letters per line. Now it sits under the title when the two don't fit side by side. Refs #157.
 - When a Meta-signed Messenger was uninstalled with its data kept, the install check told you to patch a higher version, which can't work for a build Meta signed. It points you at `Clone install` now, or at removing the leftover if you don't need its data. Refs #156.

@@ -232,6 +232,7 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
     found.getValue(CHAT_CHANNEL_KEEP).addAll(findChatChannelKeep(classes))
     found.getValue(CHAT_CHANNEL_RAISE).addAll(findChatChannelRaise(classes))
     found.getValue(CHAT_HEAD_VIDEO).addAll(findChatHeadVideo(classes))
+    found.getValue(CALL_BUTTON_BUILT).addAll(findCallButtonBuilt(classes, stringTables))
     autoReplyPictureRecipe = resolveAutoReplyPictureRecipe(classes)
     messageLogContract = resolveMessageLogContract(classes)
     quietChatContract = resolveQuietChatContract(classes, messageLogContract)

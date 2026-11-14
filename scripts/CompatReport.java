@@ -243,7 +243,7 @@ public class CompatReport {
         PATCHES.put("Record calls", List.of("call_recording"));
         PATCHES.put("Live captions on calls", List.of("call_recording"));
         PATCHES.put("Hide call buttons", List.of("hide_call_bar"));
-        PATCHES.put("Ask before a call", List.of("hide_call_bar"));
+        PATCHES.put("Ask before a call", List.of("hide_call_bar", "call_button_built"));
         PATCHES.put("Allow screenshots", List.of("allow_screenshot", "screenshot_viewers"));
         PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read"));
         PATCHES.put("Mark as read button", List.of("mark_read_bar", "mark_read_click"));
@@ -4504,6 +4504,81 @@ public class CompatReport {
         if (fields.size() != 1) return List.of();
         int locked = AccessFlags.STATIC.getValue() | AccessFlags.FINAL.getValue() | AccessFlags.PRIVATE.getValue();
         return (fields.get(0).getAccessFlags() & locked) != 0 ? List.of() : players;
+    }
+
+    /**
+     * The register a call button builder returns its wrapper in: its only return, of a new instance of the declared
+     * return type made right before it, which nothing jumps to. -1 for any other method. Mirrors CallButtonBuilt.kt.
+     */
+    static int callButtonReturn(Method m) {
+        String wrapper = m.getReturnType();
+        if (!wrapper.startsWith("L") || wrapper.startsWith("Ljava/") || wrapper.startsWith("Landroid/") || m.getImplementation() == null) return -1;
+        var code = instructions(m);
+        int at = -1;
+        for (int k = 0; k < code.size(); k++) if (code.get(k).getOpcode() == Opcode.RETURN_OBJECT) {
+            if (at >= 0) return -1;
+            at = k;
+        }
+        if (at < 2) return -1;
+        int returned = register(code.get(at));
+        var made = code.get(at - 2);
+        var init = code.get(at - 1);
+        if (made.getOpcode() != Opcode.NEW_INSTANCE || register(made) != returned ||
+            !(made instanceof ReferenceInstruction mr) || !(mr.getReference() instanceof TypeReference type) || !wrapper.equals(type.getType())) return -1;
+        if (init.getOpcode() != Opcode.INVOKE_DIRECT || !(init instanceof FiveRegisterInstruction call) || call.getRegisterC() != returned ||
+            !(init instanceof ReferenceInstruction ir) || !(ir.getReference() instanceof MethodReference constructor) ||
+            !wrapper.equals(constructor.getDefiningClass()) || !"<init>".equals(constructor.getName()) || constructor.getParameterTypes().isEmpty()) return -1;
+        return mediaTargets(m).contains(at) ? -1 : returned;
+    }
+
+    /** The one everyday call tag a builder gives its button, as a literal or through a string table, else null. */
+    static String callButtonTag(Method m, Map<String, Map<Integer, String>> tables) {
+        var code = instructions(m);
+        var named = new HashSet<String>();
+        for (var i : code) if (i instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference s) named.add(s.getString());
+        named.addAll(tableStrings(code, tables));
+        String tag = null;
+        for (var t : CALL_TAGS) if (named.contains(t)) {
+            if (tag != null) return null;
+            tag = t;
+        }
+        return tag;
+    }
+
+    /** The base type a builder's wrapper constructor takes the button as. */
+    static String callButtonBase(Method m) {
+        var code = instructions(m);
+        int at = 0;
+        while (code.get(at).getOpcode() != Opcode.RETURN_OBJECT) at++;
+        return ((MethodReference) ((ReferenceInstruction) code.get(at - 1)).getReference()).getParameterTypes().get(0).toString();
+    }
+
+    /**
+     * call_button_built: the audio and video call button builders, taking a thread key and a Mig scheme, exactly one of
+     * each, returning the same wrapper, which extends the abstract base its constructor takes first. Mirrors CallButtonBuilt.kt.
+     */
+    static List<Method> callButtonBuilt(List<ClassDef> classes, Map<String, Map<Integer, String>> tables) {
+        var builders = new HashMap<String, List<Method>>();
+        for (var cls : classes) for (var m : cls.getMethods()) {
+            var params = m.getParameterTypes().stream().map(CharSequence::toString).toList();
+            if (!params.contains(THREAD_KEY) || !params.contains(MIG_SCHEME) || callButtonReturn(m) < 0) continue;
+            String tag = callButtonTag(m, tables);
+            if (tag != null) builders.computeIfAbsent(tag, k -> new ArrayList<>()).add(m);
+        }
+        var audio = builders.getOrDefault("audio_call_button", List.of());
+        var video = builders.getOrDefault("video_call_button", List.of());
+        if (audio.size() != 1 || video.size() != 1) return List.of();
+        Method a = audio.get(0), v = video.get(0);
+        String base = callButtonBase(a);
+        if (!a.getReturnType().equals(v.getReturnType()) || !base.equals(callButtonBase(v))) return List.of();
+        ClassDef wrapperClass = null, baseClass = null;
+        for (var cls : classes) {
+            if (wrapperClass == null && cls.getType().equals(a.getReturnType())) wrapperClass = cls;
+            if (baseClass == null && cls.getType().equals(base)) baseClass = cls;
+        }
+        if (wrapperClass == null || baseClass == null || !base.equals(wrapperClass.getSuperclass()) ||
+            !AccessFlags.ABSTRACT.isSet(baseClass.getAccessFlags()) || AccessFlags.INTERFACE.isSet(baseClass.getAccessFlags())) return List.of();
+        return List.of(a, v);
     }
 
     /** menu_blur: DialogFragment's onStart, while exactly one class has the DialogFragment shape. Mirrors MenuBlur.kt. */
@@ -9772,6 +9847,7 @@ public class CompatReport {
         found.get("special_contacts").addAll(specialContacts(classes));
         found.get("menu_blur").addAll(menuBlur(classes));
         found.get("chat_head_video").addAll(chatHeadVideo(classes));
+        found.get("call_button_built").addAll(callButtonBuilt(classes, stringTables));
         customFontHooks(classes).forEach((key, methods) -> found.get(key).addAll(methods));
         // Every viewer method with an entry point's name is checked, whatever its signature, and one that doesn't match
         // leaves the control unresolved, as findControls in ControlHooks.kt clears it then.

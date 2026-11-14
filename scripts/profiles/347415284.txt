@@ -70,6 +70,8 @@ hook bubbles LX/2F7;->A00()Z
 hook business_suggestions LX/7Tu;->A05(LX/7Tu;)Z
 hook business_suggestions LX/7Uu;->A04(LX/7Uu;)Z
 hook business_suggestions LX/HVC;->A05()Z
+hook call_button_built LX/5R9;->A00(LX/4vX;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/6fE;Z)LX/9qP;
+hook call_button_built LX/5mH;->A00(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/6fE;)LX/9qP;
 hook call_recording LX/Cwz;->run()V
 hook call_recording LX/Cx0;->run()V
 hook call_recording Lcom/facebook/rsys/overlayconfigmanager/OverlayConfigManagerHolder;-><init>(Ljava/util/ArrayList;)V

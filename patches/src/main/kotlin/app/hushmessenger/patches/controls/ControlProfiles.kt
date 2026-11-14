@@ -101,6 +101,10 @@ internal val PROFILE_347415354 = ControlProfile(
         "bubble_mode" to setOf("LX/2F8;->A01(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "bubbles" to setOf("LX/2F8;->A00()Z"),
         "business_suggestions" to setOf("LX/7T8;->A05(LX/7T8;)Z", "LX/7U8;->A04(LX/7U8;)Z", "LX/HYA;->A05()Z"),
+        "call_button_built" to setOf(
+            "LX/5Ro;->A00(LX/4wC;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/6eW;Z)LX/9qK;",
+            "LX/5mw;->A00(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/6eW;)LX/9qK;",
+        ),
         "call_recording" to setOf(
             "LX/Cwr;->run()V", "LX/Cws;->run()V",
             "Lcom/facebook/rsys/overlayconfigmanager/OverlayConfigManagerHolder;-><init>(Ljava/util/ArrayList;)V",
@@ -400,6 +404,10 @@ internal val PROFILE_347415280 = ControlProfile(
         "bubble_mode" to setOf("LX/2F7;->A01(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "bubbles" to setOf("LX/2F7;->A00()Z"),
         "business_suggestions" to setOf("LX/7Tu;->A05(LX/7Tu;)Z", "LX/7Uu;->A04(LX/7Uu;)Z", "LX/HVC;->A05()Z"),
+        "call_button_built" to setOf(
+            "LX/5R9;->A00(LX/4vX;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/6fE;Z)LX/9qP;",
+            "LX/5mH;->A00(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/6fE;)LX/9qP;",
+        ),
         "call_recording" to setOf(
             "LX/Cwz;->run()V", "LX/Cx0;->run()V",
             "Lcom/facebook/rsys/overlayconfigmanager/OverlayConfigManagerHolder;-><init>(Ljava/util/ArrayList;)V",
@@ -699,6 +707,10 @@ internal val PROFILE_347415302 = ControlProfile(
         "bubble_mode" to setOf("LX/2F8;->A01(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "bubbles" to setOf("LX/2F8;->A00()Z"),
         "business_suggestions" to setOf("LX/7T8;->A05(LX/7T8;)Z", "LX/7U8;->A04(LX/7U8;)Z", "LX/HY9;->A05()Z"),
+        "call_button_built" to setOf(
+            "LX/5Ro;->A00(LX/4wC;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/6eW;Z)LX/9qK;",
+            "LX/5mw;->A00(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/6eW;)LX/9qK;",
+        ),
         "call_recording" to setOf(
             "LX/Cwr;->run()V", "LX/Cws;->run()V",
             "Lcom/facebook/rsys/overlayconfigmanager/OverlayConfigManagerHolder;-><init>(Ljava/util/ArrayList;)V",
@@ -998,6 +1010,10 @@ internal val PROFILE_347415262 = ControlProfile(
         "bubble_mode" to setOf("LX/2FY;->A01(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
         "bubbles" to setOf("LX/2FY;->A00()Z"),
         "business_suggestions" to setOf("LX/7UU;->A05(LX/7UU;)Z", "LX/7VU;->A04(LX/7VU;)Z", "LX/HaW;->A05()Z"),
+        "call_button_built" to setOf(
+            "LX/5SK;->A00(LX/4wi;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/6fg;Z)LX/9sJ;",
+            "LX/5nS;->A00(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/6fg;)LX/9sJ;",
+        ),
         "call_recording" to setOf(
             "LX/Czu;->run()V", "LX/Czv;->run()V",
             "Lcom/facebook/rsys/overlayconfigmanager/OverlayConfigManagerHolder;-><init>(Ljava/util/ArrayList;)V",

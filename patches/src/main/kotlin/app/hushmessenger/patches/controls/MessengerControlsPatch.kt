@@ -187,6 +187,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         HIDE_READ_RECEIPTS -> validateChatSeen()
         REPLY_READ -> validateReplyRead()
         MARK_READ_BAR, HIDE_CALL_BAR -> validateMarkReadBar()
+        CALL_BUTTON_BUILT -> validateCallButtonBuilt()
         MARK_READ_CLICK -> validateMarkReadClick()
         ANALYTICS_UPLOADS -> validateAnalyticsUpload()
         ATTRIBUTION_UPLOADS -> validateAttributionUpload()
@@ -291,6 +292,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             HIDE_READ_RECEIPTS -> method.injectChatSeen()
             REPLY_READ -> method.injectReplyRead()
             MARK_READ_BAR, HIDE_CALL_BAR -> method.injectMarkReadBar()
+            CALL_BUTTON_BUILT -> method.injectCallButtonBuilt()
             MARK_READ_CLICK -> method.injectMarkReadClick()
             "keep_unsent" -> method.injectKeepUnsent()
             "unsent_indicator" -> method.injectUnsentIndicator()
@@ -723,7 +725,7 @@ val hideCallButtonsPatch = controlPatch("hide_call_buttons", "Hide call buttons"
     "Takes the audio and video call buttons out of a chat's top bar, so you can't tap one by accident. Calls still ring, and you can still join one that's going.", "Calls", HIDE_CALL_BAR)
 @Suppress("unused")
 val callConfirmPatch = controlPatch("call_confirm", "Ask before a call",
-    "Tapping the audio or video call button in a chat's top bar asks first, so a stray tap doesn't ring anyone. Call starts it, Cancel doesn't. Calls coming in aren't affected.", "Calls", HIDE_CALL_BAR)
+    "Tapping the audio or video call button in a chat's top bar asks first, so a stray tap doesn't ring anyone. Call starts it, Cancel doesn't. Calls coming in aren't affected.", "Calls", HIDE_CALL_BAR, CALL_BUTTON_BUILT)
 @Suppress("unused")
 val systemCameraPatch = controlPatch("system_camera", "Use the phone's camera app",
     "The camera button in a chat opens your phone's own camera app. The photo then opens in Messenger's editor, ready to send. Its Ask photo or video option records videos too.", "Photos and videos",
