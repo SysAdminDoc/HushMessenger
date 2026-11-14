@@ -71,7 +71,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Hide the tab bar while scrolling | The tab bar at the bottom slides away as you scroll down your chats and comes back when you scroll up. Takes a Messenger restart. |
 | Floating tab bar | Switches the bottom tab bar to the floating style Messenger is testing, which sits over your chats. Takes a Messenger restart. |
 | Keep the search bar | Brings back the search bar above your chats when Messenger has swapped it for a search icon. Takes effect after a restart, and nothing changes if you never got the icon. Experimental. |
-| Preview chats on long press | Pressing and holding a chat opens Messenger's own preview of it, with the chat's menu underneath, so you can peek at a chat without opening it. Experimental. |
+| Preview chats on long press | Pressing and holding a chat opens Messenger's own preview of it, with the chat's menu underneath, so you can peek at a chat without opening it. A peek leaves the chat unread, and the other person doesn't see Seen until you open it (checked in an encrypted one-to-one chat). Experimental. |
 | Bigger chat preview | The long-press preview takes most of the screen and scrolls back through the chat. The menu under it stays short and scrolls. Experimental. |
 | Hide chat menu items | Press and hold any chat once, then pick which of that menu's items to hide here. Messenger keeps at least one of its own. Experimental. |
 | Hide Mark as read | Takes Mark as read out of the menu you get when you press and hold a chat, so you can't mark one read by accident. Mark as unread stays. |
