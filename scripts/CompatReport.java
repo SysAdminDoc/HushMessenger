@@ -7917,6 +7917,9 @@ public class CompatReport {
     // 587's numbering (586 read 0x0101055400014313 and 0x0101039400033264).
     static final long FLOATING_TAB_BAR_FLAG = 0x0101055600014560L;
     static final long CHATS_SCROLL_AWAY_FLAG = 0x0101039000033352L;
+    // The Chats page's slide answer, which the bar's frame asks before a scroll may move the bar at all.
+    static final long CHATS_SLIDE_FLAG = 0x0101039000003351L;
+    static final String FUNCTION0 = "Lkotlin/jvm/functions/Function0;";
     static final List<String> TAB_BAR_BUILDER_PARAMETERS =
         List.of("Landroid/content/Context;", "Lcom/facebook/auth/usersession/FbUserSession;", "Z");
     static final List<String> TAB_BAR_FRAGMENT_PARAMETERS =
@@ -8035,9 +8038,10 @@ public class CompatReport {
     }
 
     /**
-     * The Chats page's scroll-away answer: an instance method with no parameters ending in its flag, a boolean check of
-     * it and a return of that answer, with nothing landing on the return. The check is a static (Object, long) one (586)
-     * or the config interface's (long) one right after a cast to it (587). The return's index, or -1. Mirrors TabBar.kt.
+     * One of the Chats page's two answers, its scroll-away answer or its slide answer: an instance method with no
+     * parameters ending in its flag, a boolean check of it and a return of that answer. The check is a static (Object,
+     * long) one (586) or the config interface's (long) one right after a cast to it (587). Early no's may jump onto the
+     * return (earlyNosOnly): they keep landing on it past the hook. The return's index, or -1. Mirrors TabBar.kt.
      */
     static int tabBarScrollAwayReturn(Method method) {
         if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || !method.getParameterTypes().isEmpty() || !"Z".equals(method.getReturnType())) return -1;
@@ -8047,7 +8051,8 @@ public class CompatReport {
         boolean cast = code.get(end - 3).getOpcode() == Opcode.CHECK_CAST;
         if (cast && end < 4) return -1;
         var load = code.get(cast ? end - 4 : end - 3);
-        if (load.getOpcode() != Opcode.CONST_WIDE || !Long.valueOf(CHATS_SCROLL_AWAY_FLAG).equals(wide(load))) return -1;
+        Long read = wide(load);
+        if (load.getOpcode() != Opcode.CONST_WIDE || read == null || read != CHATS_SCROLL_AWAY_FLAG && read != CHATS_SLIDE_FLAG) return -1;
         int flag = register(load);
         var call = code.get(end - 2);
         if (!(call instanceof ReferenceInstruction r) || !(r.getReference() instanceof MethodReference check)) return -1;
@@ -8063,18 +8068,109 @@ public class CompatReport {
         if (!form || !"Z".equals(check.getReturnType()) || args.size() != 3 || args.get(1) != flag || args.get(2) != flag + 1) return -1;
         int answer = register(code.get(end - 1));
         if (code.get(end - 1).getOpcode() != Opcode.MOVE_RESULT || register(code.get(end)) != answer || answer > 15) return -1;
-        return mediaTargets(method).contains(end) ? -1 : end;
+        return earlyNosOnly(method, code, end, answer) ? end : -1;
     }
 
-    /** tab_bar_scroll_away: the one page whose scroll-away answer reads the Chats flag. Mirrors TabBar.kt. */
-    static List<Method> tabBarScrollAway(List<ClassDef> classes) {
-        Method found = null;
-        for (var cls : classes) for (var method : cls.getMethods()) {
-            if (!"Z".equals(method.getReturnType()) || !method.getParameterTypes().isEmpty() || tabBarScrollAwayReturn(method) < 0) continue;
-            if (found != null) return List.of();
-            found = method;
+    /**
+     * Whether every jump onto the return carries a no: none from a switch or a catch, nothing landing anywhere up to the
+     * last jump, and the answer's last write before each jump a const/4 of 0. Mirrors TabBar.kt's earlyNosOnly.
+     */
+    static boolean earlyNosOnly(Method method, List<Instruction> code, int end, int answer) {
+        if (mediaTargets(method, false).contains(end)) return false;
+        var early = new ArrayList<Integer>();
+        for (int i = 0; i < code.size(); i++) if (mediaTarget(code, i) == end) early.add(i);
+        if (early.isEmpty()) return true;
+        int last = Collections.max(early);
+        for (int t : mediaTargets(method)) if (t >= 0 && t <= last) return false;
+        for (int at : early) {
+            int write = -1;
+            for (int i = at - 1; i >= 0 && write < 0; i--) if (writes(code.get(i), answer)) write = i;
+            if (write < 0 || code.get(write).getOpcode() != Opcode.CONST_4 ||
+                ((NarrowLiteralInstruction) code.get(write)).getNarrowLiteral() != 0) return false;
         }
-        return found == null ? List.of() : List.of(found);
+        return true;
+    }
+
+    /** The flag a Chats page answer reads, or null when the method isn't one. */
+    static Long chatsPageFlag(Method method) {
+        int end = tabBarScrollAwayReturn(method);
+        if (end < 0) return null;
+        var code = instructions(method);
+        return wide(code.get(code.get(end - 3).getOpcode() == Opcode.CHECK_CAST ? end - 4 : end - 3));
+    }
+
+    /**
+     * Where the bar's frame decides whether a scroll may move the bar: an interface ()Z call that asks the page for its
+     * slide answer (pageInterfaces and slideName say which count, null for any), then within four instructions, past
+     * only a move-result, a const/4 and if-ne or if-eqz, a Function0 read from a field, unboxed by a static (Function0)
+     * boolean helper, and an if-eqz forward on its answer. One per method, nothing landing on it. The if-eqz's index, or
+     * -1. Mirrors TabBar.kt.
+     */
+    static int tabBarSlideCheck(Method method, Set<String> pageInterfaces, String slideName) {
+        if (!"Z".equals(method.getReturnType())) return -1;
+        var code = instructions(method);
+        int gate = -1;
+        for (int at = 0; at < code.size(); at++) {
+            if (code.get(at).getOpcode() != Opcode.INVOKE_INTERFACE ||
+                !(((ReferenceInstruction) code.get(at)).getReference() instanceof MethodReference call)) continue;
+            if (!"Z".equals(call.getReturnType()) || !call.getParameterTypes().isEmpty()) continue;
+            if (slideName != null && (!slideName.equals(call.getName()) || !pageInterfaces.contains(call.getDefiningClass()))) continue;
+            int check = -1;
+            for (int i = at + 1; i <= at + 4; i++) if (slideFunctionCheck(code, i)) { check = i; break; }
+            if (check < 0) continue;
+            boolean plain = true;
+            for (int i = at + 1; i < check; i++) {
+                var op = code.get(i).getOpcode();
+                if (op != Opcode.MOVE_RESULT && op != Opcode.CONST_4 && op != Opcode.IF_NE && op != Opcode.IF_EQZ) plain = false;
+            }
+            if (!plain) continue;
+            if (gate >= 0) return -1;
+            gate = check + 3;
+        }
+        if (gate < 0) return -1;
+        int answer = register(code.get(gate));
+        if (answer > 15) return -1;
+        return mediaTargets(method).contains(gate) ? -1 : gate;
+    }
+
+    /** A Function0 read from a field, unboxed to a yes or no by a static helper, and an if-eqz forward on the answer. */
+    static boolean slideFunctionCheck(List<Instruction> code, int at) {
+        if (at + 3 >= code.size()) return false;
+        if (code.get(at).getOpcode() != Opcode.IGET_OBJECT ||
+            !(((ReferenceInstruction) code.get(at)).getReference() instanceof FieldReference field) || !FUNCTION0.equals(field.getType())) return false;
+        var unbox = code.get(at + 1);
+        if (unbox.getOpcode() != Opcode.INVOKE_STATIC || !(((ReferenceInstruction) unbox).getReference() instanceof MethodReference helper)) return false;
+        var types = new ArrayList<String>();
+        for (var t : helper.getParameterTypes()) types.add(t.toString());
+        if (!"Z".equals(helper.getReturnType()) || !types.equals(List.of(FUNCTION0)) || !reads(unbox).equals(List.of(register(code.get(at))))) return false;
+        int answer = register(code.get(at + 2));
+        return code.get(at + 2).getOpcode() == Opcode.MOVE_RESULT && code.get(at + 3).getOpcode() == Opcode.IF_EQZ &&
+            register(code.get(at + 3)) == answer && mediaTarget(code, at + 3) > at + 3;
+    }
+
+    /**
+     * tab_bar_scroll_away: the Chats page's two answers, each the one method reading its flag and both on the same page,
+     * then every check in the bar's frame asking a page for its slide answer through an interface that page implements.
+     * Empty when a part is missing or found twice. Mirrors TabBar.kt.
+     */
+    static List<Method> tabBarScrollAway(List<ClassDef> classes) {
+        Method scroll = null, slide = null;
+        ClassDef scrollPage = null, slidePage = null;
+        int scrolls = 0, slides = 0;
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (!"Z".equals(method.getReturnType()) || !method.getParameterTypes().isEmpty()) continue;
+            Long flag = chatsPageFlag(method);
+            if (flag == null) continue;
+            if (flag == CHATS_SCROLL_AWAY_FLAG) { scroll = method; scrollPage = cls; scrolls++; }
+            else { slide = method; slidePage = cls; slides++; }
+        }
+        if (scrolls != 1 || slides != 1 || !scrollPage.getType().equals(slidePage.getType())) return List.of();
+        var page = new HashSet<String>();
+        for (var type : slidePage.getInterfaces()) page.add(type.toString());
+        var found = new ArrayList<Method>(List.of(scroll, slide));
+        for (var cls : classes) for (var method : cls.getMethods())
+            if ("Z".equals(method.getReturnType()) && tabBarSlideCheck(method, page, slide.getName()) >= 0) found.add(method);
+        return found.size() == 2 ? List.of() : found;
     }
 
     /** The register holding parameter n, counting this as 0 on an instance method. */

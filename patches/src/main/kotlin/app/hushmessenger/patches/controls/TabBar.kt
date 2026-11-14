@@ -9,9 +9,11 @@ import com.android.tools.smali.dexlib2.iface.ClassDef
 import com.android.tools.smali.dexlib2.iface.Method
 import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.Instruction
+import com.android.tools.smali.dexlib2.iface.instruction.NarrowLiteralInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.WideLiteralInstruction
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 /**
@@ -36,6 +38,16 @@ internal const val FLOATING_TAB_BAR_FLAG = 0x0101055600014560L
 
 /** The flag the Chats page reads for its scroll-away answer, as 587 numbers it (586 read 0x0101039400033264). */
 internal const val CHATS_SCROLL_AWAY_FLAG = 0x0101039000033352L
+
+/**
+ * The flag the Chats page reads when the bar's frame asks whether a scroll may move the bar at all, as 587 numbers it.
+ * The scroll-away answer only sets how far the bar can go, so without this one the bar never starts sliding.
+ */
+internal const val CHATS_SLIDE_FLAG = 0x0101039000003351L
+
+private val CHATS_PAGE_FLAGS = setOf(CHATS_SCROLL_AWAY_FLAG, CHATS_SLIDE_FLAG)
+
+private const val FUNCTION0 = "Lkotlin/jvm/functions/Function0;"
 
 private val TAB_BAR_BUILDER_PARAMETERS = listOf("Landroid/content/Context;", "Lcom/facebook/auth/usersession/FbUserSession;", "Z")
 
@@ -136,18 +148,23 @@ private fun List<Instruction>.lazyOverlayCheck(at: Int): Boolean {
 }
 
 /**
- * The Chats page's scroll-away answer: an instance method with no parameters that ends by reading its flag and
- * returning that answer, through a static (Object, long) boolean check (586) or the config interface's (long) check
- * right after a cast to it (587). Nothing may land on the return.
+ * One of the Chats page's two answers, its scroll-away answer or its slide answer: an instance method with no
+ * parameters that ends by reading its flag and returning that answer, through a static (Object, long) boolean check
+ * (586) or the config interface's (long) check right after a cast to it (587). The slide answer's early no's (page not
+ * shown, list busy) jump onto the same return ([earlyNosOnly]). The hook goes in front of it and those jumps keep
+ * landing on the return itself, so only the flag's answer goes through the switch.
  */
-internal fun Method.tabBarScrollAwayReturn(): TabBarGate? {
+internal fun Method.tabBarScrollAwayReturn(): TabBarGate? = chatsPageAnswer()?.second
+
+/** [tabBarScrollAwayReturn] with the flag it reads. */
+private fun Method.chatsPageAnswer(): Pair<Long, TabBarGate>? {
     if (AccessFlags.STATIC.isSet(accessFlags) || parameterTypes.isNotEmpty() || returnType != "Z") return null
     val code = code()
     val end = code.size - 1
     if (end < 3 || code[end].opcode != Opcode.RETURN) return null
     val cast = code[end - 3].takeIf { it.opcode == Opcode.CHECK_CAST }
     val load = code.getOrNull(if (cast == null) end - 3 else end - 4) ?: return null
-    if (load.opcode != Opcode.CONST_WIDE || load.wide() != CHATS_SCROLL_AWAY_FLAG) return null
+    val read = load.wide()?.takeIf { load.opcode == Opcode.CONST_WIDE && it in CHATS_PAGE_FLAGS } ?: return null
     val flag = load.register() ?: return null
     val call = code[end - 2].method() ?: return null
     val args = code[end - 2].reads()
@@ -161,8 +178,64 @@ internal fun Method.tabBarScrollAwayReturn(): TabBarGate? {
     if (!form || call.returnType != "Z" || args.size != 3 || args[1] != flag || args[2] != flag + 1) return null
     val answer = code[end - 1].register() ?: return null
     if (code[end - 1].opcode != Opcode.MOVE_RESULT || code[end].register() != answer || answer > 15) return null
-    if (end in jumpTargets()) return null
-    return TabBarGate(end, answer)
+    if (!earlyNosOnly(code, end, answer)) return null
+    return read to TabBarGate(end, answer)
+}
+
+/**
+ * Whether every jump onto the return at [end] carries a no: none from a switch or a catch, nothing landing anywhere up
+ * to the last jump, and the answer's last write before each jump a const/4 of 0. Those jumps skip the hook, so a page
+ * that isn't showing still says no with the switch on.
+ */
+private fun Method.earlyNosOnly(code: List<Instruction>, end: Int, answer: Int): Boolean {
+    if (end in jumpTargets(branches = false)) return false
+    val early = code.indices.filter { code.branchTarget(it) == end }
+    if (early.isEmpty()) return true
+    val last = early.max()
+    if (jumpTargets().any { it <= last }) return false
+    return early.all { at ->
+        val write = (at - 1 downTo 0).firstOrNull { code[it].writes(answer) } ?: return@all false
+        code[write].opcode == Opcode.CONST_4 && (code[write] as NarrowLiteralInstruction).narrowLiteral == 0
+    }
+}
+
+private fun Instruction.writes(register: Int) = opcode.setsRegister() && this is OneRegisterInstruction &&
+    (registerA == register || (opcode.setsWideRegister() && registerA + 1 == register))
+
+/**
+ * Where the bar's frame decides whether a scroll may move the bar: it asks the page under it for its slide answer
+ * ([asksPage] says which interface calls count), and on yes reads its own slide check, a function held in a field and
+ * unboxed by a static (Function0) boolean helper. Messenger only fills that field for the floating pill, with its own
+ * overlay flag. The hook goes on the if-eqz that tests the helper's answer, one per method, and nothing may land on it.
+ */
+internal fun Method.tabBarSlideCheck(asksPage: (MethodReference) -> Boolean = { true }): TabBarGate? {
+    if (returnType != "Z") return null
+    val code = code()
+    val gates = code.indices.filter { at ->
+        val call = code[at].method()
+        code[at].opcode == Opcode.INVOKE_INTERFACE && call != null && call.returnType == "Z" && call.parameterTypes.isEmpty() && asksPage(call)
+    }.mapNotNull { at ->
+        val check = (at + 1..at + 4).firstOrNull { code.slideFunctionCheck(it) } ?: return@mapNotNull null
+        val between = setOf(Opcode.MOVE_RESULT, Opcode.CONST_4, Opcode.IF_NE, Opcode.IF_EQZ)
+        if ((at + 1 until check).all { code[it].opcode in between }) check + 3 else null
+    }
+    val gate = gates.singleOrNull() ?: return null
+    val answer = code[gate].register() ?: return null
+    if (answer > 15 || gate in jumpTargets()) return null
+    return TabBarGate(gate, answer)
+}
+
+/** A function read from a field, unboxed to a yes or no by a static helper, and an if-eqz forward on the answer. */
+private fun List<Instruction>.slideFunctionCheck(at: Int): Boolean {
+    val field = (getOrNull(at) as? ReferenceInstruction)?.reference as? FieldReference ?: return false
+    val unbox = getOrNull(at + 1)?.method() ?: return false
+    val held = this[at].register() ?: return false
+    val answer = getOrNull(at + 2)?.register() ?: return false
+    return this[at].opcode == Opcode.IGET_OBJECT && field.type == FUNCTION0 &&
+        this[at + 1].opcode == Opcode.INVOKE_STATIC && unbox.returnType == "Z" &&
+        unbox.parameterTypes.map { it.toString() } == listOf(FUNCTION0) && this[at + 1].reads() == listOf(held) &&
+        this[at + 2].opcode == Opcode.MOVE_RESULT && getOrNull(at + 3)?.opcode == Opcode.IF_EQZ &&
+        this[at + 3].register() == answer && branchTarget(at + 3) > at + 3
 }
 
 private fun Iterable<ClassDef>.tabBarBuilders() = flatMap { cls -> cls.methods.filter { it.isTabBarBuilder() } }
@@ -175,9 +248,24 @@ internal fun findFloatingTabBar(classes: Iterable<ClassDef>): List<Method> =
 internal fun findTabBarOverlay(classes: Iterable<ClassDef>): List<Method> =
     listOfNotNull(classes.tabBarBuilders().filter { it.tabBarOverlayGate() != null }.singleOrNull())
 
-/** The one page whose scroll-away answer reads the Chats flag. */
-internal fun findTabBarScrollAway(classes: Iterable<ClassDef>): List<Method> =
-    listOfNotNull(classes.flatMap { cls -> cls.methods.filter { it.returnType == "Z" && it.parameterTypes.isEmpty() && it.tabBarScrollAwayReturn() != null } }.singleOrNull())
+/**
+ * The Chats page's two answers, each the one method reading its flag and both on the same page, then every check in
+ * the bar's frame that asks a page for its slide answer through an interface that page implements. A part missing,
+ * or found twice, leaves Hide the tab bar while scrolling unapplied.
+ */
+internal fun findTabBarScrollAway(classes: Iterable<ClassDef>): List<Method> {
+    val answers = classes.flatMap { cls ->
+        cls.methods.filter { it.returnType == "Z" && it.parameterTypes.isEmpty() }.mapNotNull { m -> m.chatsPageAnswer()?.let { Triple(cls, m, it.first) } }
+    }
+    val scroll = answers.filter { it.third == CHATS_SCROLL_AWAY_FLAG }.singleOrNull() ?: return emptyList()
+    val slide = answers.filter { it.third == CHATS_SLIDE_FLAG }.singleOrNull() ?: return emptyList()
+    if (scroll.first.type != slide.first.type) return emptyList()
+    val page = slide.first.interfaces.map { it.toString() }.toSet()
+    val asksPage = { call: MethodReference -> call.name == slide.second.name && call.definingClass in page }
+    val checks = classes.flatMap { cls -> cls.methods.filter { it.returnType == "Z" && it.tabBarSlideCheck(asksPage) != null } }
+    if (checks.isEmpty()) return emptyList()
+    return listOf(scroll.second, slide.second) + checks
+}
 
 internal fun MutableMethod.validateFloatingTabBar(): TabBarGate =
     floatingTabBarGate() ?: tabBarChanged("no floating bar gate in ${hookId()}")
@@ -186,7 +274,7 @@ internal fun MutableMethod.validateTabBarOverlay(): TabBarGate =
     tabBarOverlayGate() ?: tabBarChanged("no overlay gate in ${hookId()}")
 
 internal fun MutableMethod.validateTabBarScrollAway(): TabBarGate =
-    tabBarScrollAwayReturn() ?: tabBarChanged("no scroll-away answer in ${hookId()}")
+    tabBarScrollAwayReturn() ?: tabBarSlideCheck() ?: tabBarChanged("no scroll-away answer or slide check in ${hookId()}")
 
 /** While Floating tab bar is on, the builder reads the pill's flag as yes. Off, Pause and safe mode keep Messenger's. */
 internal fun MutableMethod.injectFloatingTabBar() {
@@ -209,7 +297,10 @@ internal fun MutableMethod.injectTabBarOverlay() {
     """.trimIndent())
 }
 
-/** While Hide the tab bar while scrolling is on, the Chats page lets the bar slide away as its list scrolls. */
+/**
+ * While Hide the tab bar while scrolling is on, the Chats page lets the bar slide away as its list scrolls, and the
+ * bar's frame lets a scroll move it even where Messenger's own overlay flag says no.
+ */
 internal fun MutableMethod.injectTabBarScrollAway() {
     val gate = validateTabBarScrollAway()
     addInstructions(gate.index, """

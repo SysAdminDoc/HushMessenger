@@ -27,6 +27,13 @@ private const val FRAME = "LX/Tb3;"
 private const val BUILDER_PARAMETERS = "(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;Z)"
 internal const val SYNTHETIC_TAB_BAR_BUILDER = "$BUILDER->A01$BUILDER_PARAMETERS$FRAME"
 internal const val SYNTHETIC_CHATS_SCROLL_AWAY = "$CHATS_PAGE->F7L()Z"
+private const val SLIDE_PAGE = "LX/Tb9;"
+internal const val SYNTHETIC_CHATS_SLIDE = "$CHATS_PAGE->D2x()Z"
+private const val SLIDE_FRAME = "LX/Td1;"
+internal const val SYNTHETIC_SLIDE_START = "$SLIDE_FRAME->EWo(Landroid/view/View;Landroid/view/View;II)Z"
+internal const val SYNTHETIC_SLIDE_GATE = "$SLIDE_FRAME->A03(Landroid/view/View;${SLIDE_FRAME}I)Z"
+/** Hide the tab bar while scrolling's four hooks in the synthetic fixture. */
+internal val SYNTHETIC_SCROLL_AWAY_HOOKS = setOf(SYNTHETIC_CHATS_SCROLL_AWAY, SYNTHETIC_CHATS_SLIDE, SYNTHETIC_SLIDE_START, SYNTHETIC_SLIDE_GATE)
 private const val FLOATING = "$SETTINGS->floatingTabBar(I)Z"
 private const val OVERLAY = "$SETTINGS->tabBarOverlay(I)Z"
 private const val SCROLL_AWAY = "$SETTINGS->tabBarScrollAway(I)Z"
@@ -146,6 +153,73 @@ invoke-interface {v2, v0, v1}, $CONFIG->B3T(J)Z
 move-result v0
 return v0"""
 
+/**
+ * The Chats page's slide answer as 587 writes it, cut down. v3 is this. No while the page isn't shown or its list is
+ * busy, each no a jump onto the return, else its own flag read the same way as the scroll-away answer.
+ */
+private const val SLIDE_BODY = """iget-boolean v0, v3, $CHATS_PAGE->A05:Z
+const/4 v2, 0x0
+if-eqz v0, :done
+invoke-virtual {v3}, $CHATS_PAGE->isAdded()Z
+move-result v0
+if-eqz v0, :done
+iget-boolean v0, v3, $CHATS_PAGE->A01:Z
+if-nez v0, :done
+invoke-static {}, LX/2wm;->A05()LX/4vN;
+move-result-object v2
+const-wide v0, 0x0101039000003351L
+check-cast v2, $CONFIG
+invoke-interface {v2, v0, v1}, $CONFIG->B3T(J)Z
+move-result v2
+:done
+return v2"""
+
+/**
+ * The frame's onStartNestedScroll, cut down. v5 is this. It asks the page under it for its slide answer, then its own
+ * slide check held in a field, before it takes the scroll.
+ */
+private const val SLIDE_START_BODY = """const/4 v3, 0x0
+and-int/lit8 v0, v8, 0x2
+if-eqz v0, :done
+iget-object v0, v5, $SLIDE_FRAME->A07:$SLIDE_PAGE
+if-eqz v0, :done
+invoke-interface {v0}, $SLIDE_PAGE->D2x()Z
+move-result v1
+const/4 v0, 0x1
+if-ne v1, v0, :done
+iget-object v0, v5, $SLIDE_FRAME->A08:Lkotlin/jvm/functions/Function0;
+invoke-static {v0}, LX/18D;->A1X(Lkotlin/jvm/functions/Function0;)Z
+move-result v0
+if-eqz v0, :done
+iget-object v0, v5, $SLIDE_FRAME->A04:Landroid/view/View;
+if-ne v6, v0, :done
+const/4 v3, 0x1
+:done
+return v3"""
+
+/** The frame's static check each nested pre-scroll goes through: the same two questions, the answer reused as the yes. */
+private const val SLIDE_GATE_BODY = """if-nez v3, :other
+iget-object v0, v2, $SLIDE_FRAME->A05:Landroid/view/View;
+:check
+if-ne v1, v0, :no
+iget-object v0, v2, $SLIDE_FRAME->A07:$SLIDE_PAGE
+if-eqz v0, :no
+invoke-interface {v0}, $SLIDE_PAGE->D2x()Z
+move-result v0
+const/4 v1, 0x1
+if-ne v0, v1, :no
+iget-object v0, v2, $SLIDE_FRAME->A08:Lkotlin/jvm/functions/Function0;
+invoke-static {v0}, LX/18D;->A1X(Lkotlin/jvm/functions/Function0;)Z
+move-result v0
+if-eqz v0, :no
+return v1
+:other
+iget-object v0, v2, $SLIDE_FRAME->A03:Landroid/view/View;
+goto :check
+:no
+const/4 v1, 0x0
+return v1"""
+
 /** [body] with each swap made once, failing if one doesn't apply. */
 private fun edited(body: String, vararg swaps: Pair<String, String>) = swaps.fold(body) { text, (from, to) ->
     check(text.split(from).size == 2) { "$from isn't in the body once" }
@@ -160,9 +234,27 @@ private fun chatsPage(body: String = CHATS_BODY, id: String = SYNTHETIC_CHATS_SC
 
 private fun fragment(body: String = FRAGMENT_BODY) = fixtureMethod(SYNTHETIC_TAB_BAR_FRAGMENT, body, 16)
 
-/** The frame builder on its singleton and the Chats page that answers whether the bar may slide away. */
-internal fun tabBarFixture(builder: MutableMethod = builder(), page: MutableMethod = chatsPage()): List<MutableClass> =
-    listOf(fixtureClass(builder.definingClass, listOf(builder)), fixtureClass(CHATS_PAGE, listOf(page)))
+private fun chatsSlide(body: String = SLIDE_BODY, id: String = SYNTHETIC_CHATS_SLIDE) = fixtureMethod(id, body, 4, AccessFlags.PUBLIC.value or AccessFlags.FINAL.value)
+
+private fun slideStart(body: String = SLIDE_START_BODY) = fixtureMethod(SYNTHETIC_SLIDE_START, body, 10, AccessFlags.PUBLIC.value or AccessFlags.FINAL.value)
+
+private fun slideGate(body: String = SLIDE_GATE_BODY) = fixtureMethod(SYNTHETIC_SLIDE_GATE, body, 4, AccessFlags.PUBLIC.value or AccessFlags.STATIC.value)
+
+/**
+ * The frame builder on its singleton, the Chats page with its two answers on whether the bar may slide away, and the
+ * bar's frame that asks the page through [pageInterfaces].
+ */
+internal fun tabBarFixture(
+    builder: MutableMethod = builder(),
+    page: MutableMethod = chatsPage(),
+    slide: MutableMethod? = chatsSlide(),
+    checks: List<MutableMethod> = listOf(slideStart(), slideGate()),
+    pageInterfaces: List<String> = listOf(SLIDE_PAGE),
+): List<MutableClass> = listOf(
+    fixtureClass(builder.definingClass, listOf(builder)),
+    fixtureClass(CHATS_PAGE, listOfNotNull(page, slide), interfaces = pageInterfaces),
+    fixtureClass(SLIDE_FRAME, checks),
+)
 
 /** 587's tab fragment and Chats page. */
 private fun tabBar587Fixture(builder: MutableMethod = fragment(), page: MutableMethod = chatsPage(CHATS_587_BODY)) = tabBarFixture(builder, page)
@@ -182,19 +274,120 @@ class TabBarTest {
         val classes = tabBarFixture()
         assertEquals(setOf(SYNTHETIC_TAB_BAR_BUILDER), found(classes, FLOATING_TAB_BAR))
         assertEquals(setOf(SYNTHETIC_TAB_BAR_BUILDER), found(classes, TAB_BAR_OVERLAY))
-        assertEquals(setOf(SYNTHETIC_CHATS_SCROLL_AWAY), found(classes, TAB_BAR_SCROLL_AWAY))
+        assertEquals(SYNTHETIC_SCROLL_AWAY_HOOKS, found(classes, TAB_BAR_SCROLL_AWAY))
         validateControls(mirroredControls(classes), setOf(FLOATING_TAB_BAR, TAB_BAR_OVERLAY, TAB_BAR_SCROLL_AWAY))
+    }
+
+    // #154: the scroll-away answer alone never moved the bar, since the frame first asks the page's slide answer and
+    // then its own slide check, which Messenger fills from its overlay flag for the floating pill.
+    @Test fun theSlideAnswerAndTheFramesChecksAreFoundWithTheScrollAwayAnswer() {
+        val classes = tabBarFixture()
+        assertEquals(SYNTHETIC_SCROLL_AWAY_HOOKS, found(classes, TAB_BAR_SCROLL_AWAY))
+        val page = chatsSlide()
+        val start = slideStart()
+        val gate = slideGate()
+        val befores = listOf(page, start, gate).map { it.code() }
+        // Builder branches read their offsets from the labels when asked, so the early jumps are counted before the edit.
+        val end = befores[0].size - 1
+        val early = befores[0].indices.filter { befores[0].branchTarget(it) == end }
+        assertEquals(3, early.size)
+        injectControl(TAB_BAR_SCROLL_AWAY, mapOf(TAB_BAR_SCROLL_AWAY to listOf(page, start, gate)))
+        // The slide answer goes through the switch right before its return, like the scroll-away answer. Its early no's
+        // still land on the return itself, so a page that isn't showing never meets the switch.
+        val answer = page.code()
+        assertEquals(befores[0].take(end), answer.take(end))
+        assertEquals(SCROLL_AWAY, answer[end].ref())
+        assertEquals(2, (answer[end] as FiveRegisterInstruction).registerC)
+        assertEquals(Opcode.RETURN, answer[end + 2].opcode)
+        for (at in early) assertEquals(end + 2, answer.branchTarget(at))
+        // Each frame check hands its own slide check's answer through the switch, and the same if-eqz still decides.
+        for ((method, before) in listOf(start, gate).zip(befores.drop(1))) {
+            val code = method.code()
+            val at = before.indices.single { before[it].opcode == Opcode.IF_EQZ && before.getOrNull(it - 2)?.ref() =="LX/18D;->A1X(Lkotlin/jvm/functions/Function0;)Z" }
+            assertEquals(before.take(at), code.take(at), method.hookId())
+            assertEquals(SCROLL_AWAY, code[at].ref(), method.hookId())
+            assertEquals(0, (code[at] as FiveRegisterInstruction).registerC, method.hookId())
+            assertEquals(0, (code[at + 1] as OneRegisterInstruction).registerA, method.hookId())
+            assertEquals(before.drop(at).map { it.opcode }, code.drop(at + 2).map { it.opcode }, method.hookId())
+            assertEquals(1, code.count { it.ref() == SCROLL_AWAY }, method.hookId())
+        }
+    }
+
+    // Without every part, or with the page's answers or the frame's question pointing anywhere else, nothing changes.
+    @Test fun aMissingOrStraySlidePartLeavesScrollAwayUnapplied() {
+        val elsewhere = "LX/Tc2;"
+        val cases = mapOf(
+            "no slide answer" to tabBarFixture(slide = null),
+            "no frame check" to tabBarFixture(checks = emptyList()),
+            "two slide answers" to tabBarFixture() + fixtureClass(elsewhere, listOf(chatsSlide(id = "$elsewhere->D2x()Z")), interfaces = listOf(SLIDE_PAGE)),
+            "the slide answer on another page" to tabBarFixture(slide = null) +
+                fixtureClass(elsewhere, listOf(chatsSlide(id = "$elsewhere->D2x()Z")), interfaces = listOf(SLIDE_PAGE)),
+            "a page the frame never asks" to tabBarFixture(pageInterfaces = listOf("LX/Tc3;")),
+            "the frame asking another answer" to tabBarFixture(checks = listOf(
+                slideStart(SLIDE_START_BODY.replace("D2x()Z", "D2y()Z")), slideGate(SLIDE_GATE_BODY.replace("D2x()Z", "D2y()Z")))),
+        )
+        for ((case, classes) in cases) {
+            assertTrue(found(classes, TAB_BAR_SCROLL_AWAY).isEmpty(), case)
+            assertFailsWith<PatchException>(case) { validateControls(mirroredControls(classes), setOf(TAB_BAR_SCROLL_AWAY)) }
+        }
+    }
+
+    // The slide answer's early jumps skip the switch, so each must carry a no. Anything else there, or a way into the
+    // early checks past the no, leaves the slide answer and with it the whole control unapplied.
+    @Test fun aSlideAnswerWhoseEarlyJumpsMayCarryAnythingButNoLeavesScrollAwayUnapplied() {
+        fun slide(vararg swaps: Pair<String, String>) = tabBarFixture(slide = chatsSlide(edited(SLIDE_BODY, *swaps)))
+        val cases = mapOf(
+            "an early yes" to slide("const/4 v2, 0x0" to "const/4 v2, 0x1"),
+            "an early answer never set" to slide("const/4 v2, 0x0\n" to ""),
+            "the no overwritten before a jump" to slide("iget-boolean v0, v3, $CHATS_PAGE->A01:Z" to "iget-boolean v2, v3, $CHATS_PAGE->A01:Z\nmove v0, v2"),
+            "a way into the early checks past the no" to slide("const/4 v2, 0x0\n" to "if-nez v0, :mid\nconst/4 v2, 0x0\n",
+                "invoke-virtual {v3}" to ":mid\ninvoke-virtual {v3}"),
+            "a wide write over the no" to slide("iget-boolean v0, v3, $CHATS_PAGE->A01:Z" to "const-wide v1, 0x0L\niget-boolean v0, v3, $CHATS_PAGE->A01:Z"),
+        )
+        for ((case, classes) in cases) {
+            assertTrue(found(classes, TAB_BAR_SCROLL_AWAY).isEmpty(), case)
+            assertFailsWith<PatchException>(case) { validateControls(mirroredControls(classes), setOf(TAB_BAR_SCROLL_AWAY)) }
+        }
+    }
+
+    // A frame check in any other shape stays as it is, so the control can't match the tested build's four hooks.
+    @Test fun anyOtherSlideCheckShapeLeavesScrollAwayUnapplied() {
+        fun start(vararg swaps: Pair<String, String>) = tabBarFixture(checks = listOf(slideStart(edited(SLIDE_START_BODY, *swaps)), slideGate()))
+        val unbox = "invoke-static {v0}, LX/18D;->A1X(Lkotlin/jvm/functions/Function0;)Z"
+        val cases = mapOf(
+            "the check's if-eqz flipped" to start("move-result v0\nif-eqz v0, :done" to "move-result v0\nif-nez v0, :done"),
+            "a check held as something else" to start("A08:Lkotlin/jvm/functions/Function0;" to "A08:Lkotlin/Lazy;"),
+            "a helper taking more" to start(unbox to "invoke-static {v0, v1}, LX/18D;->A1X(Lkotlin/jvm/functions/Function0;I)Z"),
+            "a helper unboxing another register" to start(unbox to "invoke-static {v1}, LX/18D;->A1X(Lkotlin/jvm/functions/Function0;)Z"),
+            "a virtual helper" to start(unbox to "invoke-virtual {v0}, LX/18D;->A1X(Lkotlin/jvm/functions/Function0;)Z"),
+            "another register tested" to start("move-result v0\nif-eqz v0, :done" to "move-result v0\nif-eqz v1, :done"),
+            "something else between the page's answer and the check" to start("const/4 v0, 0x1\nif-ne v1, v0, :done" to
+                "const/4 v0, 0x1\nif-ne v1, v0, :done\nadd-int/lit8 v1, v1, 0x1"),
+            "a branch onto the check's if-eqz" to start("const/4 v3, 0x0\n" to "const/4 v3, 0x0\nif-nez v7, :gate\n",
+                "move-result v0\nif-eqz v0, :done" to "move-result v0\n:gate\nif-eqz v0, :done"),
+            "the check asked twice" to start(":done\nreturn v3" to "iget-object v0, v5, $SLIDE_FRAME->A07:$SLIDE_PAGE\n" +
+                "invoke-interface {v0}, $SLIDE_PAGE->D2x()Z\nmove-result v1\niget-object v0, v5, $SLIDE_FRAME->A08:Lkotlin/jvm/functions/Function0;\n" +
+                "$unbox\nmove-result v0\nif-eqz v0, :done\nconst/4 v3, 0x1\n:done\nreturn v3"),
+        )
+        for ((case, classes) in cases) {
+            assertEquals(SYNTHETIC_SCROLL_AWAY_HOOKS - SYNTHETIC_SLIDE_START, found(classes, TAB_BAR_SCROLL_AWAY), case)
+            assertFailsWith<PatchException>(case) { validateControls(mirroredControls(classes), setOf(TAB_BAR_SCROLL_AWAY)) }
+        }
     }
 
     @Test fun eachFamilyMapsItsOwnBuilderAndChatsPage() {
         fun ids(profile: ControlProfile) = listOf(FLOATING_TAB_BAR, TAB_BAR_OVERLAY, TAB_BAR_SCROLL_AWAY).map { profile.hooks.getValue(it) }
         val view = "->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;"
-        // Family B keeps arm64's tab fragment and only renames the Chats page's answer.
+        // Family B keeps arm64's tab fragment and only renames the Chats page's answers and the frame's checks.
         val a = "LX/1er;$view"
         val c = "LX/1fH;$view"
-        assertEquals(listOf(setOf(a), setOf(a), setOf("LX/1tj;->FGC()Z")), ids(PROFILE_347415354))
-        assertEquals(listOf(setOf(c), setOf(c), setOf("LX/1u9;->FGl()Z")), ids(PROFILE_347415262))
-        assertEquals(listOf(setOf(a), setOf(a), setOf("LX/1tj;->FGF()Z")), ids(PROFILE_347415280))
+        val scroll = "(Landroid/view/View;Landroid/view/View;II)Z"
+        assertEquals(listOf(setOf(a), setOf(a), setOf("LX/1p9;->EWo$scroll", "LX/1tj;->DUs()Z", "LX/1tj;->FGC()Z",
+            "LX/4d2;->A03(Landroid/view/View;LX/4d2;I)Z")), ids(PROFILE_347415354))
+        assertEquals(listOf(setOf(c), setOf(c), setOf("LX/1pZ;->EXA$scroll", "LX/1u9;->DVG()Z", "LX/1u9;->FGl()Z",
+            "LX/4dY;->A03(Landroid/view/View;LX/4dY;I)Z")), ids(PROFILE_347415262))
+        assertEquals(listOf(setOf(a), setOf(a), setOf("LX/1p9;->EWr$scroll", "LX/1tj;->DV4()Z", "LX/1tj;->FGF()Z",
+            "LX/4cN;->A03(Landroid/view/View;LX/4cN;I)Z")), ids(PROFILE_347415280))
     }
 
     // A check before the pill's flag in the overlay's own shape, even on a register of its own, isn't the overlay.
@@ -210,7 +403,7 @@ class TabBarTest {
         val classes = tabBar587Fixture()
         assertEquals(setOf(SYNTHETIC_TAB_BAR_FRAGMENT), found(classes, FLOATING_TAB_BAR))
         assertEquals(setOf(SYNTHETIC_TAB_BAR_FRAGMENT), found(classes, TAB_BAR_OVERLAY))
-        assertEquals(setOf(SYNTHETIC_CHATS_SCROLL_AWAY), found(classes, TAB_BAR_SCROLL_AWAY))
+        assertEquals(SYNTHETIC_SCROLL_AWAY_HOOKS, found(classes, TAB_BAR_SCROLL_AWAY))
         activeProfile = syntheticProfileWith(FLOATING_TAB_BAR to setOf(SYNTHETIC_TAB_BAR_FRAGMENT), TAB_BAR_OVERLAY to setOf(SYNTHETIC_TAB_BAR_FRAGMENT))
         validateControls(mirroredControls(classes), setOf(FLOATING_TAB_BAR, TAB_BAR_OVERLAY, TAB_BAR_SCROLL_AWAY))
     }
@@ -345,7 +538,7 @@ class TabBarTest {
             "the flag read with something else" to body(read to "invoke-static {v2, v0, v1}, LX/17k;->A1X(Ljava/lang/String;J)Z"),
             "something between the answer and the return" to body("move-result v0\nreturn v0" to "move-result v0\nconst/4 v0, 0x1\nreturn v0"),
             "another register returned" to body("move-result v0\nreturn v0" to "move-result v0\nreturn v2"),
-            "a branch onto the return" to body("move-result-object v2\n" to "move-result-object v2\nif-eqz v2, :done\n",
+            "a branch onto the return carrying no answer" to body("move-result-object v2\n" to "move-result-object v2\nif-eqz v2, :done\n",
                 "move-result v0\nreturn v0" to "move-result v0\n:done\nreturn v0"),
             "a static page" to tabBarFixture(page = chatsPage(flags = AccessFlags.PUBLIC.value or AccessFlags.STATIC.value)),
             "a page that takes a parameter" to tabBarFixture(page = fixtureMethod("$CHATS_PAGE->F7L(I)Z", CHATS_BODY, 5)),
@@ -429,6 +622,9 @@ class TabBarTest {
             Triple("a builder with its overlay check chained", TAB_BAR_OVERLAY, builder(edited(BUILDER_BODY, "if-nez v10, :overlay" to "if-nez v0, :overlay"))),
             Triple("the builder as the Chats page", TAB_BAR_SCROLL_AWAY, builder()),
             Triple("a page reading another flag", TAB_BAR_SCROLL_AWAY, chatsPage(edited(CHATS_BODY, "0x0101039000033352L" to "0x0101039000033353L"))),
+            Triple("a slide answer with an early yes", TAB_BAR_SCROLL_AWAY, chatsSlide(edited(SLIDE_BODY, "const/4 v2, 0x0" to "const/4 v2, 0x1"))),
+            Triple("a frame check with its if-eqz flipped", TAB_BAR_SCROLL_AWAY,
+                slideStart(edited(SLIDE_START_BODY, "move-result v0\nif-eqz v0, :done" to "move-result v0\nif-nez v0, :done"))),
         )
         for ((case, key, bad) in cases) {
             val badBefore = bad.code()
@@ -475,17 +671,26 @@ class TabBarTest {
             assertEquals(before.map { it.opcode }.filter { it != Opcode.NOP },
                 after.filterIndexed { i, _ -> i !in added }.map { it.opcode }.filter { it != Opcode.NOP }, code)
 
-            val page = MutableMethod(pages.single())
-            val pageBefore = page.code()
-            val end = page.validateTabBarScrollAway()
-            page.injectTabBarScrollAway()
-            val pageAfter = page.code()
-            assertEquals(SCROLL_AWAY, pageAfter[end.index].ref(), code)
-            assertEquals(end.answer, (pageAfter[end.index] as FiveRegisterInstruction).registerC, code)
-            assertEquals(end.answer, (pageAfter[end.index + 1] as OneRegisterInstruction).registerA, code)
-            assertEquals(end.answer, (pageAfter.last() as OneRegisterInstruction).registerA, code)
-            assertEquals(pageBefore.map { it.opcode }.filter { it != Opcode.NOP },
-                (pageAfter.take(end.index) + pageAfter.drop(end.index + 2)).map { it.opcode }.filter { it != Opcode.NOP }, code)
+            // The page's two answers and the frame's checks, each handing the yes or no it tests through the switch.
+            assertEquals(2, pages.count { it.parameterTypes.isEmpty() }, code)
+            for (hooked in pages) {
+                val id = "$code ${hooked.hookId()}"
+                val page = MutableMethod(hooked)
+                val pageBefore = page.code()
+                val gate = page.validateTabBarScrollAway()
+                page.injectTabBarScrollAway()
+                val pageAfter = page.code()
+                assertEquals(SCROLL_AWAY, pageAfter[gate.index].ref(), id)
+                assertEquals(gate.answer, (pageAfter[gate.index] as FiveRegisterInstruction).registerC, id)
+                assertEquals(gate.answer, (pageAfter[gate.index + 1] as OneRegisterInstruction).registerA, id)
+                assertEquals(pageBefore[gate.index].opcode, pageAfter[gate.index + 2].opcode, id)
+                assertEquals(gate.answer, (pageAfter[gate.index + 2] as OneRegisterInstruction).registerA, id)
+                assertEquals(pageBefore.map { it.opcode }.filter { it != Opcode.NOP },
+                    (pageAfter.take(gate.index) + pageAfter.drop(gate.index + 2)).map { it.opcode }.filter { it != Opcode.NOP }, id)
+                // The slide answer's early no's still land on its return, past the switch.
+                for (at in pageBefore.indices.filter { it < gate.index && pageBefore.branchTarget(it) == gate.index })
+                    assertEquals(gate.index + 2, pageAfter.branchTarget(at), id)
+            }
         }
     }
 }

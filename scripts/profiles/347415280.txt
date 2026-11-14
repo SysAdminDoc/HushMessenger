@@ -260,7 +260,10 @@ hook system_camera LX/5rq;->DZ9(Landroid/os/Bundle;LX/5Qz;)Z
 hook system_camera LX/7Hb;->FL1(Lcom/facebook/messaging/montage/composer/model/MontageComposerFragmentParams;Lcom/facebook/messaging/send/trigger/NavigationTrigger;)V
 hook tab_badges LX/1i7;->A00(Ljava/lang/String;)LX/39h;
 hook tab_bar_overlay LX/1er;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;
+hook tab_bar_scroll_away LX/1p9;->EWr(Landroid/view/View;Landroid/view/View;II)Z
+hook tab_bar_scroll_away LX/1tj;->DV4()Z
 hook tab_bar_scroll_away LX/1tj;->FGF()Z
+hook tab_bar_scroll_away LX/4cN;->A03(Landroid/view/View;LX/4cN;I)Z
 hook tab_config LX/1jh;->A02(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)LX/1kS;
 hook tab_notifications LX/1i6;->A09(LX/1i6;)Z
 hook tab_people LX/1i6;->A0E(LX/1i6;)Z

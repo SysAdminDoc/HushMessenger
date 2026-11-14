@@ -862,8 +862,10 @@ public final class Settings {
     public static boolean tabBarOverlay(int stock) { return stock != 0 || heldTabBar(TAB_BAR_SCROLL_AWAY); }
 
     /**
-     * The Chats page's answer on whether the tab bar slides away while its list scrolls. It follows the overlay's held
-     * answer, or the switch itself when Messenger chose the overlay on its own and never asked.
+     * The Chats page's two answers on the tab bar sliding away (how far it may go, and whether a scroll may move it at
+     * all), and the bar's own check as each scroll starts, which Messenger only fills in for the floating pill, from its
+     * own overlay flag. Each follows the overlay's held answer, or the switch itself when Messenger chose the overlay on
+     * its own and never asked.
      */
     public static boolean tabBarScrollAway(int stock) {
         if (stock != 0) return true;
