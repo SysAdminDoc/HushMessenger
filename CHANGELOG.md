@@ -37,6 +37,7 @@
 - `Log chats that don't notify`, under `Keep a message log`, also saves messages from muted and restricted chats that aren't end-to-end encrypted, without a notification. Those chats used to stop before the log could see the message. Now they go through to the log and the notification is dropped right before it would show. Unsends still get marked, and auto reply leaves those chats alone. Refs #143.
 - Patching in Morphe Manager holds less memory. One of the `Android Auto messages` lookups kept a copy of every APK it had read for as long as the patches stayed loaded, so patching a second time carried the first APK along. It lets go once it's done now. Refs #75.
 - `GmsCore support` only tells Messenger that Google Play services is there while microG-RE is installed and turned on. It used to say yes either way, so without microG-RE Messenger kept reaching for an app that wasn't there. Now it carries on the way it does on a phone with no Play services. On Android 14 and newer, a phone without microG-RE also keeps Android's own sign-in route, so a password manager can still offer a saved login.
+- For developers, `scripts/CompatReport.java` is a small launcher now. The report it runs lives in `scripts/compat/`, one file per group of patches instead of one file of nearly 12,000 lines, and you start it the same way as before.
 
 ## 0.29.0 (2026-11-05)
 

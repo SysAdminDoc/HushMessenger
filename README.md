@@ -299,7 +299,7 @@ Where things live:
 - `patches-list.json` is the generated patch catalog (`:patches:generatePatchCatalog`). `patches-bundle.json` is the Morphe source index and only changes at release time.
 - `scripts/release/release.ps1` runs a release in five stages: `prepare`, `preflight`, `build`, `publish` and `index`.
 
-To add a control, find its hook in the stock APK with `:patches:inspectDex -PapkPath=<apk> -Ptarget=<query>` (queries like `class:LX/Foo;`, `method:LX/Foo;->A01`, `callers:`, `strings:<text>`, `reads:`, `writes:` and `impl:`). Define it under `controls/` so discovery validates every site before the first edit, add the row in `SettingsActivity.java` with its text in `SettingsText.java` and `SettingsTranslations.java`, mirror the hook in `CompatReport.java`, and add tests for the expected shape and for a missing or ambiguous one.
+To add a control, find its hook in the stock APK with `:patches:inspectDex -PapkPath=<apk> -Ptarget=<query>` (queries like `class:LX/Foo;`, `method:LX/Foo;->A01`, `callers:`, `strings:<text>`, `reads:`, `writes:` and `impl:`). Define it under `controls/` so discovery validates every site before the first edit, add the row in `SettingsActivity.java` with its text in `SettingsText.java` and `SettingsTranslations.java`, mirror the hook in its family's file under `scripts/compat/`, and add tests for the expected shape and for a missing or ambiguous one.
 
 Translations are welcome. A language is one Java table of text pairs registered with one line in `SettingsTranslations.java`, and `SettingsTranslationTest` fails the build when a text is missing or a placeholder changed.
 
