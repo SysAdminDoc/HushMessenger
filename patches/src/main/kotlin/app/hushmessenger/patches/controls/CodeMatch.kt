@@ -71,3 +71,21 @@ internal class MemberMatch(val id: String) {
         return refName == name && ref.toString() == id
     }
 }
+
+/**
+ * A table keyed by method or field ids: what `ids[ref.toString()]` answers for a method or field reference. The
+ * reference's name is looked up first, so one whose name no key has is never built into an id. It holds strings only,
+ * so a top-level one is fine.
+ */
+internal class MemberTable<V>(private val ids: Map<String, V>) {
+    private val names = ids.keys.mapTo(HashSet()) { it.substringAfter("->").substringBefore('(').substringBefore(':') }
+
+    operator fun get(ref: Reference?): V? {
+        val name = when (ref) {
+            is MethodReference -> ref.name
+            is FieldReference -> ref.name
+            else -> return null
+        }
+        return if (name in names) ids[ref.toString()] else null
+    }
+}
