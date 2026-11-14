@@ -792,25 +792,52 @@ public class CompatReport {
         return out.append(")\n").toString();
     }
 
-    /** The Kotlin a new build needs, reusing a recorded build's profile or sites when they're identical. */
+    static final String PATCH_SOURCES = "patches/src/main/kotlin/app/hushmessenger/patches/";
+
+    /** Whether the patch source at -file (under PATCH_SOURCES) matches -regex; false when it can't be read. */
+    static boolean patchSourceHas(String file, String regex) {
+        try {
+            return Pattern.compile(regex).matcher(Files.readString(scriptDir().getParent().resolve(PATCH_SOURCES + file))).find();
+        } catch (IOException | InvalidPathException | NullPointerException e) {
+            return false;
+        }
+    }
+
+    /**
+     * The Kotlin a new build needs, reusing a recorded build's profile or sites when they're identical. Only what the
+     * patch sources don't already declare is printed: the release's build stage re-records every supported family,
+     * and a "list it in VERSIONS" line for a build that's been listed for days read as a missing build.
+     */
     static void printKotlin(Profile build, Collection<Profile> others) {
         var sameControls = others.stream().filter(o -> o.sameControls(build)).map(o -> o.code).toList();
         var sameSites = others.stream().filter(o -> o.dexSites.equals(build.dexSites)).map(o -> o.code).toList();
-        System.out.println("// MessengerTarget.kt: list " + build.code + " under \"" + build.version + "\" in VERSIONS.");
-        if (sameControls.isEmpty()) {
+        var code = "\\b" + Pattern.quote(build.code) + "\\b";
+        boolean listed = patchSourceHas("MessengerTarget.kt", "(?s)val VERSIONS\\b.*?" + code + ".*?val VERSION_CODES")
+            && patchSourceHas("MessengerTarget.kt", code + " to SupportedAbi\\.");
+        boolean controlsMapped = patchSourceHas("controls/ControlProfiles.kt", code + " to PROFILE_");
+        boolean sitesMapped = patchSourceHas("coexist/InstallBesideMetaAppsPatch.kt", code + " to expectedDexSites");
+        if (listed && controlsMapped && sitesMapped) {
+            System.out.println("// " + build.code + " is already declared: MessengerTarget.kt lists it, and controlProfiles and" +
+                " expectedDexSitesByBuild map it. Nothing to add.");
+            return;
+        }
+        if (!listed) {
+            System.out.println("// MessengerTarget.kt: list " + build.code + " under \"" + build.version + "\" in VERSIONS, with its ABI in ABIS.");
+        }
+        if (!controlsMapped && sameControls.isEmpty()) {
             System.out.println("// ControlProfiles.kt: add this profile and map " + build.code + " to it in controlProfiles.");
             System.out.println();
             System.out.print(kotlinProfile(build));
-        } else {
+        } else if (!controlsMapped) {
             System.out.println("// ControlProfiles.kt: the controls match build " + String.join(", ", sameControls) +
                 ". Map " + build.code + " to the same profile in controlProfiles.");
         }
-        System.out.println();
-        if (sameSites.isEmpty()) {
+        if (!sitesMapped) System.out.println();
+        if (!sitesMapped && sameSites.isEmpty()) {
             System.out.println("// InstallBesideMetaAppsPatch.kt: add these sites and map " + build.code + " to them in expectedDexSitesByBuild.");
             System.out.println();
             System.out.print(kotlinDexSites(build));
-        } else {
+        } else if (!sitesMapped) {
             System.out.println("// InstallBesideMetaAppsPatch.kt: the permission loads match build " + String.join(", ", sameSites) +
                 ". Map " + build.code + " to the same sites in expectedDexSitesByBuild.");
         }
