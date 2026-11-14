@@ -95,7 +95,9 @@ hook chat_preview_size Lcom/facebook/messaging/threadlist/threaditemmenu/preview
 hook chat_promotions LX/HaU;->A0C()Z
 hook chat_promotions LX/HaU;->A0D()Z
 hook community_inbox LX/23z;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
+hook delta_unsent LX/5iJ;->DXO(I)Z
 hook delta_unsent LX/cZQ;->DXO(I)Z
+hook delta_unsent LX/cZZ;->DXO(I)Z
 hook disappearing_swipe Lcom/facebook/messaging/threadview/overscroll/ui/OverScrollActionBehavior;->onStartNestedScroll(Landroidx/coordinatorlayout/widget/CoordinatorLayout;Landroid/view/View;Landroid/view/View;Landroid/view/View;II)Z
 hook emoji_drawer LX/5lx;->DKf()Z
 hook emoji_drawer LX/AQp;->A0R(LX/HTp;)Z
@@ -273,7 +275,9 @@ hook text_style LX/9z9;->onSelectionChanged(II)V
 hook typing LX/BFh;->run()V
 hook typing_mailbox LX/4dg;->A0L(Ljava/lang/String;Z)LX/34j;
 hook unsent_clear Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0C(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V
+hook unsent_indicator LX/5iJ;->Cpd(I)Ljava/lang/String;
 hook unsent_indicator LX/cZQ;->Cpd(I)Ljava/lang/String;
+hook unsent_indicator LX/cZZ;->Cpd(I)Ljava/lang/String;
 hook unsent_recall LX/A01;->A00(Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
 hook wifi_identity LX/1b5;->A02()LX/eWo;
 hook wifi_identity LX/38m;->BD6()Ljava/lang/String;

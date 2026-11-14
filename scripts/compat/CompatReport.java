@@ -984,6 +984,24 @@ public class CompatReport {
         return abis;
     }
 
+    /**
+     * An encrypted chat's row class: built on a CQL result set, serving the message row interface and the getters its
+     * text hook reads (threading id, time, sender and content type), each a name and return type taking the row index.
+     */
+    static boolean isCqlRow(ClassDef cls, String rowInterface, List<Map.Entry<String, String>> getters) {
+        if (rowInterface.isEmpty() || getters.stream().anyMatch(g -> g.getKey().isEmpty())) return false;
+        if (AccessFlags.ABSTRACT.isSet(cls.getAccessFlags()) || AccessFlags.INTERFACE.isSet(cls.getAccessFlags())) return false;
+        if (!List.of(rowInterface).equals(cls.getInterfaces())) return false;
+        boolean built = false;
+        var served = new HashSet<Map.Entry<String, String>>();
+        for (var m : cls.getMethods()) {
+            var params = m.getParameterTypes().stream().map(Object::toString).toList();
+            if ("<init>".equals(m.getName()) && params.equals(List.of("Lcom/facebook/msys/mci/CQLResultSet;"))) built = true;
+            if (params.equals(List.of("I"))) served.add(Map.entry(m.getName(), m.getReturnType()));
+        }
+        return built && served.containsAll(getters);
+    }
+
     static String resolveWrapper(ClassDef wCls, String rawName, String returnType) {
         for (var wm : wCls.getMethods()) {
             if (wm.getName().equals(rawName) && wm.getReturnType().equals(returnType)

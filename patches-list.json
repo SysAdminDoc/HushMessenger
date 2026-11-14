@@ -3268,7 +3268,7 @@
         },
         {
             "name": "Keep unsent messages",
-            "description": "Keeps messages on screen after someone unsends them, in chats where it works. In end-to-end encrypted chats the message stays in its notification instead, since the chat itself can't keep it. Group chats aren't tested. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "Keeps messages on screen after someone unsends them, marked [unsent]. In end-to-end encrypted chats it keeps the words Messenger already showed you, in the chat or a notification, until Messenger restarts. Group chats aren't tested. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Privacy",
             "dependencies": [

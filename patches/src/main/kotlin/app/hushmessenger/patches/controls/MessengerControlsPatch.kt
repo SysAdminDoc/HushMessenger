@@ -508,6 +508,14 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 }
                 injectControl(key, methods)
                 for ((old, new) in built) { host.methods.remove(old); host.directMethods.remove(old); host.methods.add(new); host.directMethods.add(new) }
+            } else if (key == "keep_unsent") {
+                // Built before the first edit, so a row class without the helper's getters stops the patch with Messenger
+                // untouched. Only encrypted chats' CQL rows take the helper.
+                val rows = methods["unsent_indicator"].orEmpty().filter { it.validateUnsentIndicator() }.map { it.definingClass }.distinct()
+                val helpers = rows.map { mutableClassDefBy(it) to unsentRowHelper(it) }
+                for ((row, _) in helpers) row.checkUnsentRowHelper()
+                injectControl(key, methods)
+                for ((row, helper) in helpers) row.addUnsentRowHelper(helper)
             } else if (key == INBOX_SEARCH_BAR) {
                 val host = mutableClassDefBy(SETTINGS)
                 val stub = host.methods.singleOrNull { it.hookId() == SEARCH_ICON_STUB }
@@ -769,7 +777,7 @@ val hideReadReceiptsPatch = controlPatch("hide_read_receipts", "Hide read receip
 @Suppress("unused")
 val markReadButtonPatch = controlPatch("mark_read_button", "Mark as read button", "Puts Messenger's Mark as read icon in a chat's top bar while Hide read receipts is on. Opening the chat still sends nothing, and a tap on the icon sends Seen and marks the chat read. When the bar is full it takes the place of the chat details button (tapping the chat's name opens the same page), or of another button that isn't for calls when a chat doesn't have one, so the call buttons stay put.", "Privacy", MARK_READ_BAR, MARK_READ_CLICK)
 @Suppress("unused")
-val keepUnsentPatch = controlPatch("keep_unsent", "Keep unsent messages", "Keeps messages on screen after someone unsends them, in chats where it works. In end-to-end encrypted chats the message stays in its notification instead, since the chat itself can't keep it. Group chats aren't tested.", "Privacy", "keep_unsent", "unsent_indicator", "delta_unsent", UNSENT_RECALL, UNSENT_CLEAR)
+val keepUnsentPatch = controlPatch("keep_unsent", "Keep unsent messages", "Keeps messages on screen after someone unsends them, marked [unsent]. In end-to-end encrypted chats it keeps the words Messenger already showed you, in the chat or a notification, until Messenger restarts. Group chats aren't tested.", "Privacy", "keep_unsent", "unsent_indicator", "delta_unsent", UNSENT_RECALL, UNSENT_CLEAR)
 @Suppress("unused")
 val blockedListPicturesPatch = controlPatch("blocked_list_pictures", "Hide pictures on the Blocked list",
     "Hides people's profile pictures on the list of people you've blocked, under Privacy and safety. Their names and Unblock stay.", "Privacy")

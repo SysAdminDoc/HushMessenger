@@ -174,6 +174,31 @@ class ControlDiscoveryTest {
         for (key in syntheticHooks.keys) validateControls(found, setOf(key))
     }
 
+    /** #172: encrypted chats' CQL row classes take both unsent hooks next to the list wrapper's. */
+    @Test fun encryptedChatRowsGetTheUnsentHooksNextToTheListWrapper() {
+        val wrapper = messageWrapperFixture(type = "LX/K1Y;", otidGetter = "CA3", stampGetters = true)
+        fun unsent(dumper: MutableClass, vararg rows: MutableClass) = mirroredControls(listOf(dumper, wrapper) + rows)
+            .filterKeys { it == "unsent_indicator" || it == "delta_unsent" }.mapValues { (_, found) -> found.map { it.hookId() }.sorted() }
+        val withOtid = debugDumperFixture(otidGetter = "CA2", stampGetters = true)
+        assertEquals(mapOf(
+            "delta_unsent" to listOf("LX/K1Y;->Btd(I)Z", "Lfixture/CqlRow;->Btd(I)Z"),
+            "unsent_indicator" to listOf("LX/K1Y;->BWo(I)Ljava/lang/String;", "Lfixture/CqlRow;->BWo(I)Ljava/lang/String;"),
+        ), unsent(withOtid, cqlRowFixture()))
+        val wrapperOnly = mapOf(
+            "delta_unsent" to listOf("LX/K1Y;->Btd(I)Z"),
+            "unsent_indicator" to listOf("LX/K1Y;->BWo(I)Ljava/lang/String;"),
+        )
+        for ((name, rows) in listOf(
+            "no threading id getter" to unsent(withOtid, cqlRowFixture(otidGetter = null)),
+            "another row interface" to unsent(withOtid, cqlRowFixture(interfaceType = "Lfixture/OtherRow;")),
+            "not built on a result set" to unsent(withOtid, cqlRowFixture(init = "Landroid/database/Cursor;")),
+            "a debug writer without the threading id" to unsent(debugDumperFixture(stampGetters = true), cqlRowFixture()),
+            // The text hook's helper also reads the row's time, sender and content type (#172 on 587).
+            "no time, sender or type getters" to unsent(withOtid, cqlRowFixture(stampGetters = false)),
+            "a debug writer without the time" to unsent(debugDumperFixture(otidGetter = "CA2"), cqlRowFixture()),
+        )) assertEquals(wrapperOnly, rows, name)
+    }
+
     @Test fun theStoryRingHookIsOnlyThePreviewConstructorThatTakesTheCard() {
         val fixture = completeFixture()
         validateControls(mirroredControls(fixture), setOf("anonymous_stories"))

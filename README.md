@@ -120,7 +120,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | View stories anonymously | Opens other people's stories without adding you to their viewer list. |
 | Mark as seen button | Works with View stories anonymously. Stories you open get an eye with a slash through it, and tapping it adds you to that story's viewer list. The next story stays anonymous. Experimental. |
 | Save any story | Adds **Save** to the **More options** menu on other people's stories. |
-| Keep unsent messages | Keeps messages on the older unsend routes and marks them "[unsent]". An encrypted chat can't keep the message itself, so its notification stays up instead. |
+| Keep unsent messages | Keeps messages in the chat after someone unsends them, marked "[unsent]". In an encrypted chat it keeps the words Messenger already showed you, in the chat or in a notification, until Messenger restarts. |
 | Allow screenshots | Lets you screenshot protected photos and media, view-once included, with no screenshot notice to the sender. |
 | Hide pictures on the Blocked list | The list of people you've blocked, under Privacy and safety, shows their names and Unblock without their profile pictures. |
 | Notify for restricted chats | Messages from people you've restricted notify you like any other chat, unless you've muted that chat or it's end-to-end encrypted. They still can't see when you're active or when you've read their messages. A restricted encrypted chat also drops out of your chat list, so search the person's name in Messenger and open it from the results. |

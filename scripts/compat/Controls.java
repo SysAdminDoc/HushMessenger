@@ -211,8 +211,10 @@ final class Controls {
             }
         }
 
-        String msgTextGetterName = "", msgIdGetterName = "", msgIsUnsentGetterName = "";
-        String rawText = "", rawId = "", rawUnsent = "";
+        String msgTextGetterName = "", msgIdGetterName = "", msgIsUnsentGetterName = "", msgOtidGetterName = "", msgRowInterface = "";
+        String msgTimestampGetterName = "", msgSenderGetterName = "", msgContentTypeGetterName = "", msgContentSubtypeGetterName = "";
+        String rawText = "", rawId = "", rawUnsent = "", rawOtid = "", rawTimestamp = "", rawSender = "", rawContentType = "";
+        String rawContentSubtype = "";
         outer:
         for (var cls : classes) {
             for (var m : cls.getMethods()) {
@@ -238,8 +240,13 @@ final class Controls {
                     } else if (ref instanceof StringReference sr && lastRef != null) {
                         switch (sr.getString()) {
                             case "text=" -> { if ("Ljava/lang/String;".equals(lastRef.getReturnType())) { rawText = lastRef.getName(); lastRef = null; } }
+                            case "offline_threading_id=" -> { if ("Ljava/lang/String;".equals(lastRef.getReturnType())) { rawOtid = lastRef.getName(); lastRef = null; } }
                             case "message_id=" -> { if ("Ljava/lang/String;".equals(lastRef.getReturnType())) { rawId = lastRef.getName(); lastRef = null; } }
                             case "is_unsent=" -> { if ("Z".equals(lastRef.getReturnType())) { rawUnsent = lastRef.getName(); lastRef = null; } }
+                            case "timestamp_ms=" -> { if ("J".equals(lastRef.getReturnType())) { rawTimestamp = lastRef.getName(); lastRef = null; } }
+                            case "sender_id=" -> { if ("J".equals(lastRef.getReturnType())) { rawSender = lastRef.getName(); lastRef = null; } }
+                            case "message_content_type=" -> { if ("I".equals(lastRef.getReturnType())) { rawContentType = lastRef.getName(); lastRef = null; } }
+                            case "message_content_subtype=" -> { if ("I".equals(lastRef.getReturnType())) { rawContentSubtype = lastRef.getName(); lastRef = null; } }
                         }
                     }
                 }
@@ -251,6 +258,7 @@ final class Controls {
             msgTextGetterName = rawText;
             msgIdGetterName = rawId;
             msgIsUnsentGetterName = rawUnsent;
+            msgOtidGetterName = rawOtid;
             for (var wCls : classes) {
                 if (!AccessFlags.ABSTRACT.isSet(wCls.getAccessFlags())) continue;
                 if (wCls.getInterfaces().size() != 1) continue;
@@ -269,9 +277,17 @@ final class Controls {
                 msgTextGetterName = resolveWrapper(wCls, rawText, "Ljava/lang/String;");
                 msgIdGetterName = resolveWrapper(wCls, rawId, "Ljava/lang/String;");
                 msgIsUnsentGetterName = resolveWrapper(wCls, rawUnsent, "Z");
+                if (!rawOtid.isEmpty()) msgOtidGetterName = resolveWrapper(wCls, rawOtid, "Ljava/lang/String;");
+                if (!rawTimestamp.isEmpty()) msgTimestampGetterName = resolveWrapper(wCls, rawTimestamp, "J");
+                if (!rawSender.isEmpty()) msgSenderGetterName = resolveWrapper(wCls, rawSender, "J");
+                if (!rawContentType.isEmpty()) msgContentTypeGetterName = resolveWrapper(wCls, rawContentType, "I");
+                if (!rawContentSubtype.isEmpty()) msgContentSubtypeGetterName = resolveWrapper(wCls, rawContentSubtype, "I");
+                msgRowInterface = wCls.getInterfaces().get(0);
                 break;
             }
         }
+        var cqlRowGetters = List.of(Map.entry(msgOtidGetterName, "Ljava/lang/String;"), Map.entry(msgTimestampGetterName, "J"),
+            Map.entry(msgSenderGetterName, "J"), Map.entry(msgContentTypeGetterName, "I"), Map.entry(msgContentSubtypeGetterName, "I"));
 
         // The app icon manager maps "default" to the start screen and every other icon to a LauncherAlias.
         var appIconManagers = new HashSet<String>();
@@ -487,6 +503,14 @@ final class Controls {
                     if (instanceFieldCount2 == 1 && hasListField2 && hasGetCount2) {
                         found.get("delta_unsent").add(method);
                     }
+                }
+
+                // Encrypted chats' rows come straight from a CQL result set and take both unsent hooks too.
+                if (paramTypes.equals(List.of("I")) && isCqlRow(cls, msgRowInterface, cqlRowGetters)) {
+                    if (!msgTextGetterName.isEmpty() && method.getName().equals(msgTextGetterName) &&
+                        "Ljava/lang/String;".equals(method.getReturnType())) found.get("unsent_indicator").add(method);
+                    if (!msgIsUnsentGetterName.isEmpty() && method.getName().equals(msgIsUnsentGetterName) &&
+                        "Z".equals(method.getReturnType())) found.get("delta_unsent").add(method);
                 }
 
                 // ai_search
