@@ -5,11 +5,14 @@ import com.android.tools.smali.dexlib2.dexbacked.reference.DexBackedFieldReferen
 import com.android.tools.smali.dexlib2.dexbacked.reference.DexBackedMethodReference
 import com.android.tools.smali.dexlib2.dexbacked.reference.DexBackedStringReference
 import com.android.tools.smali.dexlib2.dexbacked.reference.DexBackedTypeReference
+import com.android.tools.smali.dexlib2.iface.Method
+import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 import com.android.tools.smali.dexlib2.iface.reference.Reference
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
 import com.android.tools.smali.dexlib2.iface.reference.TypeReference
+import java.util.Arrays
 import java.util.IdentityHashMap
 
 /*
@@ -35,6 +38,18 @@ internal class StringMatch(val value: String) {
         is DexBackedStringReference -> ref.stringIndex == indexes.getOrPut(ref.dexFile) { ref.dexFile.stringIndex(value) }
         is StringReference -> ref.string == value
         else -> false
+    }
+
+    /**
+     * Whether any instruction of [method] loads the string. A method findControls' walk hands a check already has its
+     * string indexes read, so no reference is made for each instruction.
+     */
+    fun inCode(method: Method): Boolean {
+        method.codeKeys()?.let { keys ->
+            val dex = keys.dex ?: return false
+            return Arrays.binarySearch(keys.strings, indexes.getOrPut(dex) { dex.stringIndex(value) }) >= 0
+        }
+        return method.implementation?.instructions?.any { matches((it as? ReferenceInstruction)?.reference) } == true
     }
 }
 

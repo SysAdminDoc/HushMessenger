@@ -74,7 +74,7 @@ internal fun findCallButtonLists(classes: Iterable<ClassDef>, builders: List<Met
     val owners = builders.map { it.definingClass }.toSet()
     val names = builders.map { it.name }.toSet()
     val base = builders.first().callButtonBase()
-    val callers = classes.flatMap { it.methods }.filter { m ->
+    val callers = codeReferrers(classes, methods = ids).map { it.second }.filter { m ->
         val code = m.implementation?.instructions ?: return@filter false
         code.mapNotNull { insn ->
             ((insn as? ReferenceInstruction)?.reference as? MethodReference)

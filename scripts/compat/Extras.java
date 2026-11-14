@@ -470,11 +470,12 @@ final class Extras {
      * of a query also calls the list. Mirrors PhoneIdSync.kt.
      */
     static List<Method> phoneIdSync(List<ClassDef> classes) {
-        var requesters = new ArrayList<ClassDef>();
+        // A set by type, like the patch's: a class two dex files both carry is one requester, the first copy.
+        var requesters = new LinkedHashSet<ClassDef>();
         for (var cls : classes) for (var method : cls.getMethods())
             if (literals(method).contains(PHONE_ID_PROVIDER)) { requesters.add(cls); break; }
         if (requesters.size() != 1) return List.of();
-        var requester = requesters.get(0);
+        var requester = requesters.iterator().next();
         var lists = new ArrayList<Method>();
         var syncs = new ArrayList<Method>();
         var queries = new HashSet<String>();

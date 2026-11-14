@@ -95,6 +95,13 @@ class PhoneIdSyncTest {
         validateControls(mirroredControls(phoneIdFixture()), setOf(PHONE_ID_SYNC))
     }
 
+    // Two dex files can each carry a copy of one class. The requesters are the classes by name, so the copy that only
+    // holds the query doesn't make a second requester.
+    @Test fun aSecondCopyOfTheRequesterIsStillOneRequester() {
+        val copy = fixtureClass(REQUESTER, listOf(query()))
+        assertEquals(setOf(SYNTHETIC_PHONE_ID_LIST, SYNTHETIC_PHONE_ID_SYNC), found(phoneIdFixture(others = listOf(appStart(), copy))))
+    }
+
     @Test fun eachProfileHooksOneRequestersListAndSync() {
         assertEquals(setOf(SYNTHETIC_PHONE_ID_LIST, SYNTHETIC_PHONE_ID_SYNC), SYNTHETIC_PROFILE.hooks.getValue(PHONE_ID_SYNC))
         // Each release renames the requester.

@@ -115,8 +115,27 @@ internal var messageIsUnsentGetterName: String = ""
 
 internal fun Method.hookId() = "$definingClass->$name(${parameterTypes.joinToString("")})$returnType"
 
+/**
+ * The finders' per-method checks that one shared walk answers, so a method's code is decoded once for all of them
+ * instead of once per finder. A finder called outside [findControls] walks on its own and finds the same methods.
+ */
+private fun sharedChecks(): List<WalkCheck> = listOf(
+    chatPreviewBuilders, chatPreviewReaders, storyFinishedLoggers, blockedListBuilders, phoneIdRequesters, phoneIdSenders,
+    nearbyScanSites, wifiIdentitySites, markReadBars, markIconSetters, voiceDownloads, menuTaps, saveVideoRows, moreSheets,
+    audioCasters, trayInsertBuilders, trayPluginClasses, landscapeFlagReaders, mediaOrientationClasses, fontSites,
+    searchBarBuilders, searchScreenHintShapes, carBundleWriters, carExtensionSteps, ringDeciders, menuItemsBuilders,
+    callButtonShapes, summaryPillHandlers, homeHeaders, composerResults, cameraLaunches, chatCameraFactories,
+    captureLaunchers, launcherStarts, cameraUriChecks, internalFileOpens, galleryItemsShapes, galleryHandlerShapes,
+    inboundCopies, tempFolderChecks, configHolders, playoutSwitches, playoutWriters, recordHandovers, recentMediaDetectors,
+    attributionUploads, instantCaptures, pinLimitLoaders, sharedFlagReaders, aiMentionShapes, headerRenders, logBars,
+    ringMountClasses, roundingPrinterClasses, legacyRoundings, tileShapeFlags, messageDebugStrings,
+)
+
 /** Match semantics first, then require the exact set the build's profile records. */
-internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInboxContract? = findCommunityInbox(classes)): Map<String, List<Method>> {
+internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInboxContract? = findCommunityInbox(classes)): Map<String, List<Method>> =
+    withSharedWalk(classes, sharedChecks()) { findControlsIn(classes, community) }
+
+private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInboxContract?): Map<String, List<Method>> {
     // Every build lists the base profile's controls (ControlProfileTest), so these keys are the active build's too. Only
     // the hook ids differ by build, and validateControls compares what's found here with the active build's.
     val found = BASE_PROFILE.hooks.keys.associateWith { mutableListOf<Method>() }
@@ -141,7 +160,10 @@ internal fun findControls(classes: Iterable<ClassDef>, community: CommunityInbox
         .firstOrNull { it.returnType == "V" && it.parameterTypes.size == 2 && it.parameterTypes[1] == "I" }
         ?.definingClass
     if (gridBinderType != null) {
-        for (cls in classes) {
+        var last: ClassDef? = null
+        for ((cls, _) in codeReferrers(classes, types = listOf(gridBinderType))) {
+            if (cls === last) continue
+            last = cls
             val instantiates = cls.methods.any { m ->
                 m.implementation?.instructions?.any { insn ->
                     insn.opcode == Opcode.NEW_INSTANCE &&
@@ -276,6 +298,13 @@ private fun findStoryCardKeys(classes: Iterable<ClassDef>): Set<String> = classe
             .map { (it as ReferenceInstruction).reference.toString() }
 }.toSet()
 
+/** The methods that write a message row's debug string, with its text, id and unsent fields. */
+internal val messageDebugStrings = MethodCheck {
+    val fields = listOf("text=", "message_id=", "is_unsent=").map(::StringMatch)
+    val test: MethodTest = { _, m -> fields.all { it.inCode(m) } }
+    test
+}
+
 /** The getters the unsent hooks call on a message row, named by the row's debug string and the wrapper that serves it. */
 private fun resolveMessageGetterNames(classes: Iterable<ClassDef>) {
     messageTextGetterName = ""
@@ -284,28 +313,24 @@ private fun resolveMessageGetterNames(classes: Iterable<ClassDef>) {
     var rawText = ""
     var rawId = ""
     var rawUnsent = ""
-    val debugText = StringMatch("text=")
-    for (cls in classes) {
+    var debugClass: ClassDef? = null
+    for ((cls, m) in messageDebugStrings.sites(classes)) {
+        // A class's first debug string is the only one read, and none once the text getter is named.
+        if (cls === debugClass) continue
         if (rawText.isNotEmpty()) break
-        for (m in cls.methods) {
-            val debugCode = m.implementation?.instructions?.toList() ?: continue
-            if (debugCode.none { debugText.matches((it as? ReferenceInstruction)?.reference) }) continue
-            val debugStrs = debugCode.mapNotNull { ((it as? ReferenceInstruction)?.reference as? StringReference)?.string }
-            if ("text=" !in debugStrs || "message_id=" !in debugStrs || "is_unsent=" !in debugStrs) continue
-            var lastRef: DexMethodReference? = null
-            for (insn in debugCode) {
-                val ref = (insn as? ReferenceInstruction)?.reference ?: continue
-                if (insn.opcode == Opcode.INVOKE_INTERFACE && ref is DexMethodReference) {
-                    lastRef = ref
-                } else if (ref is StringReference && lastRef != null) {
-                    when (ref.string) {
-                        "text=" -> if (lastRef.returnType == "Ljava/lang/String;") { rawText = lastRef.name; lastRef = null }
-                        "message_id=" -> if (lastRef.returnType == "Ljava/lang/String;") { rawId = lastRef.name; lastRef = null }
-                        "is_unsent=" -> if (lastRef.returnType == "Z") { rawUnsent = lastRef.name; lastRef = null }
-                    }
+        debugClass = cls
+        var lastRef: DexMethodReference? = null
+        for (insn in m.implementation!!.instructions) {
+            val ref = (insn as? ReferenceInstruction)?.reference ?: continue
+            if (insn.opcode == Opcode.INVOKE_INTERFACE && ref is DexMethodReference) {
+                lastRef = ref
+            } else if (ref is StringReference && lastRef != null) {
+                when (ref.string) {
+                    "text=" -> if (lastRef.returnType == "Ljava/lang/String;") { rawText = lastRef.name; lastRef = null }
+                    "message_id=" -> if (lastRef.returnType == "Ljava/lang/String;") { rawId = lastRef.name; lastRef = null }
+                    "is_unsent=" -> if (lastRef.returnType == "Z") { rawUnsent = lastRef.name; lastRef = null }
                 }
             }
-            break
         }
     }
     if (rawText.isNotEmpty()) {
