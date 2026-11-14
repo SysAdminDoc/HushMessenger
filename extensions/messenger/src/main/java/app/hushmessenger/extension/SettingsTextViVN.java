@@ -771,6 +771,6 @@ final class SettingsTextViVN {
         {"custom_font.title", "Sử dụng phông chữ tùy chỉnh"},
         {"custom_font.description", "Thay thế phông chữ Meta bằng phông chữ điện thoại để hiển thị văn bản Messenger, hoặc bạn có thể sử dụng tệp phông chữ .ttf hoặc .otf được chọn bên dưới, đồng thời điều chỉnh kích thước hoặc vị trí lên xuống. Biểu tượng cảm xúc không bị ảnh hưởng. Có thể thấy thay đổi sau khi khởi động lại Messenger."},
         {"menu_blur.title", "Làm mờ phía sau menu"},
-        {"menu_blur.description", "Làm mờ màn hình phía sau menu hiện ra khi bạn nhấn giữ một đoạn chat, cùng các menu và bảng bật lên khác của Messenger, giống như trên iPhone. Cần Android 12 trở lên. Nếu điện thoại đang tắt hiệu ứng làm mờ (chế độ tiết kiệm pin có thể tắt nó), màn hình sẽ tối đi như trước."},
+        {"menu_blur.description", "Làm mờ màn hình phía sau menu hiện ra khi bạn nhấn giữ một đoạn chat, cùng các menu và bảng bật lên khác của Messenger, giống như trên iPhone. Cần Android 12 trở lên."},
     };
 }

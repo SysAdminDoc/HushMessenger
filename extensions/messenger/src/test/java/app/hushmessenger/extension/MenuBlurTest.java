@@ -3,10 +3,17 @@ package app.hushmessenger.extension;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Build;
+import android.os.Looper;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import org.junit.After;
 import org.junit.Before;
@@ -16,12 +23,18 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.GraphicsMode;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = {28, 36})
 public class MenuBlurTest {
     private final Predicate<Window> stock = MenuBlur.available;
+    private final BiConsumer<View, Float> effect = MenuBlur.screenEffect;
+    /** Every blur radius put on each screen, 0 for a cleared one. */
+    private final Map<View, List<Float>> effects = new HashMap<>();
     private Activity activity;
 
     @Before public void reset() {
@@ -30,20 +43,25 @@ public class MenuBlurTest {
         Settings.activeAt.clear();
         CrashGuard.resetForTests();
         Settings.hookErrors.clear();
+        MenuBlur.resetForTests();
         MenuBlur.available = window -> true;
+        MenuBlur.screenEffect = (screen, radius) -> effects.computeIfAbsent(screen, v -> new ArrayList<>()).add(radius);
         activity = Robolectric.buildActivity(Activity.class).setup().get();
     }
 
     @After public void restore() {
         MenuBlur.available = stock;
+        MenuBlur.screenEffect = effect;
+        MenuBlur.resetForTests();
         Settings.hookErrors.clear();
         Settings.hookErrorLogged.clear();
     }
 
-    /** A dialog as a DialogFragment's onStart leaves it: shown, dimming what's behind it. */
+    /** A dialog as a DialogFragment's onStart leaves it: shown, dimming what's behind it, its window attached. */
     private Dialog shown() {
         Dialog dialog = new Dialog(activity);
         dialog.show();
+        shadowOf(Looper.getMainLooper()).idle();
         WindowManager.LayoutParams attributes = dialog.getWindow().getAttributes();
         assertTrue("A plain dialog dims what's behind it", (attributes.flags & WindowManager.LayoutParams.FLAG_DIM_BEHIND) != 0);
         assertTrue(attributes.dimAmount > MenuBlur.DIM);
@@ -97,14 +115,63 @@ public class MenuBlurTest {
         }
     }
 
-    @Test public void aPhoneThatCantBlurKeepsMessengersDim() {
+    @Test public void aPhoneThatCantBlurAcrossWindowsBlursMessengersScreenUntilTheMenuCloses() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S);
         Settings.preferences.edit().putBoolean(MenuBlur.KEY, true).commit();
         MenuBlur.available = window -> false;
-        Dialog dialog = shown();
-        float stockDim = dialog.getWindow().getAttributes().dimAmount;
-        MenuBlur.shown(dialog);
-        assertFalse(blurred(dialog));
-        assertEquals(stockDim, dialog.getWindow().getAttributes().dimAmount, 0f);
+        View screen = activity.getWindow().getDecorView();
+        float radius = Math.round(MenuBlur.RADIUS_DP * activity.getResources().getDisplayMetrics().density);
+
+        Dialog menu = shown();
+        MenuBlur.shown(menu);
+        assertFalse("The window itself can't blur here", blurred(menu));
+        assertEquals("Messenger's screen under the menu blurs", List.of(radius), effects.get(screen));
+        assertEquals("A light dim stays, so the menu stands out", MenuBlur.DIM, menu.getWindow().getAttributes().dimAmount, 0f);
+        assertTrue(Settings.lastActive(MenuBlur.KEY) > 0);
+
+        MenuBlur.shown(menu);
+        Dialog sheet = shown();
+        MenuBlur.shown(sheet);
+        assertEquals("The same menu shown again and a second one over it blur the screen once", List.of(radius), effects.get(screen));
+        assertEquals(Integer.valueOf(2), MenuBlur.blurredScreens.get(screen));
+
+        sheet.dismiss();
+        shadowOf(Looper.getMainLooper()).idle();
+        assertEquals("The first menu still holds the blur", List.of(radius), effects.get(screen));
+        menu.dismiss();
+        shadowOf(Looper.getMainLooper()).idle();
+        assertEquals("The last menu to close clears it", List.of(radius, 0f), effects.get(screen));
+        assertTrue(MenuBlur.blurredScreens.isEmpty());
+        assertTrue(Settings.hookErrors.isEmpty());
+    }
+
+    @Test public void aMenuWithNoMessengerScreenUnderItKeepsMessengersDim() {
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S);
+        Settings.preferences.edit().putBoolean(MenuBlur.KEY, true).commit();
+        MenuBlur.available = window -> false;
+        Dialog overlay = new Dialog(RuntimeEnvironment.getApplication());
+        overlay.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+        overlay.show();
+        shadowOf(Looper.getMainLooper()).idle();
+        float stockDim = overlay.getWindow().getAttributes().dimAmount;
+        MenuBlur.shown(overlay);
+        assertTrue("Nothing of Messenger's to blur", effects.isEmpty());
+        assertEquals(stockDim, overlay.getWindow().getAttributes().dimAmount, 0f);
+        overlay.dismiss();
+    }
+
+    @Test @Config(sdk = 36) @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void theRealScreenBlurGoesOnAndComesOff() {
+        Settings.preferences.edit().putBoolean(MenuBlur.KEY, true).commit();
+        MenuBlur.available = window -> false;
+        MenuBlur.screenEffect = effect;
+        Dialog menu = shown();
+        MenuBlur.shown(menu);
+        assertEquals(Integer.valueOf(1), MenuBlur.blurredScreens.get(activity.getWindow().getDecorView()));
+        menu.dismiss();
+        shadowOf(Looper.getMainLooper()).idle();
+        assertTrue(MenuBlur.blurredScreens.isEmpty());
+        assertTrue("Neither the blur nor clearing it failed", Settings.hookErrors.isEmpty());
     }
 
     @Test public void aWindowThatDoesntDimIsLeftAlone() {

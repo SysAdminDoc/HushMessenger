@@ -771,6 +771,6 @@ final class SettingsTextZhTw {
         {"custom_font.title", "使用自訂字型"},
         {"custom_font.description", "以手機字型取代 Meta 字型來顯示 Messenger 文字，也可使用下方選取的 .ttf 或 .otf 字型檔案，並調整大小或上下位置。表情符號不受影響。重新啟動 Messenger 後即可看到變更。"},
         {"menu_blur.title", "選單背景模糊"},
-        {"menu_blur.description", "長按聊天室時跳出的選單，以及 Messenger 其他的彈出選單和面板，背後的畫面會像 iPhone 一樣變模糊。需要 Android 12 以上。如果手機關閉了模糊效果（省電模式可能會關閉），畫面會像以前一樣變暗。"},
+        {"menu_blur.description", "長按聊天室時跳出的選單，以及 Messenger 其他的彈出選單和面板，背後的畫面會像 iPhone 一樣變模糊。需要 Android 12 以上。"},
     };
 }

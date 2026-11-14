@@ -771,6 +771,6 @@ final class SettingsTextTr {
         {"custom_font.title", "Kendi yazı tipini kullan"},
         {"custom_font.description", "Messenger'ın metnini Meta'nın yazı tipi yerine telefonunun yazı tipiyle ya da aşağıdan seçtiğin bir .ttf veya .otf yazı tipi dosyasıyla gösterir. Bu yazı tipini büyütüp küçültebilir, yukarı veya aşağı taşıyabilirsin. Emojiler değişmez. Değişikliği görmek için Messenger'ı yeniden başlat."},
         {"menu_blur.title", "Menülerin arkasını bulanıklaştır"},
-        {"menu_blur.description", "Bir sohbete basılı tuttuğunda açılan menünün ve Messenger'ın diğer açılır menülerinin ve sayfalarının arkasındaki ekranı iPhone'daki gibi bulanıklaştırır. Android 12 veya daha yenisi gerekir. Telefonunda bulanıklık kapalıysa (pil tasarrufu bunu kapatabilir) ekran eskisi gibi kararır."},
+        {"menu_blur.description", "Bir sohbete basılı tuttuğunda açılan menünün ve Messenger'ın diğer açılır menülerinin ve sayfalarının arkasındaki ekranı iPhone'daki gibi bulanıklaştırır. Android 12 veya daha yenisi gerekir."},
     };
 }

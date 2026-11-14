@@ -403,7 +403,7 @@
         },
         {
             "name": "Blur behind menus",
-            "description": "Blurs the screen behind the menu you get when you press and hold a chat, and behind Messenger's other pop-up menus and sheets, like on an iPhone. Needs Android 12 or newer. When your phone has blur off, the screen darkens like it always did. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "Blurs the screen behind the menu you get when you press and hold a chat, and behind Messenger's other pop-up menus and sheets, like on an iPhone. Needs Android 12 or newer. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Theme",
             "dependencies": [
