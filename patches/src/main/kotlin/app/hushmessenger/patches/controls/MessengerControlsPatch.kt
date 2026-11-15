@@ -803,7 +803,7 @@ val customFontPatch = controlPatch("custom_font", "Use your own font",
     "Theme", "font_layout", "font_repository", "font_roboto", "font_by_name", "font_input")
 @Suppress("unused")
 val menuBlurPatch = controlPatch("menu_blur", "Blur behind menus",
-    "Blurs the screen behind the menu you get when you press and hold a chat, and behind Messenger's other pop-up menus and sheets, like on an iPhone. Needs Android 12 or newer.",
+    "Blurs the screen behind the menu you get when you press and hold a chat or a message, and behind Messenger's other pop-up menus and sheets, like on an iPhone. Needs Android 12 or newer.",
     "Theme", MENU_BLUR)
 private var anonymousStoriesApplied = false
 

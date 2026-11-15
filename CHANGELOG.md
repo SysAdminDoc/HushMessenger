@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- `Blur behind menus` now blurs the chat behind the menu you get when you press and hold a message, too. That menu draws its own dim instead of asking Android for one, so the switch used to skip it. Refs #162.
 - `Stop app list and device ID sharing` no longer stops patching when Morphe's `Spoof signature` is picked too. That patch reroutes Messenger's installed-app list through its own code before ours runs, so the switch didn't recognize the list anymore and threw "the device ID sync changed". The switch now finds the list either way. The Facebook clone option had the same blind spot with its "is Facebook installed" check and now follows the clone either way too. Refs #174.
 
 ### Checks
