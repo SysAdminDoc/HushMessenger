@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- `Stop app list and device ID sharing` no longer stops patching when Morphe's `Spoof signature` is picked too. That patch reroutes Messenger's installed-app list through its own code before ours runs, so the switch didn't recognize the list anymore and threw "the device ID sync changed". The switch now finds the list either way. The Facebook clone option had the same blind spot with its "is Facebook installed" check and now follows the clone either way too. Refs #174.
+
 ### Checks
 
 - For developers, the release walk finds the message log and auto reply buttons on a phone set to large text. It used to give up after a fixed number of swipes, and at 200% text the Controls list ran longer than that. It now searches down to the end of the list and back up, and the walk receipt records the phone's text size.

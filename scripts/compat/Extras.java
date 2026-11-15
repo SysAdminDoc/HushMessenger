@@ -448,13 +448,35 @@ final class Extras {
 
     static final String PHONE_ID_PROVIDER = ".provider.phoneid";
     static final String GET_PHONE_ID = "com.facebook.GET_PHONE_ID";
-    static final String INSTALLED_PACKAGES = "Landroid/content/pm/PackageManager;->getInstalledPackages(I)Ljava/util/List;";
+    static final String INSTALLED_PACKAGES_CALL = "getInstalledPackages(I)Ljava/util/List;";
 
     static List<String> methodCalls(Method method) {
         var called = new ArrayList<String>();
         for (var i : instructions(method))
             if (i instanceof ReferenceInstruction ri && ri.getReference() instanceof MethodReference call) called.add(call.toString());
         return called;
+    }
+
+    static final String PACKAGE_MANAGER = "Landroid/content/pm/PackageManager;";
+
+    /**
+     * The PackageManager method an instruction calls, as "name(params)return", straight or through Morphe's Spoof
+     * signature wrapper, a static that takes the manager first (#174). Mirrors PackageManagerCalls.kt.
+     */
+    static String packageManagerCall(Instruction i) {
+        if (!(i instanceof ReferenceInstruction ri) || !(ri.getReference() instanceof MethodReference call)) return null;
+        var parameters = new ArrayList<String>();
+        for (var t : call.getParameterTypes()) parameters.add(t.toString());
+        boolean manager = PACKAGE_MANAGER.equals(call.getDefiningClass());
+        switch (i.getOpcode()) {
+            case INVOKE_VIRTUAL, INVOKE_VIRTUAL_RANGE -> { if (!manager) return null; }
+            case INVOKE_STATIC, INVOKE_STATIC_RANGE -> {
+                if (manager || parameters.isEmpty() || !PACKAGE_MANAGER.equals(parameters.get(0))) return null;
+                parameters.remove(0);
+            }
+            default -> { return null; }
+        }
+        return call.getName() + "(" + String.join("", parameters) + ")" + call.getReturnType();
     }
 
     static List<String> params(Method method) {
@@ -483,7 +505,7 @@ final class Extras {
             boolean isStatic = AccessFlags.STATIC.isSet(method.getAccessFlags());
             var called = methodCalls(method);
             if (isStatic && "Ljava/util/ArrayList;".equals(method.getReturnType()) && params(method).equals(List.of(requester.getType())) &&
-                called.stream().filter(INSTALLED_PACKAGES::equals).count() == 1) lists.add(method);
+                instructions(method).stream().filter(i -> INSTALLED_PACKAGES_CALL.equals(packageManagerCall(i))).count() == 1) lists.add(method);
             if (!isStatic && "V".equals(method.getReturnType()) && params(method).equals(List.of("Ljava/lang/String;")) &&
                 literals(method).contains(GET_PHONE_ID) && called.stream().anyMatch(c -> c.contains(";->sendOrderedBroadcast("))) syncs.add(method);
             if (literals(method).contains(PHONE_ID_PROVIDER)) queries.add(hookId(method));

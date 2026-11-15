@@ -24,7 +24,10 @@ internal const val PHONE_ID_PROVIDER = ".provider.phoneid"
 /** The ordered broadcast Meta's apps answer with their ID. */
 internal const val GET_PHONE_ID = "com.facebook.GET_PHONE_ID"
 
-internal const val INSTALLED_PACKAGES = "Landroid/content/pm/PackageManager;->getInstalledPackages(I)Ljava/util/List;"
+private const val INSTALLED_PACKAGES_CALL = "getInstalledPackages(I)Ljava/util/List;"
+
+/** The app list's read as Messenger writes it. */
+internal const val INSTALLED_PACKAGES = "$PACKAGE_MANAGER_TYPE->$INSTALLED_PACKAGES_CALL"
 
 private fun phoneIdChanged(detail: String): Nothing =
     throw PatchException("Messenger controls: the device ID sync changed ($detail)")
@@ -35,10 +38,14 @@ private fun Method.strings() =
 private fun Method.calls() =
     implementation?.instructions?.mapNotNull { (it as? ReferenceInstruction)?.reference as? MethodReference }.orEmpty()
 
-/** The requester's app list: a static (requester)ArrayList holding one getInstalledPackages call. */
+/**
+ * The requester's app list: a static (requester)ArrayList holding one getInstalledPackages call, made straight or
+ * through Morphe's Spoof signature wrapper.
+ */
 internal fun Method.isPhoneIdAppList() =
     AccessFlags.STATIC.isSet(accessFlags) && returnType == "Ljava/util/ArrayList;" &&
-        parameterTypes.map { it.toString() } == listOf(definingClass) && calls().count { it.toString() == INSTALLED_PACKAGES } == 1
+        parameterTypes.map { it.toString() } == listOf(definingClass) &&
+        implementation?.instructions?.count { it.packageManagerCall() == INSTALLED_PACKAGES_CALL } == 1
 
 /** The requester's sync: an instance (String)V that sends GET_PHONE_ID as an ordered broadcast. */
 internal fun Method.isPhoneIdBroadcast() =
