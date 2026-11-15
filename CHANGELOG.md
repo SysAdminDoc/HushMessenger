@@ -5,6 +5,7 @@
 ### Fixed
 
 - `Blur behind menus` now blurs the chat behind the menu you get when you press and hold a message, too. That menu draws its own dim instead of asking Android for one, so the switch used to skip it. Refs #162.
+- Morphe Manager now treats a copy made with `Clone install under another package name` as a clone, so its card gets the Clone chip and stays apart from your regular Messenger. If you changed the copy's package name in that patch's options, type it in again before you repatch, because Manager won't carry the old one over. The app name you picked stays.
 - `Stop app list and device ID sharing` no longer stops patching when Morphe's `Spoof signature` is picked too. That patch reroutes Messenger's installed-app list through its own code before ours runs, so the switch didn't recognize the list anymore and threw "the device ID sync changed". The switch now finds the list either way. The Facebook clone option had the same blind spot with its "is Facebook installed" check and now follows the clone either way too. Refs #174.
 
 ### Checks
