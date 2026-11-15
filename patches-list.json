@@ -403,7 +403,7 @@
         },
         {
             "name": "Blur behind menus",
-            "description": "Blurs the screen behind the menu you get when you press and hold a chat, and behind Messenger's other pop-up menus and sheets, like on an iPhone. Needs Android 12 or newer. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "Blurs the screen behind the menu you get when you press and hold a chat or a message, and behind Messenger's other pop-up menus and sheets, like on an iPhone. Needs Android 12 or newer. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Theme",
             "dependencies": [
@@ -590,7 +590,7 @@
                     "values": {}
                 },
                 {
-                    "key": "clonePackageName",
+                    "key": "packageName",
                     "title": "Package name",
                     "description": "The copy's unique app ID, like com.facebook.orca.hush. Use words joined by dots, each starting with a letter. It can't match Messenger or another Meta app.",
                     "required": true,
