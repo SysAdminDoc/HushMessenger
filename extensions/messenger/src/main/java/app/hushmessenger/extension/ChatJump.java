@@ -167,14 +167,17 @@ public final class ChatJump {
      * Shows [dialog] over the chat [context] belongs to. A chat head draws from Messenger's own chat head service,
      * where no activity holds a window a dialog can hang on, so the dialog goes up over other apps the way the chat
      * head itself does. Without this nothing reached the screen there and whatever the dialog was asking went ahead
-     * unasked (#172).
+     * unasked (#172). Every question Hush asks over a chat comes through here, so this is also where each one takes
+     * Hush's own look instead of the platform's flat alert sheet (#179).
      */
     static void showOverChat(Dialog dialog, Context context) {
         if (activity(context) == null) {
             Window window = dialog.getWindow();
             if (window != null) window.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
         }
+        ChatDialogs.dress(dialog);
         dialog.show();
+        ChatDialogs.dressButtons(dialog);
     }
 
     /** The watcher behind [callback] when it's ours, else null. */
