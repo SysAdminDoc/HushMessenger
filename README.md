@@ -117,6 +117,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Ask before a call | Tapping an audio or video call button asks first, so a stray tap doesn't ring anyone. That covers a chat's top bar, a business chat and the New message screen. **Call** starts it, **Cancel** doesn't. |
 | Hide read receipts | Opening a chat no longer sends Seen. The chat stays unread on your phone until you reply or mark it read. Group chats haven't been checked. |
 | Mark as read button | Works with Hide read receipts. A chat's top bar gets Messenger's own Mark as read icon, and tapping it sends the Seen that opening the chat held back. When the bar is full it replaces the chat details button (tapping the chat's name opens the same page), or another button that isn't for calls when a chat doesn't have one. Experimental. |
+| Mark chats read on this phone | Works with Hide read receipts. A chat you've opened stops looking unread in the chat list, so it isn't bold with a count beside it any more. Nothing goes to Messenger, so the other person still isn't told you read it. A new message brings the unread look back. |
 | View stories anonymously | Opens other people's stories without adding you to their viewer list. |
 | Mark as seen button | Works with View stories anonymously. Stories you open get an eye with a slash through it, and tapping it adds you to that story's viewer list. The next story stays anonymous. Experimental. |
 | Save any story | Adds **Save** to the **More options** menu on other people's stories. |
@@ -200,7 +201,7 @@ Messenger and Android handle this without a switch. In Messenger's app info, set
 
 ### Read receipts
 
-With **Hide read receipts** on, a chat you open stays unread on your phone, because Messenger marks a chat read and sends Seen in one step. **Mark as read** and replying still mark it read and show Seen. If you'd rather have chats marked read without anyone seeing Seen, leave the switch off and turn off **Show read receipts** in Messenger's Settings > Privacy & safety > Read receipts.
+With **Hide read receipts** on, a chat you open stays unread on your phone, because Messenger marks a chat read and sends Seen in one step. **Mark chats read on this phone** clears that unread look from the chat list without sending anything, so a chat you've read through stops sitting there bold with a count. **Mark as read** and replying still mark it read and show Seen. If you'd rather have chats marked read without anyone seeing Seen, leave the switch off and turn off **Show read receipts** in Messenger's Settings > Privacy & safety > Read receipts.
 
 ## Supported Messenger builds
 
