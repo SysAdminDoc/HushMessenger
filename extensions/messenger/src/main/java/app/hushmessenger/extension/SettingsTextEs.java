@@ -729,6 +729,8 @@ final class SettingsTextEs {
         {"external_gallery.description", "El botón de galería de un chat abre la app de galería de tu teléfono. Una foto o un video se abre en el editor de Messenger para ese chat, listo para enviar. Si eliges varios, se abre el panel Enviar a de Messenger con todos ellos y ese chat arriba."},
         {"gallery_to_chat.title", "Poner lo elegido en la galería en el chat"},
         {"gallery_to_chat.description", "Con Abrir tu app de galería activado, lo que elijas va al cuadro de mensaje del chat como con la galería de Messenger, en lugar del editor o del panel Enviar a. No se envía nada hasta que tocas Enviar. Un chat que ya estaba abierto necesita volver a abrirse."},
+        {"paste_photo.title", "Pegar una foto en el chat"},
+        {"paste_photo.description", "Una foto que pegas en un chat va al cuadro de mensaje del chat, como lo que eliges en tu galería, en lugar de salir por su cuenta. No se envía nada hasta que tocas Enviar, así que puedes añadir un comentario o cambiar de idea. El texto pegado y los GIF del teclado funcionan como antes. Un chat que ya estaba abierto necesita volver a abrirse."},
         {"instant_gallery.title", "Enviar Instants desde tu galería"},
         {"instant_gallery.description", "Tocar el obturador en Instants abre la app de galería de tu teléfono en lugar de tomar una foto. La foto que elijas sale como el Instant, recortada a la forma de la cámara. Si sales de la galería, no se envía nada."},
         {"external_browser.title", "Abrir los enlaces web fuera de Messenger"},

@@ -728,6 +728,8 @@ final class SettingsTextTr {
         {"external_gallery.description", "Sohbetteki galeri düğmesi telefonunun kendi galeri uygulamasını açar. Tek bir fotoğraf veya video, o sohbet için göndermeye hazır şekilde Messenger'ın düzenleyicisinde açılır. Birkaç tane seçersen Messenger'ın Şuraya gönder sayfası hepsiyle birlikte ve o sohbet en üstte olacak şekilde açılır."},
         {"gallery_to_chat.title", "Galeriden seçilenleri sohbete koy"},
         {"gallery_to_chat.description", "'Galeri uygulamanı aç' açıkken seçtiklerin, düzenleyici veya Şuraya gönder sayfası yerine Messenger'ın kendi galerisindeki gibi sohbetin mesaj kutusuna gider. Gönder'e dokunana kadar hiçbir şey gönderilmez. Zaten açık olan bir sohbetin yeniden açılması gerekir."},
+        {"paste_photo.title", "Sohbete fotoğraf yapıştır"},
+        {"paste_photo.description", "Bir sohbete yapıştırdığın fotoğraf, kendi başına gitmek yerine galeriden seçtiğin bir fotoğraf gibi sohbetin mesaj kutusuna gider. Gönder'e dokunana kadar hiçbir şey gönderilmez, böylece bir açıklama ekleyebilir ya da fikrini değiştirebilirsin. Yapıştırdığın metin ve klavyenin GIF'leri eskisi gibi çalışır. Zaten açık olan bir sohbetin yeniden açılması gerekir."},
         {"instant_gallery.title", "Instants'ı galeriden gönder"},
         {"instant_gallery.description", "Instants'ta deklanşöre dokunmak fotoğraf çekmek yerine telefonunun galeri uygulamasını açar. Seçtiğin fotoğraf, kameranın şekline göre kırpılıp Instant olarak gider. Galeriden geri çıkarsan hiçbir şey gönderilmez."},
         {"external_browser.title", "Web bağlantılarını dışarıda aç"},

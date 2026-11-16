@@ -132,6 +132,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Use the phone's camera app | A chat's camera button opens your own camera app. Ask photo or video lets it record videos too. |
 | Open your gallery app | A chat's gallery button opens your own gallery app. One pick opens in Messenger's editor, and several open the Send to sheet with that chat at the top. |
 | Put gallery picks in the chat | Goes with Open your gallery app. What you pick lands above the chat's message box, the way Messenger's own gallery puts it there, one item or several. Nothing goes out until you tap Send. Experimental. |
+| Paste a photo into the chat | A photo you paste lands above the chat's message box instead of going out by itself, so you can add a caption or back out. Pasted text and the keyboard's GIFs work as they did. Reopen the chat after you turn this on. Experimental. |
 | Send Instants from your gallery | The Instants shutter opens your gallery app instead of taking a photo. The photo you pick goes out as the Instant, cut to fit. Back out and nothing is sent. Experimental. |
 | Open web links externally | Opens http and https links in your default browser. |
 | Slide chats in and out | Slides a chat in from the side when you open it and back out when you leave. |

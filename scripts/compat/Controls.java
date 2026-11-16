@@ -150,6 +150,7 @@ final class Controls {
         found.get("external_gallery").addAll(externalGalleryHooks(classes, stringTables));
         found.get("gallery_temp_file").addAll(galleryTempFileHooks(classes));
         found.get("gallery_to_chat").addAll(galleryToChatHooks(classes));
+        found.get("paste_photo").addAll(pastePhotoHooks(classes));
         found.get("instant_gallery").addAll(instantGallery(classes));
         found.get("special_contacts").addAll(specialContacts(classes));
         found.get("menu_blur").addAll(menuBlur(classes));

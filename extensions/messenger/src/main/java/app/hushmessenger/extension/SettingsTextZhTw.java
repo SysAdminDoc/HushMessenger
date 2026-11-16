@@ -728,6 +728,8 @@ final class SettingsTextZhTw {
         {"external_gallery.description", "聊天室中的相簿按鈕會開啟手機本身的相簿應用程式。選取一張相片或一部影片時，會在該聊天室的 Messenger 編輯器中開啟，供你傳送。選取多個項目時，則會開啟 Messenger 的「傳送至」面板，顯示所有選取項目，並將該聊天室列在最上方。"},
         {"gallery_to_chat.title", "將相簿選取項目放入聊天室"},
         {"gallery_to_chat.description", "開啟「開啟手機相簿應用程式」時，你選取的項目會像 Messenger 自己的相簿一樣放進聊天室的訊息框，而不是開啟編輯器或「傳送至」面板。在你點選傳送之前不會傳出任何內容。"},
+        {"paste_photo.title", "將相片貼到聊天室"},
+        {"paste_photo.description", "你貼到聊天室的相片會像從相簿選取的項目一樣放進聊天室的訊息框，而不是自己傳出去。在你點選傳送之前不會傳出任何內容，所以你可以加上說明文字或改變心意。貼上的文字和鍵盤的 GIF 和以前一樣。已經開啟的聊天室需要重新開啟。"},
         {"instant_gallery.title", "從相簿傳送 Instants"},
         {"instant_gallery.description", "在 Instants 中點按快門時，會開啟手機的相簿應用程式，而不是拍照。你選取的相片會裁成相機畫面的形狀，作為 Instant 傳出。從相簿返回而沒有選取，就不會傳送任何內容。"},
         {"external_browser.title", "在外部開啟網頁連結"},

@@ -6,6 +6,7 @@
 
 - `Show settings tab` is a new switch under Navigation. Messenger has a settings tab of its own, the round one with your picture on it that sits at the end of the bottom bar, but it only builds it for some accounts. This puts it there on any account, so your Messenger settings are one tap away instead of a trip through the inbox. Restart Messenger after you turn it on. Refs #184.
 - The settings screen is in Spanish now. Refs #183.
+- `Paste a photo into the chat` is a new switch under Photos and videos. Paste a photo into a chat and Messenger sends it right then: no preview, no caption, no HD, and nothing to cancel. With this on, the photo lands above the message box the way a pick from your gallery does and waits for you to tap Send. Pasted text and the keyboard's GIFs work as they did, and a chat that's already open needs reopening once after you turn it on. Refs #180.
 - `Mark chats read on this phone` is a new switch under Privacy, for when you're using `Hide read receipts`. Holding the receipt back also meant Messenger never marked the chat read for you, so a chat you'd opened and read through stayed bold in the list with a count sitting next to it. With this on, that unread look clears the moment you open the chat. Nothing goes out to Messenger, so the other person still isn't told you read it, and a new message brings the bold and the count back. Refs #178.
 
 ### Changed and fixed

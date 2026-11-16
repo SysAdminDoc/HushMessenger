@@ -119,6 +119,7 @@ internal val settingsExtension = bytecodePatch(description = "Load HushMessenger
         autoReplyPictureRecipe = null
         galleryRoute = null
         galleryChatRoute = null
+        pasteRoute = null
         pinLimitGetters = emptySet()
         metaAiFlagGetters = emptySet()
         monospaceMakers = emptySet()
@@ -248,6 +249,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         MENU_BLUR -> validateMenuBlur()
         GALLERY_TEMP_FILE -> validateGalleryTempFile()
         GALLERY_TO_CHAT -> validateGalleryToChat()
+        PASTE_PHOTO -> validatePastePhoto()
         in CUSTOM_FONT_HOOKS -> validateCustomFont(hook)
         "avatar_tabs" -> validateKeyboardTabsInline()
         "typing_mailbox" -> validateOutgoingTyping()
@@ -380,6 +382,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             MENU_BLUR -> method.injectMenuBlur()
             GALLERY_TEMP_FILE -> method.injectGalleryTempFile()
             GALLERY_TO_CHAT -> method.injectGalleryToChat()
+            PASTE_PHOTO -> method.injectPastePhoto()
             in CUSTOM_FONT_HOOKS -> method.injectCustomFont(hook)
             "avatar_tabs" -> method.injectKeyboardTabsInline()
             "typing_mailbox" -> method.injectOutgoingTyping()
@@ -751,6 +754,9 @@ val externalGalleryPatch = controlPatch("external_gallery", "Open your gallery a
 @Suppress("unused")
 val galleryToChatPatch = controlPatch("gallery_to_chat", "Put gallery picks in the chat",
     "With Open your gallery app on, what you pick goes into the chat's message box the way Messenger's own gallery puts it there, instead of the editor or the Send to sheet. Nothing goes out until you tap Send.", "Photos and videos")
+@Suppress("unused")
+val pastePhotoPatch = controlPatch("paste_photo", "Paste a photo into the chat",
+    "A photo you paste into a chat goes into the chat's message box the way a pick from your gallery does, instead of going out on its own. Nothing is sent until you tap Send, so you can add a caption or change your mind. Pasted text and the keyboard's GIFs work as they did. Open the chat again after turning this on.", "Photos and videos")
 @Suppress("unused")
 val instantGalleryPatch = controlPatch("instant_gallery", "Send Instants from your gallery",
     "Tapping the shutter in Instants opens your phone's gallery app instead of taking a photo. The photo you pick goes out as the Instant, cut to the camera's shape. Back out of the gallery and nothing is sent.", "Photos and videos",

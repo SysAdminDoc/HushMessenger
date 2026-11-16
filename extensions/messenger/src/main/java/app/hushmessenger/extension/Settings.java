@@ -1376,13 +1376,14 @@ public final class Settings {
     /**
      * A chat's composer asks this whether to build Messenger's tray above the message box, which the server turns on for
      * some accounts and not others (#101). With no tray a pick put in the chat lands nowhere, so with Put gallery picks in
-     * the chat and Open your gallery app on, the answer is yes. A chat whose composer was built before the switch went on
-     * has no tray, so its picks keep the Send to sheet or the editor until it's opened again.
+     * the chat and Open your gallery app on, the answer is yes, and with Paste a photo into the chat on as well (#180).
+     * A chat whose composer was built before the switch went on has no tray, so its picks keep the Send to sheet or the
+     * editor until it's opened again.
      */
     public static boolean galleryTray(boolean stock) {
         boolean tray = stock;
         try {
-            tray = stock || wouldUse(GalleryPicker.KEY) && enabled(GalleryPicker.CHAT_KEY);
+            tray = stock || wouldUse(GalleryPicker.KEY) && enabled(GalleryPicker.CHAT_KEY) || wouldUse(PastePhoto.KEY);
         } catch (RuntimeException error) {
             hookFailedPrivately(GalleryPicker.CHAT_KEY, "Couldn't add the tray for what you pick", error);
         }
