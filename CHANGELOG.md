@@ -11,6 +11,7 @@
 
 ### Changed and fixed
 
+- A copy of Messenger renamed by a patch other than `Clone install under another package name` opens now instead of stopping on its loading screen. Messenger looks up its backup settings by its own package name and throws when that name isn't its own, which is where the copy died. The new `Keep a renamed copy working` patch keeps that one lookup on Messenger's name, and sends attachments, muted chats and hidden friendships to the copy's own storage rather than to the Messenger it was copied from. It's always on, with nothing to switch, and the copies `Clone install` makes are untouched. Refs #185.
 - Privacy was getting long to scroll, so the six `Stop ...` switches have a `Tracking` section of their own now. Same switches under the same names, and nothing you'd already turned on needs turning on again.
 - The patches are built with Morphe patcher 2.4.0 now, the one that comes with Morphe Manager 2.6.0 and Morphe Desktop 2.2.0. Manager won't load a bundle made with a newer patcher than its own, so update Manager to 2.6.0 or newer (or Desktop to 2.2.0) before you add this release.
 - `Ask before a call` asks in a chat head too. A chat head draws in a window Messenger puts over other apps, with no screen behind it for a dialog to sit on, so the question went up as nothing and the call started anyway. `Jump to a date` was blind in the same spot, and its menu and date picker now open in a chat head as well. Refs #172.
