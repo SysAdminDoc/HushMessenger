@@ -686,6 +686,8 @@ final class SettingsText {
         ENGLISH.put("save_view_once_button", "Save");
         ENGLISH.put("save_view_once_saved", "Saved to %1$s");
         ENGLISH.put("save_view_once_failed", "Couldn't save that one.");
+        ENGLISH.put("floating_menu", "Floating message menu");
+        ENGLISH.put("floating_menu_help", "Moves the actions you get from pressing and holding a message off the bottom of the screen and into a rounded card right under that message, like an iPhone. The emoji row stays where it is, and every action is still Messenger's own.");
         ENGLISH.put("story_seen_button", "Mark as seen button");
         ENGLISH.put("story_seen_button_help", "Puts an eye button on stories you open. Tap it when you want that person to see you viewed the story on screen. The eye has a slash until you do.");
         ENGLISH.put("story_seen", "Mark as seen");

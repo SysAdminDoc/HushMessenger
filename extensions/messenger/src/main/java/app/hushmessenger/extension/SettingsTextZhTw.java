@@ -588,6 +588,8 @@ final class SettingsTextZhTw {
         {"save_view_once_button", "儲存"},
         {"save_view_once_saved", "已儲存到 %1$s"},
         {"save_view_once_failed", "這個存不起來。"},
+        {"floating_menu", "浮動訊息選單"},
+        {"floating_menu_help", "把長按訊息後出現的動作從螢幕底部移到那則訊息正下方的圓角卡片上，就像 iPhone 一樣。表情符號那一排維持原位，每個動作也還是 Messenger 自己的。"},
         {"story_seen_button", "標示為已看過按鈕"},
         {"story_seen_button_help", "在你開啟的限時動態上加入眼睛按鈕。想讓對方知道你看過畫面上的限時動態時，點一下即可。點之前，眼睛上會有一條斜線。"},
         {"story_seen", "標示為已看過"},

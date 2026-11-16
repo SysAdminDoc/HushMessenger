@@ -588,6 +588,8 @@ final class SettingsTextViVN {
         {"save_view_once_button", "Lưu"},
         {"save_view_once_saved", "Đã lưu vào %1$s"},
         {"save_view_once_failed", "Không lưu được mục đó."},
+        {"floating_menu", "Menu tin nhắn nổi"},
+        {"floating_menu_help", "Chuyển các tùy chọn khi bạn nhấn giữ một tin nhắn từ dưới cùng màn hình lên một thẻ bo góc ngay bên dưới tin nhắn đó, giống như trên iPhone. Hàng biểu tượng cảm xúc vẫn ở chỗ cũ và mọi tùy chọn vẫn là của Messenger."},
         {"story_seen_button", "Nút đánh dấu là đã xem"},
         {"story_seen_button_help", "Thêm nút hình con mắt vào tin bạn mở. Chạm vào khi bạn muốn người đó thấy bạn đã xem tin đang hiện trên màn hình. Con mắt có gạch chéo cho đến khi bạn chạm."},
         {"story_seen", "Đánh dấu là đã xem"},

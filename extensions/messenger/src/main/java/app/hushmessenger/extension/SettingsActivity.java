@@ -1045,6 +1045,8 @@ public final class SettingsActivity extends Activity {
                     text.format(StoryEye.KEY), text.format("story_seen_button_help"), false), 8);
                 else if ("allow_screenshot".equals(spec[0])) ui.add(wrapper, controlRow(ViewOnceSave.KEY,
                     text.format(ViewOnceSave.KEY), text.format("save_view_once_help"), false), 8);
+                else if (MenuBlur.KEY.equals(spec[0])) ui.add(wrapper, controlRow(FloatingMenu.KEY,
+                    text.format(FloatingMenu.KEY), text.format("floating_menu_help"), false), 8);
                 else if (Settings.TAB_BADGES.equals(spec[0])) {
                     for (String keep : Settings.KEEP_BADGES.values()) ui.add(wrapper, controlRow(keep, text.format(keep), "", false), 8);
                 }

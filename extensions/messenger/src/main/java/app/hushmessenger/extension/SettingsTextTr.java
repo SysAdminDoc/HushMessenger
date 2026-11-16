@@ -588,6 +588,8 @@ final class SettingsTextTr {
         {"save_view_once_button", "Kaydet"},
         {"save_view_once_saved", "%1$s konumuna kaydedildi"},
         {"save_view_once_failed", "Bu kaydedilemedi."},
+        {"floating_menu", "Yüzen mesaj menüsü"},
+        {"floating_menu_help", "Bir mesaja basılı tutunca çıkan seçenekleri ekranın altından alıp, iPhone'daki gibi tam o mesajın altındaki yuvarlak köşeli bir karta taşır. Emoji sırası yerinde kalır ve her seçenek yine Messenger'ın kendi seçeneğidir."},
         {"story_seen_button", "Görüldü olarak işaretle düğmesi"},
         {"story_seen_button_help", "Açtığın hikayelere bir göz düğmesi ekler. Ekrandaki hikayeyi gördüğünü o kişinin görmesini istediğinde ona dokun. Dokunana kadar gözün üstünde bir çizgi olur."},
         {"story_seen", "Görüldü olarak işaretle"},

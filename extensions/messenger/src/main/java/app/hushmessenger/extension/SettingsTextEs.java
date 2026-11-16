@@ -588,6 +588,8 @@ final class SettingsTextEs {
         {"save_view_once_button", "Guardar"},
         {"save_view_once_saved", "Guardado en %1$s"},
         {"save_view_once_failed", "No se pudo guardar."},
+        {"floating_menu", "Menú flotante de mensajes"},
+        {"floating_menu_help", "Saca las acciones que aparecen al mantener presionado un mensaje de la parte inferior de la pantalla y las pone en una tarjeta redondeada justo debajo de ese mensaje, como en un iPhone. La fila de emojis se queda donde está y cada acción sigue siendo la de Messenger."},
         {"story_seen_button", "Botón Marcar como vista"},
         {"story_seen_button_help", "Pone un botón con un ojo en las historias que abres. Tócalo cuando quieras que esa persona vea que viste la historia en pantalla. El ojo aparece tachado hasta que lo hagas."},
         {"story_seen", "Marcar como vista"},
