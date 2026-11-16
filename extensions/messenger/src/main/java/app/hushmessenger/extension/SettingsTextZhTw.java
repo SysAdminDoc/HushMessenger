@@ -692,7 +692,7 @@ final class SettingsTextZhTw {
         {"local_chat_search.title", "搜尋已儲存的訊息"},
         {"local_chat_search.description", "在聊天室的搜尋結果中加入一個按鈕，用來搜尋儲存在這支手機上的訊息。對於 Messenger 內建搜尋找不到任何內容的舊聊天室很有幫助。此功能適用於未採用端對端加密的聊天室，而且只能找到手機已載入的內容，所以請先在聊天室中向上捲動。"},
         {"chat_jump.title", "跳到第一則訊息或指定日期"},
-        {"chat_jump.description", "長按聊天室頂端的名稱，即可跳到第一則訊息或你選的日期。Messenger 一次只載入一頁聊天內容，所以會一路往回捲動並在畫面上顯示數量，直到抵達為止，按「取消」即可停止。最多只能回到 Messenger 能載入的範圍。"},
+        {"chat_jump.description", "長按聊天室頂端的名稱，即可跳到第一則訊息或你選的日期。聊天室左下角的箭頭可直接跳到第一則訊息，長按箭頭則可選擇日期。Messenger 一次只載入一頁聊天內容，所以會一路往回捲動並在畫面上顯示數量，直到抵達為止，按「取消」即可停止。最多只能回到 Messenger 能載入的範圍。"},
         {"landscape.title", "允許橫向顯示"},
         {"landscape.description", "讓 Messenger 隨手機轉成橫向，鍵盤更寬，照片和影片也更大。會依照手機的自動旋轉設定。通話、相機、付款和其他少數畫面仍保持直向。變更後請重新啟動 Messenger。"},
         {"call_recording.title", "通話錄音"},

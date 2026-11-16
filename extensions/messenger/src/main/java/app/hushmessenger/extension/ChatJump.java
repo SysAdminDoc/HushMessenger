@@ -23,6 +23,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -95,6 +96,8 @@ public final class ChatJump {
 
     /** Chat views Messenger has shown. Only touched on the main thread. */
     private static final List<WeakReference<View>> chats = new ArrayList<>();
+    /** The arrow on each chat on screen, so one chat only ever gets one. Only touched on the main thread. */
+    private static final Map<View, Arrow> arrows = new IdentityHashMap<>();
     static Jump running;
 
     private ChatJump() { }
@@ -111,15 +114,20 @@ public final class ChatJump {
                         } catch (Throwable error) {
                             Settings.hookFailed(KEY, "Can't watch the chat for a jump", error);
                         }
+                        showArrow(attached);
                     }
 
                     @Override public void onViewDetachedFromWindow(View detached) {
+                        hideArrow(detached);
                         Jump jump = running;
                         if (jump != null && jump.chat == detached) jump.lose();
                     }
                 });
             }
-            if (view.isAttachedToWindow()) watch(view);
+            if (view.isAttachedToWindow()) {
+                watch(view);
+                showArrow(view);
+            }
         } catch (Throwable error) {
             Settings.hookFailed(KEY, "Can't watch the chat for a jump", error);
         }
@@ -271,6 +279,9 @@ public final class ChatJump {
      * a message among them, is left to Messenger.
      */
     static long dateAt(View chat, int x, int y) {
+        // The arrow floats over the messages, so the row under it keeps its hands off that touch.
+        Arrow arrow = arrows.get(chat);
+        if (arrow != null && arrow.holds(x, y)) return 0;
         View list = listIn(chat);
         if (list == null || !contains(list, x, y)) return 0;
         View row = rowAt(list, x, y);
@@ -779,6 +790,7 @@ public final class ChatJump {
             handler.removeCallbacks(this);
             bar.hide();
             if (running == this) running = null;
+            refreshArrow(chat);
             String said = said(outcome);
             if (said != null) Toast.makeText(chat.getContext(), new SettingsText(chat.getContext()).get(said), Toast.LENGTH_SHORT).show();
         }
@@ -801,6 +813,153 @@ public final class ChatJump {
                 case NO_DATES: return "chat_jump_no_dates";
                 default: return null;
             }
+        }
+    }
+
+    /** Puts the arrow on [chat] unless it's already there. Never throws. */
+    static void showArrow(View chat) {
+        try {
+            if (!Settings.enabled(KEY) || arrows.containsKey(chat)) return;
+            Arrow arrow = new Arrow(chat);
+            arrows.put(chat, arrow);
+            arrow.show();
+        } catch (Throwable error) {
+            arrows.remove(chat);
+            Settings.hookFailed(KEY, "Can't put the jump arrow on the chat", error);
+        }
+    }
+
+    /** Takes the arrow off [chat]. */
+    static void hideArrow(View chat) {
+        Arrow arrow = arrows.remove(chat);
+        if (arrow != null) arrow.hide();
+    }
+
+    /** The arrow on [chat], for the tests. */
+    static Arrow arrowOn(View chat) {
+        return arrows.get(chat);
+    }
+
+    /**
+     * Takes [view] off [parent] once whatever is going on now is done. A window handing its children their detach
+     * walks the very list our view sits in, so taking it out right there leaves a hole the walk then trips over.
+     */
+    private static void takeOut(ViewGroup parent, View view) {
+        if (parent == null || view == null) return;
+        view.setVisibility(View.GONE);
+        new Handler(Looper.getMainLooper()).post(() -> {
+            if (view.getParent() == parent) parent.removeView(view);
+        });
+    }
+
+    /** Has [chat]'s arrow look again, for when the count bar comes and goes without a layout of its own. */
+    static void refreshArrow(View chat) {
+        Arrow arrow = arrows.get(chat);
+        if (arrow != null) arrow.update();
+    }
+
+    /**
+     * A round arrow at the bottom left of a chat that goes to its first message, the other way round from
+     * Messenger's own arrow down to the newest one, since a long press on the chat's name is easy to miss (#177).
+     * A long press on the arrow asks for a day instead. It's only up while the chat has older messages to go to,
+     * and it stands down while the count bar is on screen.
+     */
+    static final class Arrow implements ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnScrollChangedListener {
+        private final View chat;
+        private final Rect visible = new Rect();
+        private final int[] where = new int[2];
+        private ViewGroup content;
+        /** How far up from the bottom the arrow sits, clearing the chat box. */
+        private int above;
+        ImageView button;
+
+        Arrow(View chat) {
+            this.chat = chat;
+        }
+
+        void show() {
+            View found = chat.getRootView().findViewById(android.R.id.content);
+            if (!(found instanceof FrameLayout)) return;
+            content = (ViewGroup) found;
+            Context context = chat.getContext();
+            SettingsUi ui = new SettingsUi(context, MaterialYouTheme.chatIsLight());
+            int size = ui.dp(40), pad = ui.dp(11);
+            above = ui.dp(64);
+            button = new ImageView(context);
+            // The icon points back, so a quarter turn clockwise points it at the top of the chat.
+            button.setImageDrawable(SettingsIcons.icon(context, SettingsIcons.BACK, ui.text));
+            button.setRotation(90);
+            button.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            button.setPadding(pad, pad, pad, pad);
+            button.setBackground(ui.interactive(ui.surface, ui.line, size / 2));
+            button.setElevation(ui.dp(3));
+            button.setContentDescription(new SettingsText(context).get("chat_jump_first"));
+            button.setOnClickListener(tapped -> {
+                try {
+                    start(chat, 0);
+                } catch (Throwable error) {
+                    Settings.hookFailed(KEY, "Can't start the jump", error);
+                }
+            });
+            button.setOnLongClickListener(held -> {
+                try {
+                    held.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                    chooser.choose(held.getContext(), day -> start(chat, day));
+                } catch (Throwable error) {
+                    Settings.hookFailed(KEY, "Can't ask where to jump", error);
+                }
+                return true;
+            });
+            button.setVisibility(View.GONE);
+            FrameLayout.LayoutParams params =
+                new FrameLayout.LayoutParams(size, size, Gravity.BOTTOM | Gravity.START);
+            params.setMarginStart(ui.dp(12));
+            params.bottomMargin = above;
+            content.addView(button, params);
+            content.getViewTreeObserver().addOnGlobalLayoutListener(this);
+            content.getViewTreeObserver().addOnScrollChangedListener(this);
+            update();
+        }
+
+        /** Whether the arrow is up and takes the touch at (x, y), which the date rows under it then leave alone. */
+        boolean holds(int x, int y) {
+            return button != null && button.getVisibility() == View.VISIBLE && contains(button, x, y);
+        }
+
+        /** Up while the chat is on screen with older messages to go to, down while a jump holds the bar. */
+        void update() {
+            if (button == null || content == null) return;
+            View list = chat.isShown() ? listIn(chat) : null;
+            Jump jump = running;
+            boolean up = list != null && list.canScrollVertically(-1) && (jump == null || jump.chat != chat);
+            int wanted = up ? View.VISIBLE : View.GONE;
+            if (button.getVisibility() != wanted) button.setVisibility(wanted);
+        }
+
+        @Override public void onScrollChanged() {
+            update();
+        }
+
+        @Override public void onGlobalLayout() {
+            if (button == null || content == null) return;
+            content.getWindowVisibleDisplayFrame(visible);
+            content.getLocationOnScreen(where);
+            int covered = Math.max(0, where[1] + content.getHeight() - visible.bottom);
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) button.getLayoutParams();
+            if (params.bottomMargin != covered + above) {
+                params.bottomMargin = covered + above;
+                button.setLayoutParams(params);
+            }
+            update();
+        }
+
+        void hide() {
+            if (content == null) return;
+            content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            content.getViewTreeObserver().removeOnScrollChangedListener(this);
+            takeOut(content, button);
+            content = null;
+            button = null;
         }
     }
 
@@ -844,6 +1003,7 @@ public final class ChatJump {
             content.addView(bar, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
             content.getViewTreeObserver().addOnGlobalLayoutListener(this);
+            refreshArrow(chat);
         }
 
         void update() {
@@ -868,7 +1028,8 @@ public final class ChatJump {
         void hide() {
             if (content == null) return;
             content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            content.removeView(bar);
+            // A chat leaving a window that's going away stops the jump from inside that window's own detach.
+            takeOut(content, bar);
             content = null;
             bar = null;
             status = null;

@@ -692,7 +692,7 @@ final class SettingsTextTr {
         {"local_chat_search.title", "Kayıtlı mesajlarda ara"},
         {"local_chat_search.description", "Bir sohbetin arama sonuçlarına, bu telefonda kayıtlı mesajlarda arayan bir düğme ekler. Messenger'ın kendi aramasının hiçbir şey bulamadığı eski sohbetlerde işe yarar. Uçtan uca şifreli olmayan sohbetlerde çalışır ve yalnızca telefonun yüklediğini bulabilir, bu yüzden önce sohbette yukarı kaydır."},
         {"chat_jump.title", "İlk mesaja veya bir tarihe git"},
-        {"chat_jump.description", "Sohbetin ilk mesajına veya seçtiğin bir güne gitmek için üstteki sohbet adına uzun bas. Messenger bir sohbeti sayfa sayfa yüklediği için oraya varana kadar ekranda bir sayaçla geriye kaydırır ve İptal bunu durdurur. Ancak Messenger'ın yükleyebildiği kadar geriye gidebilir."},
+        {"chat_jump.description", "Sohbetin ilk mesajına veya seçtiğin bir güne gitmek için üstteki sohbet adına uzun bas. Sohbetin sol alt köşesindeki ok ilk mesaja götürür, oka uzun basarsan bir gün sorar. Messenger bir sohbeti sayfa sayfa yüklediği için oraya varana kadar ekranda bir sayaçla geriye kaydırır ve İptal bunu durdurur. Ancak Messenger'ın yükleyebildiği kadar geriye gidebilir."},
         {"landscape.title", "Yatay moda izin ver"},
         {"landscape.description", "Daha geniş bir klavye ve daha büyük fotoğraf ve videolar için Messenger'ın telefonunla birlikte yan dönmesini sağlar. Telefonunun otomatik döndürme ayarına uyar. Aramalar, kamera, ödemeler ve birkaç ekran daha dik kalır. Değiştirdikten sonra Messenger'ı yeniden başlat."},
         {"call_recording.title", "Aramaları kaydet"},

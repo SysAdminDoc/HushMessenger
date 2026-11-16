@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import java.time.Duration;
@@ -578,6 +579,88 @@ public class ChatJumpTest {
         assertFalse("a dark chat gets a dark menu", darkTitle(dark));
     }
 
+    private ViewGroup content() {
+        return activity.findViewById(android.R.id.content);
+    }
+
+    private ImageView arrow() {
+        ChatJump.Arrow on = ChatJump.arrowOn(chat);
+        assertNotNull("no arrow on the chat", on);
+        return on.button;
+    }
+
+    /** #177: the long press on the chat's name is easy to miss, so the arrow makes the same jump with one tap. */
+    @Test public void theArrowGoesToTheFirstMessage() {
+        on(true);
+        openChat();
+        list.older = 1000;
+        ImageView arrow = arrow();
+        assertSame(content(), arrow.getParent());
+        assertEquals(View.VISIBLE, arrow.getVisibility());
+        arrow.performClick();
+        assertNotNull(ChatJump.running);
+        idle(3 * ChatJump.TICK_MS);
+        assertTrue(list.pulls > 0);
+        assertTrue(Settings.hookErrors.isEmpty());
+    }
+
+    @Test public void aLongPressOnTheArrowAsksWhereToGo() {
+        on(true);
+        openChat();
+        assertTrue(arrow().performLongClick());
+        assertEquals(1, asked.size());
+        assertNull(ChatJump.running);
+        asked.get(0).jump(0);
+        assertNotNull(ChatJump.running);
+    }
+
+    @Test public void theArrowStaysOffWithNothingOlderToGoTo() {
+        on(true);
+        openChat();
+        assertEquals(View.VISIBLE, arrow().getVisibility());
+        list.older = 0;
+        // What the window's own observer calls as the list scrolls.
+        ChatJump.arrowOn(chat).onScrollChanged();
+        assertEquals(View.GONE, arrow().getVisibility());
+    }
+
+    @Test public void theArrowStandsDownWhileTheCountBarIsUp() {
+        on(true);
+        openChat();
+        list.older = 1000;
+        arrow().performClick();
+        assertNotNull(ChatJump.running);
+        assertEquals(View.GONE, arrow().getVisibility());
+        ChatJump.running.bar.cancel.performClick();
+        assertNull(ChatJump.running);
+        assertEquals(View.VISIBLE, arrow().getVisibility());
+    }
+
+    @Test public void noArrowGoesUpWithTheSwitchOff() {
+        on(false);
+        openChat();
+        assertNull(ChatJump.arrowOn(chat));
+        assertEquals(1, content().getChildCount());
+    }
+
+    /** The arrow floats over the messages, where a tap used to open the day picker off the same touch. */
+    @Test public void aTapOnTheArrowIsNotATapOnADateUnderIt() {
+        on(true);
+        openChat();
+        long when = ChatJump.midnight(2025, 2, 14) + 9 * 3_600_000L;
+        View date = dateRow(when, 80, 120);
+        ImageView arrow = arrow();
+        int[] row = new int[2], host = new int[2];
+        date.getLocationOnScreen(row);
+        content().getLocationOnScreen(host);
+        int x = row[0] - host[0] + date.getWidth() / 2, y = row[1] - host[1] + date.getHeight() / 2;
+        arrow.layout(x - 20, y - 20, x + 20, y + 20);
+        assertEquals(0, ChatJump.dateAt(chat, screenX(arrow), screenY(arrow)));
+        // With the arrow down, the row under it is a date again, so the arrow is what held that touch back.
+        arrow.setVisibility(View.GONE);
+        assertEquals(when, ChatJump.dateAt(chat, screenX(arrow), screenY(arrow)));
+    }
+
     @Test public void cancelStopsTheJumpWhereItIs() {
         on(true);
         openChat();
@@ -592,7 +675,9 @@ public class ChatJumpTest {
         idle(10 * ChatJump.TICK_MS);
         assertTrue(jump.done());
         assertEquals(pulls, list.pulls);
-        assertEquals(1, ((ViewGroup) activity.findViewById(android.R.id.content)).getChildCount());
+        // The chat and the arrow stay, the bar goes.
+        assertEquals(2, content().getChildCount());
+        assertSame(chat, content().getChildAt(0));
         assertNull(ShadowToast.getTextOfLatestToast());
     }
 
@@ -626,7 +711,8 @@ public class ChatJumpTest {
             Settings.preferences = prefs;
         }
         assertNull(ChatJump.running);
-        assertEquals(1, ((ViewGroup) activity.findViewById(android.R.id.content)).getChildCount());
+        assertEquals(2, content().getChildCount());
+        assertSame(chat, content().getChildAt(0));
         asked.get(0).jump(0);
         assertNotNull(ChatJump.running);
         assertNotNull(ChatJump.running.bar.bar);

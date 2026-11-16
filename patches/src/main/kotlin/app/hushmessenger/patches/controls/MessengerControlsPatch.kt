@@ -717,7 +717,7 @@ val localChatSearchPatch = controlPatch("local_chat_search", "Search saved messa
     manifest = { addLocalSearch() })
 @Suppress("unused")
 val chatJumpPatch = controlPatch("chat_jump", "Jump to the first message or a date",
-    "Long press a chat's name at the top of the chat to jump to its first message or to a day you pick. Tapping one of the dates between the messages opens the same day picker on that day. Messenger loads a chat a page at a time, so it scrolls back with a count on screen until it gets there, and Cancel stops it. It can only go as far back as Messenger can load.", "Conversations",
+    "Long press a chat's name at the top of the chat to jump to its first message or to a day you pick. An arrow at the bottom left of a chat goes to its first message, and a long press on the arrow asks for a day. Tapping one of the dates between the messages opens the same day picker on that day. Messenger loads a chat a page at a time, so it scrolls back with a count on screen until it gets there, and Cancel stops it. It can only go as far back as Messenger can load.", "Conversations",
     CHAT_JUMP)
 @Suppress("unused")
 val allowLandscapePatch = controlPatch("landscape", "Allow landscape",
