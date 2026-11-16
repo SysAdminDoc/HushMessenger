@@ -1501,9 +1501,11 @@ public final class Settings {
     public static boolean unlockAppThemes() { return enabled("app_themes"); }
     public static void addScreenshotFlags(Window window, int flags) {
         window.addFlags(allowScreenshot() ? flags & ~WindowManager.LayoutParams.FLAG_SECURE : flags);
+        ViewOnceSave.offer(window);
     }
     public static void setScreenshotFlags(Window window, int flags, int mask) {
         window.setFlags(allowScreenshot() ? flags & ~WindowManager.LayoutParams.FLAG_SECURE : flags, mask);
+        ViewOnceSave.offer(window);
     }
     /** How long after you send something the open chat may mark itself read, which shows Seen as stock Messenger does. */
     static final long REPLY_READ_MS = 5_000;

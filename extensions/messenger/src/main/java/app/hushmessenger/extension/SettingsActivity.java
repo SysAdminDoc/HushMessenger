@@ -218,6 +218,7 @@ public final class SettingsActivity extends Activity {
         {"nearby_scans", "Stop nearby scans", "Stops Messenger from reading the list of Wi-Fi networks around you, and hides the name and hardware address of the one you're connected to, the way Android does when Messenger can't see your location. Also stops the timer it can run while it's open to check your location and scan for Wi-Fi networks and Bluetooth devices.", "tracking"},
         {"phone_id_sync", "Stop app list and device ID sharing", "Stops Messenger from going through the apps on your phone to find other Meta apps, and from asking them for the device ID Meta uses to link the apps on one phone. Messenger keeps the ID it already has.", "tracking"},
         {"message_log", "Keep a message log", "Saves each message when its notification arrives, so you can read it after it's unsent, and marks the ones that were. Works in encrypted chats. Stays on your phone. In a chat with disappearing messages on, Messenger leaves the words out of its notification, so those messages aren't logged.", "privacy"},
+        {"allow_screenshot", "Allow screenshots", "Lets you screenshot protected chat media, such as view-once photos and Quicksnap, and stops screenshot notices. A switch under it puts a Save button on the view-once viewer. It doesn't add replay.", "privacy"},
         {"secure_chat", "Block screenshots in chats", "Stops a screenshot or a screen recording of a chat you have open on this phone, and leaves the chat out of the app switcher's preview. Android refuses the screenshot itself, so it covers every chat and not only the disappearing ones. A chat that was already open needs opening again. The person you're chatting with still has their own phone to screenshot on.", "privacy"},
         {"hide_read_receipts", "Hide read receipts", "Opening a chat no longer tells people you read their message, and the chat stays unread here. Marking it read yourself or replying marks it read and shows Seen, like Messenger does. Group chats aren't tested. Messenger's own Read receipts setting under Privacy & safety marks chats read without Seen.", "privacy"},
         {"mark_read_button", "Mark as read button", "Puts Messenger's Mark as read icon in a chat's top bar while Hide read receipts is on. Opening the chat still sends nothing. Tap the icon when you want the sender to see Seen, and the chat turns read here too. When the bar is full it takes the place of the chat details button (tapping the chat's name opens the same page), or of another button that isn't for calls when a chat doesn't have one, so the call buttons stay put.", "privacy"},
@@ -1029,7 +1030,7 @@ public final class SettingsActivity extends Activity {
                     || MessageLog.KEY.equals(spec[0]) || AutoReply.KEY.equals(spec[0]) || Settings.AVATAR_SHAPE.equals(spec[0])
                     || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0]) || ChatHiding.KEY.equals(spec[0])
                     || MessageActions.KEY.equals(spec[0]) || ChatMenuItems.KEY.equals(spec[0]) || CameraActivity.KEY.equals(spec[0])
-                    || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])) {
+                    || MenuBlur.KEY.equals(spec[0]) || ("allow_screenshot".equals(spec[0]) && Build.VERSION.SDK_INT >= 29)) {
                 // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
                 ui.add(wrapper, row, 0);
@@ -1042,6 +1043,8 @@ public final class SettingsActivity extends Activity {
                     text.format(CameraActivity.ASK), text.format("system_camera_ask_help"), false), 8);
                 else if (StoryEye.OWNER.equals(spec[0])) ui.add(wrapper, controlRow(StoryEye.KEY,
                     text.format(StoryEye.KEY), text.format("story_seen_button_help"), false), 8);
+                else if ("allow_screenshot".equals(spec[0])) ui.add(wrapper, controlRow(ViewOnceSave.KEY,
+                    text.format(ViewOnceSave.KEY), text.format("save_view_once_help"), false), 8);
                 else if (Settings.TAB_BADGES.equals(spec[0])) {
                     for (String keep : Settings.KEEP_BADGES.values()) ui.add(wrapper, controlRow(keep, text.format(keep), "", false), 8);
                 }

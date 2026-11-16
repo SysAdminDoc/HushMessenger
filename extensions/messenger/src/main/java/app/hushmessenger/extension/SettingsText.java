@@ -681,6 +681,11 @@ final class SettingsText {
         ENGLISH.put("mark_read", "Mark as read");
         ENGLISH.put("mark_read_done", "Marked as read");
         ENGLISH.put("mark_read_nothing", "Nothing new to mark as read");
+        ENGLISH.put("save_view_once", "Save button on view-once media");
+        ENGLISH.put("save_view_once_help", "Puts a Save button on view-once photos and Quicksnap while Allow screenshots is on. One tap keeps what's on screen in your pictures under Pictures/Messenger, so you don't lose it to the photo closing or being unsent. On a video it keeps the frame you're looking at.");
+        ENGLISH.put("save_view_once_button", "Save");
+        ENGLISH.put("save_view_once_saved", "Saved to %1$s");
+        ENGLISH.put("save_view_once_failed", "Couldn't save that one.");
         ENGLISH.put("story_seen_button", "Mark as seen button");
         ENGLISH.put("story_seen_button_help", "Puts an eye button on stories you open. Tap it when you want that person to see you viewed the story on screen. The eye has a slash until you do.");
         ENGLISH.put("story_seen", "Mark as seen");
