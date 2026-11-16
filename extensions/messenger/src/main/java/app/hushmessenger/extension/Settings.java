@@ -2608,7 +2608,12 @@ public final class Settings {
             boolean settingsRow = !menuRowHidden();
             Context context = appContext;
             String logRow = MessageLogButton.inMenu() && context != null ? MessageLogButton.label(context) : null;
-            if (list == null || list.isEmpty() || !settingsRow && logRow == null) return;
+            String logOutRow = context != null && MenuRows.logOutInMenu() ? MenuRows.logOutLabel(context) : null;
+            if (list == null || list.isEmpty()) return;
+            // Every row the Menu tab shows, so settings can offer each one, and then out go the ones already picked.
+            MenuRows.remember(list);
+            MenuRows.hide(list);
+            if (list.isEmpty() || !settingsRow && logRow == null && logOutRow == null) return;
             // Messenger builds its QR code row into the same list, so find Settings by its folder key.
             int at = -1;
             for (int i = 0; i < list.size() && at < 0; i++) if (holdsSettingsKey(list.get(i))) at = i;
@@ -2621,7 +2626,11 @@ public final class Settings {
             }
             if (logRow != null) {
                 Object log = menuRowCopy(original, logRow);
-                if (log != null) list.add(at + 1, log);
+                if (log != null) list.add(++at, log);
+            }
+            if (logOutRow != null) {
+                Object out = menuRowCopy(original, logOutRow);
+                if (out != null) list.add(++at, out);
             }
         } catch (Exception | LinkageError e) {
             hookFailed("menu_row", "addMenuSettingsEntry failed", e);
@@ -2666,6 +2675,13 @@ public final class Settings {
         return clone;
     }
 
+    /** Messenger's own Log out, from its Menu tab row. A build that doesn't hand it over says so instead. */
+    private static void logOutFromMenu(Context context) {
+        if (LogOut.start(context, HostScreens.logoutRoute())) return;
+        android.widget.Toast.makeText(context, new SettingsText(context).get("log_out_failed"),
+            android.widget.Toast.LENGTH_LONG).show();
+    }
+
     private static boolean holdsSettingsKey(Object row) throws IllegalAccessException {
         if (row == null) return false;
         for (java.lang.reflect.Field f : row.getClass().getDeclaredFields()) {
@@ -2699,9 +2715,11 @@ public final class Settings {
             }
             if (!settingsKey || context == null) return item;
             boolean settings = titles.contains("HushMessenger");
-            if (!settings && !titles.contains(MessageLogButton.label(context))) return item;
+            boolean logOut = !settings && MenuRows.logOutInMenu() && titles.contains(MenuRows.logOutLabel(context));
+            if (!settings && !logOut && !titles.contains(MessageLogButton.label(context))) return item;
             recognized = true;
             if (settings) HostScreens.open(context, HostScreens.SETTINGS);
+            else if (logOut) logOutFromMenu(context);
             else MessageLogButton.open(context);
             return null;
         } catch (ReflectiveOperationException | RuntimeException | LinkageError error) {

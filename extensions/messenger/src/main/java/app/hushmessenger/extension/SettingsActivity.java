@@ -68,6 +68,7 @@ public final class SettingsActivity extends Activity {
     private final HomeHeaderRow homeHeader = new HomeHeaderRow(this);
     private final MessageActionsRow messageActions = new MessageActionsRow(this);
     private final ChatMenuItemsRow chatMenuItems = new ChatMenuItemsRow(this);
+    private final MenuRowsRow menuRows = new MenuRowsRow(this);
     private final CallCaptionsRow callCaptions = new CallCaptionsRow(this);
     private final SpecialContactsRow specialContacts = new SpecialContactsRow(this);
     private final SharedPreferences.OnSharedPreferenceChangeListener preferenceListener = (preferences, key) -> {
@@ -417,6 +418,7 @@ public final class SettingsActivity extends Activity {
         if (quietCallers != null) fillQuietCallers();
         messageActions.fill(null);
         chatMenuItems.fill(null);
+        menuRows.fill(null);
         specialContacts.fill(null);
         updates.syncUpdateChoice(false);
         showGmsCoreNotice();
@@ -1416,7 +1418,8 @@ public final class SettingsActivity extends Activity {
 
     /** A row's icon: one its key's words call for, else its section's. Fixed per key, since some rows are rebuilt later. */
     private static String rowIcon(String key) {
-        if (WAYS_IN.contains(key) || "hide_drawer_icon".equals(key)) return SettingsIcons.forKey(key, sectionIcon("quick_access"));
+        if (WAYS_IN.contains(key) || "hide_drawer_icon".equals(key) || MenuRows.LOG_OUT.equals(key))
+            return SettingsIcons.forKey(key, sectionIcon("quick_access"));
         if ("light".equals(key) || "material_you_black".equals(key) || MaterialYouTheme.LIGHT_KEY.equals(key) || MaterialYouTheme.LIGHT_GRAYS_KEY.equals(key))
             return SettingsIcons.forKey(key, sectionIcon("appearance"));
         if ("check_updates".equals(key)) return SettingsIcons.forKey(key, sectionIcon("about"));
@@ -1533,6 +1536,22 @@ public final class SettingsActivity extends Activity {
             ui.add(access, sharedInstall, 12);
         }
         section(content, "quick_access", access);
+        // #189: the Menu tab's own rows, which only the Menu row patch reaches.
+        if (menuRow) {
+            LinearLayout menu = ui.panel();
+            menu.setPadding(ui.dp(12), ui.dp(14), ui.dp(12), ui.dp(14));
+            ui.add(menu, ui.text(text.get("menu_rows_help"), 13, ui.muted, false), 0);
+            menuRows.addTo(menu);
+            ui.rule(menu, 12);
+            if (LogOut.available()) {
+                ui.add(menu, controlRow(MenuRows.LOG_OUT, text.format(MenuRows.LOG_OUT), text.format("menu_log_out_help"), false), 10);
+            } else {
+                TextView noLogOut = ui.text(text.get("log_out_unavailable"), 13, ui.muted, false);
+                noLogOut.setTag("menu_log_out_unavailable");
+                ui.add(menu, noLogOut, 10);
+            }
+            section(content, "menu_tab", menu);
+        }
         if (!installedControls.isEmpty()) {
             // The section around it carries the "quick_setups" tag.
             LinearLayout quick = quickPanel = ui.panel();

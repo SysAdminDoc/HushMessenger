@@ -156,6 +156,12 @@ final class SettingsText {
         ENGLISH.put("menu_row_needs_way", "Turn the icon shortcuts or the logo long press back on first, so you have a way back without the row.");
         ENGLISH.put("hide_menu_row_help_without_shortcut", "Takes the HushMessenger row out of Messenger's Menu tab and side menu. Long-press the Messenger logo at the top of Chats to get back here. Turn the logo long press off and the row comes back.");
         ENGLISH.put("hide_menu_row_help_plain", "Takes the HushMessenger row out of Messenger's Menu tab and side menu.");
+        // #189: Messenger's own rows in the Menu tab, and Log out among them.
+        ENGLISH.put("menu_tab", "Menu tab");
+        ENGLISH.put("menu_rows_help", "Rows Messenger puts in its Menu tab, such as Communities or Channel invites. Hide the ones you never open. Each row turns up here once the Menu tab has shown it.");
+        ENGLISH.put("menu_rows_empty", "Open Messenger's Menu tab once, and its rows show up here for you to hide.");
+        ENGLISH.put("menu_log_out", "Log out row in the Menu tab");
+        ENGLISH.put("menu_log_out_help", "Puts Log out in Messenger's Menu tab, under Settings. It signs you out the way Messenger's own Log out does.");
         // With the icon shortcuts hidden, the App tab lists what's left, one sentence each.
         ENGLISH.put("way_menu", "Open HushMessenger settings from its row in Messenger's Menu tab or side menu.");
         ENGLISH.put("way_logo", "Long-press the Messenger logo at the top of Chats to open these settings.");

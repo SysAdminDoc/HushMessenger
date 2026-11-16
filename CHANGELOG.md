@@ -4,6 +4,7 @@
 
 ### New
 
+- Messenger's Menu tab has a `Menu tab` section in HushMessenger's App settings now, listing every row Messenger puts there: Communities, Channel invites, Marketplace, whatever your account gets. Hide the ones you never open and the Menu tab comes back short. Each row turns up in settings once the Menu tab has shown it, so open it once after you patch, and the last row standing can't be hidden. There's a `Log out row in the Menu tab` switch in the same section as well, which puts Log out right under Settings and signs you out the way Messenger's own Log out does. Refs #189.
 - `Show settings tab` is a new switch under Navigation. Messenger has a settings tab of its own, the round one with your picture on it that sits at the end of the bottom bar, but it only builds it for some accounts. This puts it there on any account, so your Messenger settings are one tap away instead of a trip through the inbox. Restart Messenger after you turn it on. Refs #184.
 - The settings screen is in Spanish now. Refs #183.
 - `Paste a photo into the chat` is a new switch under Photos and videos. Paste a photo into a chat and Messenger sends it right then: no preview, no caption, no HD, and nothing to cancel. With this on, the photo lands above the message box the way a pick from your gallery does and waits for you to tap Send. Pasted text and the keyboard's GIFs work as they did, and a chat that's already open needs reopening once after you turn it on. Refs #180.
