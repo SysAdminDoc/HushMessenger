@@ -1435,6 +1435,8 @@ public final class SettingsActivity extends Activity {
             : CameraActivity.ASK.equals(key) ? CameraActivity.KEY
             : StoryEye.KEY.equals(key) ? StoryEye.OWNER
             : CallCaptions.SPEAK.equals(key) || CallCaptions.DUCK.equals(key) ? CallCaptions.KEY
+            : ViewOnceSave.KEY.equals(key) ? "allow_screenshot"
+            : FloatingMenu.KEY.equals(key) ? MenuBlur.KEY
             : Settings.KEEP_BADGES.containsValue(key) ? Settings.TAB_BADGES
             : MessageLogButton.KEY.equals(key) || MessageLogButton.MENU_KEY.equals(key) || MessageLogButton.CHAT_KEY.equals(key)
                 || MessageLog.SAVE_EXPIRING.equals(key)
@@ -2113,6 +2115,8 @@ public final class SettingsActivity extends Activity {
             if (Settings.AVATAR_SHAPE.equals(spec[0])) inside = text.get(Settings.AVATAR_ROUNDED) + " " + text.get("avatar_shape_rounded_help");
             if (CameraActivity.KEY.equals(spec[0])) inside = text.get(CameraActivity.ASK) + " " + text.get("system_camera_ask_help");
             if (StoryEye.OWNER.equals(spec[0])) inside = text.get(StoryEye.KEY) + " " + text.get("story_seen_button_help");
+            if ("allow_screenshot".equals(spec[0])) inside = text.get(ViewOnceSave.KEY) + " " + text.get("save_view_once_help");
+            if (MenuBlur.KEY.equals(spec[0])) inside = text.get(FloatingMenu.KEY) + " " + text.get("floating_menu_help");
             if (CallCaptions.KEY.equals(spec[0])) inside = text.get("call_captions_heard_title") + " " + text.get("call_captions_shown_title") + " "
                 + text.get(CallCaptions.SPEAK) + " " + text.get("call_captions_speak_help") + " " + text.get(CallCaptions.DUCK) + " "
                 + text.get("call_captions_duck_help");

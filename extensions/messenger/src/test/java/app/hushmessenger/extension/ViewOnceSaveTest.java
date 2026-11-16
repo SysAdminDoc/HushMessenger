@@ -94,6 +94,11 @@ public class ViewOnceSaveTest {
         assertSame("a second viewer lock doesn't stack a second button", pill, viewerOpens());
     }
 
+    /** A switch left out of SUB_SWITCHES is written to no backup and comes back off on the next phone. */
+    @Test public void theSaveSwitchIsBackedUpUnderAllowScreenshots() {
+        assertEquals("allow_screenshot", Settings.SUB_SWITCHES.get(ViewOnceSave.KEY));
+    }
+
     /** Android 9 lets no app write to shared pictures without the storage permission, so there's nothing to offer. */
     @Test @Config(sdk = 28) public void android9GetsNoButton() {
         on(true, true);

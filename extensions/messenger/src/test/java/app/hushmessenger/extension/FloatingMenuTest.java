@@ -107,6 +107,11 @@ public class FloatingMenuTest {
         return null;
     }
 
+    /** A switch left out of SUB_SWITCHES is written to no backup and comes back off on the next phone. */
+    @Test public void theFloatingMenuSwitchIsBackedUpUnderBlurBehindMenus() {
+        assertEquals(MenuBlur.KEY, Settings.SUB_SWITCHES.get(FloatingMenu.KEY));
+    }
+
     @Test public void theActionsLeaveTheBottomOfTheScreenForACardUnderTheMessage() {
         FloatingMenu.dress(overlay, host);
 

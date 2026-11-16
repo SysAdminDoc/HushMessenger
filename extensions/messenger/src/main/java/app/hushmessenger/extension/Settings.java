@@ -465,6 +465,8 @@ public final class Settings {
         owners.put(StoryEye.KEY, StoryEye.OWNER);
         owners.put(CallCaptions.SPEAK, CallCaptions.KEY);
         owners.put(CallCaptions.DUCK, CallCaptions.KEY);
+        owners.put(ViewOnceSave.KEY, "allow_screenshot");
+        owners.put(FloatingMenu.KEY, MenuBlur.KEY);
         SUB_SWITCHES = Collections.unmodifiableMap(owners);
     }
 
