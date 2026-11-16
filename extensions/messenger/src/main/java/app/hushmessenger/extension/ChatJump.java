@@ -48,7 +48,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Jump to the first message or a date (#130). A long press on the chat's name in its top bar asks where to go.
+ * Jump to the first message or a date (#130). A long press on the chat's name in its top bar asks where to go, and a
+ * tap on one of the dates between the messages opens the day picker on that day (#177).
  * Messenger loads a chat a page at a time and its list's own methods are renamed, so the jump pages the list back
  * through the View API the list overrides (scrollBy, canScrollVertically and the accessibility row count), with a
  * count and Cancel on screen, until older messages stop coming or the day turns up. The chat fragment hands its view
@@ -84,7 +85,13 @@ public final class ChatJump {
         void choose(Context context, Target target);
     }
 
+    /** How the day is asked for, starting at [day], or at today when that's 0. Tests swap it. */
+    interface Picker {
+        void pick(Context context, long day, Target target);
+    }
+
     static volatile Chooser chooser = ChatJump::choose;
+    static volatile Picker picker = ChatJump::pickDay;
 
     /** Chat views Messenger has shown. Only touched on the main thread. */
     private static final List<WeakReference<View>> chats = new ArrayList<>();
@@ -257,6 +264,43 @@ public final class ChatJump {
         return best;
     }
 
+    /**
+     * The day a tap at (x, y) landed on in [chat]'s message list, or 0 when it landed anywhere else. The dates between
+     * a chat's messages are rows nothing listens to, so a tap on one does nothing in Messenger today and the day it
+     * names is read off the row the same way the jump reads a message's own send time (#177). A row that takes taps,
+     * a message among them, is left to Messenger.
+     */
+    static long dateAt(View chat, int x, int y) {
+        View list = listIn(chat);
+        if (list == null || !contains(list, x, y)) return 0;
+        View row = rowAt(list, x, y);
+        if (row == null || listens(row)) return 0;
+        return times(Collections.singletonList(row), System.currentTimeMillis(), new HashMap<>())[0];
+    }
+
+    /** The row of [list] under (x, y), topmost first, or null. */
+    static View rowAt(View list, int x, int y) {
+        if (!(list instanceof ViewGroup)) return null;
+        ViewGroup group = (ViewGroup) list;
+        for (int i = group.getChildCount() - 1; i >= 0; i--) {
+            View row = group.getChildAt(i);
+            if (row.getVisibility() == View.VISIBLE && contains(row, x, y)) return row;
+        }
+        return null;
+    }
+
+    /** Whether [row] or anything in it answers a tap, in which case that touch stays Messenger's. */
+    static boolean listens(View row) {
+        if (row.isClickable() || row.isLongClickable()) return true;
+        if (row instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) row;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                if (listens(group.getChildAt(i))) return true;
+            }
+        }
+        return false;
+    }
+
     static boolean isList(Class<?> type) {
         for (; type != null; type = type.getSuperclass()) {
             if (LIST.equals(type.getName())) return true;
@@ -296,7 +340,7 @@ public final class ChatJump {
             .setItems(new CharSequence[]{text.get("chat_jump_first"), text.get("chat_jump_date")}, (dialog, which) -> {
                 try {
                     if (which == 0) target.jump(0);
-                    else pickDay(context, target);
+                    else picker.pick(context, 0, target);
                 } catch (Throwable error) {
                     Settings.hookFailed(KEY, "Can't start the jump", error);
                 }
@@ -304,18 +348,21 @@ public final class ChatJump {
             .create(), context);
     }
 
-    private static void pickDay(Context context, Target target) {
+    /** The day picker, open on [day] or on today when that's 0, and never past today. */
+    static void pickDay(Context context, long day, Target target) {
         Calendar today = Calendar.getInstance();
-        DatePickerDialog picker = new DatePickerDialog(context, MaterialYouTheme.chatDialogTheme(),
-            (view, year, month, day) -> {
+        Calendar open = Calendar.getInstance();
+        if (day > 0) open.setTimeInMillis(Math.min(day, today.getTimeInMillis()));
+        DatePickerDialog dialog = new DatePickerDialog(context, MaterialYouTheme.chatDialogTheme(),
+            (view, year, month, picked) -> {
                 try {
-                    target.jump(midnight(year, month, day));
+                    target.jump(midnight(year, month, picked));
                 } catch (Throwable error) {
                     Settings.hookFailed(KEY, "Can't start the jump", error);
                 }
-            }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH));
-        picker.getDatePicker().setMaxDate(today.getTimeInMillis());
-        showOverChat(picker, context);
+            }, open.get(Calendar.YEAR), open.get(Calendar.MONTH), open.get(Calendar.DAY_OF_MONTH));
+        dialog.getDatePicker().setMaxDate(today.getTimeInMillis());
+        showOverChat(dialog, context);
     }
 
     /** Local midnight at the start of the day. [month] counts from 0, like the picker's. */
@@ -842,6 +889,9 @@ public final class ChatJump {
         private MotionEvent last;
         private float downX, downY;
         private boolean held;
+        /** The chat whose date a touch went down on, and the day that date names. */
+        private View dateChat;
+        private long date;
 
         Watching(Window window, Window.Callback original) {
             this.window = window;
@@ -886,13 +936,16 @@ public final class ChatJump {
                 held = false;
                 View decor = window.peekDecorView();
                 if (decor == null || chats.isEmpty() || !Settings.wouldUse(KEY)) return false;
-                View name = titleAt(decor, (int) event.getRawX(), (int) event.getRawY());
-                View heads = name != null ? chatFor(name) : null;
-                if (heads == null) return false;
-                title = name;
-                chat = heads;
                 downX = event.getRawX();
                 downY = event.getRawY();
+                View name = titleAt(decor, (int) downX, (int) downY);
+                View heads = name != null ? chatFor(name) : null;
+                if (heads == null) {
+                    dated(decor, (int) downX, (int) downY);
+                    return false;
+                }
+                title = name;
+                chat = heads;
                 keep(event);
                 handler.postDelayed(fire, ViewConfiguration.getLongPressTimeout());
                 return false;
@@ -901,15 +954,42 @@ public final class ChatJump {
                 if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) held = false;
                 return true;
             }
-            if (title == null) return false;
+            if (title == null && dateChat == null) return false;
             if (action == MotionEvent.ACTION_MOVE) {
-                int slop = ViewConfiguration.get(title.getContext()).getScaledTouchSlop();
+                Context context = (title != null ? title : dateChat).getContext();
+                int slop = ViewConfiguration.get(context).getScaledTouchSlop();
                 if (Math.abs(event.getRawX() - downX) > slop || Math.abs(event.getRawY() - downY) > slop) forget();
-                else keep(event);
+                else if (title != null) keep(event);
+            } else if (action == MotionEvent.ACTION_UP) {
+                View chat = dateChat;
+                long day = date;
+                forget();
+                // The touch goes on to Messenger either way: a date row does nothing with it.
+                if (chat != null) tapped(chat, day);
             } else if (action != MotionEvent.ACTION_POINTER_UP) {
                 forget();
             }
             return false;
+        }
+
+        /** Keeps the chat and the day when the touch went down on a date between a chat's messages. */
+        private void dated(View decor, int x, int y) {
+            for (WeakReference<View> held : chats) {
+                View chat = held.get();
+                if (chat == null || !chat.isShown() || chat.getRootView() != decor.getRootView()) continue;
+                long day = dateAt(chat, x, y);
+                if (day != 0) {
+                    dateChat = chat;
+                    date = day;
+                    return;
+                }
+            }
+        }
+
+        /** A tap on a date: the day picker opens on that day, and the jump goes where it's left. */
+        private void tapped(View chat, long day) {
+            if (!Settings.enabled(KEY)) return;
+            picker.pick(window.getContext(), day, picked -> start(chat, picked));
         }
 
         private void keep(MotionEvent event) {
@@ -923,6 +1003,8 @@ public final class ChatJump {
             last = null;
             title = null;
             chat = null;
+            dateChat = null;
+            date = 0;
         }
 
         private void fire() {
