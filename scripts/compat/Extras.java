@@ -325,6 +325,57 @@ final class Extras {
         return search.size() == 1 && view.size() == 1 ? List.of(search.get(0), view.get(0)) : List.of();
     }
 
+    static final String UNREAD_SNIPPET_CLASS =
+        "Lcom/facebook/messaging/threadlist/plugins/core/threadsnippet/unreadcount/UnreadCountSnippetImpl;";
+    static final String LONG_MAXIMUM = "Ljava/lang/Math;->max(JJ)J";
+
+    /** The chat-list unread answer: three long comparisons, a maximum, and five of the summary's own times. */
+    static boolean isUnreadAnswer(Method method) {
+        if (!AccessFlags.STATIC.isSet(method.getAccessFlags()) || !"Z".equals(method.getReturnType())
+            || !params(method).equals(List.of(LOCAL_THREAD_SUMMARY))) return false;
+        var code = instructions(method);
+        int comparisons = 0;
+        boolean maximum = false;
+        var times = new LinkedHashSet<String>();
+        for (var instruction : code) {
+            if (instruction.getOpcode() == Opcode.CMP_LONG) comparisons++;
+            if (LONG_MAXIMUM.equals(calledName(instruction))) maximum = true;
+            if (instruction.getOpcode() == Opcode.IGET_WIDE && instruction instanceof ReferenceInstruction ri
+                && ri.getReference() instanceof FieldReference field
+                && LOCAL_THREAD_SUMMARY.equals(field.getDefiningClass()) && "J".equals(field.getType()))
+                times.add(field.getName());
+        }
+        return comparisons == 3 && maximum && times.size() == 5;
+    }
+
+    /**
+     * local_read: the one unread answer the chat list shares, read out of the unread-count snippet whose own plugin
+     * name survives every build, then confirmed by the answer's shape. Mirrors LocalRead.kt.
+     */
+    static List<Method> localRead(List<ClassDef> classes) {
+        var asked = new LinkedHashSet<String>();
+        for (var cls : classes) {
+            if (!UNREAD_SNIPPET_CLASS.equals(cls.getType())) continue;
+            for (var method : cls.getMethods()) {
+                if (!params(method).equals(List.of(LOCAL_THREAD_SUMMARY))) continue;
+                for (var instruction : instructions(method)) {
+                    if (instruction.getOpcode() != Opcode.INVOKE_STATIC
+                        || !(instruction instanceof ReferenceInstruction ri)
+                        || !(ri.getReference() instanceof MethodReference call)
+                        || !"Z".equals(call.getReturnType()) || call.getParameterTypes().size() != 1
+                        || !LOCAL_THREAD_SUMMARY.equals(call.getParameterTypes().get(0).toString())) continue;
+                    asked.add(call.toString());
+                }
+            }
+        }
+        if (asked.size() != 1) return List.of();
+        String wanted = asked.iterator().next();
+        var answers = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods())
+            if (wanted.equals(hookId(method)) && isUnreadAnswer(method)) answers.add(method);
+        return answers.size() == 1 ? List.of(answers.get(0)) : List.of();
+    }
+
     static final String OVERLAY_CONFIG_HOLDER = "Lcom/facebook/rsys/overlayconfigmanager/OverlayConfigManagerHolder;";
     static final String WEBRTC_AUDIO_TRACK = "Lorg/webrtc/voiceengine/WebRtcAudioTrack;";
     static final String WEBRTC_AUDIO_RECORD = "Lorg/webrtc/voiceengine/WebRtcAudioRecord;";

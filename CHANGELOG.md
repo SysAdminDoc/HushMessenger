@@ -6,9 +6,11 @@
 
 - `Show settings tab` is a new switch under Navigation. Messenger has a settings tab of its own, the round one with your picture on it that sits at the end of the bottom bar, but it only builds it for some accounts. This puts it there on any account, so your Messenger settings are one tap away instead of a trip through the inbox. Restart Messenger after you turn it on. Refs #184.
 - The settings screen is in Spanish now. Refs #183.
+- `Mark chats read on this phone` is a new switch under Privacy, for when you're using `Hide read receipts`. Holding the receipt back also meant Messenger never marked the chat read for you, so a chat you'd opened and read through stayed bold in the list with a count sitting next to it. With this on, that unread look clears the moment you open the chat. Nothing goes out to Messenger, so the other person still isn't told you read it, and a new message brings the bold and the count back. Refs #178.
 
 ### Changed and fixed
 
+- Privacy was getting long to scroll, so the six `Stop ...` switches have a `Tracking` section of their own now. Same switches under the same names, and nothing you'd already turned on needs turning on again.
 - The patches are built with Morphe patcher 2.4.0 now, the one that comes with Morphe Manager 2.6.0 and Morphe Desktop 2.2.0. Manager won't load a bundle made with a newer patcher than its own, so update Manager to 2.6.0 or newer (or Desktop to 2.2.0) before you add this release.
 - `Ask before a call` asks in a chat head too. A chat head draws in a window Messenger puts over other apps, with no screen behind it for a dialog to sit on, so the question went up as nothing and the call started anyway. `Jump to a date` was blind in the same spot, and its menu and date picker now open in a chat head as well. Refs #172.
 - `Keep unsent messages` keeps the words of an unsent message after you close Messenger from the multitasking screen. In an encrypted chat those words were only held in memory, so the "deleted a message" row came back blank once the app had been swiped away. They're now written to a small sealed file of their own, which means clearing the message log doesn't take them, and only messages you've already seen unsent are written there. An unsend that happens while Messenger isn't running still arrives with nothing to show. Refs #70, #172.

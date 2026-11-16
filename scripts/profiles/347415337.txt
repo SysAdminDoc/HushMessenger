@@ -178,6 +178,7 @@ hook landscape_lock LX/07D;->A0K()Z
 hook landscape_media LX/7LD;->A00(LX/7LD;I)V
 hook local_chat_search LX/NCJ;->FBm(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V
 hook local_chat_search LX/NCJ;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+hook local_read LX/2ac;->A0J(Lcom/facebook/messaging/model/threads/ThreadSummary;)Z
 hook mark_read_action LX/Jgw;->A0D()Z
 hook mark_read_action LX/Jgx;->A0P()Z
 hook mark_read_bar LX/7Nx;->FDi(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/74D;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V

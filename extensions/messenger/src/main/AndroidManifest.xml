@@ -78,6 +78,7 @@
         <meta-data android:name="hush.feature.auto_reply" android:value="true" />
         <meta-data android:name="hush.feature.hide_read_receipts" android:value="true" />
         <meta-data android:name="hush.feature.mark_read_button" android:value="true" />
+        <meta-data android:name="hush.feature.read_chats_locally" android:value="true" />
         <meta-data android:name="hush.feature.keep_unsent" android:value="true" />
         <meta-data android:name="hush.feature.anonymous_stories" android:value="true" />
         <meta-data android:name="hush.feature.save_stories" android:value="true" />

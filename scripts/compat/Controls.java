@@ -120,6 +120,7 @@ final class Controls {
         found.get("car_messages").addAll(carMessages(classes));
         found.get("car_extension_gate").addAll(carExtensionGate(classes));
         found.get("local_chat_search").addAll(localChatSearch(classes));
+        found.get("local_read").addAll(localRead(classes));
         found.get("call_recording").addAll(callRecording(classes));
         found.get("home_header").addAll(homeHeader(classes));
         var markRead = markReadButton(classes);

@@ -104,6 +104,7 @@ final class SettingsText {
         ENGLISH.put("photos_videos", "Photos and videos");
         ENGLISH.put("links_bubbles", "Links and bubbles");
         ENGLISH.put("privacy", "Privacy");
+        ENGLISH.put("tracking", "Tracking");
         ENGLISH.put("theme", "Theme");
         ENGLISH.put("settings", "HushMessenger settings");
         ENGLISH.put("preview_title", "HushMessenger UI preview");

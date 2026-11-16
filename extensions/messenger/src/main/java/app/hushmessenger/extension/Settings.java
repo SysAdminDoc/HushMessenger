@@ -1547,7 +1547,97 @@ public final class Settings {
         } catch (RuntimeException error) {
             hookFailed(MarkReadButton.KEY, "Can't keep the chat's Seen for Mark as read", error);
         }
+        markChatReadLocally(thread);
         return true;
+    }
+
+    /**
+     * Mark chats read on this phone: chats opened while a Seen was held back, as "chat key:time read". Messenger
+     * never hears about them, so the time is kept here and the chat list reads it back for a month.
+     */
+    static final String LOCAL_READ_KEY = "read_chats_locally";
+    static final String LOCAL_READ_CHATS = "local_read_chats";
+    static final long LOCAL_READ_TTL = 30L * 24 * 60 * 60 * 1000L;
+    static final int LOCAL_READ_CHATS_MAX = 512;
+    private static final Object LOCAL_READ_LOCK = new Object();
+    /** Null until the first read, and set back to null by a test standing in for the next launch. */
+    static volatile ConcurrentHashMap<String, Long> localReadChats;
+
+    /** Read back once per launch, then kept in memory: the chat list asks this for every row it draws. */
+    static ConcurrentHashMap<String, Long> localReadMarks() {
+        ConcurrentHashMap<String, Long> marks = localReadChats;
+        if (marks != null) return marks;
+        synchronized (LOCAL_READ_LOCK) {
+            if (localReadChats != null) return localReadChats;
+            ConcurrentHashMap<String, Long> read = new ConcurrentHashMap<>();
+            SharedPreferences prefs = preferences;
+            if (prefs != null) {
+                long now = System.currentTimeMillis();
+                for (String entry : prefs.getStringSet(LOCAL_READ_CHATS, Collections.emptySet())) {
+                    int at = entry.lastIndexOf(':');
+                    if (at <= 0) continue;
+                    try {
+                        long marked = Long.parseLong(entry.substring(at + 1));
+                        if (now - marked <= LOCAL_READ_TTL) read.put(entry.substring(0, at), marked);
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+            localReadChats = read;
+            return read;
+        }
+    }
+
+    /** The chat was just opened with its Seen held back, so it counts as read here from this moment on. */
+    static void markChatReadLocally(Object chat) {
+        if (chat == null) return;
+        try {
+            if (!enabled(LOCAL_READ_KEY)) return;
+            String key = String.valueOf(chat);
+            if (key.isEmpty()) return;
+            long now = System.currentTimeMillis();
+            ConcurrentHashMap<String, Long> marks = localReadMarks();
+            Long already = marks.get(key);
+            if (already != null && already >= now) return;
+            marks.put(key, now);
+            synchronized (LOCAL_READ_LOCK) {
+                List<Map.Entry<String, Long>> entries = new ArrayList<>(marks.entrySet());
+                // Newest first, and the chat just read ahead of the ones marked in the same millisecond.
+                Collections.sort(entries, (first, second) -> {
+                    if (first.getKey().equals(second.getKey())) return 0;
+                    if (key.equals(first.getKey())) return -1;
+                    if (key.equals(second.getKey())) return 1;
+                    return Long.compare(second.getValue(), first.getValue());
+                });
+                Set<String> kept = new HashSet<>();
+                for (Map.Entry<String, Long> entry : entries) {
+                    if (kept.size() >= LOCAL_READ_CHATS_MAX || now - entry.getValue() > LOCAL_READ_TTL) {
+                        marks.remove(entry.getKey(), entry.getValue());
+                        continue;
+                    }
+                    kept.add(entry.getKey() + ":" + entry.getValue());
+                }
+                SharedPreferences prefs = preferences;
+                if (prefs != null) prefs.edit().putStringSet(LOCAL_READ_CHATS, kept).apply();
+            }
+        } catch (RuntimeException error) {
+            hookFailed(LOCAL_READ_KEY, "Can't keep a chat read on this phone", error);
+        }
+    }
+
+    /**
+     * The chat list's unread check, asked for the bold row, the "n new messages" line and the Chats badge alike. A
+     * chat read on this phone answers read until a message newer than that moment lands in it.
+     */
+    public static boolean chatReadLocally(Object chat, long newestMessage) {
+        try {
+            if (chat == null || !enabled(LOCAL_READ_KEY)) return false;
+            Long marked = localReadMarks().get(String.valueOf(chat));
+            return marked != null && marked >= newestMessage;
+        } catch (RuntimeException error) {
+            hookFailed(LOCAL_READ_KEY, "Can't tell whether a chat was read on this phone", error);
+            return false;
+        }
     }
 
     /** Record the account and thread only after the native composer dispatch returns. */

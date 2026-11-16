@@ -271,6 +271,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(MARK_READ_BAR).addAll(markReadBar)
     found.getValue(HIDE_CALL_BAR).addAll(markReadBar)
     found.getValue(MARK_READ_CLICK).addAll(markReadClick)
+    found.getValue(LOCAL_READ).addAll(findLocalRead(classes))
     val (logBar, logClick) = findMessageLogButton(classes)
     found.getValue(MESSAGE_LOG_BUTTON).addAll(logBar)
     found.getValue(MESSAGE_LOG_CLICK).addAll(logClick)

@@ -203,6 +203,7 @@ internal val PROFILE_347415354 = ControlProfile(
             "LX/NCJ;->FBm(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
             "LX/NCJ;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
         ),
+        "local_read" to setOf("LX/2ac;->A0J(Lcom/facebook/messaging/model/threads/ThreadSummary;)Z"),
         "mark_read_action" to setOf("LX/Jgw;->A0D()Z", "LX/Jgx;->A0P()Z"),
         "mark_read_bar" to setOf(
             "LX/7Nx;->FDi(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/74D;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
@@ -516,6 +517,7 @@ internal val PROFILE_347415280 = ControlProfile(
             "LX/Mpa;->FBp(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
             "LX/Mpa;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
         ),
+        "local_read" to setOf("LX/2ab;->A0J(Lcom/facebook/messaging/model/threads/ThreadSummary;)Z"),
         "mark_read_action" to setOf("LX/JRs;->A0D()Z", "LX/JRt;->A0P()Z"),
         "mark_read_bar" to setOf(
             "LX/7Oj;->FDl(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/74z;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
@@ -829,6 +831,7 @@ internal val PROFILE_347415302 = ControlProfile(
             "LX/NCI;->FBm(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
             "LX/NCI;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
         ),
+        "local_read" to setOf("LX/2ac;->A0J(Lcom/facebook/messaging/model/threads/ThreadSummary;)Z"),
         "mark_read_action" to setOf("LX/Jgv;->A0D()Z", "LX/Jgw;->A0P()Z"),
         "mark_read_bar" to setOf(
             "LX/7Nx;->FDi(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/74D;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
@@ -1142,6 +1145,7 @@ internal val PROFILE_347415262 = ControlProfile(
             "LX/NI1;->FCI(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
             "LX/NI1;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
         ),
+        "local_read" to setOf("LX/2b2;->A0J(Lcom/facebook/messaging/model/threads/ThreadSummary;)Z"),
         "mark_read_action" to setOf("LX/Jda;->A0D()Z", "LX/Jdb;->A0P()Z"),
         "mark_read_bar" to setOf(
             "LX/7PJ;->FEG(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/75Z;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
