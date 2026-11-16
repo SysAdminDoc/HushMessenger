@@ -229,7 +229,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         CAR_MESSAGES -> validateCarMessages()
         CAR_EXTENSION_GATE -> validateCarExtensionGate()
         LOCAL_CHAT_SEARCH -> validateLocalChatSearch()
-        CHAT_JUMP -> validateChatJump()
+        CHAT_JUMP, SECURE_CHAT -> validateChatJump()
         CALL_RECORDING -> validateCallRecording()
         HOME_HEADER -> validateHomeHeader()
         TEXT_STYLE -> validateTextStyleField()
@@ -362,6 +362,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             CAR_EXTENSION_GATE -> method.injectCarExtensionGate()
             LOCAL_CHAT_SEARCH -> method.injectLocalChatSearch()
             CHAT_JUMP -> method.injectChatJump()
+            SECURE_CHAT -> method.injectSecureChat()
             CALL_RECORDING -> method.injectCallRecording()
             HOME_HEADER -> method.injectHomeHeader()
             TEXT_STYLE -> method.injectTextStyleField()
@@ -782,6 +783,10 @@ val stopPhoneIdSyncPatch = controlPatch("phone_id_sync", "Stop app list and devi
     "Stops Messenger from going through the apps on your phone to find other Meta apps, and from asking them for the device ID Meta uses to link the apps on one phone. Messenger keeps the ID it already has.", "Tracking")
 @Suppress("unused")
 val allowScreenshotPatch = controlPatch("allow_screenshot", "Allow screenshots", "Lets you screenshot protected chat media, such as view-once photos and Quicksnap, and stops screenshot notices. It doesn't add replay or saving.", "Privacy", "allow_screenshot", "screenshot_viewers")
+@Suppress("unused")
+val secureChatPatch = controlPatch("secure_chat", "Block screenshots in chats",
+    "Stops a screenshot or a screen recording of a chat you have open, on this phone, and leaves the chat out of the app switcher's preview. Android refuses the screenshot itself, so it works in every chat and not only the disappearing ones. A chat that was already open needs opening again. The person you're chatting with still has their own phone to screenshot on.",
+    "Privacy", SECURE_CHAT)
 @Suppress("unused")
 val hideReadReceiptsPatch = controlPatch("hide_read_receipts", "Hide read receipts", "Opening a chat no longer tells people you read their message, and the chat stays unread on this phone. Marking it read yourself or replying in it marks it read and shows Seen, like Messenger does. Group chats aren't tested. Messenger's own Read receipts setting under Privacy & safety marks chats read without showing Seen.", "Privacy", HIDE_READ_RECEIPTS, REPLY_READ)
 @Suppress("unused")

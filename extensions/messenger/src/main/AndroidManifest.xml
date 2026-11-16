@@ -65,6 +65,7 @@
         <meta-data android:name="hush.feature.external_browser" android:value="true" />
         <meta-data android:name="hush.feature.bubbles" android:value="true" />
         <meta-data android:name="hush.feature.allow_screenshot" android:value="true" />
+        <meta-data android:name="hush.feature.secure_chat" android:value="true" />
         <meta-data android:name="hush.feature.analytics_uploads" android:value="true" />
         <meta-data android:name="hush.feature.attribution_uploads" android:value="true" />
         <meta-data android:name="hush.feature.ad_events" android:value="true" />

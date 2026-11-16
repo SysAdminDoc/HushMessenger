@@ -281,6 +281,7 @@ internal val PROFILE_347415354 = ControlProfile(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",
             "Lcom/facebook/messaging/quicksnap/consumption/viewer/MsgrQuicksnapViewerFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
         ),
+        "secure_chat" to setOf("LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "share_story" to setOf(
             "LX/P4A;->A8j()V",
             "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V",
@@ -599,6 +600,7 @@ internal val PROFILE_347415280 = ControlProfile(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",
             "Lcom/facebook/messaging/quicksnap/consumption/viewer/MsgrQuicksnapViewerFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
         ),
+        "secure_chat" to setOf("LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "share_story" to setOf(
             "LX/Out;->A8l()V",
             "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V",
@@ -917,6 +919,7 @@ internal val PROFILE_347415302 = ControlProfile(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",
             "Lcom/facebook/messaging/quicksnap/consumption/viewer/MsgrQuicksnapViewerFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
         ),
+        "secure_chat" to setOf("LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "share_story" to setOf(
             "LX/P49;->A8j()V",
             "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V",
@@ -1235,6 +1238,7 @@ internal val PROFILE_347415262 = ControlProfile(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",
             "Lcom/facebook/messaging/quicksnap/consumption/viewer/MsgrQuicksnapViewerFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
         ),
+        "secure_chat" to setOf("LX/1i9;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "share_story" to setOf(
             "LX/OyU;->A8j()V",
             "Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V",

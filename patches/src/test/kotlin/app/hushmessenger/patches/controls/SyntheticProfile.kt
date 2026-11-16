@@ -183,6 +183,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     HIDE_CALL_LISTS to setOf(SYNTHETIC_BUSINESS_CALLS, SYNTHETIC_NEW_MESSAGE_CALLS),
     "chat_fragment" to setOf("LX/1hl;-><init>()V"),
     CHAT_JUMP to setOf(SYNTHETIC_CHAT_JUMP),
+    SECURE_CHAT to setOf(SYNTHETIC_CHAT_JUMP),
     "chat_inbox" to setOf("LX/1fs;-><init>()V"),
     "chat_legacy" to setOf("LX/1hd;->onCreateAnimation(IZI)$ANIMATION"),
     "people" to setOf("LX/1pm;->A0C()Z", "LX/2Wl;->A04()Z"),

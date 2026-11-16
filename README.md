@@ -122,7 +122,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Mark as seen button | Works with View stories anonymously. Stories you open get an eye with a slash through it, and tapping it adds you to that story's viewer list. The next story stays anonymous. Experimental. |
 | Save any story | Adds **Save** to the **More options** menu on other people's stories. |
 | Keep unsent messages | Keeps messages in the chat after someone unsends them, marked "[unsent]". In an encrypted chat it keeps the words Messenger already showed you, in the chat or in a notification, and still has them after Messenger restarts. |
-| Allow screenshots | Lets you screenshot protected photos and media, view-once included, with no screenshot notice to the sender. |
+| Block screenshots in chats | Android refuses a screenshot or a screen recording while a chat is open on this phone, and keeps the chat out of the app switcher's preview. |
 | Hide pictures on the Blocked list | The list of people you've blocked, under Privacy and safety, shows their names and Unblock without their profile pictures. |
 | Notify for restricted chats | Messages from people you've restricted notify you like any other chat, unless you've muted that chat or it's end-to-end encrypted. They still can't see when you're active or when you've read their messages. A restricted encrypted chat also drops out of your chat list, so search the person's name in Messenger and open it from the results. |
 | Use system emoji | Draws emoji with your phone's own set on Android 12 and newer. |
