@@ -321,7 +321,7 @@ public final class CallRecording {
                 removePill();
                 pill = makePill(top);
                 ((ViewGroup) found).addView(pill, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL));
+                    ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL));
             }
             boolean recording = session != null;
             pill.setText(new SettingsText(top).get(recording ? "call_recording_stop_pill" : "call_recording_start"));
@@ -341,33 +341,45 @@ public final class CallRecording {
         pill = null;
     }
 
+    /**
+     * How far above the bottom of the screen the button sits, in dp: clear of Messenger's own row of call buttons,
+     * which stands about 78dp tall above the navigation bar, with room to spare on a taller row (#105).
+     */
+    static final int ABOVE_CALL_BUTTONS_DP = 112;
+
     private static TextView makePill(Activity activity) {
         float density = activity.getResources().getDisplayMetrics().density;
         TextView view = new TextView(activity);
         view.setTextColor(Color.WHITE);
-        view.setTextSize(14);
+        view.setTextSize(13);
         view.setTypeface(Typeface.DEFAULT_BOLD);
         view.setGravity(Gravity.CENTER);
-        view.setMinHeight((int) (density * 48));
-        view.setPadding((int) (density * 20), 0, (int) (density * 20), 0);
+        view.setMinHeight((int) (density * 40));
+        view.setPadding((int) (density * 16), 0, (int) (density * 16), 0);
         view.setElevation(density * 24);
         view.setOnClickListener(clicked -> tapped(activity));
-        // Below the status bar, however this screen lays itself out. Moving it waits until this layout pass is over.
+        // Above the call buttons, however this screen lays itself out. Moving it waits until this layout pass is over.
         view.addOnLayoutChangeListener((self, left, up, right, down, oldLeft, oldUp, oldRight, oldDown) -> self.post(() -> place(self)));
         return view;
     }
 
-    private static void place(View view) {
+    /**
+     * Keeps the button above Messenger's own call buttons and clear of the navigation bar. It used to sit under the
+     * status bar, where it covered the name of the person you were calling as the call started (#105).
+     */
+    static void place(View view) {
         View parent = (View) view.getParent();
         if (parent == null) return;
         Rect visible = new Rect();
         int[] where = new int[2];
         parent.getWindowVisibleDisplayFrame(visible);
         parent.getLocationOnScreen(where);
-        int margin = Math.max(0, visible.top - where[1]) + (int) (view.getResources().getDisplayMetrics().density * 8);
+        float density = view.getResources().getDisplayMetrics().density;
+        int underTheBar = Math.max(0, where[1] + parent.getHeight() - visible.bottom);
+        int margin = underTheBar + (int) (density * ABOVE_CALL_BUTTONS_DP);
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
-        if (params.topMargin == margin) return;
-        params.topMargin = margin;
+        if (params.bottomMargin == margin) return;
+        params.bottomMargin = margin;
         view.setLayoutParams(params);
     }
 

@@ -194,6 +194,21 @@ public class CallRecordingTest {
         assertNull(pill());
     }
 
+    /** #105: it used to sit under the status bar, over the name of the person you were calling. */
+    @Test public void theButtonSitsAboveMessengersOwnCallButtons() {
+        on();
+        open();
+        callStarts();
+        TextView button = pill();
+        assertNotNull(button);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) button.getLayoutParams();
+        assertEquals(android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL, params.gravity);
+        assertEquals(0, params.topMargin);
+        CallRecording.place(button);
+        float density = button.getResources().getDisplayMetrics().density;
+        assertEquals((int) (density * CallRecording.ABOVE_CALL_BUTTONS_DP), params.bottomMargin);
+    }
+
     @Test public void theButtonShowsItsPressBeforeAndDuringARecording() throws Exception {
         on();
         open();
