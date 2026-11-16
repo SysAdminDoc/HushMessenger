@@ -239,7 +239,7 @@ public class CompatReport {
         PATCHES.put("Ask before a call", List.of("hide_call_bar", "call_button_built"));
         PATCHES.put("Allow screenshots", List.of("allow_screenshot", "screenshot_viewers"));
         PATCHES.put("Block screenshots in chats", List.of("secure_chat"));
-        PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read"));
+        PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read", "delivery_receipt"));
         PATCHES.put("Mark chats read on this phone", List.of("local_read"));
         PATCHES.put("Mark as read button", List.of("mark_read_bar", "mark_read_click"));
         PATCHES.put("Keep unsent messages", List.of("keep_unsent", "unsent_indicator", "delta_unsent", "unsent_recall", "unsent_clear"));

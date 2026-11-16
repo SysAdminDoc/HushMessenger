@@ -1031,7 +1031,8 @@ public final class SettingsActivity extends Activity {
                     || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0]) || ChatHiding.KEY.equals(spec[0])
                     || MessageActions.KEY.equals(spec[0]) || ChatMenuItems.KEY.equals(spec[0]) || CameraActivity.KEY.equals(spec[0])
                     || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])
-                    || MenuBlur.KEY.equals(spec[0]) || ("allow_screenshot".equals(spec[0]) && Build.VERSION.SDK_INT >= 29)) {
+                    || MenuBlur.KEY.equals(spec[0]) || "hide_read_receipts".equals(spec[0])
+                    || ("allow_screenshot".equals(spec[0]) && Build.VERSION.SDK_INT >= 29)) {
                 // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
                 ui.add(wrapper, row, 0);
@@ -1048,6 +1049,8 @@ public final class SettingsActivity extends Activity {
                     text.format(ViewOnceSave.KEY), text.format("save_view_once_help"), false), 8);
                 else if (MenuBlur.KEY.equals(spec[0])) ui.add(wrapper, controlRow(FloatingMenu.KEY,
                     text.format(FloatingMenu.KEY), text.format("floating_menu_help"), false), 8);
+                else if ("hide_read_receipts".equals(spec[0])) ui.add(wrapper, controlRow(Settings.HIDE_DELIVERED,
+                    text.format(Settings.HIDE_DELIVERED), text.format("hide_delivered_help"), false), 8);
                 else if (Settings.TAB_BADGES.equals(spec[0])) {
                     for (String keep : Settings.KEEP_BADGES.values()) ui.add(wrapper, controlRow(keep, text.format(keep), "", false), 8);
                 }
@@ -1437,6 +1440,7 @@ public final class SettingsActivity extends Activity {
             : CallCaptions.SPEAK.equals(key) || CallCaptions.DUCK.equals(key) ? CallCaptions.KEY
             : ViewOnceSave.KEY.equals(key) ? "allow_screenshot"
             : FloatingMenu.KEY.equals(key) ? MenuBlur.KEY
+            : Settings.HIDE_DELIVERED.equals(key) ? "hide_read_receipts"
             : Settings.KEEP_BADGES.containsValue(key) ? Settings.TAB_BADGES
             : MessageLogButton.KEY.equals(key) || MessageLogButton.MENU_KEY.equals(key) || MessageLogButton.CHAT_KEY.equals(key)
                 || MessageLog.SAVE_EXPIRING.equals(key)
@@ -2117,6 +2121,7 @@ public final class SettingsActivity extends Activity {
             if (StoryEye.OWNER.equals(spec[0])) inside = text.get(StoryEye.KEY) + " " + text.get("story_seen_button_help");
             if ("allow_screenshot".equals(spec[0])) inside = text.get(ViewOnceSave.KEY) + " " + text.get("save_view_once_help");
             if (MenuBlur.KEY.equals(spec[0])) inside = text.get(FloatingMenu.KEY) + " " + text.get("floating_menu_help");
+            if ("hide_read_receipts".equals(spec[0])) inside = text.get(Settings.HIDE_DELIVERED) + " " + text.get("hide_delivered_help");
             if (CallCaptions.KEY.equals(spec[0])) inside = text.get("call_captions_heard_title") + " " + text.get("call_captions_shown_title") + " "
                 + text.get(CallCaptions.SPEAK) + " " + text.get("call_captions_speak_help") + " " + text.get(CallCaptions.DUCK) + " "
                 + text.get("call_captions_duck_help");

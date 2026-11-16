@@ -467,6 +467,7 @@ public final class Settings {
         owners.put(CallCaptions.DUCK, CallCaptions.KEY);
         owners.put(ViewOnceSave.KEY, "allow_screenshot");
         owners.put(FloatingMenu.KEY, MenuBlur.KEY);
+        owners.put(Settings.HIDE_DELIVERED, "hide_read_receipts");
         SUB_SWITCHES = Collections.unmodifiableMap(owners);
     }
 
@@ -1554,6 +1555,19 @@ public final class Settings {
         }
         markChatReadLocally(thread);
         return true;
+    }
+
+    /** Hide Delivered, the sub-option under Hide read receipts. */
+    static final String HIDE_DELIVERED = "hide_delivered";
+
+    /**
+     * Whether the Delivered batch is dropped instead of sent. It rides on Hide read receipts, so turning that off
+     * turns this off with it, and it only covers chats that go over this transport. Encrypted chats answer on their own.
+     */
+    public static boolean hideDeliveryReceipts() {
+        if (!enabled("hide_read_receipts")) return false;
+        SharedPreferences prefs = preferences;
+        return prefs != null && prefs.getBoolean(HIDE_DELIVERED, false);
     }
 
     /**

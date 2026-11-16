@@ -130,6 +130,7 @@ internal val PROFILE_347415354 = ControlProfile(
         "chat_preview_size" to setOf("Lcom/facebook/messaging/threadlist/threaditemmenu/preview/InboxThreadPreviewDialogFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;"),
         "chat_promotions" to setOf("LX/HY9;->A0C()Z", "LX/HY9;->A0D()Z"),
         "community_inbox" to setOf("LX/23Z;->invoke(Ljava/lang/Object;)Ljava/lang/Object;"),
+        "delivery_receipt" to setOf("LX/OkY;->A02(Lcom/facebook/auth/usersession/FbUserSession;LX/PMW;Lcom/google/common/base/Optional;Ljava/lang/String;)V"),
         "delta_unsent" to setOf("LX/5hn;->DX0(I)Z", "LX/W2u;->DX0(I)Z", "LX/cNC;->DX0(I)Z"),
         "disappearing_swipe" to setOf("Lcom/facebook/messaging/threadview/overscroll/ui/OverScrollActionBehavior;->onStartNestedScroll(Landroidx/coordinatorlayout/widget/CoordinatorLayout;Landroid/view/View;Landroid/view/View;Landroid/view/View;II)Z"),
         "emoji_drawer" to setOf(
@@ -449,6 +450,7 @@ internal val PROFILE_347415280 = ControlProfile(
         "chat_preview_size" to setOf("Lcom/facebook/messaging/threadlist/threaditemmenu/preview/InboxThreadPreviewDialogFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;"),
         "chat_promotions" to setOf("LX/HVB;->A0C()Z", "LX/HVB;->A0D()Z"),
         "community_inbox" to setOf("LX/23Z;->invoke(Ljava/lang/Object;)Ljava/lang/Object;"),
+        "delivery_receipt" to setOf("LX/Uml;->A02(Lcom/facebook/auth/usersession/FbUserSession;LX/VMD;Lcom/google/common/base/Optional;Ljava/lang/String;)V"),
         "delta_unsent" to setOf("LX/5h8;->DXB(I)Z", "LX/Yx1;->DXB(I)Z", "LX/cQj;->DXB(I)Z"),
         "disappearing_swipe" to setOf("Lcom/facebook/messaging/threadview/overscroll/ui/OverScrollActionBehavior;->onStartNestedScroll(Landroidx/coordinatorlayout/widget/CoordinatorLayout;Landroid/view/View;Landroid/view/View;Landroid/view/View;II)Z"),
         "emoji_drawer" to setOf(
@@ -768,6 +770,7 @@ internal val PROFILE_347415302 = ControlProfile(
         "chat_preview_size" to setOf("Lcom/facebook/messaging/threadlist/threaditemmenu/preview/InboxThreadPreviewDialogFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;"),
         "chat_promotions" to setOf("LX/HY8;->A0C()Z", "LX/HY8;->A0D()Z"),
         "community_inbox" to setOf("LX/23Z;->invoke(Ljava/lang/Object;)Ljava/lang/Object;"),
+        "delivery_receipt" to setOf("LX/OkX;->A02(Lcom/facebook/auth/usersession/FbUserSession;LX/PMV;Lcom/google/common/base/Optional;Ljava/lang/String;)V"),
         "delta_unsent" to setOf("LX/5hn;->DX0(I)Z", "LX/W2s;->DX0(I)Z", "LX/cNC;->DX0(I)Z"),
         "disappearing_swipe" to setOf("Lcom/facebook/messaging/threadview/overscroll/ui/OverScrollActionBehavior;->onStartNestedScroll(Landroidx/coordinatorlayout/widget/CoordinatorLayout;Landroid/view/View;Landroid/view/View;Landroid/view/View;II)Z"),
         "emoji_drawer" to setOf(
@@ -1087,6 +1090,7 @@ internal val PROFILE_347415262 = ControlProfile(
         "chat_preview_size" to setOf("Lcom/facebook/messaging/threadlist/threaditemmenu/preview/InboxThreadPreviewDialogFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;"),
         "chat_promotions" to setOf("LX/HaU;->A0C()Z", "LX/HaU;->A0D()Z"),
         "community_inbox" to setOf("LX/23z;->invoke(Ljava/lang/Object;)Ljava/lang/Object;"),
+        "delivery_receipt" to setOf("LX/Olp;->A03(Lcom/facebook/auth/usersession/FbUserSession;LX/PEF;Lcom/google/common/base/Optional;Ljava/lang/String;)V"),
         "delta_unsent" to setOf("LX/5iJ;->DXO(I)Z", "LX/cZQ;->DXO(I)Z", "LX/cZZ;->DXO(I)Z"),
         "disappearing_swipe" to setOf("Lcom/facebook/messaging/threadview/overscroll/ui/OverScrollActionBehavior;->onStartNestedScroll(Landroidx/coordinatorlayout/widget/CoordinatorLayout;Landroid/view/View;Landroid/view/View;Landroid/view/View;II)Z"),
         "emoji_drawer" to setOf(

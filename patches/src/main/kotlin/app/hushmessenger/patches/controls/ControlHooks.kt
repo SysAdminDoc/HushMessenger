@@ -570,6 +570,8 @@ private class ControlScan(
         // An open chat marks itself read, which also sends Seen, only through the job its seen handler schedules here.
         if (method.isChatSeenBroadcast()) add(HIDE_READ_RECEIPTS)
         if (method.isReplyReadDispatch()) add(REPLY_READ)
+        // Delivered goes out as a batch from one manager, which publishes its own op name over its own topic.
+        if (method.isDeliveryReceiptSend()) add(DELIVERY_RECEIPT)
         // Opening a story card sends its seen state through the handler Messenger tags with this name.
         if (ret == "V" && params == listOf(MONTAGE_CARD, "Z") &&
             !AccessFlags.STATIC.isSet(method.accessFlags) && STORY_MARK_READ_TAG in strings) add("anonymous_stories")
