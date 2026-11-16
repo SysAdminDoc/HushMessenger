@@ -1858,7 +1858,20 @@ public final class Settings {
 
     /** Whether an encrypted chat's rows go through {@link #labelKeptUnsentRow} at all. */
     public static boolean watchesUnsentRows() {
-        return wouldUse("keep_unsent");
+        if (!wouldUse("keep_unsent")) return false;
+        // Reads the words kept by an earlier run, on its own thread, before the first row asks for them.
+        UnsentWords.warmUp();
+        return true;
+    }
+
+    /**
+     * The words kept for [key], from this run or an earlier one. {@link #ROW_TEXT} empties when Messenger is swiped
+     * away, so an unsend seen before that reads its words back from {@link UnsentWords} instead (#70, #172).
+     */
+    private static String keptWords(String key) {
+        if (key == null) return null;
+        String words = ROW_TEXT.get(key);
+        return words != null ? words : UnsentWords.words(key);
     }
 
     /**
@@ -1920,9 +1933,16 @@ public final class Settings {
             boolean hasText = text != null && !text.isEmpty();
             String stamp = rowStamp(timestamp, senderId);
             if (contentType == UNSENT_PLACEHOLDER_TYPE && contentSubtype == UNSENT_PLACEHOLDER_SUBTYPE) {
-                String words = stamp == null ? null : ROW_TEXT.get(stamp);
-                if (words == null && stamp != null) words = ROW_TEXT.get(lineStamp(timestamp));
-                return words == null ? text : "[unsent] " + words;
+                String words = stamp == null ? null : keptWords(stamp);
+                String under = stamp;
+                if (words == null && stamp != null) {
+                    under = lineStamp(timestamp);
+                    words = keptWords(under);
+                }
+                if (words == null) return text;
+                // This row is the unsend, so its words are worth keeping for the next run of Messenger.
+                UnsentWords.keep(under, words);
+                return "[unsent] " + words;
             }
             if (!isKeptUnsent(threadingId) && !isKeptUnsent(messageId)) {
                 if (hasText) {
@@ -1931,10 +1951,16 @@ public final class Settings {
                 }
                 return text;
             }
-            String original = hasText ? text : ROW_TEXT.get(key);
+            String original = hasText ? text : keptWords(key);
+            String under = key;
             // A notification keeps its words under the message id, and the row may have been keyed by its threading id.
-            if (original == null && messageId != null && !messageId.equals(key)) original = ROW_TEXT.get(messageId);
-            return original == null ? text : "[unsent] " + original;
+            if (original == null && messageId != null && !messageId.equals(key)) {
+                under = messageId;
+                original = keptWords(under);
+            }
+            if (original == null) return text;
+            UnsentWords.keep(under, original);
+            return "[unsent] " + original;
         } catch (Throwable failure) {
             hookFailedPrivately("keep_unsent", "Can't show an unsent message", failure);
             return text;
@@ -1956,7 +1982,11 @@ public final class Settings {
                     if (shown != null && shown.text != null && !shown.text.isEmpty()) {
                         ROW_TEXT.put(messageId, shown.text);
                         // The chat's "deleted a message" row finds it by the line's time.
-                        rememberStamp(lineStamp(shown.time), messageId, shown.text);
+                        String stamp = lineStamp(shown.time);
+                        rememberStamp(stamp, messageId, shown.text);
+                        // Kept for the next run of Messenger too, under both keys the row looks under.
+                        UnsentWords.keep(messageId, shown.text);
+                        UnsentWords.keep(stamp, shown.text);
                     }
                 } catch (RuntimeException unreadable) {
                     // The row's own earlier text can still answer.
