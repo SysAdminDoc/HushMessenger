@@ -6,8 +6,9 @@
 
 - The settings screen is in Spanish now. Refs #183.
 
-### Fixed
+### Changed and fixed
 
+- The patches are built with Morphe patcher 2.4.0 now, the one that comes with Morphe Manager 2.6.0 and Morphe Desktop 2.2.0. Manager won't load a bundle made with a newer patcher than its own, so update Manager to 2.6.0 or newer (or Desktop to 2.2.0) before you add this release.
 - `Ask before a call` asks in a chat head too. A chat head draws in a window Messenger puts over other apps, with no screen behind it for a dialog to sit on, so the question went up as nothing and the call started anyway. `Jump to a date` was blind in the same spot, and its menu and date picker now open in a chat head as well. Refs #172.
 - `Keep unsent messages` keeps the words of an unsent message after you close Messenger from the multitasking screen. In an encrypted chat those words were only held in memory, so the "deleted a message" row came back blank once the app had been swiped away. They're now written to a small sealed file of their own, which means clearing the message log doesn't take them, and only messages you've already seen unsent are written there. An unsend that happens while Messenger isn't running still arrives with nothing to show. Refs #70, #172.
 - The Record button on a call sits at the bottom now, above Messenger's own call buttons, and it's a little smaller. It used to sit in the top bar, right over the name of the person you were calling as the call started. Refs #105.
