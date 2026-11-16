@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### New
+
+- The settings screen is in Spanish now. Refs #183.
+
 ### Fixed
 
 - `Ask before a call` asks in a chat head too. A chat head draws in a window Messenger puts over other apps, with no screen behind it for a dialog to sit on, so the question went up as nothing and the call started anyway. `Jump to a date` was blind in the same spot, and its menu and date picker now open in a chat head as well. Refs #172.
