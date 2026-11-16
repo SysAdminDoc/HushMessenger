@@ -519,6 +519,24 @@ public final class Settings {
         return original && !hideTabBadge("facebook");
     }
 
+    /** Takes the words off the tabs at the bottom and leaves the icons on their own. */
+    static final String HIDE_TAB_LABELS = "hide_tab_labels";
+
+    /**
+     * Asked once per tab as the bar builds its descriptions. True puts an empty title where the tab's word goes, so the
+     * bar draws the icon alone. The content description is left as Messenger wrote it, so TalkBack still names the tab.
+     */
+    public static boolean hideTabLabels() {
+        try {
+            if (!enabled(HIDE_TAB_LABELS)) return false;
+            activeAt.put(HIDE_TAB_LABELS, System.currentTimeMillis());
+            return true;
+        } catch (RuntimeException error) {
+            hookFailed(HIDE_TAB_LABELS, "Can't hide a tab label", error);
+            return false;
+        }
+    }
+
     /** First answer this process gave for the emoji drawer, or null before Messenger asked. */
     static volatile Boolean oldEmojiDrawer;
     private static final Object EMOJI_DRAWER = new Object();

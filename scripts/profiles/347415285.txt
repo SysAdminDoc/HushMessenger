@@ -274,6 +274,7 @@ hook tab_bar_scroll_away LX/1tj;->DV4()Z
 hook tab_bar_scroll_away LX/1tj;->FGF()Z
 hook tab_bar_scroll_away LX/4cN;->A03(Landroid/view/View;LX/4cN;I)Z
 hook tab_config LX/1jh;->A02(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)LX/1kS;
+hook tab_labels LX/1sm;-><init>(LX/1si;Ljava/lang/String;Ljava/lang/String;Z)V
 hook tab_notifications LX/1i6;->A09(LX/1i6;)Z
 hook tab_people LX/1i6;->A0E(LX/1i6;)Z
 hook text_style LX/9xF;->onSelectionChanged(II)V

@@ -168,17 +168,21 @@ internal class ReadFlow(method: Method) {
             }
         }
     }
-    fun deadFrom(start: Int, register: Int) {
+    /** Whether nothing reads the register again from here on, down every path out of it, the exceptional ones too. */
+    fun deadAt(start: Int, register: Int): Boolean {
         val pending = ArrayDeque<Int>().apply { add(start) }
         val seen = mutableSetOf<Int>()
         while (pending.isNotEmpty()) {
             val i = pending.removeFirst()
             if (!seen.add(i)) continue
-            readRequire(!code[i].readReads(register))
+            if (code[i].readReads(register)) return false
             pending.addAll(exceptionalSuccessors(i))
             if (!code[i].readWrites(register)) pending.addAll(normalSuccessors(i))
         }
+        return true
     }
+
+    fun deadFrom(start: Int, register: Int) = readRequire(deadAt(start, register))
 }
 
 /**

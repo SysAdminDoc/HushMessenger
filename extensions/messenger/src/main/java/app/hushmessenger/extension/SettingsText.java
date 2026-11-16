@@ -98,6 +98,7 @@ final class SettingsText {
         ENGLISH.put("inbox", "Inbox");
         ENGLISH.put("chat_menu", "Chat menu");
         ENGLISH.put("navigation", "Navigation");
+        ENGLISH.put("tab_bar", "Tab bar");
         ENGLISH.put("stickers", "Stickers");
         ENGLISH.put("conversations", "Conversations");
         ENGLISH.put("calls", "Calls");

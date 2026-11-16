@@ -72,6 +72,7 @@ final class Controls {
         found.get("facebook_badge").addAll(facebookBadgeChecks(classes));
         found.get("facebook_profile_header").addAll(profileHeaders(classes));
         found.get("tab_config").addAll(tabConfigurations(classes));
+        found.get("tab_labels").addAll(tabDescriptions(classes));
         found.get("ai_mentions").addAll(aiMentionDispatchers(classes));
         found.get("ai_commands").addAll(aiCommandLists(classes));
         var searchBars = searchBarBuilders(classes);
