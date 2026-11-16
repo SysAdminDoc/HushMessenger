@@ -3,6 +3,7 @@ package app.hushmessenger.extension;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Rect;
@@ -17,6 +18,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -144,6 +146,20 @@ public final class ChatJump {
             context = ((ContextWrapper) context).getBaseContext();
         }
         return null;
+    }
+
+    /**
+     * Shows [dialog] over the chat [context] belongs to. A chat head draws from Messenger's own chat head service,
+     * where no activity holds a window a dialog can hang on, so the dialog goes up over other apps the way the chat
+     * head itself does. Without this nothing reached the screen there and whatever the dialog was asking went ahead
+     * unasked (#172).
+     */
+    static void showOverChat(Dialog dialog, Context context) {
+        if (activity(context) == null) {
+            Window window = dialog.getWindow();
+            if (window != null) window.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+        }
+        dialog.show();
     }
 
     /** The watcher behind [callback] when it's ours, else null. */
@@ -275,7 +291,7 @@ public final class ChatJump {
     /** Asks where to go, then for the day when it's a date. */
     private static void choose(Context context, Target target) {
         SettingsText text = new SettingsText(context);
-        new AlertDialog.Builder(context, MaterialYouTheme.chatDialogTheme())
+        showOverChat(new AlertDialog.Builder(context, MaterialYouTheme.chatDialogTheme())
             .setTitle(text.get("chat_jump_title"))
             .setItems(new CharSequence[]{text.get("chat_jump_first"), text.get("chat_jump_date")}, (dialog, which) -> {
                 try {
@@ -285,7 +301,7 @@ public final class ChatJump {
                     Settings.hookFailed(KEY, "Can't start the jump", error);
                 }
             })
-            .show();
+            .create(), context);
     }
 
     private static void pickDay(Context context, Target target) {
@@ -299,7 +315,7 @@ public final class ChatJump {
                 }
             }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH));
         picker.getDatePicker().setMaxDate(today.getTimeInMillis());
-        picker.show();
+        showOverChat(picker, context);
     }
 
     /** Local midnight at the start of the day. [month] counts from 0, like the picker's. */

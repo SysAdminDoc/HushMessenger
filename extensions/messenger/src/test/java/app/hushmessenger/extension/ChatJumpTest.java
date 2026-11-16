@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -429,6 +430,28 @@ public class ChatJumpTest {
         bar.cancel.performClick();
         assertNull(ChatJump.running);
         assertNull(bar.bar);
+    }
+
+    /**
+     * #172: a chat head has no activity for a dialog to hang a window on, so Jump to a date's menu and its date
+     * picker went up as nothing there. They go up over other apps instead, the way the chat head itself does.
+     */
+    @Test public void aDialogOverAChatHeadGoesUpInAWindowOfItsOwn() {
+        Context head = RuntimeEnvironment.getApplication();
+        assertNull(ChatJump.activity(head));
+        AlertDialog overChatHead = new AlertDialog.Builder(head, MaterialYouTheme.chatDialogTheme())
+            .setTitle("Jump to").create();
+        ChatJump.showOverChat(overChatHead, head);
+        assertTrue(overChatHead.isShowing());
+        assertEquals(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, overChatHead.getWindow().getAttributes().type);
+        overChatHead.dismiss();
+        // In a chat it stays an ordinary dialog on the chat's own window.
+        openChat();
+        AlertDialog overChat = new AlertDialog.Builder(activity, MaterialYouTheme.chatDialogTheme())
+            .setTitle("Jump to").create();
+        ChatJump.showOverChat(overChat, activity);
+        assertTrue(overChat.isShowing());
+        assertEquals(WindowManager.LayoutParams.TYPE_APPLICATION, overChat.getWindow().getAttributes().type);
     }
 
     /** Whether the menu's title is drawn in a dark color, as it is on a light sheet. */
