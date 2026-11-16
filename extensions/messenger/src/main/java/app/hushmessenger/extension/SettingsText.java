@@ -488,6 +488,8 @@ final class SettingsText {
         ENGLISH.put("tab_people_pending_off", "The People tab comes back after Messenger restarts");
         ENGLISH.put("tab_people_show_pending_on", "The People tab shows after Messenger restarts");
         ENGLISH.put("tab_people_show_pending_off", "The People tab goes away after Messenger restarts");
+        ENGLISH.put("tab_settings_show_pending_on", "The settings tab shows after Messenger restarts");
+        ENGLISH.put("tab_settings_show_pending_off", "The settings tab goes away after Messenger restarts");
         ENGLISH.put("tab_notifications_pending_on", "The Notifications tab is hidden after Messenger restarts");
         ENGLISH.put("tab_notifications_pending_off", "The Notifications tab comes back after Messenger restarts");
         ENGLISH.put("tab_stories_pending_on", "The Stories tab is hidden after Messenger restarts");

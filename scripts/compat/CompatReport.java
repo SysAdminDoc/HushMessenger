@@ -181,6 +181,7 @@ public class CompatReport {
         PATCHES.put("Hide Reels badge", List.of("reels_badge"));
         PATCHES.put("Hide People tab", List.of("tab_people", "tab_config"));
         PATCHES.put("Show People tab", List.of("tab_config"));
+        PATCHES.put("Show settings tab", List.of("tab_config"));
         PATCHES.put("Hide Notifications tab", List.of("tab_notifications", "tab_config"));
         PATCHES.put("Hide Stories tab", List.of("tab_config"));
         PATCHES.put("Hide tab badges", List.of("tab_badges", "facebook_badge"));

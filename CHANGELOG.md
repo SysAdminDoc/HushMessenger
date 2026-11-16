@@ -4,6 +4,7 @@
 
 ### New
 
+- `Show settings tab` is a new switch under Navigation. Messenger has a settings tab of its own, the round one with your picture on it that sits at the end of the bottom bar, but it only builds it for some accounts. This puts it there on any account, so your Messenger settings are one tap away instead of a trip through the inbox. Restart Messenger after you turn it on. Refs #184.
 - The settings screen is in Spanish now. Refs #183.
 
 ### Changed and fixed
