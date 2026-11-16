@@ -218,14 +218,15 @@ final class SettingsText {
         ENGLISH.put("call_captions_duck_help", "Turns the other people down while a caption is read, so you can follow the voice.");
         ENGLISH.put("call_captions_heard", "They speak: %1$s");
         ENGLISH.put("call_captions_heard_title", "Language they speak");
-        ENGLISH.put("call_captions_heard_hint", "Captions listen for this language. One marked to download gets fetched by the phone first.");
+        ENGLISH.put("call_captions_heard_hint", "Captions listen for this language. One marked to download gets fetched by the phone first, and the last row opens every other language your phone knows.");
         ENGLISH.put("call_captions_shown", "Show captions in: %1$s");
         ENGLISH.put("call_captions_shown_title", "Show captions in");
-        ENGLISH.put("call_captions_shown_hint", "Captions get translated on the phone into this language. Only the languages your phone can translate into are listed.");
+        ENGLISH.put("call_captions_shown_hint", "Captions get translated on the phone into this language. The list is what your phone reports it can do, and the last row opens every other language it knows.");
         ENGLISH.put("call_captions_phone_language", "Phone's language (%1$s)");
         ENGLISH.put("call_captions_untranslated_choice", "As spoken, no translation");
         ENGLISH.put("call_captions_loading", "Looking at what your phone has");
         ENGLISH.put("call_captions_download", "%1$s (downloads first)");
+        ENGLISH.put("call_captions_other", "Another language…");
         ENGLISH.put("call_captions_picked", "Captions: %1$s");
         ENGLISH.put("call_captions_downloading_now", "Downloading %1$s");
         ENGLISH.put("call_captions_cancel", "Cancel");
