@@ -224,6 +224,13 @@ final class SettingsText {
         ENGLISH.put("call_recording_scope_help", "A call starts recording itself as soon as it begins. Only chosen chats records the people you switch on below, and an outgoing call is matched by the name on the call screen.");
         ENGLISH.put("call_recording_scope_picked", "Calls to record: %1$s");
         ENGLISH.put("call_recording_recent_empty", "Chats show up here once they call you, newest first.");
+        ENGLISH.put("call_recording_folder", "Recordings folder");
+        ENGLISH.put("call_recording_folder_help", "Recordings go to the phone's own Recordings folder unless you pick another one. Pick a folder on an SD card or in a cloud app's folder and they're written straight there.");
+        ENGLISH.put("call_recording_folder_default", "The phone's Recordings folder");
+        ENGLISH.put("call_recording_folder_choose", "Pick a folder");
+        ENGLISH.put("call_recording_folder_reset", "Use the default");
+        ENGLISH.put("call_recording_folder_picked", "Recordings folder: %1$s");
+        ENGLISH.put("call_recording_folder_refused", "Couldn't use that folder. Pick one you can write to.");
         ENGLISH.put("call_recording_keep", "Keep recordings");
         ENGLISH.put("call_recording_keep_all", "Keep them all");
         ENGLISH.put("call_recording_keep_days", "For %1$s days");

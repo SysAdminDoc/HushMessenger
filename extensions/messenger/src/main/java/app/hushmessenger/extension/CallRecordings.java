@@ -14,7 +14,9 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +48,11 @@ final class CallRecordings {
     /** One switch per chat, this prefix and the chat's key, so each binds like any other switch. */
     static final String CHAT_PREFIX = "call_recording_chat_";
 
+    /** The folder recordings are written to, as a tree the person picked. Empty for the phone's own. */
+    static final String FOLDER = "call_recording_folder";
+    /** What a picked folder is held with, so it still opens after a restart. */
+    static final int FOLDER_ACCESS = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+
     private static final String CHANNEL = "hush_call_recordings";
     private static final int NOTIFICATION = 193;
 
@@ -60,6 +67,53 @@ final class CallRecordings {
         } catch (RuntimeException notANumber) {
             return 0;
         }
+    }
+
+    /** The folder picked for recordings, or null for the phone's own. */
+    static Uri folder() {
+        String saved = Settings.preferences == null ? null : Settings.preferences.getString(FOLDER, "");
+        if (saved == null || saved.isEmpty()) return null;
+        try {
+            return Uri.parse(saved);
+        } catch (RuntimeException unreadable) {
+            return null;
+        }
+    }
+
+    /** The name to show for the folder picked, which is the last part of its path. Null when there's none. */
+    static String folderName(Uri tree) {
+        if (tree == null) return null;
+        String id = DocumentsContract.getTreeDocumentId(tree);
+        if (id == null || id.isEmpty()) return null;
+        int lastPart = Math.max(id.lastIndexOf('/'), id.lastIndexOf(':'));
+        String name = lastPart < 0 ? id : id.substring(lastPart + 1);
+        return name.isEmpty() ? id : name;
+    }
+
+    /**
+     * Holds on to the folder picked so recordings can still be written to it after a restart, and lets go of the one
+     * before it. Answers whether the new one was taken.
+     */
+    static boolean folderChosen(Context context, Uri tree) {
+        Uri before = folder();
+        if (tree != null) {
+            try {
+                context.getContentResolver().takePersistableUriPermission(tree, FOLDER_ACCESS);
+            } catch (RuntimeException refused) {
+                Settings.hookFailedPrivately(CallRecording.KEY, "Couldn't hold on to the folder picked", refused);
+                return false;
+            }
+        }
+        if (Settings.preferences != null)
+            Settings.preferences.edit().putString(FOLDER, tree == null ? "" : tree.toString()).apply();
+        if (before != null && !before.equals(tree)) {
+            try {
+                context.getContentResolver().releasePersistableUriPermission(before, FOLDER_ACCESS);
+            } catch (RuntimeException alreadyGone) {
+                // Let go with the folder itself, which is nothing to put right.
+            }
+        }
+        return true;
     }
 
     /** Which calls record themselves. Anything else in the store reads as only the ones you tap Record on. */
@@ -145,7 +199,37 @@ final class CallRecordings {
     static int clean(Context context, long now) {
         int days = keepDays();
         if (days <= 0) return 0;
-        return deleteBefore(context, now - TimeUnit.DAYS.toMillis(days));
+        long before = now - TimeUnit.DAYS.toMillis(days);
+        return deleteBefore(context, before) + deleteFromFolderBefore(context, folder(), before);
+    }
+
+    /**
+     * The same tidy-up for the folder picked, which MediaStore knows nothing about. Only the files this patch named
+     * are looked at, so anything else kept in there is left where it is.
+     */
+    static int deleteFromFolderBefore(Context context, Uri tree, long before) {
+        if (tree == null) return 0;
+        int deleted = 0;
+        try {
+            ContentResolver resolver = context.getContentResolver();
+            Uri inside = DocumentsContract.buildChildDocumentsUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree));
+            List<Uri> old = new ArrayList<>();
+            String[] columns = {DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                DocumentsContract.Document.COLUMN_LAST_MODIFIED};
+            try (Cursor rows = resolver.query(inside, columns, null, null, null)) {
+                if (rows == null) return 0;
+                while (rows.moveToNext()) {
+                    String name = rows.getString(1);
+                    if (name == null || !name.startsWith(PREFIX) || rows.isNull(2) || rows.getLong(2) >= before) continue;
+                    old.add(DocumentsContract.buildDocumentUriUsingTree(tree, rows.getString(0)));
+                }
+            }
+            for (Uri recording : old) if (DocumentsContract.deleteDocument(resolver, recording)) deleted++;
+        } catch (IOException | RuntimeException unreadable) {
+            // The folder may have been moved or taken away since it was picked, and the call this followed is over.
+            Settings.hookFailedPrivately(CallRecording.KEY, "Couldn't look over the folder picked", unreadable);
+        }
+        return deleted;
     }
 
     /**

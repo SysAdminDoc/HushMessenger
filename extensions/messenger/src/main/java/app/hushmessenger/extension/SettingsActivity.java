@@ -126,7 +126,7 @@ public final class SettingsActivity extends Activity {
     boolean started;
     static final int UNDO_MILLIS = 10_000;
     static final int SAVE_CHOICES = 7101, READ_CHOICES = 7102, PICK_FONT = 7103, PICK_AUTO_REPLY_PICTURE = 7104, SAVE_MESSAGE_LOG = 7105,
-        PICK_HOME_HEADER = 7106, PICK_TAB_ICON = 7107;
+        PICK_HOME_HEADER = 7106, PICK_TAB_ICON = 7107, PICK_RECORDING_FOLDER = 7108;
     /**
      * The switch for each way back in (#22, HushFacebook#146), and the help and reason each was built with. Turning one
      * way off can change what the others say or whether they can turn off, so they're rebuilt when that changes.
@@ -1090,6 +1090,7 @@ public final class SettingsActivity extends Activity {
                 else if (CallRecording.KEY.equals(spec[0])) {
                     callRecording.addScopeTo(wrapper);
                     addRecordCallChats(wrapper);
+                    callRecording.addFolderTo(wrapper);
                     callRecording.addKeepTo(wrapper);
                     ui.add(wrapper, controlRow(CallRecordings.NOTIFY, text.format(CallRecordings.NOTIFY),
                         text.format("call_recording_notify_help"), false), 8);
@@ -1956,6 +1957,12 @@ public final class SettingsActivity extends Activity {
             else feedback(text.get("font_file_unreadable"), Toast.LENGTH_LONG);
             return;
         }
+        if (request == PICK_RECORDING_FOLDER) {
+            // Cancelled: the folder already saved stays the one in use.
+            if (result != RESULT_OK || data == null || data.getData() == null) return;
+            callRecording.folderChosen(data.getData());
+            return;
+        }
         if (request != SAVE_CHOICES && request != READ_CHOICES) return;
         backup.documentResult(request, result, data);
     }
@@ -2219,6 +2226,8 @@ public final class SettingsActivity extends Activity {
                 for (String scope : CallRecordings.SCOPES) inside += " " + text.get(CallRecordings.SCOPE + "_" + scope);
                 if (CallRecordings.CHOSEN.equals(CallRecordings.scope()))
                     for (String[] chat : QuietCalls.recent()) inside += " " + chat[1];
+                inside += " " + text.get(CallRecordings.FOLDER) + " " + text.get("call_recording_folder_help")
+                    + " " + text.get("call_recording_folder_choose") + " " + text.get("call_recording_folder_reset");
                 inside += " " + text.get("call_recording_keep") + " " + text.get("call_recording_keep_help");
                 for (String days : CallRecordings.KEEP_CHOICES)
                     inside += " " + text.get("0".equals(days) ? "call_recording_keep_all" : "call_recording_keep_days", days);

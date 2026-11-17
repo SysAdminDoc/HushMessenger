@@ -1,8 +1,13 @@
 package app.hushmessenger.extension;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +21,8 @@ final class CallRecordingRow {
     private final SettingsActivity page;
     private final List<RadioButton> choices = new ArrayList<>();
     private final List<RadioButton> scopes = new ArrayList<>();
+    private TextView folder;
+    private Button useDefault;
 
     CallRecordingRow(SettingsActivity page) {
         this.page = page;
@@ -38,6 +45,49 @@ final class CallRecordingRow {
         fill();
     }
 
+    /** Where recordings are written: the phone's own Recordings folder, or one the person picks. */
+    void addFolderTo(LinearLayout content) {
+        page.ui.add(content, page.ui.text(page.text.get(CallRecordings.FOLDER), 15, page.ui.text, true), 8);
+        folder = page.ui.text("", 13, page.ui.muted, false);
+        folder.setTag("call_recording_folder_name");
+        folder.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        page.ui.add(content, folder, 4);
+        Button choose = page.ui.button(page.text.get("call_recording_folder_choose"));
+        choose.setTag("call_recording_folder_choose");
+        choose.setOnClickListener(clicked -> pickFolder());
+        page.ui.add(content, choose, 8);
+        useDefault = page.ui.button(page.text.get("call_recording_folder_reset"));
+        useDefault.setTag("call_recording_folder_reset");
+        useDefault.setOnClickListener(clicked -> folderChosen(null));
+        page.ui.add(content, useDefault, 8);
+        page.ui.add(content, page.ui.text(page.text.get("call_recording_folder_help"), 13, page.ui.muted, false), 8);
+        fill();
+    }
+
+    private void pickFolder() {
+        Intent picker = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).addFlags(CallRecordings.FOLDER_ACCESS);
+        try {
+            page.startActivityForResult(picker, SettingsActivity.PICK_RECORDING_FOLDER);
+        } catch (RuntimeException noPicker) {
+            page.feedback(page.text.get("call_recording_folder_refused"), Toast.LENGTH_LONG);
+        }
+    }
+
+    /** Back from the picker, or from Use the default with nothing picked. */
+    void folderChosen(Uri tree) {
+        if (!CallRecordings.folderChosen(page, tree)) {
+            page.feedback(page.text.get("call_recording_folder_refused"), Toast.LENGTH_LONG);
+            return;
+        }
+        fill();
+        page.feedback(page.text.get("call_recording_folder_picked", folderLabel()), Toast.LENGTH_SHORT);
+    }
+
+    private String folderLabel() {
+        String name = CallRecordings.folderName(CallRecordings.folder());
+        return name == null ? page.text.format("call_recording_folder_default") : name;
+    }
+
     void addKeepTo(LinearLayout content) {
         page.ui.add(content, page.ui.text(page.text.get("call_recording_keep"), 15, page.ui.text, true), 8);
         RadioGroup group = new RadioGroup(page);
@@ -56,6 +106,10 @@ final class CallRecordingRow {
 
     /** Shows what's saved, so coming back to the page or a change made elsewhere reads right. */
     void fill() {
+        if (folder != null) {
+            folder.setText(folderLabel());
+            useDefault.setVisibility(CallRecordings.folder() == null ? View.GONE : View.VISIBLE);
+        }
         String now = String.valueOf(CallRecordings.keepDays());
         for (RadioButton choice : choices) choice.setChecked(choice.getTag().equals("call_recording_keep_" + now));
         String scope = CallRecordings.scope();

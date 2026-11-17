@@ -33,6 +33,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
@@ -88,7 +89,7 @@ public final class CallRecording {
         }
     }
 
-    static volatile Store store = new SharedAudio();
+    static volatile Store store = new Saving();
 
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private static volatile boolean callActive;
@@ -130,7 +131,7 @@ public final class CallRecording {
         application = null;
         startedThisCall = false;
         MAIN.removeCallbacks(TICKING);
-        store = new SharedAudio();
+        store = new Saving();
         CallCaptions.resetForTests();
     }
 
@@ -701,6 +702,77 @@ public final class CallRecording {
             boolean keptFile = kept;
             boolean failure = failed;
             MAIN.post(() -> finished(this, context, keptFile, failure));
+        }
+    }
+
+    /**
+     * Where a recording goes: the folder picked under the switch when there is one, and the phone's own Recordings
+     * folder otherwise. A picked folder that has been moved, renamed or taken away since falls back rather than
+     * losing the call (#193).
+     */
+    @TargetApi(29)
+    static final class Saving implements Store {
+        @Override public Target open(Context context, String name) throws IOException {
+            Uri picked = CallRecordings.folder();
+            if (picked != null) {
+                try {
+                    return new PickedFolder(picked).open(context, name);
+                } catch (IOException | RuntimeException unusable) {
+                    Settings.hookFailedPrivately(KEY, "Couldn't write to the folder picked", unusable);
+                }
+            }
+            return new SharedAudio().open(context, name);
+        }
+    }
+
+    /** A recording written into a folder the person picked, through the document it makes there. */
+    static final class PickedFolder implements Store {
+        private final Uri tree;
+
+        PickedFolder(Uri tree) {
+            this.tree = tree;
+        }
+
+        @Override public Target open(Context context, String name) throws IOException {
+            ContentResolver resolver = context.getContentResolver();
+            Uri parent = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree));
+            Uri item = DocumentsContract.createDocument(resolver, parent, VoiceMessages.Format.WAV.mime, name);
+            if (item == null) throw new IOException("The folder picked made no file");
+            ParcelFileDescriptor descriptor;
+            try {
+                descriptor = resolver.openFileDescriptor(item, "rw");
+                if (descriptor == null) throw new IOException("The folder picked gave no file");
+            } catch (IOException | RuntimeException error) {
+                remove(resolver, item);
+                throw error;
+            }
+            FileOutputStream stream = new FileOutputStream(descriptor.getFileDescriptor());
+            return new Target() {
+                @Override public FileChannel channel() {
+                    return stream.getChannel();
+                }
+
+                @Override public void close(boolean keep) throws IOException {
+                    try {
+                        stream.close();
+                        descriptor.close();
+                    } finally {
+                        if (!keep) remove(resolver, item);
+                    }
+                }
+
+                @Override public Uri uri() {
+                    return item;
+                }
+            };
+        }
+
+        private static void remove(ContentResolver resolver, Uri item) {
+            try {
+                DocumentsContract.deleteDocument(resolver, item);
+            } catch (IOException | RuntimeException gone) {
+                // Nothing left to take away, which is where this was headed anyway.
+            }
         }
     }
 
