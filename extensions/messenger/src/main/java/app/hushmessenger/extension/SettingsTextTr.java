@@ -899,5 +899,7 @@ final class SettingsTextTr {
         {"menu_blur.description", "Bir sohbete veya mesaja basılı tuttuğunda açılan menünün ve Messenger'ın diğer açılır menülerinin ve sayfalarının arkasındaki ekranı iPhone'daki gibi bulanıklaştırır. Android 12 veya daha yenisi gerekir."},
         {"invisible_buttons.title", "Görünmez düğmeler"},
         {"invisible_buttons.description", "Aşağıda seçtiğin düğmeleri görünmez çizer ama yeri, boyutu ve yaptığı iş aynı kalır, yani dokunuş hâlâ işler. Bir sohbetin sana gösterdiği her düğme, ekran okuyucunun söylediği adla listelenir, bu yüzden listeyi doldurmak için bir sohbeti bir kez aç."},
+        {"ios_bars.title", "Yarı saydam sohbet çubukları"},
+        {"ios_bars.description", "Sohbetin üst çubuğu ve mesaj kutusu yarı saydam olur, mesajlar altlarından kayar ve bulanık görünür, iPhone'daki çubuklar gibi. Android 12 veya sonrası gerekir."},
     };
 }

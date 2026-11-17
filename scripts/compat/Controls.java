@@ -596,14 +596,16 @@ final class Controls {
                     if ("M4TabNavigationFragment".equals(original)) found.get("chat_inbox").add(method);
                 }
 
-                // chat_jump, secure_chat and invisible_buttons: the chat fragment's own onViewCreated, where the chat
-                // first has a view. Mirrors ChatJump.kt, SecureChat.kt and InvisibleButtons.kt, which all inject there.
+                // chat_jump, secure_chat, invisible_buttons and ios_bars: the chat fragment's own onViewCreated, where
+                // the chat first has a view. Mirrors ChatJump.kt, SecureChat.kt, InvisibleButtons.kt and IosBars.kt,
+                // which all inject there.
                 if ("MsysThreadViewFragment".equals(original) && !isStatic && "onViewCreated".equals(method.getName()) &&
                     "V".equals(method.getReturnType()) && paramTypes.equals(List.of("Landroid/view/View;", "Landroid/os/Bundle;")) &&
                     method.getImplementation() != null) {
                     found.get("chat_jump").add(method);
                     found.get("secure_chat").add(method);
                     found.get("invisible_buttons").add(method);
+                    found.get("ios_bars").add(method);
                 }
 
                 // chat_legacy: the chat fragment on Messenger's older route, which loads its own animation

@@ -248,6 +248,7 @@ public final class SettingsActivity extends Activity {
         {"custom_font", "Use your own font", "Shows Messenger's text in your phone's font instead of Meta's, or in a .ttf or .otf font file you choose below, which you can also make larger or smaller and move up or down. Emoji don't change. Restart Messenger to see a change.", "theme"},
         {"menu_blur", "Blur behind menus", "Blurs the screen behind the menu you get when you press and hold a chat or a message, and behind Messenger's other pop-up menus and sheets, like on an iPhone. It needs Android 12 or newer.", "theme"},
         {"invisible_buttons", "Invisible buttons", "Draws buttons you pick below at nothing while they keep their place, their size and what they do, so a tap still lands on them. Every button a chat has shown you is listed by the name a screen reader says for it, so open a chat once to fill the list.", "theme"},
+        {"ios_bars", "Translucent chat bars", "The chat's top bar and message box go see-through, with the messages scrolling under them and showing through blurred, the way the bars on an iPhone do it. Needs Android 12 or newer.", "theme"},
     };
 
     static final String DRAWER_ALIAS = "app.hushmessenger.extension.SettingsLauncher";

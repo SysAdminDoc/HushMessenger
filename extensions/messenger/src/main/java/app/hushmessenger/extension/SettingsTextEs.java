@@ -900,5 +900,7 @@ final class SettingsTextEs {
         {"menu_blur.description", "Desenfoca la pantalla detrás del menú que aparece al mantener presionado un chat o un mensaje, y detrás de los otros menús emergentes y paneles de Messenger, como en un iPhone. Necesita Android 12 o posterior."},
         {"invisible_buttons.title", "Botones invisibles"},
         {"invisible_buttons.description", "Dibuja los botones que elijas abajo en nada, pero conservan su lugar, su tamaño y lo que hacen, así que un toque sigue llegando. Cada botón que un chat te ha mostrado aparece con el nombre que dice un lector de pantalla, así que abre un chat una vez para llenar la lista."},
+        {"ios_bars.title", "Barras del chat translúcidas"},
+        {"ios_bars.description", "La barra de arriba del chat y la caja de mensajes se vuelven translúcidas, con los mensajes pasando por debajo y asomando borrosos, como lo hacen las barras de un iPhone. Necesita Android 12 o posterior."},
     };
 }

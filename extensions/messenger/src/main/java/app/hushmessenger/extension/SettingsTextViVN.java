@@ -899,5 +899,7 @@ final class SettingsTextViVN {
         {"menu_blur.description", "Làm mờ màn hình phía sau menu hiện ra khi bạn nhấn giữ một đoạn chat hoặc một tin nhắn, cùng các menu và bảng bật lên khác của Messenger, giống như trên iPhone. Cần Android 12 trở lên."},
         {"invisible_buttons.title", "Nút vô hình"},
         {"invisible_buttons.description", "Vẽ các nút bạn chọn bên dưới thành vô hình nhưng vẫn giữ nguyên vị trí, kích thước và chức năng, nên một lần nhấn vẫn trúng. Mọi nút một đoạn chat đã hiện cho bạn đều được liệt kê theo tên mà trình đọc màn hình gọi, vì vậy hãy mở một đoạn chat một lần để lấp danh sách."},
+        {"ios_bars.title", "Thanh chat trong mờ"},
+        {"ios_bars.description", "Thanh trên cùng của đoạn chat và hộp tin nhắn trở nên trong mờ, tin nhắn chạy bên dưới và hiện lên mờ qua thanh, giống các thanh trên iPhone. Cần Android 12 hoặc mới hơn."},
     };
 }

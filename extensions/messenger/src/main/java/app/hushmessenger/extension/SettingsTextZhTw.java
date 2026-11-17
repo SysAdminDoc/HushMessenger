@@ -899,5 +899,7 @@ final class SettingsTextZhTw {
         {"menu_blur.description", "長按聊天室或訊息時跳出的選單，以及 Messenger 其他的彈出選單和面板，背後的畫面會像 iPhone 一樣變模糊。需要 Android 12 以上。"},
         {"invisible_buttons.title", "隱形按鈕"},
         {"invisible_buttons.description", "把你在下面挑選的按鈕畫成看不見，但位置、大小和功能都不變，所以點下去照樣有用。聊天室顯示給你的每個按鈕都會用螢幕閱讀器唸出的名稱列在這裡，所以先開啟一個聊天室一次來填滿清單。"},
+        {"ios_bars.title", "半透明聊天列"},
+        {"ios_bars.description", "聊天室的頂端列和訊息框變成半透明，訊息會從下面滑過並透出模糊的樣子，就像 iPhone 的列一樣。需要 Android 12 或更新版本。"},
     };
 }
