@@ -679,6 +679,11 @@ public final class Settings {
         }
         // Record calls and Live captions share the one audio choice native makes per run.
         if (CallRecording.KEY.equals(key) || CallCaptions.KEY.equals(key)) return CallRecording.heldPlayout(key);
+        if (TabSwipe.KEY.equals(key)) {
+            // The frame asks on every touch, so only a home screen built before the switch went on waits for a restart.
+            Boolean swiping = tabSwiping;
+            return swiping == null || swiping || !wouldUse(key) ? null : false;
+        }
         Boolean held = "meta_ai".equals(key) ? metaAiTab : "emoji_drawer".equals(key) ? oldEmojiDrawer
             : SEARCH_BAR.equals(key) ? keptSearchBar : LANDSCAPE.equals(key) ? landscape : OwnFont.KEY.equals(key) ? customFont
             : FLOATING_TAB_BAR.equals(key) ? floatingBar : TAB_BAR_SCROLL_AWAY.equals(key) ? scrollAwayBar : bottomTabs.get(key);
@@ -981,6 +986,28 @@ public final class Settings {
         Boolean held = scrollAwayBar;
         if (held == null) return enabled(TAB_BAR_SCROLL_AWAY);
         if (held) activeAt.put(TAB_BAR_SCROLL_AWAY, System.currentTimeMillis());
+        return held;
+    }
+
+    /** First answer this process gave on the home screen's swipe frame, or null before a home screen was built. */
+    static volatile Boolean tabSwiping;
+    private static final Object TAB_SWIPE_LOCK = new Object();
+
+    /**
+     * Whether the home screen's view goes inside the frame that watches for a sideways drag. Held for the run, so the
+     * hierarchy Messenger built with the switch off stays as it was until a restart. The frame asks the switch again on
+     * every touch, so turning the swipe off takes effect at once and only turning it on waits.
+     */
+    public static boolean tabSwipe() {
+        Boolean held = tabSwiping;
+        if (held == null) {
+            // Started before the lock, so nothing waits on HostScreens' startup lock while holding this one.
+            if (!HostScreens.started) HostScreens.initializeLate();
+            synchronized (TAB_SWIPE_LOCK) {
+                if (tabSwiping == null) tabSwiping = wouldUse(TabSwipe.KEY);
+                held = tabSwiping;
+            }
+        }
         return held;
     }
     static final String BLOCKED_LIST_PICTURES = "blocked_list_pictures";

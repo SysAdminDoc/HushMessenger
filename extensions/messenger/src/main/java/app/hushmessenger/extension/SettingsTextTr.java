@@ -776,6 +776,8 @@ final class SettingsTextTr {
         {"tab_bar_scroll_away.description", "Sohbetlerinde aşağı kaydırdıkça alttaki sekme çubuğunu yoldan çeker ve yukarı kaydırınca geri getirir. Değişikliği görmek için Messenger'ı yeniden başlat."},
         {"floating_tab_bar.title", "Yüzen sekme çubuğu"},
         {"floating_tab_bar.description", "Alttaki sekme çubuğunu, Messenger'ın denediği yüzen stile geçirir. Bu stilde çubuk sohbetlerinin altında değil, üzerinde durur. Messenger bazı ekranlarda normal çubuğunu koruyabilir. Değişikliği görmek için Messenger'ı yeniden başlat."},
+        {"tab_swipe.title", "Sekmeler arasında kaydırma"},
+        {"tab_swipe.description", "Alttaki çubuktaki düğmeye uzanmak yerine sohbetlerinde yana kaydırarak sonraki sekmeye geç. Gizli sekmeler atlanır ve yana kayan bir liste kaydırmayı kendinde tutar. Açtıktan sonra Messenger'ı yeniden başlat."},
         {"chat_animation.title", "Sohbetleri kaydırarak aç ve kapat"},
         {"chat_animation.description", "Bir sohbeti açtığında onu yandan kaydırarak getirir, geri döndüğünde kaydırarak çıkarır. Sohbet balonları ve baloncuklar etkilenmez."},
         {"story_hold.title", "Hikayeleri sonda beklet"},

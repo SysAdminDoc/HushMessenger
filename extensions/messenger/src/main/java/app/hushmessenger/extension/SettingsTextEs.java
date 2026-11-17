@@ -777,6 +777,8 @@ final class SettingsTextEs {
         {"tab_bar_scroll_away.description", "Aparta la barra de pestañas de abajo cuando te desplazas hacia abajo por tus chats y la trae de vuelta cuando te desplazas hacia arriba. Reinicia Messenger para ver el cambio."},
         {"floating_tab_bar.title", "Barra de pestañas flotante"},
         {"floating_tab_bar.description", "Cambia la barra de pestañas de abajo al estilo flotante que Messenger está probando, que queda sobre tus chats en lugar de debajo. Messenger puede mantener su barra habitual en algunas pantallas. Reinicia Messenger para ver el cambio."},
+        {"tab_swipe.title", "Deslizar entre pestañas"},
+        {"tab_swipe.description", "Desliza de lado en tus chats para pasar a la siguiente pestaña de la barra de abajo, en vez de bajar la mano hasta su botón. Las pestañas ocultas se saltan, y una lista que se desliza de lado se queda con el gesto. Reinicia Messenger después de activarlo."},
         {"chat_animation.title", "Deslizar los chats al abrirlos y cerrarlos"},
         {"chat_animation.description", "Desliza un chat desde un lado al abrirlo y hacia fuera al volver. No afecta a las burbujas de chat ni a las burbujas de Android."},
         {"story_hold.title", "Detener las historias al final"},

@@ -71,6 +71,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Typing in your chat list | A chat in your list says typing over its last message while the other person is typing, instead of waiting until you open the chat. Messenger already carries this and Meta's server keeps it off. Takes a Messenger restart. Experimental. |
 | Hide the tab bar while scrolling | The tab bar at the bottom slides away as you scroll down your chats and comes back when you scroll up. Takes a Messenger restart. |
 | Floating tab bar | Switches the bottom tab bar to the floating style Messenger is testing, which sits over your chats. Takes a Messenger restart. |
+| Swipe between tabs | Swipe sideways on your chats to move to the next tab in the bar at the bottom. Hidden tabs are skipped. Takes a Messenger restart. |
 | Keep the search bar | Brings back the search bar above your chats when Messenger has swapped it for a search icon. Takes effect after a restart, and nothing changes if you never got the icon. Experimental. |
 | Preview chats on long press | Pressing and holding a chat opens Messenger's own preview of it, with the chat's menu underneath, so you can peek at a chat without opening it. A peek leaves the chat unread, and the other person doesn't see Seen until you open it (checked in an encrypted one-to-one chat). Experimental. |
 | Bigger chat preview | The long-press preview takes most of the screen and scrolls back through the chat. The menu under it stays short and scrolls. Experimental. |

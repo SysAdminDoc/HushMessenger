@@ -294,6 +294,7 @@ hook tab_icons LX/1sR;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/1sR;
 hook tab_labels LX/1sm;-><init>(LX/1si;Ljava/lang/String;Ljava/lang/String;Z)V
 hook tab_notifications LX/1i6;->A09(LX/1i6;)Z
 hook tab_people LX/1i6;->A0E(LX/1i6;)Z
+hook tab_swipe LX/1er;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;
 hook text_style LX/9xA;->onSelectionChanged(II)V
 hook typing LX/BDj;->run()V
 hook typing_mailbox LX/4dA;->A0L(Ljava/lang/String;Z)LX/34J;

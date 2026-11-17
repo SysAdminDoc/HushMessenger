@@ -776,6 +776,8 @@ final class SettingsTextViVN {
         {"tab_bar_scroll_away.description", "Thanh tab dưới cùng trượt đi khi bạn cuộn xuống danh sách đoạn chat và quay lại khi bạn cuộn lên. Có hiệu lực sau khi khởi động lại Messenger."},
         {"floating_tab_bar.title", "Thanh tab nổi"},
         {"floating_tab_bar.description", "Chuyển thanh tab dưới cùng sang kiểu nổi mà Messenger đang thử nghiệm, nằm đè lên danh sách đoạn chat thay vì bên dưới. Messenger có thể vẫn giữ thanh tab thông thường trên một số màn hình. Có hiệu lực sau khi khởi động lại Messenger."},
+        {"tab_swipe.title", "Vuốt để chuyển tab"},
+        {"tab_swipe.description", "Vuốt ngang trên danh sách trò chuyện để sang tab kế tiếp trên thanh dưới cùng, thay vì phải với tay xuống nút của nó. Các tab đang ẩn sẽ được bỏ qua, và danh sách tự cuộn ngang vẫn giữ cú vuốt của nó. Khởi động lại Messenger sau khi bật."},
         {"chat_animation.title", "Mở và đóng phòng chat bằng hiệu ứng trượt"},
         {"chat_animation.description", "Trượt vào từ cạnh bên khi mở phòng chat và trượt ra khi quay lại. Bong bóng chat và bong bóng thông báo không bị ảnh hưởng."},
         {"story_hold.title", "Dừng lại khi kết thúc tin"},

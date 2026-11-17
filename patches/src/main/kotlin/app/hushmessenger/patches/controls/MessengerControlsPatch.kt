@@ -229,6 +229,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         FLOATING_TAB_BAR -> validateFloatingTabBar()
         TAB_BAR_OVERLAY -> validateTabBarOverlay()
         TAB_BAR_SCROLL_AWAY -> validateTabBarScrollAway()
+        TAB_SWIPE -> validateTabSwipe()
         AVATAR_SHAPE -> validateAvatarShape()
         STORY_RING -> validateStoryRing()
         QUIET_CALL_RING -> validateQuietCallRing()
@@ -371,6 +372,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             FLOATING_TAB_BAR -> method.injectFloatingTabBar()
             TAB_BAR_OVERLAY -> method.injectTabBarOverlay()
             TAB_BAR_SCROLL_AWAY -> method.injectTabBarScrollAway()
+            TAB_SWIPE -> method.injectTabSwipe()
             AVATAR_SHAPE -> method.injectAvatarShape()
             STORY_RING -> method.injectStoryRing()
             QUIET_CALL_RING -> method.injectQuietCallRing()
@@ -459,6 +461,9 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
             val hiddenRoute = if (HIDDEN_CHAT_LIST in selected) {
                 resolveHiddenChatRoute(discoveredControls.getValue(HIDDEN_CHAT_LIST).single(), discoveredControls.getValue(HIDDEN_CHAT_ROW).single(),
                     discoveredControls.getValue(HIDDEN_CHAT_TAP).single()) { classDefByOrNull(it) } to hiddenChatStub()
+            } else null
+            val swipeRoute = if (TAB_SWIPE in selected) {
+                resolveTabSwipe(discoveredControls.getValue(TAB_SWIPE).single()) { classDefByOrNull(it) } to tabSwipeStub()
             } else null
             val emojiFontHolder = if ("emoji_typeface" in selected) {
                 discoveredControls.getValue("emoji_typeface").single().emojiFontHolder { classDefByOrNull(it) }
@@ -584,6 +589,7 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 inboxRoute?.let { (route, stub) -> stub.writeInboxRefreshRoute(route) }
                 pinRoute?.let { (route, stub) -> stub.writePinnedChatRoute(route) }
                 hiddenRoute?.let { (route, stub) -> stub.writeHiddenChatRoute(route) }
+                swipeRoute?.let { (route, stub) -> stub.writeTabSwipeRoute(route) }
                 emojiFontHolder?.let { init ->
                     mutableClassDefBy(init.substringBefore("->")).methods.single { it.hookId() == init }.injectEmojiFontHolder()
                 }
@@ -676,6 +682,10 @@ val tabBarScrollAwayPatch = controlPatch("tab_bar_scroll_away", "Hide the tab ba
 @Suppress("unused")
 val floatingTabBarPatch = controlPatch("floating_tab_bar", "Floating tab bar", "Switches the tab bar at the bottom to the floating style Messenger is trying out, which sits over your chats instead of below them. Messenger may keep its usual bar on some screens. Restart Messenger to see the change.",
     "Tab bar", FLOATING_TAB_BAR)
+@Suppress("unused")
+val tabSwipePatch = controlPatch("tab_swipe", "Swipe between tabs",
+    "Swipe sideways on your chats to move to the next tab in the bar at the bottom, instead of reaching down for its button. Hidden tabs are skipped, and a list that scrolls sideways keeps the swipe. Restart Messenger after you turn it on.",
+    "Tab bar", TAB_SWIPE)
 @Suppress("unused")
 val holdStoriesPatch = controlPatch("story_hold", "Hold stories at the end", "Keeps a story on screen when it ends instead of moving on to the next one, so you go on with a tap or a swipe. Photos and videos both wait, and the last story stays open until you close it.", "Navigation")
 @Suppress("unused")

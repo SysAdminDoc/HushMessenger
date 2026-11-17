@@ -776,6 +776,8 @@ final class SettingsTextZhTw {
         {"tab_bar_scroll_away.description", "向下捲動聊天清單時，底部分頁列會滑出畫面，向上捲動時再滑回來。重新啟動 Messenger 後生效。"},
         {"floating_tab_bar.title", "浮動分頁列"},
         {"floating_tab_bar.description", "把底部分頁列換成 Messenger 正在試用的浮動樣式，疊在聊天清單上，而不是放在清單下方。在部分螢幕上，Messenger 可能仍保留一般分頁列。重新啟動 Messenger 後生效。"},
+        {"tab_swipe.title", "滑動切換分頁"},
+        {"tab_swipe.description", "在聊天清單上左右滑動就能切到下方分頁列的下一個分頁，不用再伸手去按它的按鈕。隱藏的分頁會跳過，會左右滑動的清單也會留住自己的滑動。開啟後請重新啟動 Messenger。"},
         {"chat_animation.title", "以滑動動畫開啟與關閉聊天室"},
         {"chat_animation.description", "開啟聊天室時從側邊滑入，返回時滑出。聊天大頭貼與泡泡通知不受影響。"},
         {"story_hold.title", "限時動態結束時停留"},

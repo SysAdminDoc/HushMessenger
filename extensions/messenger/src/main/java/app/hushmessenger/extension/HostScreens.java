@@ -155,6 +155,11 @@ public final class HostScreens {
         return "";
     }
 
+    /** Rewritten with the home screen's open tab, its tab list and its tab switch once the patch proves all three. */
+    static String tabSwipeRoute() {
+        return "";
+    }
+
     /**
      * Starts settings when SettingsProvider never ran, as on a Root Mount install. Only in Messenger's main process,
      * the one SettingsProvider runs in, so the other processes stay stock the way they are on a normal install.
