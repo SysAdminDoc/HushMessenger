@@ -37,9 +37,10 @@ import java.util.WeakHashMap;
  */
 public final class InvisibleButtons {
     static final String KEY = "invisible_buttons";
-    private static final String SEEN = "invisible_buttons_seen", LEVELS = "invisible_buttons_levels";
+    private static final String SEEN = "invisible_buttons_seen";
+    static final String LEVELS = "invisible_buttons_levels";
     /** Where the first build kept its picks, every one fully invisible. Read as 0 until the next change moves them. */
-    private static final String HIDDEN = "invisible_buttons_hidden";
+    static final String HIDDEN = "invisible_buttons_hidden";
     /** The levels settings offer, in percent of how Messenger draws the button. 100 is Messenger's own. */
     static final int[] LEVELS_OFFERED = {0, 25, 50, 75, 100};
     /** More than Messenger shows across its screens, so a name from an older build drops off the list in time. */

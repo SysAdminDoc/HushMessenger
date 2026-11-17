@@ -541,9 +541,12 @@ final class SettingsText {
         ENGLISH.put("import_same", "Your choices already match that backup.");
         // Nothing changed, but the backup had more in it than this phone took, so it doesn't match.
         ENGLISH.put("import_none_changed", "None of your choices changed.");
-        ENGLISH.put("import_auto_reply_off", "Auto reply stays off. Backups don't carry replies.");
+        ENGLISH.put("import_auto_reply_off", "Auto reply stays off. That backup has no replies.");
         ENGLISH.put("import_empty", "Nothing to paste. Copy your choices first.");
         ENGLISH.put("import_invalid", "Not a choices backup. Nothing changed.");
+        ENGLISH.put("import_too_large", "That backup is bigger than 128 KB, so nothing changed.");
+        ENGLISH.put("export_too_large", "Your choices are too big for one backup.");
+        ENGLISH.put("export_too_large_detail", "Most of it is from %s. Nothing was copied or saved.");
         ENGLISH.put("restore_failed", "Couldn't read that file. Try again, or pick another file.");
         ENGLISH.put("choices_file_no_picker", "Couldn't open a file picker on this phone.");
         ENGLISH.put("import_unknown_one", "Skipped %d choice this version doesn't know.");
@@ -553,7 +556,7 @@ final class SettingsText {
         ENGLISH.put("import_no_choices", "Nothing to restore. None of those match your patches.");
         ENGLISH.put("save_choices_file", "Save choices to a file");
         ENGLISH.put("read_choices_file", "Restore choices from a file");
-        ENGLISH.put("choices_file_help", "Saves only your choices, up to 16 KB. No chats or accounts are included. Choices missing from the file stay as they are. If settings close while you pick a file, pick it again.");
+        ENGLISH.put("choices_file_help", "Saves your choices, up to 128 KB, auto replies and hidden or pinned chats included. Messages and pictures stay out of it, and so does your account. Choices missing from the file stay as they are. If settings close while you pick a file, pick it again.");
         ENGLISH.put("choices_file_saved", "Choices file saved");
         ENGLISH.put("choices_file_saving", "Saving choices file...");
         ENGLISH.put("choices_file_reading", "Reading choices file...");

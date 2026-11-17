@@ -414,6 +414,7 @@ public final class SettingsActivity extends Activity {
             // The picker's answer arrives before the posted sheet is back, so the card it's for is known now.
             if (draft != null) autoReplies.restorePick(draft);
             messageLog.restoreState(state);
+            backup.restoreState(state);
             if (draft != null) root.post(() -> autoReplies.showAutoReplies(draft));
             else if (state.getBoolean("message_log_open")) root.post(messageLog::showMessageLog);
         }
@@ -561,6 +562,24 @@ public final class SettingsActivity extends Activity {
         if (!accessHelpMenuRow) return text.get(accessHelpId);
         if (!menuRow) return text.get(accessHelpId + (logo ? "_logo" : ""));
         return text.get(accessHelpId + (logo ? "_menu" : "_menu_without_logo"));
+    }
+
+    /** A restore wrote lists and words this page drew as it opened, so it opens again, the way a theme change does. */
+    void reloadAfterRestore() {
+        if (!recreatingTheme) {
+            recreatingTheme = true;
+            recreate();
+        }
+    }
+
+    /** A restore wrote these choices without their rows, so what flipping each row also updates follows now. */
+    void followRestored(Set<String> changed) {
+        if (changed.contains("hide_drawer_icon")) syncDrawerIcon(this);
+        if (changed.contains(Settings.SHARE_STORY) || changed.contains("paused")) Settings.syncStoryShareTarget(this);
+        if (changed.contains(Settings.HIDE_ICON_SHORTCUTS) || (changed.contains(Settings.HIDE_LOGO_PRESS) || changed.contains("hide_drawer_icon"))
+                && Settings.preferences.getBoolean(Settings.HIDE_ICON_SHORTCUTS, false)) HostScreens.refreshShortcuts(this, () -> runOnUiThread(() -> {
+            if (!isFinishing() && !isDestroyed()) refreshChoices();
+        }));
     }
 
     void refreshChoices() {
@@ -2309,6 +2328,7 @@ public final class SettingsActivity extends Activity {
         Bundle draft = autoReplies.autoReplyDraft();
         if (draft != null) state.putBundle("auto_reply_draft", draft);
         messageLog.saveState(state);
+        backup.saveState(state);
         state.putString("page", page);
         state.putString("query", search.getText().toString());
         state.putInt("selection_start", search.getSelectionStart());
