@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -2110,7 +2112,9 @@ public final class Settings {
     }
 
     private static final String KEPT_UNSENT_KEY = "kept_unsent_ids";
-    private static final int KEPT_UNSENT_LIMIT = 4096;
+    /** The same ids, oldest first, one per line. The set has no order, so this one says which go first at the limit. */
+    private static final String KEPT_UNSENT_ORDER_KEY = "kept_unsent_order";
+    static final int KEPT_UNSENT_LIMIT = 4096;
     private static final Object KEPT_UNSENT_LOCK = new Object();
 
     public static void recordUnsent(String messageId) {
@@ -2120,14 +2124,21 @@ public final class Settings {
         synchronized (KEPT_UNSENT_LOCK) {
             Set<String> previous = prefs.getStringSet(KEPT_UNSENT_KEY, Collections.emptySet());
             if (previous.size() > KEPT_UNSENT_LIMIT || !previous.contains(messageId)) {
-                Set<String> ids = new HashSet<>();
+                String[] order = prefs.getString(KEPT_UNSENT_ORDER_KEY, "").split("\n");
+                Set<String> ordered = new HashSet<>(Arrays.asList(order));
+                // Ids kept before the order was written have no known age, so they count as the oldest.
+                LinkedHashSet<String> ids = new LinkedHashSet<>();
+                for (String id : previous) if (!ordered.contains(id)) ids.add(id);
+                for (String id : order) if (previous.contains(id)) ids.add(id);
+                ids.remove(messageId);
                 ids.add(messageId);
-                // StringSet has no age ordering. Preserve this interception and bound the remaining markers.
-                for (String id : previous) {
-                    if (ids.size() == KEPT_UNSENT_LIMIT) break;
-                    ids.add(id);
+                Iterator<String> oldest = ids.iterator();
+                for (int extra = ids.size() - KEPT_UNSENT_LIMIT; extra > 0; extra--) {
+                    oldest.next();
+                    oldest.remove();
                 }
-                prefs.edit().putStringSet(KEPT_UNSENT_KEY, ids).apply();
+                prefs.edit().putStringSet(KEPT_UNSENT_KEY, new HashSet<>(ids))
+                    .putString(KEPT_UNSENT_ORDER_KEY, String.join("\n", ids)).apply();
             }
         }
         activeAt.put("keep_unsent", System.currentTimeMillis());
