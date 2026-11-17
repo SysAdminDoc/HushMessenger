@@ -337,6 +337,7 @@ internal val PROFILE_347415354 = ControlProfile(
             "LX/cNC;->CpO(I)Ljava/lang/String;",
         ),
         "unsent_recall" to setOf("LX/9y2;->A00(Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z"),
+        "view_once_anywhere" to setOf("LX/5H4;->render(LX/5Re;LX/5q2;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;)V"),
         "wifi_identity" to setOf(
             "LX/1af;->A02()LX/ac3;", "LX/38L;->BD0()Ljava/lang/String;", "LX/38L;->C4Y()J",
             "LX/B96;->A03()Ljava/lang/String;", "LX/B96;->A04(Ljava/util/Map;)V",
@@ -667,6 +668,7 @@ internal val PROFILE_347415280 = ControlProfile(
             "LX/cQj;->CpT(I)Ljava/lang/String;",
         ),
         "unsent_recall" to setOf("LX/9y7;->A00(Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z"),
+        "view_once_anywhere" to setOf("LX/5GP;->render(LX/5Qz;LX/5pN;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;)V"),
         "wifi_identity" to setOf(
             "LX/1af;->A02()LX/auK;", "LX/38P;->BD3()Ljava/lang/String;", "LX/38P;->C4c()J",
             "LX/B9A;->A03()Ljava/lang/String;", "LX/B9A;->A04(Ljava/util/Map;)V",
@@ -997,6 +999,7 @@ internal val PROFILE_347415302 = ControlProfile(
             "LX/cNC;->CpO(I)Ljava/lang/String;",
         ),
         "unsent_recall" to setOf("LX/9y2;->A00(Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z"),
+        "view_once_anywhere" to setOf("LX/5H4;->render(LX/5Re;LX/5q2;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;)V"),
         "wifi_identity" to setOf(
             "LX/1af;->A02()LX/ac2;", "LX/38L;->BD0()Ljava/lang/String;", "LX/38L;->C4Y()J",
             "LX/B96;->A03()Ljava/lang/String;", "LX/B96;->A04(Ljava/util/Map;)V",
@@ -1327,6 +1330,7 @@ internal val PROFILE_347415262 = ControlProfile(
             "LX/cZZ;->Cpd(I)Ljava/lang/String;",
         ),
         "unsent_recall" to setOf("LX/A01;->A00(Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z"),
+        "view_once_anywhere" to setOf("LX/5Ha;->render(LX/5SA;LX/HU4;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;)V"),
         "wifi_identity" to setOf(
             "LX/1b5;->A02()LX/eWo;", "LX/38m;->BD6()Ljava/lang/String;", "LX/38m;->C4e()J",
             "LX/BB4;->A03()Ljava/lang/String;", "LX/BB4;->A04(Ljava/util/Map;)V",

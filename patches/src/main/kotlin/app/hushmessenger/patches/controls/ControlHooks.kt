@@ -284,6 +284,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(SYSTEM_CAMERA).addAll(findSystemCamera(classes))
     found.getValue(EXTERNAL_GALLERY).addAll(findExternalGallery(classes))
     found.getValue(INSTANT_GALLERY).addAll(findInstantGallery(classes))
+    found.getValue(VIEW_ONCE_ANYWHERE).addAll(findViewOnceAnywhere(classes))
     found.getValue(SPECIAL_CONTACTS).addAll(findSpecialContacts(classes))
     found.getValue(MENU_BLUR).addAll(findMenuBlur(classes))
     found.getValue(GALLERY_TEMP_FILE).addAll(findGalleryTempFile(classes))

@@ -839,6 +839,8 @@ final class SettingsTextViVN {
         {"paste_photo.description", "Ảnh bạn dán vào phòng chat sẽ vào ô tin nhắn của phòng chat giống như ảnh chọn từ thư viện, thay vì tự gửi đi. Không có gì được gửi cho đến khi bạn nhấn Gửi, nên bạn có thể thêm chú thích hoặc đổi ý. Văn bản đã dán và GIF của bàn phím vẫn hoạt động như trước. Phòng chat đang mở sẵn cần được mở lại."},
         {"instant_gallery.title", "Gửi Instants từ thư viện"},
         {"instant_gallery.description", "Chạm nút chụp trong Instants sẽ mở ứng dụng thư viện của điện thoại thay vì chụp ảnh. Ảnh bạn chọn sẽ được gửi dưới dạng Instant, cắt theo khung hình của camera. Thoát khỏi thư viện mà không chọn thì không có gì được gửi."},
+        {"view_once_anywhere.title", "Cho dùng Xem một lần trong mọi đoạn chat"},
+        {"view_once_anywhere.description", "Thư viện của Messenger chỉ hiện nút Xem một lần trong một số đoạn chat, nên nhóm thì không bao giờ có. Tùy chọn này cho dùng nút đó ở mọi nơi thư viện mở ra. Còn Messenger của người nhận có coi đó là Xem một lần hay không thì vẫn do Meta quyết định."},
         {"external_browser.title", "Mở liên kết web trong trình duyệt ngoài"},
         {"external_browser.description", "Sử dụng trình duyệt mặc định để mở liên kết web (http và https). Các loại liên kết khác giữ nguyên hành vi ban đầu."},
         {"link_player.title", "Phát liên kết video ngay trong đoạn chat"},

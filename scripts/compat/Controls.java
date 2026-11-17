@@ -157,6 +157,7 @@ final class Controls {
         found.get("gallery_to_chat").addAll(galleryToChatHooks(classes));
         found.get("paste_photo").addAll(pastePhotoHooks(classes));
         found.get("instant_gallery").addAll(instantGallery(classes));
+        found.get("view_once_anywhere").addAll(viewOnceAnywhere(classes));
         found.get("special_contacts").addAll(specialContacts(classes));
         found.get("menu_blur").addAll(menuBlur(classes));
         found.get("chat_head_video").addAll(chatHeadVideo(classes));

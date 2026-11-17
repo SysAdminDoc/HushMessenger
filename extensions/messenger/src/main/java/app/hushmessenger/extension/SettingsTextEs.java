@@ -840,6 +840,8 @@ final class SettingsTextEs {
         {"paste_photo.description", "Una foto que pegas en un chat va al cuadro de mensaje del chat, como lo que eliges en tu galería, en lugar de salir por su cuenta. No se envía nada hasta que tocas Enviar, así que puedes añadir un comentario o cambiar de idea. El texto pegado y los GIF del teclado funcionan como antes. Un chat que ya estaba abierto necesita volver a abrirse."},
         {"instant_gallery.title", "Enviar Instants desde tu galería"},
         {"instant_gallery.description", "Tocar el obturador en Instants abre la app de galería de tu teléfono en lugar de tomar una foto. La foto que elijas sale como el Instant, recortada a la forma de la cámara. Si sales de la galería, no se envía nada."},
+        {"view_once_anywhere.title", "Ofrecer Ver una vez en todos los chats"},
+        {"view_once_anywhere.description", "La galería de Messenger muestra el botón de Ver una vez solo en algunos chats, así que un grupo nunca lo tiene. Esto lo ofrece en todos los sitios donde se abre la galería. Que el Messenger del otro lado lo trate como Ver una vez sigue dependiendo de Meta."},
         {"external_browser.title", "Abrir los enlaces web fuera de Messenger"},
         {"external_browser.description", "Abre los enlaces web (http y https) en tu navegador predeterminado. Los demás tipos de enlaces funcionan como antes."},
         {"link_player.title", "Reproducir los enlaces de vídeo en el chat"},

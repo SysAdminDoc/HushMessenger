@@ -839,6 +839,8 @@ final class SettingsTextZhTw {
         {"paste_photo.description", "你貼到聊天室的相片會像從相簿選取的項目一樣放進聊天室的訊息框，而不是自己傳出去。在你點選傳送之前不會傳出任何內容，所以你可以加上說明文字或改變心意。貼上的文字和鍵盤的 GIF 和以前一樣。已經開啟的聊天室需要重新開啟。"},
         {"instant_gallery.title", "從相簿傳送 Instants"},
         {"instant_gallery.description", "在 Instants 中點按快門時，會開啟手機的相簿應用程式，而不是拍照。你選取的相片會裁成相機畫面的形狀，作為 Instant 傳出。從相簿返回而沒有選取，就不會傳送任何內容。"},
+        {"view_once_anywhere.title", "在每個聊天都提供查看一次"},
+        {"view_once_anywhere.description", "Messenger 的相簿只在部分聊天顯示查看一次的開關，群組永遠沒有。這會在相簿開啟的每個地方都提供那個開關。對方的 Messenger 是否把它當成查看一次，仍然由 Meta 決定。"},
         {"external_browser.title", "在外部開啟網頁連結"},
         {"external_browser.description", "使用預設瀏覽器開啟網頁連結（http 與 https）。其他類型的連結維持原本的行為。"},
         {"link_player.title", "在聊天室中播放影片連結"},

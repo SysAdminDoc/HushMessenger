@@ -839,6 +839,8 @@ final class SettingsTextTr {
         {"paste_photo.description", "Bir sohbete yapıştırdığın fotoğraf, kendi başına gitmek yerine galeriden seçtiğin bir fotoğraf gibi sohbetin mesaj kutusuna gider. Gönder'e dokunana kadar hiçbir şey gönderilmez, böylece bir açıklama ekleyebilir ya da fikrini değiştirebilirsin. Yapıştırdığın metin ve klavyenin GIF'leri eskisi gibi çalışır. Zaten açık olan bir sohbetin yeniden açılması gerekir."},
         {"instant_gallery.title", "Instants'ı galeriden gönder"},
         {"instant_gallery.description", "Instants'ta deklanşöre dokunmak fotoğraf çekmek yerine telefonunun galeri uygulamasını açar. Seçtiğin fotoğraf, kameranın şekline göre kırpılıp Instant olarak gider. Galeriden geri çıkarsan hiçbir şey gönderilmez."},
+        {"view_once_anywhere.title", "Her sohbette Bir kez görüntüle sun"},
+        {"view_once_anywhere.description", "Messenger'ın galerisi Bir kez görüntüle düğmesini yalnızca bazı sohbetlerde gösterir, bu yüzden bir grup onu hiç görmez. Bu, galeri nerede açılırsa açılsın düğmeyi sunar. Karşı taraftaki Messenger'ın bunu Bir kez görüntüle sayıp saymaması hâlâ Meta'ya bağlı."},
         {"external_browser.title", "Web bağlantılarını dışarıda aç"},
         {"external_browser.description", "Web bağlantılarını (http ve https) varsayılan tarayıcında açar. Diğer bağlantı türleri eskisi gibi çalışır."},
         {"link_player.title", "Video bağlantılarını sohbette oynat"},

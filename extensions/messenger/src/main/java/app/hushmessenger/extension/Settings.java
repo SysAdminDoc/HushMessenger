@@ -862,6 +862,12 @@ public final class Settings {
     public static boolean blockDisappearingSwipe() { return enabled("disappearing_swipe"); }
     /** Asked each time a chat looks for a photo or video taken just before it opened; true shows no card for it. */
     public static boolean hideRecentMedia() { return enabled("recent_media"); }
+    /**
+     * The gallery in the message box asks whether to offer View once, handing in the answer Messenger's own capability
+     * vector gave. True offers it. Off, Pause and safe mode give Messenger's answer back, so the toggle shows up exactly
+     * where it always did.
+     */
+    public static boolean viewOnceOffered(boolean offered) { return offered || enabled("view_once_anywhere"); }
     static final String SHARE_STORY = "share_story";
     /** The Send to list's more-ways-to-share loader asks whether to add Your story; false leaves it out. */
     public static boolean keepShareStory(boolean shown) { return shown && !enabled(SHARE_STORY); }

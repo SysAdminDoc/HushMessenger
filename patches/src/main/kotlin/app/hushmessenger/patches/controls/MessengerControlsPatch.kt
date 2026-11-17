@@ -251,6 +251,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         SYSTEM_CAMERA -> validateSystemCamera()
         EXTERNAL_GALLERY -> validateExternalGallery()
         INSTANT_GALLERY -> validateInstantGallery()
+        VIEW_ONCE_ANYWHERE -> validateViewOnceAnywhere()
         SPECIAL_CONTACTS -> validateSpecialContacts()
         MENU_BLUR -> validateMenuBlur()
         GALLERY_TEMP_FILE -> validateGalleryTempFile()
@@ -392,6 +393,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             SYSTEM_CAMERA -> method.injectSystemCamera()
             EXTERNAL_GALLERY -> method.injectExternalGallery()
             INSTANT_GALLERY -> method.injectInstantGallery()
+            VIEW_ONCE_ANYWHERE -> method.injectViewOnceAnywhere()
             SPECIAL_CONTACTS -> method.injectSpecialContacts()
             MENU_BLUR -> method.injectMenuBlur()
             GALLERY_TEMP_FILE -> method.injectGalleryTempFile()
@@ -789,6 +791,10 @@ val pastePhotoPatch = controlPatch("paste_photo", "Paste a photo into the chat",
 val instantGalleryPatch = controlPatch("instant_gallery", "Send Instants from your gallery",
     "Tapping the shutter in Instants opens your phone's gallery app instead of taking a photo. The photo you pick goes out as the Instant, cut to the camera's shape. Back out of the gallery and nothing is sent.", "Photos and videos",
     manifest = { addInstantGallery() })
+@Suppress("unused")
+val viewOnceAnywherePatch = controlPatch("view_once_anywhere", "Offer View once in every chat",
+    "Messenger's gallery shows the View once toggle in some chats only, so a group never gets it. This offers it everywhere the gallery opens. Whether the other side's Messenger treats it as View once is still up to Meta.",
+    "Photos and videos")
 @Suppress("unused")
 val stopAnalyticsUploadsPatch = controlPatch("analytics_uploads", "Stop analytics uploads",
     "Stops the background services Messenger uses to upload usage statistics. It still records them on your phone, and they can upload after you turn this off.", "Tracking")

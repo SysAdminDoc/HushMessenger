@@ -220,6 +220,7 @@ public class CompatReport {
         PATCHES.put("Put gallery picks in the chat", List.of("gallery_to_chat"));
         PATCHES.put("Paste a photo into the chat", List.of("paste_photo"));
         PATCHES.put("Send Instants from your gallery", List.of("instant_gallery"));
+        PATCHES.put("Offer View once in every chat", List.of("view_once_anywhere"));
         PATCHES.put("Special contacts", List.of("special_contacts", "hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
         PATCHES.put("Play video links in the chat", List.of("link_player"));
         PATCHES.put("Stop analytics uploads", List.of("analytics_uploads"));
