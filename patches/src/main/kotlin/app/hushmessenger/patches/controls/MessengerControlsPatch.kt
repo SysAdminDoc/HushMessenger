@@ -218,6 +218,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         STORY_HOLD -> validateStoryHold()
         CHAT_PREVIEW -> validateChatPreview()
         CHAT_PREVIEW_SIZE -> validateChatPreviewSize()
+        INBOX_TYPING -> validateInboxTyping()
         CHAT_MENU_ITEMS -> validateChatMenuItems()
         LANDSCAPE_LOCK -> validatePortraitLock()
         LANDSCAPE_MEDIA -> validateMediaOrientation()
@@ -360,6 +361,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             STORY_HOLD -> method.injectStoryHold()
             CHAT_PREVIEW -> method.injectChatPreview()
             CHAT_PREVIEW_SIZE -> method.injectChatPreviewSize()
+            INBOX_TYPING -> method.injectInboxTyping()
             LANDSCAPE_LOCK -> method.injectPortraitLock()
             LANDSCAPE_MEDIA -> method.injectMediaOrientation()
             BLOCKED_LIST_PICTURES -> method.injectBlockedListPictures()
@@ -617,6 +619,10 @@ val hideInstantsButtonPatch = controlPatch("instants_button", "Hide the Instants
     "Hides the + button that slides in at the right edge of your chat list and the one under your chat heads. Both open Instants.", "Inbox")
 @Suppress("unused")
 val hideSubtabsPatch = controlPatch("subtabs", "Hide inbox tabs", "Hides the All, Unread and Groups tabs above your chats.", "Inbox")
+@Suppress("unused")
+val inboxTypingPatch = controlPatch("inbox_typing", "Typing in your chat list",
+    "Writes typing over a chat's last message in your list while the other person types, instead of only showing it once you're in the chat. Messenger carries this already and Meta's server keeps it off. Restart Messenger to see it start.",
+    "Inbox", INBOX_TYPING)
 @Suppress("unused")
 val keepSearchBarPatch = controlPatch("inbox_search_bar", "Keep the search bar",
     "Brings back the search bar at the top of your chat list when Messenger has swapped it for a search icon. Restart Messenger after changing it. If Messenger never gave you the icon, nothing changes.", "Inbox")

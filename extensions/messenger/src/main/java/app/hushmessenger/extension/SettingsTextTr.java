@@ -730,6 +730,8 @@ final class SettingsTextTr {
         {"instants_button.description", "Sohbet listenin sağ kenarından kayarak gelen + düğmesini ve sohbet balonlarının altındakini gizler. İkisi de Instants'ı açar."},
         {"subtabs.title", "Gelen kutusu sekmelerini gizle"},
         {"subtabs.description", "Sohbetlerinin üstündeki Tümü, Okunmamış ve Gruplar sekmelerini gizler."},
+        {"inbox_typing.title", "Sohbet listende yazıyor bilgisi"},
+        {"inbox_typing.description", "Karşıdaki kişi yazarken, listendeki sohbetin son mesajının üzerine yazıyor bilgisini koyar, bunu yalnızca sohbete girdiğinde göstermek yerine. Messenger bunu zaten taşıyor ve Meta'nın sunucusu kapalı tutuyor. Başlaması için Messenger'ı yeniden başlat."},
         {"inbox_search_bar.title", "Arama çubuğunu koru"},
         {"inbox_search_bar.description", "Messenger arama çubuğunu bir arama simgesiyle değiştirdiyse sohbet listenin üstündeki arama çubuğunu geri getirir. Değişikliği görmek için Messenger'ı yeniden başlat. Simge sende hiç çıkmadıysa hiçbir şey değişmez."},
         {"chat_preview.title", "Uzun basınca sohbet önizlemesi"},

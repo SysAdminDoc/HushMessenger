@@ -68,6 +68,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Hide stories and notes | Hides the row of stories and notes above your chats, and the story rings around profile pictures. |
 | Hide the Instants button | Hides the + button that slides in at the right edge of your chat list and the one under your chat heads. Both open Instants. |
 | Hide inbox tabs | Hides the All, Unread and Groups tabs above your chats. |
+| Typing in your chat list | A chat in your list says typing over its last message while the other person is typing, instead of waiting until you open the chat. Messenger already carries this and Meta's server keeps it off. Takes a Messenger restart. Experimental. |
 | Hide the tab bar while scrolling | The tab bar at the bottom slides away as you scroll down your chats and comes back when you scroll up. Takes a Messenger restart. |
 | Floating tab bar | Switches the bottom tab bar to the floating style Messenger is testing, which sits over your chats. Takes a Messenger restart. |
 | Keep the search bar | Brings back the search bar above your chats when Messenger has swapped it for a search icon. Takes effect after a restart, and nothing changes if you never got the icon. Experimental. |

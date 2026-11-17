@@ -824,6 +824,13 @@ public final class Settings {
     public static boolean chatPreview(boolean stock) { return enabled("chat_preview") || stock; }
 
     /**
+     * Asked with Meta's answer wherever one of the chat list's four typing plugins reads its flag: the inbox loader,
+     * the store, the teardown and the thread snippet. True runs them all, so a chat in the list says typing while the
+     * other person types. Off, Pause and safe mode keep Meta's answer, which is no on the builds we patch.
+     */
+    public static boolean inboxTyping(boolean stock) { return enabled("inbox_typing") || stock; }
+
+    /**
      * Asked when a call starts ringing, before Messenger decides to ring and vibrate, and again for the call's
      * notification. True takes Messenger's own ringtone-off path and posts the notification without the pop-up. With
      * Only chosen chats on, only a call from a chosen chat gets true.

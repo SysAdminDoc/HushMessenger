@@ -175,6 +175,10 @@ hook inbox_search_bar LX/1tj;->A0D(Landroid/view/ViewGroup;)V
 hook inbox_search_bar LX/23Z;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
 hook inbox_search_bar LX/2Ku;->A0M()Z
 hook inbox_search_bar LX/2cu;->render(LX/27r;)LX/1F6;
+hook inbox_typing LX/1wn;->A01()V
+hook inbox_typing LX/2EU;->A0B(LX/2EU;)Z
+hook inbox_typing LX/2fm;->Cqk(LX/0Lz;Lcom/facebook/messaging/model/threads/ThreadSummary;)LX/3AL;
+hook inbox_typing LX/2g8;->A03(Ljava/util/List;)V
 hook instant_gallery LX/VKB;->EKR(LX/2rP;)V
 hook instants_button LX/1tj;->A0G(LX/1tj;)V
 hook instants_button LX/cMo;->A0Y(LX/cMo;)V

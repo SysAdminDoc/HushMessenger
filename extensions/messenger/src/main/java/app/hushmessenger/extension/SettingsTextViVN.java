@@ -730,6 +730,8 @@ final class SettingsTextViVN {
         {"instants_button.description", "Ẩn nút + trượt vào từ mép phải danh sách trò chuyện và nút bên dưới bong bóng chat. Cả hai đều mở Instants."},
         {"subtabs.title", "Ẩn tab hộp thư đến"},
         {"subtabs.description", "Ẩn các tab 'Tất cả', 'Chưa đọc' và 'Nhóm' phía trên các đoạn chat."},
+        {"inbox_typing.title", "Đang nhập trong danh sách đoạn chat"},
+        {"inbox_typing.description", "Viết 'đang nhập' lên tin nhắn cuối của một đoạn chat trong danh sách khi người kia đang nhập, thay vì chỉ hiện khi bạn đã vào đoạn chat. Messenger đã có sẵn phần này và máy chủ của Meta vẫn tắt nó. Khởi động lại Messenger để nó bắt đầu."},
         {"inbox_search_bar.title", "Giữ thanh tìm kiếm"},
         {"inbox_search_bar.description", "Đưa thanh tìm kiếm trở lại đầu danh sách trò chuyện khi Messenger đã thay nó bằng biểu tượng tìm kiếm. Có hiệu lực sau khi khởi động lại Messenger. Nếu bạn chưa nhận được biểu tượng đó, sẽ không có thay đổi nào xảy ra."},
         {"chat_preview.title", "Xem trước phòng chat khi nhấn giữ"},

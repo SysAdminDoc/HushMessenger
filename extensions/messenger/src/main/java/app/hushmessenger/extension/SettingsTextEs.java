@@ -731,6 +731,8 @@ final class SettingsTextEs {
         {"instants_button.description", "Oculta el botón + que aparece deslizándose en el borde derecho de tu lista de chats y el que está debajo de tus burbujas de chat. Los dos abren Instants."},
         {"subtabs.title", "Ocultar pestañas de la bandeja de entrada"},
         {"subtabs.description", "Oculta las pestañas Todos, No leídos y Grupos encima de tus chats."},
+        {"inbox_typing.title", "Escribiendo en tu lista de chats"},
+        {"inbox_typing.description", "Pone «escribiendo» sobre el último mensaje de un chat de tu lista mientras la otra persona escribe, en vez de mostrarlo solo cuando ya estás dentro del chat. Messenger ya lo trae y el servidor de Meta lo mantiene apagado. Reinicia Messenger para que empiece."},
         {"inbox_search_bar.title", "Mantener la barra de búsqueda"},
         {"inbox_search_bar.description", "Recupera la barra de búsqueda en la parte superior de tu lista de chats cuando Messenger la cambió por un icono de búsqueda. Reinicia Messenger para ver el cambio. No cambia nada si nunca te apareció el icono."},
         {"chat_preview.title", "Vista previa de chats al mantener presionado"},
