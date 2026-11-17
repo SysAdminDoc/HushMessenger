@@ -217,6 +217,16 @@ final class SettingsText {
         ENGLISH.put("call_recording_channel", "Call recording");
         ENGLISH.put("call_recording_saved", "Call saved to %1$s");
         ENGLISH.put("call_recording_failed", "Couldn't record this call");
+        ENGLISH.put("call_recording_keep", "Keep recordings");
+        ENGLISH.put("call_recording_keep_all", "Keep them all");
+        ENGLISH.put("call_recording_keep_days", "For %1$s days");
+        ENGLISH.put("call_recording_keep_help", "Checked after a call is saved. Only the recordings this made are counted, and anything you've moved or renamed stays where it is.");
+        ENGLISH.put("call_recording_keep_picked", "Keep recordings: %1$s");
+        ENGLISH.put("call_recording_notify", "Notify when a call is saved");
+        ENGLISH.put("call_recording_notify_help", "A notification once the recording is written, with the name of the file. Tap it to play the recording, or Share to send it somewhere.");
+        ENGLISH.put("call_recording_saved_channel", "Saved call recordings");
+        ENGLISH.put("call_recording_saved_title", "Call recording saved");
+        ENGLISH.put("call_recording_share", "Share");
         ENGLISH.put("call_captions_unsupported", "This needs Android 13 or newer. Your choice is saved.");
         ENGLISH.put("call_captions_speak", "Read captions aloud");
         ENGLISH.put("call_captions_speak_help", "Reads each caption out loud in the phone's voice once it's finished. Use earphones so the other people don't hear it too.");

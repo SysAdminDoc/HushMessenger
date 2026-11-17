@@ -72,6 +72,7 @@ public final class SettingsActivity extends Activity {
     private final InvisibleButtonsRow invisibleButtons = new InvisibleButtonsRow(this);
     private final MenuRowsRow menuRows = new MenuRowsRow(this);
     private final CallCaptionsRow callCaptions = new CallCaptionsRow(this);
+    private final CallRecordingRow callRecording = new CallRecordingRow(this);
     private final SpecialContactsRow specialContacts = new SpecialContactsRow(this);
     private final QuietModeRow quietMode = new QuietModeRow(this);
     private final SharedPreferences.OnSharedPreferenceChangeListener preferenceListener = (preferences, key) -> {
@@ -577,6 +578,7 @@ public final class SettingsActivity extends Activity {
             if (!label.contentEquals(batteryUse.getText())) batteryUse.setText(label);
         }
         fontFile.refreshFontFile();
+        callRecording.fill();
         updateSetup();
     }
 
@@ -1048,7 +1050,7 @@ public final class SettingsActivity extends Activity {
                     || MessageActions.KEY.equals(spec[0]) || ChatMenuItems.KEY.equals(spec[0]) || CameraActivity.KEY.equals(spec[0])
                     || InvisibleButtons.KEY.equals(spec[0]) || QuietMode.KEY.equals(spec[0])
                     || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])
-                    || MenuBlur.KEY.equals(spec[0]) || "hide_read_receipts".equals(spec[0])
+                    || MenuBlur.KEY.equals(spec[0]) || "hide_read_receipts".equals(spec[0]) || CallRecording.KEY.equals(spec[0])
                     || ("allow_screenshot".equals(spec[0]) && Build.VERSION.SDK_INT >= 29)) {
                 // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
@@ -1082,6 +1084,11 @@ public final class SettingsActivity extends Activity {
                 else if (MessageActions.KEY.equals(spec[0])) messageActions.addTo(wrapper);
                 else if (ChatMenuItems.KEY.equals(spec[0])) chatMenuItems.addTo(wrapper);
                 else if (InvisibleButtons.KEY.equals(spec[0])) invisibleButtons.addTo(wrapper);
+                else if (CallRecording.KEY.equals(spec[0])) {
+                    callRecording.addTo(wrapper);
+                    ui.add(wrapper, controlRow(CallRecordings.NOTIFY, text.format(CallRecordings.NOTIFY),
+                        text.format("call_recording_notify_help"), false), 8);
+                }
                 else if (CallCaptions.KEY.equals(spec[0])) {
                     callCaptions.addTo(wrapper);
                     ui.add(wrapper, controlRow(CallCaptions.SPEAK, text.format(CallCaptions.SPEAK), text.format("call_captions_speak_help"), false), 8);
@@ -1465,6 +1472,7 @@ public final class SettingsActivity extends Activity {
             : CameraActivity.ASK.equals(key) ? CameraActivity.KEY
             : StoryEye.KEY.equals(key) ? StoryEye.OWNER
             : CallCaptions.SPEAK.equals(key) || CallCaptions.DUCK.equals(key) ? CallCaptions.KEY
+            : CallRecordings.NOTIFY.equals(key) ? CallRecording.KEY
             : ViewOnceSave.KEY.equals(key) ? "allow_screenshot"
             : FloatingMenu.KEY.equals(key) ? MenuBlur.KEY
             : Settings.HIDE_DELIVERED.equals(key) ? "hide_read_receipts"
@@ -2168,6 +2176,12 @@ public final class SettingsActivity extends Activity {
             if (QuietCalls.KEY.equals(spec[0])) {
                 inside = text.get(QuietCalls.CHOSEN_ONLY) + " " + text.get("quiet_calls_chosen_help");
                 for (String[] chat : QuietCalls.recent()) inside += " " + chat[1];
+            }
+            if (CallRecording.KEY.equals(spec[0])) {
+                inside = text.get("call_recording_keep") + " " + text.get("call_recording_keep_help");
+                for (String days : CallRecordings.KEEP_CHOICES)
+                    inside += " " + text.get("0".equals(days) ? "call_recording_keep_all" : "call_recording_keep_days", days);
+                inside += " " + text.get(CallRecordings.NOTIFY) + " " + text.get("call_recording_notify_help");
             }
             if (QuietMode.KEY.equals(spec[0])) {
                 inside = text.get("quiet_mode_break") + " " + text.get(QuietMode.DAILY) + " " + text.get("quiet_mode_daily_help");

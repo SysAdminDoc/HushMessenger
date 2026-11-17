@@ -81,6 +81,11 @@ public final class CallRecording {
         FileChannel channel();
 
         void close(boolean keep) throws IOException;
+
+        /** Where the kept recording ended up, for the notification that says so (#193). Null when there's no such thing. */
+        default Uri uri() {
+            return null;
+        }
     }
 
     static volatile Store store = new SharedAudio();
@@ -628,8 +633,9 @@ public final class CallRecording {
             boolean kept = false;
             boolean failed = false;
             Target target = null;
+            String saved = name(new Date(), with);
             try {
-                target = store.open(context, name(new Date(), with));
+                target = store.open(context, saved);
                 mix = new CallMix(target.channel());
                 listening = this;
                 try {
@@ -650,6 +656,11 @@ public final class CallRecording {
                 } catch (IOException | RuntimeException error) {
                     Settings.hookFailedPrivately(KEY, "Couldn't finish a call recording", error);
                 }
+            }
+            // On this thread, with the file closed, so the call is long over before either of these touches the store.
+            if (kept && target != null) {
+                CallRecordings.saved(context, target.uri(), saved);
+                CallRecordings.clean(context, System.currentTimeMillis());
             }
             boolean keptFile = kept;
             boolean failure = failed;
@@ -694,6 +705,10 @@ public final class CallRecording {
                     } finally {
                         if (!keep) resolver.delete(item, null, null);
                     }
+                }
+
+                @Override public Uri uri() {
+                    return item;
                 }
             };
         }
