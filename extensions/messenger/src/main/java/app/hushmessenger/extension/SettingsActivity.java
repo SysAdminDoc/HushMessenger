@@ -869,6 +869,8 @@ public final class SettingsActivity extends Activity {
         if (Settings.installed.contains(HomeHeader.KEY)) values.put(HomeHeader.KEY, HomeHeader.inUse(this));
         // The bar at the bottom is built once as Messenger opens, so a picked tab icon waits for a restart too.
         if (Settings.installed.contains(TabIcons.KEY)) values.put(TabIcons.KEY, TabIcons.inUse(this));
+        // Messenger reads the encrypted chats' mute check as it starts, so Log chats that don't notify waits for one there.
+        if (Settings.installed.contains(MessageLog.KEY)) values.put(MuteQuery.RESTART_KEY, QuietChats.wanted());
         return values;
     }
 
