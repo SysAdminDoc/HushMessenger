@@ -366,7 +366,8 @@ public class CallRecordingsTest {
                 "call_recording_folder_choose", "call_recording_folder_reset", "call_recording_folder_picked",
                 "call_recording_folder_refused", CallRecordings.FORMAT, "call_recording_format_wav",
                 "call_recording_format_ogg", "call_recording_format_help", "call_recording_format_picked",
-                "call_recording_format_unavailable"}) {
+                "call_recording_format_unavailable", CallRecordings.TRACKS, "call_recording_tracks_mixed",
+                "call_recording_tracks_sides", "call_recording_tracks_help", "call_recording_tracks_picked"}) {
             assertNotNull("English " + id, SettingsText.ENGLISH.get(id));
         }
     }
@@ -443,6 +444,46 @@ public class CallRecordingsTest {
             android.widget.EditText find = root.findViewWithTag("find_control");
             android.view.View nothing = root.findViewWithTag("empty_state");
             for (String words : new String[] {"save calls as", "ogg opus", "a tenth the size"}) {
+                find.setText(words);
+                org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle();
+                assertEquals("Searching " + words, android.view.View.GONE, nothing.getVisibility());
+            }
+        }
+    }
+
+    @Test public void bothSidesShareATrackUntilEachIsAskedFor() {
+        assertEquals(CallRecordings.MIXED, CallRecordings.tracksPicked());
+        assertEquals(1, CallRecordings.channels());
+        Settings.preferences.edit().putString(CallRecordings.TRACKS, CallRecordings.SIDES).commit();
+        assertEquals(2, CallRecordings.channels());
+        Settings.preferences.edit().putString(CallRecordings.TRACKS, "quadraphonic").commit();
+        assertEquals("Anything else reads as both together", 1, CallRecordings.channels());
+    }
+
+    @Test public void settingsOffersTheTwoSides() {
+        Settings.preferences.edit().putBoolean(CallRecording.KEY, true).commit();
+        try (var page = org.robolectric.Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            android.view.View root = page.get().getWindow().getDecorView();
+            android.widget.RadioButton together = root.findViewWithTag("call_recording_tracks_mixed");
+            android.widget.RadioButton apart = root.findViewWithTag("call_recording_tracks_sides");
+            assertNotNull(together);
+            assertTrue("Together to start with", together.isChecked());
+
+            apart.performClick();
+            org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle();
+            assertEquals(CallRecordings.SIDES, Settings.preferences.getString(CallRecordings.TRACKS, null));
+            assertTrue(apart.isChecked());
+            assertFalse(together.isChecked());
+        }
+    }
+
+    @Test public void theTracksRowTurnsUpInASearch() {
+        Settings.preferences.edit().putBoolean(CallRecording.KEY, true).commit();
+        try (var page = org.robolectric.Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            android.view.View root = page.get().getWindow().getDecorView();
+            android.widget.EditText find = root.findViewWithTag("find_control");
+            android.view.View nothing = root.findViewWithTag("empty_state");
+            for (String words : new String[] {"the two sides", "on the left", "one track"}) {
                 find.setText(words);
                 org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle();
                 assertEquals("Searching " + words, android.view.View.GONE, nothing.getVisibility());

@@ -237,6 +237,11 @@ final class SettingsText {
         ENGLISH.put("call_recording_format_help", "An hour of call is around 115 MB as a WAV and nearer 10 MB as Opus, and the voices sound much the same. WAV plays in anything, where a few older players don't know Opus.");
         ENGLISH.put("call_recording_format_picked", "Save calls as: %1$s");
         ENGLISH.put("call_recording_format_unavailable", "This phone has no Opus encoder, so calls are saved as WAV whichever you pick.");
+        ENGLISH.put("call_recording_tracks", "The two sides");
+        ENGLISH.put("call_recording_tracks_mixed", "Together in one track");
+        ENGLISH.put("call_recording_tracks_sides", "One each, you on the left");
+        ENGLISH.put("call_recording_tracks_help", "One track is the usual recording, and both voices share it. One each puts you on the left and the other person on the right, so you can listen to either side on its own. It makes the file twice the size.");
+        ENGLISH.put("call_recording_tracks_picked", "The two sides: %1$s");
         ENGLISH.put("call_recording_keep", "Keep recordings");
         ENGLISH.put("call_recording_keep_all", "Keep them all");
         ENGLISH.put("call_recording_keep_days", "For %1$s days");

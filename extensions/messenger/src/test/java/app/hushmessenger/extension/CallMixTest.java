@@ -240,6 +240,40 @@ public class CallMixTest {
         assertTrue(other.full());
     }
 
+    /** With a side on each channel the two voices stay apart: you on the left, them on the right (#193). */
+    @Test public void aSideOnEachChannelKeepsTheVoicesApart() throws IOException {
+        File two = File.createTempFile("sides", ".wav");
+        try (FileChannel channel = FileChannel.open(two.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            CallMix sides = new CallMix(new CallMix.Wav(channel, 2), 2);
+            sides.mine.offer(filled(160, 1000), 160, 1, 16000, 10);
+            sides.theirs.offer(filled(160, -400), 160, 1, 16000, 10);
+            sides.finish(10);
+            ByteBuffer all = ByteBuffer.wrap(Files.readAllBytes(two.toPath())).order(ByteOrder.LITTLE_ENDIAN);
+            assertEquals(2, all.getShort(22));
+            assertEquals(CallMix.RATE * 4, all.getInt(28));
+            assertEquals(4, all.getShort(32));
+            assertEquals(160 * 4, all.getInt(40));
+            assertEquals(CallMix.HEADER_BYTES + 160 * 4, all.capacity());
+            assertEquals(1000, all.getShort(CallMix.HEADER_BYTES));
+            assertEquals(-400, all.getShort(CallMix.HEADER_BYTES + 2));
+            assertEquals(1000, all.getShort(CallMix.HEADER_BYTES + 4));
+            assertEquals(-400, all.getShort(CallMix.HEADER_BYTES + 6));
+        } finally {
+            two.delete();
+        }
+    }
+
+    /** Two channels take twice the bytes, so a WAV's own count runs out after half as long. */
+    @Test public void aSideOnEachChannelFillsTheFileTwiceAsFast() throws IOException {
+        File two = File.createTempFile("sides", ".wav");
+        try (FileChannel channel = FileChannel.open(two.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            assertEquals(CallMix.MOST_SAMPLES / 2, new CallMix.Wav(channel, 2).most());
+            assertEquals(CallMix.MOST_SAMPLES, new CallMix.Wav(channel, 1).most());
+        } finally {
+            two.delete();
+        }
+    }
+
     @Test public void releasingTheMixLetsTheSinkGo() {
         Counted sink = new Counted();
         new CallMix(sink).release();

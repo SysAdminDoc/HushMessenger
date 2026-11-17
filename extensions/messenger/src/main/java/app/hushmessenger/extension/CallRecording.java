@@ -621,15 +621,15 @@ public final class CallRecording {
      * How the file is written: Opus when that's what the name says, since the format is settled before the file is
      * made, and the plain WAV otherwise. An encoder that won't start takes the WAV rather than the call (#193).
      */
-    private static CallMix.Sink sink(Target target, String name) throws IOException {
+    private static CallMix.Sink sink(Target target, String name, int channels) throws IOException {
         if (name.endsWith("." + VoiceMessages.Format.OGG.extension) && target.descriptor() != null) {
             try {
-                return new CallOpus(target.descriptor());
+                return new CallOpus(target.descriptor(), channels);
             } catch (IOException | RuntimeException unusable) {
                 Settings.hookFailedPrivately(KEY, "Couldn't record this call as Opus", unusable);
             }
         }
-        return new CallMix.Wav(target.channel());
+        return new CallMix.Wav(target.channel(), channels);
     }
 
     /** One recording, on a thread of its own, since writing the file shouldn't hold up the call or Messenger's screens. */
@@ -692,8 +692,9 @@ public final class CallRecording {
             Target target = null;
             String saved = name(new Date(), with);
             try {
+                int channels = CallRecordings.channels();
                 target = store.open(context, saved);
-                mix = new CallMix(sink(target, saved));
+                mix = new CallMix(sink(target, saved, channels), channels);
                 listening = this;
                 try {
                     while (!mix.full() && !stopped()) mix.pump(elapsed());

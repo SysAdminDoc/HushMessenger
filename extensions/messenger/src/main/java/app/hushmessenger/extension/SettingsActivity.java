@@ -1092,6 +1092,7 @@ public final class SettingsActivity extends Activity {
                     addRecordCallChats(wrapper);
                     callRecording.addFolderTo(wrapper);
                     callRecording.addFormatTo(wrapper);
+                    callRecording.addTracksTo(wrapper);
                     callRecording.addKeepTo(wrapper);
                     ui.add(wrapper, controlRow(CallRecordings.NOTIFY, text.format(CallRecordings.NOTIFY),
                         text.format("call_recording_notify_help"), false), 8);
@@ -2231,6 +2232,9 @@ public final class SettingsActivity extends Activity {
                     + " " + text.get("call_recording_folder_choose") + " " + text.get("call_recording_folder_reset");
                 inside += " " + text.get(CallRecordings.FORMAT) + " " + text.get("call_recording_format_help");
                 for (String format : CallRecordings.FORMATS) inside += " " + text.get(CallRecordings.FORMAT + "_" + format);
+                inside += " " + text.get(CallRecordings.TRACKS) + " " + text.get("call_recording_tracks_help");
+                for (String tracks : CallRecordings.TRACK_CHOICES)
+                    inside += " " + text.get(CallRecordings.TRACKS + "_" + tracks);
                 inside += " " + text.get("call_recording_keep") + " " + text.get("call_recording_keep_help");
                 for (String days : CallRecordings.KEEP_CHOICES)
                     inside += " " + text.get("0".equals(days) ? "call_recording_keep_all" : "call_recording_keep_days", days);

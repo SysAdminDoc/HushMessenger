@@ -6,8 +6,8 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
 /**
- * Mixes both sides of a call into one mono WAV (#105). Each side hands over its sound on Messenger's audio threads, at
- * whatever rate and channel count the call uses. Sound is placed by when it arrived and the file is written against the
+ * Puts both sides of a call into one file (#105), mixed together or one side to a channel (#193). Each side hands
+ * over its sound on Messenger's audio threads, at whatever rate and channel count the call uses. Sound is placed by when it arrived and the file is written against the
  * clock, so a side that goes quiet becomes silence and never shifts the other side. The header goes back in every few
  * seconds, so a crash still leaves a file that plays.
  */
@@ -27,7 +27,10 @@ final class CallMix {
      * file is a choice under the switch (#193). The mixing above it is the same either way.
      */
     interface Sink {
-        /** Writes mono 16 bit samples that begin [at] samples into the recording. */
+        /**
+         * Writes 16 bit samples for the frames that begin [at] frames into the recording. A frame is one sample with
+         * both sides mixed, or one from each side, by how many channels the sink was made with.
+         */
         void write(long at, ByteBuffer samples) throws IOException;
 
         /** Everything due so far has been handed over. The next lot may be a few hundred milliseconds off. */
@@ -37,7 +40,7 @@ final class CallMix {
         /** Everything has been handed over, so whatever is left to write goes in. */
         void finish() throws IOException;
 
-        /** The most samples this can hold. */
+        /** The most frames this can hold. */
         default long most() {
             return Long.MAX_VALUE;
         }
@@ -48,7 +51,8 @@ final class CallMix {
     }
 
     private final Sink sink;
-    private final ByteBuffer samples = ByteBuffer.allocate(CHUNK * 2).order(ByteOrder.LITTLE_ENDIAN);
+    private final int channels;
+    private final ByteBuffer samples;
     private final short[] mineChunk = new short[CHUNK];
     private final short[] theirsChunk = new short[CHUNK];
     private long written;
@@ -57,11 +61,18 @@ final class CallMix {
     final Side theirs = new Side();
 
     CallMix(FileChannel file) throws IOException {
-        this(new Wav(file));
+        this(new Wav(file), 1);
     }
 
     CallMix(Sink sink) {
+        this(sink, 1);
+    }
+
+    /** One channel puts both sides together, two gives each its own: you on the left, them on the right (#193). */
+    CallMix(Sink sink, int channels) {
         this.sink = sink;
+        this.channels = channels == 2 ? 2 : 1;
+        this.samples = ByteBuffer.allocate(CHUNK * 2 * this.channels).order(ByteOrder.LITTLE_ENDIAN);
     }
 
     long written() {
@@ -101,7 +112,11 @@ final class CallMix {
             theirs.read(written, count, theirsChunk);
             samples.clear();
             for (int i = 0; i < count; i++) {
-                samples.putShort((short) Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, mineChunk[i] + theirsChunk[i])));
+                if (channels == 2) {
+                    samples.putShort(mineChunk[i]).putShort(theirsChunk[i]);
+                } else {
+                    samples.putShort((short) Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, mineChunk[i] + theirsChunk[i])));
+                }
             }
             samples.flip();
             sink.write(written, samples);
@@ -113,21 +128,27 @@ final class CallMix {
     /** A plain WAV file, header and all. The header goes back in every few seconds, so a crash leaves one that plays. */
     static final class Wav implements Sink {
         private final FileChannel file;
+        private final int channels;
         private long written;
         private long headerAt;
 
         Wav(FileChannel file) throws IOException {
+            this(file, 1);
+        }
+
+        Wav(FileChannel file, int channels) throws IOException {
             this.file = file;
+            this.channels = channels == 2 ? 2 : 1;
             writeHeader();
         }
 
         @Override public long most() {
-            return MOST_SAMPLES;
+            return MOST_SAMPLES / channels;
         }
 
         @Override public void write(long at, ByteBuffer samples) throws IOException {
-            long into = HEADER_BYTES + at * 2;
-            written = at + samples.remaining() / 2;
+            long into = HEADER_BYTES + at * 2 * channels;
+            written = at + samples.remaining() / (2 * channels);
             while (samples.hasRemaining()) into += file.write(samples, into);
         }
 
@@ -140,10 +161,11 @@ final class CallMix {
         }
 
         private void writeHeader() throws IOException {
-            long bytes = written * 2;
+            long bytes = written * 2 * channels;
             ByteBuffer header = ByteBuffer.allocate(HEADER_BYTES).order(ByteOrder.LITTLE_ENDIAN);
             header.put(new byte[] {'R', 'I', 'F', 'F'}).putInt((int) (36 + bytes)).put(new byte[] {'W', 'A', 'V', 'E', 'f', 'm', 't', ' '});
-            header.putInt(16).putShort((short) 1).putShort((short) 1).putInt(RATE).putInt(RATE * 2).putShort((short) 2).putShort((short) 16);
+            header.putInt(16).putShort((short) 1).putShort((short) channels).putInt(RATE).putInt(RATE * 2 * channels)
+                .putShort((short) (2 * channels)).putShort((short) 16);
             header.put(new byte[] {'d', 'a', 't', 'a'}).putInt((int) bytes);
             header.flip();
             long at = 0;

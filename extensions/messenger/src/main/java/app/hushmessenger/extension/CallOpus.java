@@ -20,44 +20,56 @@ import java.nio.ByteOrder;
 @TargetApi(29)
 final class CallOpus implements CallMix.Sink {
     static final String MIME = "audio/opus";
-    /** Mono speech at 16 kHz. Opus holds up well this low, and it's about a tenth of what the WAV takes. */
+    /** Speech at 16 kHz, per channel. Opus holds up well this low, and it's about a tenth of what the WAV takes. */
     private static final int BITS_PER_SECOND = 24000;
-    /** Opus works in 20 millisecond frames, which at {@link CallMix#RATE} is this many samples. */
+    /** Opus works in 20 millisecond frames, which at {@link CallMix#RATE} is this many of them. */
     private static final int FRAME = CallMix.RATE / 50;
     private static final int WAIT_MICROS = 20_000;
 
     /** Whether this phone can encode Opus at all. Android 10 is the first that can, and not every build does. */
     static boolean available() {
+        return available(1);
+    }
+
+    /** The same question for a recording with a side on each channel, which not every encoder takes. */
+    static boolean available(int channels) {
         if (Build.VERSION.SDK_INT < 29) return false;
         try {
-            return new MediaCodecList(MediaCodecList.REGULAR_CODECS).findEncoderForFormat(wanted()) != null;
+            return new MediaCodecList(MediaCodecList.REGULAR_CODECS).findEncoderForFormat(wanted(channels)) != null;
         } catch (RuntimeException unknown) {
             return false;
         }
     }
 
-    private static MediaFormat wanted() {
-        MediaFormat format = MediaFormat.createAudioFormat(MIME, CallMix.RATE, 1);
-        format.setInteger(MediaFormat.KEY_BIT_RATE, BITS_PER_SECOND);
+    private static MediaFormat wanted(int channels) {
+        MediaFormat format = MediaFormat.createAudioFormat(MIME, CallMix.RATE, channels);
+        format.setInteger(MediaFormat.KEY_BIT_RATE, BITS_PER_SECOND * channels);
         return format;
     }
 
     private final MediaCodec encoder;
     private final MediaMuxer muxer;
+    private final int channels;
     private final MediaCodec.BufferInfo out = new MediaCodec.BufferInfo();
     // Android is little endian everywhere it runs, and so is the mix handed over, so the bytes go straight across.
-    private final ByteBuffer frame = ByteBuffer.allocate(FRAME * 2).order(ByteOrder.nativeOrder());
+    private final ByteBuffer frame;
     private int track = -1;
     private boolean muxing;
     private boolean ended;
     private boolean done;
-    /** Samples handed to the encoder, which is what every frame's timestamp is worked out from. */
+    /** Frames handed to the encoder, which is what every buffer's timestamp is worked out from. */
     private long queued;
 
     CallOpus(FileDescriptor file) throws IOException {
+        this(file, 1);
+    }
+
+    CallOpus(FileDescriptor file, int channels) throws IOException {
+        this.channels = channels == 2 ? 2 : 1;
+        frame = ByteBuffer.allocate(FRAME * 2 * this.channels).order(ByteOrder.nativeOrder());
         encoder = MediaCodec.createEncoderByType(MIME);
         try {
-            encoder.configure(wanted(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+            encoder.configure(wanted(this.channels), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
             encoder.start();
             muxer = new MediaMuxer(file, MediaMuxer.OutputFormat.MUXER_OUTPUT_OGG);
         } catch (IOException | RuntimeException unusable) {
@@ -121,7 +133,7 @@ final class CallOpus implements CallMix.Sink {
         frame.clear();
         encoder.queueInputBuffer(index, 0, bytes, queued * 1_000_000L / CallMix.RATE,
             last ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : 0);
-        queued += bytes / 2;
+        queued += bytes / (2 * channels);
         drain(false);
     }
 

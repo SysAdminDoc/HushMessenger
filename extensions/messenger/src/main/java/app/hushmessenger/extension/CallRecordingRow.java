@@ -22,6 +22,7 @@ final class CallRecordingRow {
     private final List<RadioButton> choices = new ArrayList<>();
     private final List<RadioButton> scopes = new ArrayList<>();
     private final List<RadioButton> formats = new ArrayList<>();
+    private final List<RadioButton> trackChoices = new ArrayList<>();
     private TextView folder;
     private Button useDefault;
 
@@ -88,6 +89,31 @@ final class CallRecordingRow {
         fill();
     }
 
+    /** Whether the two sides share a track or get one each. */
+    void addTracksTo(LinearLayout content) {
+        page.ui.add(content, page.ui.text(page.text.get(CallRecordings.TRACKS), 15, page.ui.text, true), 8);
+        RadioGroup group = new RadioGroup(page);
+        group.setTag("call_recording_tracks_choices");
+        group.setOrientation(LinearLayout.VERTICAL);
+        for (String tracks : CallRecordings.TRACK_CHOICES) {
+            RadioButton choice = page.radio(CallRecordings.TRACKS + "_" + tracks,
+                page.text.get(CallRecordings.TRACKS + "_" + tracks));
+            choice.setOnClickListener(clicked -> pickTracks(tracks));
+            group.addView(choice, new RadioGroup.LayoutParams(-1, -2));
+            trackChoices.add(choice);
+        }
+        page.ui.add(content, group, 4);
+        page.ui.add(content, page.ui.text(page.text.get("call_recording_tracks_help"), 13, page.ui.muted, false), 8);
+        fill();
+    }
+
+    private void pickTracks(String tracks) {
+        if (Settings.preferences != null) Settings.preferences.edit().putString(CallRecordings.TRACKS, tracks).apply();
+        fill();
+        page.feedback(page.text.get("call_recording_tracks_picked",
+            page.text.format(CallRecordings.TRACKS + "_" + tracks)), Toast.LENGTH_SHORT);
+    }
+
     private void pickFormat(String format) {
         if (Settings.preferences != null) Settings.preferences.edit().putString(CallRecordings.FORMAT, format).apply();
         fill();
@@ -147,6 +173,9 @@ final class CallRecordingRow {
         for (RadioButton choice : scopes) choice.setChecked(choice.getTag().equals(CallRecordings.SCOPE + "_" + scope));
         String format = CallRecordings.formatPicked();
         for (RadioButton choice : formats) choice.setChecked(choice.getTag().equals(CallRecordings.FORMAT + "_" + format));
+        String tracks = CallRecordings.tracksPicked();
+        for (RadioButton choice : trackChoices)
+            choice.setChecked(choice.getTag().equals(CallRecordings.TRACKS + "_" + tracks));
     }
 
     private String label(String days) {

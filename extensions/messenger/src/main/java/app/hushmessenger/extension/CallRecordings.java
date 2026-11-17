@@ -53,6 +53,14 @@ final class CallRecordings {
     static final String WAV = "wav", OGG = "ogg";
     static final List<String> FORMATS = Arrays.asList(WAV, OGG);
 
+    /** Whether the two sides of a call share one track or get one each. */
+    static final String TRACKS = "call_recording_tracks";
+    /** Both sides added together, which is what a recording has always been. */
+    static final String MIXED = "mixed";
+    /** You on the left, them on the right, so either side can be listened to on its own. */
+    static final String SIDES = "sides";
+    static final List<String> TRACK_CHOICES = Arrays.asList(MIXED, SIDES);
+
     /** The folder recordings are written to, as a tree the person picked. Empty for the phone's own. */
     static final String FOLDER = "call_recording_folder";
     /** What a picked folder is held with, so it still opens after a restart. */
@@ -85,7 +93,19 @@ final class CallRecordings {
      * WAV rather than a file that was never written, so this is asked before the file is named.
      */
     static VoiceMessages.Format format() {
-        return OGG.equals(formatPicked()) && CallOpus.available() ? VoiceMessages.Format.OGG : VoiceMessages.Format.WAV;
+        return OGG.equals(formatPicked()) && CallOpus.available(channels())
+            ? VoiceMessages.Format.OGG : VoiceMessages.Format.WAV;
+    }
+
+    /** What's written down for the tracks. Anything else in the store reads as both sides together. */
+    static String tracksPicked() {
+        String saved = Settings.preferences == null ? null : Settings.preferences.getString(TRACKS, MIXED);
+        return TRACK_CHOICES.contains(saved) ? saved : MIXED;
+    }
+
+    /** One channel for both sides together, two for a side each. */
+    static int channels() {
+        return SIDES.equals(tracksPicked()) ? 2 : 1;
     }
 
     /**
