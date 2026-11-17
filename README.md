@@ -63,7 +63,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Hide joined community chats | Takes joined channels and announcements out of the main Chats list. The other chips keep them. |
 | Hide People You May Know | Removes suggested people from the chat list, search, stories and the People and Notifications tabs. |
 | Hide friend request cards | Hides friend request cards in the chat list. Nobody gets accepted or declined. |
-| Hide growth prompts | Removes the add-people promotion, the notes tip sheets and the "Share your own story" card after someone's stories. |
+| Hide growth prompts | Removes the add-people promotion, the notes tip sheets, the "Share your own story" card after someone's stories and the "Turn on active status" line at the top of a chat. |
 | Hide inbox promotions | Hides promotion banners in the chat list. |
 | Hide stories and notes | Hides the row of stories and notes above your chats, and the story rings around profile pictures. |
 | Hide the Instants button | Hides the + button that slides in at the right edge of your chat list and the one under your chat heads. Both open Instants. |

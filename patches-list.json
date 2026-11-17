@@ -2268,7 +2268,7 @@
         },
         {
             "name": "Hide growth prompts",
-            "description": "Hides prompts to add more people, the tip sheets in notes (like Make my notes public), and the Share your own story card after someone else's stories. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "Hides prompts to add more people, the tip sheets in notes (like Make my notes public), the Share your own story card after someone else's stories, and the Turn on active status line at the top of a chat. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Inbox",
             "dependencies": [

@@ -157,6 +157,7 @@ hook gallery_to_chat LX/AJg;->A1O()Z
 hook gallery_to_chat LX/T1M;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 hook growth LX/1wH;->A0A()Z
 hook growth LX/239;->A08(LX/239;)Z
+hook growth_active_status LX/5gF;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/53d;)Z
 hook growth_notes Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->A01(Landroidx/fragment/app/Fragment;LX/L9K;Ljava/util/List;LX/5OT;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 hook growth_story_card Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->A18(Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;)Z
 hook hidden_chat_list Lcom/facebook/messaging/msys/threadlist/plugins/core/itemsupplier/ThreadListItemSupplierImplementation;->A0F()Lcom/google/common/collect/ImmutableList;

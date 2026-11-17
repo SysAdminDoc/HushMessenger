@@ -57,6 +57,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     APP_THEMES to setOf("LX/HQz;->A00($FB_USER_SESSION)Z"),
     APP_THEME_PICK to setOf(THEME_TAP),
     "save_stories" to setOf("LX/JgG;->onClick(Landroid/view/View;)V"),
+    "growth_active_status" to setOf("LX/5gu;->A00(${FB_USER_SESSION}LX/54I;)Z"),
     "growth_notes" to setOf("Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->" +
         "A01(Landroidx/fragment/app/Fragment;LX/Ocr;Ljava/util/List;LX/5MS;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;"),
     "growth_story_card" to setOf("Lcom/facebook/messaging/montage/viewer/MontageViewerFragment;->" +

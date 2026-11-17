@@ -94,6 +94,7 @@ class ControlDiscoveryTest {
                     "chat_legacy" -> LEGACY_CHAT_ANIMATION_BODY
                     "growth_notes" -> "const-string v0, \"$NOTES_TIP_SHEET\"\nconst-string v0, \"$NOTES_TIP_TYPE_ARG\"\nconst/4 v0, 0x0\nreturn-object v0"
                     "growth_story_card" -> "sget-object v0, LX/JVI;->A0E:LX/1BL;\nconst/4 v0, 0x1\nreturn v0"
+                    "growth_active_status" -> "const-string v0, \"$ACTIVE_STATUS_UPSELL_KEY\"\nconst/4 v0, 0x1\nreturn v0"
                     APP_ICONS -> APP_ICON_GATE_BODY
                     APP_THEMES -> APP_THEME_GATE_BODY
                     "menu_settings" -> when {
@@ -108,7 +109,7 @@ class ControlDiscoveryTest {
                     else -> error("Missing synthetic resolver fixture for $key")
                 }
                 // The Context-reading app icon check and the parameterless gates, Meta AI search's among them, are instance gates.
-                val staticGate = (key in pluginGates || key == "growth_story_card" || key == APP_THEMES ||
+                val staticGate = (key in pluginGates || key == "growth_story_card" || key == "growth_active_status" || key == APP_THEMES ||
                     (key == APP_ICONS && "Landroid/content/Context;" !in id)) && !id.substringAfter('(').startsWith(')')
                 fixtureMethod(id, body, registers = when (key) { "original_photo" -> 22; ORIGINAL_VIDEO -> 24;"chat_animation", "chat_legacy" -> 5; else -> 8 }, flags = AccessFlags.PUBLIC.value or
                     if (staticGate) AccessFlags.STATIC.value else 0)

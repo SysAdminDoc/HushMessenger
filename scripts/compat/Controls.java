@@ -645,6 +645,13 @@ final class Controls {
                     found.get("growth_story_card").add(method);
                 }
 
+                // growth_active_status: the upsell check the chat header's Turn on active status line waits on
+                if (isStatic && "Z".equals(method.getReturnType()) && paramTypes.size() == 2 &&
+                    "Lcom/facebook/auth/usersession/FbUserSession;".equals(paramTypes.get(0)) &&
+                    strings.contains("an_upsell_thread_header_dismiss_count")) {
+                    found.get("growth_active_status").add(method);
+                }
+
                 // people_tab: the People tab suggestion handler handing its list and filter map to the tab
                 if ("V".equals(method.getReturnType()) && isStatic && paramTypes.equals(List.of(cls.getType())) &&
                     refs.stream().anyMatch(r -> r instanceof MethodReference mr && "V".equals(mr.getReturnType()) &&

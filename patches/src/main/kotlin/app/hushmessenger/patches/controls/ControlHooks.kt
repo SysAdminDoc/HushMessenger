@@ -68,6 +68,8 @@ internal const val STORY_SAVE_HELPER = "hushmessengerAddStorySave"
 /** Every notes tip sheet, Make my notes public and Add lyrics included, opens under this fragment tag. */
 internal const val NOTES_TIP_SHEET = "NotesMigNuxBottomSheet"
 internal const val NOTES_TIP_TYPE_ARG = "arg_nux_type"
+/** The chat header's Turn on active status line counts its dismissals under this preference key. */
+internal const val ACTIVE_STATUS_UPSELL_KEY = "an_upsell_thread_header_dismiss_count"
 /** The story viewer caps its Share your own story card per day under this preference key. */
 internal const val STORY_CARD_DATE_KEY = "last_date_creation_card_shown"
 internal const val ANDROIDX_FRAGMENT = "Landroidx/fragment/app/Fragment;"
@@ -605,6 +607,9 @@ private class ControlScan(
         // The story viewer adds its Share your own story card only while this daily cap check passes.
         if (AccessFlags.STATIC.isSet(method.accessFlags) && ret == "Z" && params == listOf(cls.type) &&
             refs.any { it.toString() in storyCardKeys }) add("growth_story_card")
+        // The chat header shows its Turn on active status line only while this upsell check passes.
+        if (AccessFlags.STATIC.isSet(method.accessFlags) && ret == "Z" && params.size == 2 &&
+            params[0].toString() == FB_USER_SESSION && ACTIVE_STATUS_UPSELL_KEY in strings) add("growth_active_status")
         if (cls.type == ANDROIDX_FRAGMENT && method.hookId() == FRAGMENT_ANIMATION) add("chat_animation")
         // The chat and the inbox under it inherit that answer. androidx needs each fragment's no-argument
         // constructor, so it names the class the animation hook tells apart.

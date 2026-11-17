@@ -626,8 +626,8 @@ val hideFriendRequestsPatch = controlPatch("friend_requests", "Hide friend reque
 val hideJoinedCommunityChatsPatch = controlPatch("community_inbox", "Hide joined community chats",
     "Hides the community chats you joined from your main chat list. Search and community folders still show them. Messages and unread counts don't change.", "Inbox")
 @Suppress("unused")
-val hideGrowthPatch = controlPatch("growth", "Hide growth prompts", "Hides prompts to add more people, the tip sheets in notes (like Make my notes public), and the Share your own story card after someone else's stories.",
-    "Inbox", "growth", "growth_notes", "growth_story_card")
+val hideGrowthPatch = controlPatch("growth", "Hide growth prompts", "Hides prompts to add more people, the tip sheets in notes (like Make my notes public), the Share your own story card after someone else's stories, and the Turn on active status line at the top of a chat.",
+    "Inbox", "growth", "growth_active_status", "growth_notes", "growth_story_card")
 @Suppress("unused")
 val hideInboxPromotionsPatch = controlPatch("inbox_promotions", "Hide inbox promotions", "Hides promotion banners in your chat list.", "Inbox")
 @Suppress("unused")
