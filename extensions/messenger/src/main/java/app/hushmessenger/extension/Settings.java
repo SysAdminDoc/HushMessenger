@@ -836,6 +836,15 @@ public final class Settings {
     public static boolean inboxTyping(boolean stock) { return enabled("inbox_typing") || stock; }
 
     /**
+     * Asked by the composer's send when something is attached, with the words that were typed. True sends those words
+     * first, as their own message, and the attachment goes out under them with no caption. Nothing typed means false,
+     * so a plain photo send is untouched, and so are Off, Pause and safe mode.
+     */
+    public static boolean captionBeforeMedia(String typed) {
+        return typed != null && !typed.trim().isEmpty() && enabled("media_caption");
+    }
+
+    /**
      * Asked when a call starts ringing, before Messenger decides to ring and vibrate, and again for the call's
      * notification. True takes Messenger's own ringtone-off path and posts the notification without the pop-up. With
      * Only chosen chats on, only a call from a chosen chat gets true.

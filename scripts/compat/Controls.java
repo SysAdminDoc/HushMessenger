@@ -108,6 +108,7 @@ final class Controls {
         found.get("passkey_login").addAll(passkeyLogin(classes));
         found.get("story_hold").addAll(storyHold(classes));
         found.get("inbox_typing").addAll(inboxTyping(classes));
+        found.get("media_caption").addAll(mediaCaption(classes));
         found.get("chat_preview").addAll(chatPreview(classes));
         found.get("chat_preview_size").addAll(chatPreviewSize(classes));
         found.get("landscape_lock").addAll(portraitLock(classes));

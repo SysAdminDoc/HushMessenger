@@ -841,6 +841,8 @@ final class SettingsTextZhTw {
         {"original_video.description", "在 Messenger 允許時傳送影片原始檔案，取代重新壓縮的版本。超過 25 MB 的影片及編輯過的影片仍會壓縮。"},
         {"xhe_audio.title", "修正無法傳送的影片"},
         {"xhe_audio.description", "某些影片會因較新的音訊格式（xHE-AAC）或三星螢幕錄影程式加入的標記，而顯示「無法傳送」，原版 Messenger 也有此問題。此功能會在傳送前修正音訊或移除標記，無論從其他應用程式分享到 Messenger，或在聊天室中選取影片都適用。影片畫面不會變更。"},
+        {"media_caption.title", "把你的文字放在相片上方"},
+        {"media_caption.description", "先輸入文字再附加相片或影片，你的文字會以獨立訊息先送出並顯示在上方，而不是在下方。標註照常可用。若沒有輸入任何文字，相片就照舊單獨送出。"},
         {"recent_media.title", "隱藏最近相片卡片"},
         {"recent_media.description", "截圖、拍照或錄影後立即開啟聊天室時，不再於訊息輸入框上方顯示建議傳送該內容的卡片。你仍可從相簿選取。"},
         {"save_voice.title", "儲存你播放的語音訊息"},

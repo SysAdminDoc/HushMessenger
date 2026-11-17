@@ -841,6 +841,8 @@ final class SettingsTextTr {
         {"original_video.description", "Messenger izin verdiğinde videoyu yeniden sıkıştırılmış bir kopya yerine orijinal dosya olarak gönderir. 25 MB'tan büyük videolar ve düzenlenmiş videolar yine sıkıştırılır."},
         {"xhe_audio.title", "Gönderilmeyen videoları düzelt"},
         {"xhe_audio.description", "Bazı videolar, standart Messenger'da bile, daha yeni bir ses biçimi (xHE-AAC) ya da Samsung'un ekran kaydedicisinin eklediği bir etiket yüzünden \"Gönderilemiyor\" hatası verir. Bu seçenek, video gönderilmeden önce sesi düzeltir veya etiketi kaldırır, videoyu Messenger'a paylaşsan da sohbette seçsen de. Görüntüye dokunulmaz."},
+        {"media_caption.title", "Yazdığını fotoğrafın üstüne koy"},
+        {"media_caption.description", "Bir şey yaz, sonra fotoğraf ya da video ekle, yazdığın altta kalmak yerine kendi mesajı olarak önce üstte gitsin. Etiketlemeler de gelir. Hiçbir şey yazmazsan fotoğraf eskisi gibi tek başına gider."},
         {"recent_media.title", "Son fotoğraf kartını gizle"},
         {"recent_media.description", "Ekran görüntüsü, fotoğraf veya video çektikten hemen sonra bir sohbeti açtığında, mesaj kutusunun üstünde onu göndermeyi öneren bir kart artık çıkmaz. Onu yine galeriden seçebilirsin."},
         {"save_voice.title", "Dinlediğin sesli mesajları kaydet"},

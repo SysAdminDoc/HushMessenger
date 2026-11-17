@@ -842,6 +842,8 @@ final class SettingsTextEs {
         {"original_video.description", "Envía un video como el archivo original cuando Messenger lo permite, en lugar de una copia recomprimida. Los videos de más de 25 MB y los videos editados se siguen comprimiendo."},
         {"xhe_audio.title", "Arreglar videos que no se envían"},
         {"xhe_audio.description", "Algunos videos fallan con \"No se pudo enviar\", incluso en Messenger sin parches, por un formato de sonido más nuevo (xHE-AAC) o una etiqueta que añade la grabadora de pantalla de Samsung. Esto arregla el sonido o quita la etiqueta antes de que salga el video, tanto si lo compartes en Messenger como si lo eliges en un chat. La imagen no se toca."},
+        {"media_caption.title", "Pon tu texto encima de la foto"},
+        {"media_caption.description", "Escribe algo, adjunta una foto o un video y tu texto sale primero, como su propio mensaje encima, en vez de debajo. Las menciones siguen funcionando. Si no escribes nada, la foto sale sola, como siempre."},
         {"recent_media.title", "Ocultar la tarjeta de foto reciente"},
         {"recent_media.description", "Abrir un chat justo después de hacer una captura de pantalla, tomar una foto o grabar un video ya no muestra una tarjeta encima del cuadro de mensaje que ofrece enviarlo. Puedes seguir eligiéndolo desde la galería."},
         {"save_voice.title", "Guardar los mensajes de voz que reproduces"},

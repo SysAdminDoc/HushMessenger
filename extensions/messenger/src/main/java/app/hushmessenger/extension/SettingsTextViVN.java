@@ -841,6 +841,8 @@ final class SettingsTextViVN {
         {"original_video.description", "Gửi tệp video gốc khi Messenger cho phép, thay thế phiên bản nén lại. Video lớn hơn 25 MB và video đã chỉnh sửa sẽ vẫn bị nén."},
         {"xhe_audio.title", "Khắc phục video không gửi được"},
         {"xhe_audio.description", "Một số video sẽ hiển thị 'Không thể gửi' do định dạng âm thanh mới hơn (xHE-AAC) hoặc các thẻ do chương trình ghi màn hình Samsung thêm vào, Messenger gốc cũng gặp sự cố này. Tính năng này sẽ sửa âm thanh hoặc xóa thẻ trước khi gửi, áp dụng cho dù chia sẻ từ ứng dụng khác vào Messenger hay chọn video trong phòng chat. Hình ảnh video sẽ không thay đổi."},
+        {"media_caption.title", "Đặt lời nhắn của bạn lên trên ảnh"},
+        {"media_caption.description", "Nhập nội dung rồi đính kèm ảnh hoặc video, lời nhắn của bạn sẽ được gửi trước, thành một tin nhắn riêng ở phía trên thay vì nằm bên dưới. Nhắc tên vẫn hoạt động. Nếu không nhập gì, ảnh vẫn được gửi một mình như trước."},
         {"recent_media.title", "Ẩn thẻ ảnh gần đây"},
         {"recent_media.description", "Khi mở phòng chat ngay sau khi chụp màn hình, chụp ảnh hoặc quay video, thẻ gợi ý gửi nội dung đó sẽ không còn hiển thị phía trên hộp nhập tin nhắn nữa. Bạn vẫn có thể chọn từ thư viện."},
         {"save_voice.title", "Lưu tin nhắn thoại bạn phát"},

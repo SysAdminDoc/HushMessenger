@@ -219,6 +219,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         CHAT_PREVIEW -> validateChatPreview()
         CHAT_PREVIEW_SIZE -> validateChatPreviewSize()
         INBOX_TYPING -> validateInboxTyping()
+        MEDIA_CAPTION -> validateMediaCaption()
         CHAT_MENU_ITEMS -> validateChatMenuItems()
         LANDSCAPE_LOCK -> validatePortraitLock()
         LANDSCAPE_MEDIA -> validateMediaOrientation()
@@ -363,6 +364,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             CHAT_PREVIEW -> method.injectChatPreview()
             CHAT_PREVIEW_SIZE -> method.injectChatPreviewSize()
             INBOX_TYPING -> method.injectInboxTyping()
+            MEDIA_CAPTION -> method.injectMediaCaption()
             LANDSCAPE_LOCK -> method.injectPortraitLock()
             LANDSCAPE_MEDIA -> method.injectMediaOrientation()
             BLOCKED_LIST_PICTURES -> method.injectBlockedListPictures()
@@ -551,6 +553,15 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 for ((row, _) in helpers) row.checkUnsentRowHelper()
                 injectControl(key, methods)
                 for ((row, helper) in helpers) row.addUnsentRowHelper(helper)
+            } else if (key == MEDIA_CAPTION) {
+                // Built before the first edit, so a compose fragment that can't take the helper stops the patch with
+                // Messenger untouched.
+                val sends = methods.getValue(MEDIA_CAPTION)
+                val helpers = sends.map { it.definingClass to it.validateMediaCaption().textSend }.distinct()
+                    .map { (host, send) -> mutableClassDefBy(host) to mediaCaptionHelper(host, send) }
+                for ((host, _) in helpers) host.checkMediaCaptionHelper()
+                injectControl(key, methods)
+                for ((host, helper) in helpers) host.addMediaCaptionHelper(helper)
             } else if (key == INBOX_SEARCH_BAR) {
                 val host = mutableClassDefBy(SETTINGS)
                 val stub = host.methods.singleOrNull { it.hookId() == SEARCH_ICON_STUB }
@@ -738,6 +749,9 @@ val disappearingSwipePatch = controlPatch("disappearing_swipe", "Ignore the swip
 val messageActionsPatch = controlPatch("message_actions", "Customize message actions",
     "Lets you choose the order of the actions you get by holding a message, and hide the ones you don't use, separately for messages you sent and messages you got. The first ones show in the row under the message and the rest under More.", "Conversations",
     MESSAGE_ACTIONS, MESSAGE_ACTIONS_MORE)
+@Suppress("unused")
+val mediaCaptionPatch = controlPatch("media_caption", "Put your words above the photo",
+    "Type something, attach a photo or video, and your words go out first, as their own message above it, instead of underneath. Mentions still work. With nothing typed, nothing changes.", "Photos and videos", MEDIA_CAPTION)
 @Suppress("unused")
 val hideRecentMediaPatch = controlPatch("recent_media", "Hide the recent photo card",
     "Stops the card above the message box that offers to send the screenshot, photo or video you just took. You can still send it from the gallery.", "Photos and videos")

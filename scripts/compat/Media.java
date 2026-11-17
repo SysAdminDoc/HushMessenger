@@ -98,6 +98,61 @@ final class Media {
             for (var h : b.getExceptionHandlers()) targets.add(offsets.getOrDefault(h.getHandlerCodeAddress(), -1));
         return targets;
     }
+    static final String SEND_CLICKED = "ComposeFragment.onSendClicked";
+    static final String CAPTION_MAP = "Lcom/google/common/collect/ImmutableMap;";
+    static final String CAPTION_STRING = "Ljava/lang/String;";
+
+    /** The compose fragment's own text send, as MediaCaption.kt reads it: static, returns nothing, takes a list last. */
+    static List<String> mediaCaptionSends(Method method) {
+        var sends = new ArrayList<String>();
+        for (var i : instructions(method)) {
+            if (i.getOpcode() != Opcode.INVOKE_STATIC && i.getOpcode() != Opcode.INVOKE_STATIC_RANGE) continue;
+            if (!(i instanceof ReferenceInstruction r) || !(r.getReference() instanceof MethodReference m)) continue;
+            var params = m.getParameterTypes().stream().map(Object::toString).toList();
+            if (!m.getDefiningClass().equals(method.getDefiningClass()) || !"V".equals(m.getReturnType())) continue;
+            if (!params.equals(List.of(method.getDefiningClass(), IMMUTABLE_LIST, CAPTION_MAP, CAPTION_STRING, "Ljava/util/List;"))) continue;
+            var id = m.getName() + "(" + String.join("", params) + ")";
+            if (!sends.contains(id)) sends.add(id);
+        }
+        return sends;
+    }
+
+    /**
+     * Whether the composer's send hands the typed text to the media parameters once, in a plain invoke-direct whose
+     * object register isn't the text's, with nothing branching onto the new-instance in front of it, and the fragment
+     * having exactly one text send to pass the words to. Mirrors MediaCaption.kt.
+     */
+    static boolean mediaCaptionSite(Method method) {
+        var code = instructions(method);
+        boolean marked = false;
+        for (var i : code)
+            if ((i.getOpcode() == Opcode.CONST_STRING || i.getOpcode() == Opcode.CONST_STRING_JUMBO) &&
+                i instanceof ReferenceInstruction r && r.getReference() instanceof StringReference s && SEND_CLICKED.equals(s.getString())) marked = true;
+        if (!marked || mediaCaptionSends(method).size() != 1) return false;
+        var sites = new ArrayList<Integer>();
+        for (int at = 0; at + 1 < code.size(); at++) {
+            if (code.get(at).getOpcode() != Opcode.NEW_INSTANCE) continue;
+            if (!(code.get(at) instanceof ReferenceInstruction made) || !(made.getReference() instanceof TypeReference built)) continue;
+            int holder = register(code.get(at));
+            var next = code.get(at + 1);
+            if (next.getOpcode() != Opcode.INVOKE_DIRECT || !(next instanceof FiveRegisterInstruction call)) continue;
+            if (!(next instanceof ReferenceInstruction r) || !(r.getReference() instanceof MethodReference ctor)) continue;
+            var params = ctor.getParameterTypes().stream().map(Object::toString).toList();
+            if (!ctor.getDefiningClass().equals(built.getType()) || !"<init>".equals(ctor.getName()) || call.getRegisterCount() != 5) continue;
+            if (!params.equals(List.of(method.getDefiningClass(), IMMUTABLE_LIST, CAPTION_MAP, CAPTION_STRING))) continue;
+            if (call.getRegisterC() != holder || call.getRegisterG() == holder) continue;
+            sites.add(at);
+        }
+        return sites.size() == 1 && !mediaTargets(method).contains(sites.get(0));
+    }
+
+    /** media_caption: the one send that carries a caption into the media parameters. Mirrors MediaCaption.kt. */
+    static List<Method> mediaCaption(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) if (mediaCaptionSite(method)) found.add(method);
+        return found;
+    }
+
     static boolean mediaWrites(Instruction i, int r) {
         return i.getOpcode().setsRegister() && (register(i) == r || (i.getOpcode().name().contains("WIDE") && register(i) + 1 == r));
     }
