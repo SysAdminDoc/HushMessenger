@@ -160,6 +160,66 @@ public class CallRecordingsTest {
         assertNotNull(notifications().getNotificationChannel("hush_call_recordings"));
     }
 
+    /** Puts the app's own share screen on the phone, which is what a chat picker is reached through (#193). */
+    private void withAShareScreen() throws android.content.IntentFilter.MalformedMimeTypeException {
+        android.content.ComponentName screen =
+            new android.content.ComponentName(app, "com.facebook.messenger.intents.ShareIntentHandler");
+        android.content.IntentFilter takesAShare = new android.content.IntentFilter(Intent.ACTION_SEND);
+        takesAShare.addCategory(Intent.CATEGORY_DEFAULT);
+        takesAShare.addDataType("audio/*");
+        Shadows.shadowOf(app.getPackageManager()).addActivityIfNotPresent(screen);
+        Shadows.shadowOf(app.getPackageManager()).addIntentFilterForActivity(screen, takesAShare);
+    }
+
+    @Test public void aRecordingGoesStraightIntoAChatOfYourOwn() throws Exception {
+        withAShareScreen();
+        Uri recording = Uri.parse("content://media/external/audio/media/7");
+        Intent toAChat = CallRecordings.toAChat(app, recording, "audio/wav");
+        assertNotNull("The app itself takes the share", toAChat);
+        assertEquals(Intent.ACTION_SEND, toAChat.getAction());
+        assertEquals(app.getPackageName(), toAChat.getPackage());
+        assertEquals(recording, toAChat.getParcelableExtra(Intent.EXTRA_STREAM));
+        assertTrue((toAChat.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0);
+        assertTrue((toAChat.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0);
+    }
+
+    @Test public void theNotificationOffersTheChatBeforeTheRestOfThePhone() throws Exception {
+        withAShareScreen();
+        allowNotifications();
+        Settings.preferences.edit().putBoolean(CallRecording.KEY, true).putBoolean(CallRecordings.NOTIFY, true).commit();
+        CallRecordings.saved(app, Uri.parse("content://media/external/audio/media/7"), "Call 2026-11-17 14.02.11.wav");
+        Notification posted = Shadows.shadowOf(notifications()).getNotification(193);
+        assertNotNull(posted);
+        assertEquals(2, posted.actions.length);
+        assertEquals("Send in a chat", posted.actions[0].title.toString());
+        assertEquals("Share", posted.actions[1].title.toString());
+    }
+
+    @Test public void withNowhereToTakeAShareThereIsNoChatToSendTo() {
+        assertNull(CallRecordings.toAChat(app, Uri.parse("content://media/external/audio/media/7"), "audio/wav"));
+    }
+
+    @Test public void aRecordingIsSentAsWhateverItWasWrittenAs() {
+        assertEquals(VoiceMessages.Format.WAV, CallRecordings.formatOf("Call 2026-11-17 14.02.11.wav"));
+        assertEquals(VoiceMessages.Format.OGG, CallRecordings.formatOf("Call 2026-11-17 14.02.11.ogg"));
+        assertEquals(VoiceMessages.Format.WAV, CallRecordings.formatOf(null));
+        // The format under the switch has moved on since, and the file that's already written hasn't.
+        Settings.preferences.edit().putString(CallRecordings.FORMAT, CallRecordings.WAV).commit();
+        assertEquals(VoiceMessages.Format.OGG, CallRecordings.formatOf("Call 2026-11-17 14.02.11.ogg"));
+    }
+
+    @Test public void anOpusRecordingIsAnnouncedAsAnOgg() throws Exception {
+        withAShareScreen();
+        allowNotifications();
+        Settings.preferences.edit().putBoolean(CallRecording.KEY, true).putBoolean(CallRecordings.NOTIFY, true).commit();
+        Uri recording = Uri.parse("content://media/external/audio/media/9");
+        CallRecordings.saved(app, recording, "Call 2026-11-17 14.02.11.ogg");
+        Notification posted = Shadows.shadowOf(notifications()).getNotification(193);
+        assertNotNull(posted);
+        Intent sent = Shadows.shadowOf(posted.actions[0].actionIntent).getSavedIntent();
+        assertEquals(VoiceMessages.Format.OGG.mime, sent.getType());
+    }
+
     @Test public void aTapPlaysTheRecordingAndShareHandsItOver() {
         Uri recording = Uri.parse("content://media/external/audio/media/7");
         Intent playing = CallRecordings.play(recording, "audio/wav");
@@ -299,6 +359,7 @@ public class CallRecordingsTest {
         for (String id : new String[] {"call_recording_keep", "call_recording_keep_help", "call_recording_keep_all",
                 "call_recording_keep_days", "call_recording_keep_picked", CallRecordings.NOTIFY, "call_recording_notify_help",
                 "call_recording_saved_channel", "call_recording_saved_title", "call_recording_share",
+                "call_recording_send",
                 CallRecordings.SCOPE, "call_recording_scope_tap", "call_recording_scope_all", "call_recording_scope_chosen",
                 "call_recording_scope_help", "call_recording_scope_picked", "call_recording_recent_empty",
                 CallRecordings.FOLDER, "call_recording_folder_help", "call_recording_folder_default",

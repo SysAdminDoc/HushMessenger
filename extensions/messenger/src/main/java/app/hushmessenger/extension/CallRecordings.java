@@ -88,6 +88,15 @@ final class CallRecordings {
         return OGG.equals(formatPicked()) && CallOpus.available() ? VoiceMessages.Format.OGG : VoiceMessages.Format.WAV;
     }
 
+    /**
+     * The type of a recording already saved, read off the end of its name. The format under the switch may have been
+     * changed since, so a file that was written as Opus still goes out as Opus.
+     */
+    static VoiceMessages.Format formatOf(String name) {
+        return name != null && name.endsWith("." + VoiceMessages.Format.OGG.extension)
+            ? VoiceMessages.Format.OGG : VoiceMessages.Format.WAV;
+    }
+
     /** The folder picked for recordings, or null for the phone's own. */
     static Uri folder() {
         String saved = Settings.preferences == null ? null : Settings.preferences.getString(FOLDER, "");
@@ -177,7 +186,7 @@ final class CallRecordings {
                 NotificationManager.IMPORTANCE_LOW);
             channel.setShowBadge(false);
             manager.createNotificationChannel(channel);
-            String mime = VoiceMessages.Format.WAV.mime;
+            String mime = formatOf(name).mime;
             Notification.Builder built = new Notification.Builder(context, CHANNEL)
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
                 .setContentTitle(text.get("call_recording_saved_title"))
@@ -185,9 +194,13 @@ final class CallRecordings {
                 .setAutoCancel(true)
                 .setLocalOnly(true)
                 .setCategory(Notification.CATEGORY_STATUS)
-                .setContentIntent(opens(context, 1, play(recording, mime)))
-                .addAction(new Notification.Action.Builder((android.graphics.drawable.Icon) null, text.get("call_recording_share"),
-                    opens(context, 2, Intent.createChooser(send(recording, mime), name).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))).build());
+                .setContentIntent(opens(context, 1, play(recording, mime)));
+            Intent chat = toAChat(context, recording, mime);
+            if (chat != null)
+                built.addAction(new Notification.Action.Builder((android.graphics.drawable.Icon) null,
+                    text.get("call_recording_send"), opens(context, 3, chat)).build());
+            built.addAction(new Notification.Action.Builder((android.graphics.drawable.Icon) null, text.get("call_recording_share"),
+                opens(context, 2, Intent.createChooser(send(recording, mime), name).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))).build());
             manager.notify(NOTIFICATION, built.build());
         } catch (RuntimeException error) {
             // The toast already said where the recording went.
@@ -208,6 +221,21 @@ final class CallRecordings {
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sending.setClipData(ClipData.newRawUri("", recording));
         return sending;
+    }
+
+    /**
+     * The recording on its way into a chat in this very app, which is how one goes to yourself: the chat picker opens
+     * with the file attached and your own chat is one of the rows (#193). The app itself is named rather than
+     * Messenger's package, so a clone or a rename still takes it. Null when this build has nowhere to take a share.
+     */
+    static Intent toAChat(Context context, Uri recording, String mime) {
+        Intent sending = send(recording, mime).setPackage(context.getPackageName())
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            return context.getPackageManager().resolveActivity(sending, 0) == null ? null : sending;
+        } catch (RuntimeException unanswerable) {
+            return null;
+        }
     }
 
     private static PendingIntent opens(Context context, int request, Intent intent) {
