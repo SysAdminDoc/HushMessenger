@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -31,15 +33,24 @@ import java.util.concurrent.Executors;
  *
  * Android 17 won't load a native file anyone can write (Safer Native DCL, for apps targeting 37 as Messenger 587 does),
  * and every Messenger process loads this one as it starts, whenever that is. So the file at Messenger's path is never
- * made writable: a change goes into a new copy beside it, which turns read-only with the old time and then moves over
- * the old one in one step. A start finds the old copy or the new one, both read-only, and a process that already
- * loaded the old one keeps it.
+ * made writable: a change goes into a new copy in Messenger's data folder, which turns read-only with the old time and
+ * then moves over the old one in one step. A start finds the old copy or the new one, both read-only, and a process that
+ * already loaded the old one keeps it.
+ *
+ * Messenger's library loader (SoLoader) keeps the folder it unpacks into read-only between unpacks, and unpacks under a
+ * lock file there, so nothing new can be made inside it (the S25 on Android 17 refused the copy beside the library).
+ * The move takes that same lock, so it never lands in the middle of an unpack, and opens the folder for the one rename
+ * the way SoLoader opens it for its own writes.
  */
 final class MuteQuery {
     private MuteQuery() {}
 
     /** Where Messenger unpacks the library, under its data folder. */
     static final String LIB = "lib-compressed/libstartup.so";
+    /** The lock file SoLoader holds in that folder while it unpacks. */
+    static final String LOCK = "dso_lock";
+    /** The new copy's name in Messenger's data folder, while it's made. */
+    private static final String STAGED = "hushmessenger_mute_query.so";
     /** The spot cache's own store, kept out of the settings a backup copies. */
     static final String FILE = "hushmessenger_mute_query";
     /** The restart row's name for the column Messenger read as it started. */
@@ -102,11 +113,25 @@ final class MuteQuery {
         Refused(String message) { super(message); }
     }
 
-    /** Moves a finished copy over Messenger's in one step. Tests swap it, since Windows won't replace a read-only file. */
+    /**
+     * Moves a finished copy over Messenger's in one step, with SoLoader's lock already held. Tests swap it, since Windows
+     * won't replace a read-only file and ignores a folder's read-only flag.
+     */
     interface Swap { void move(File from, File to) throws IOException; }
 
-    static volatile Swap swap = (from, to) ->
-        Files.move(from.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+    static volatile Swap swap = (from, to) -> {
+        File folder = to.getParentFile();
+        // SoLoader leaves the folder read-only between unpacks, and a rename into it needs it writable for that moment.
+        boolean opened = !folder.canWrite();
+        if (opened && !folder.setWritable(true)) throw new Refused("Can't open Messenger's library folder for the change");
+        try {
+            Files.move(from.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } finally {
+            if (opened && !folder.setWritable(false)) {
+                android.util.Log.w("HushMessenger", "message_log_quiet_chats: Messenger's library folder didn't go back to read-only");
+            }
+        }
+    };
 
     /** One statement in the file: where its column starts and whether it's in the edited form. */
     static final class Spot {
@@ -199,15 +224,20 @@ final class MuteQuery {
         return now.edited;
     }
 
-    /** The new copy's name, beside Messenger's. */
-    static File next(File lib) { return new File(lib.getPath() + ".hush"); }
+    /** Where the new copy is made: Messenger's data folder, the one holding [lib]'s folder, on the same disk. */
+    static File next(File lib) {
+        File data = lib.getAbsoluteFile().getParentFile().getParentFile();
+        return new File(data, STAGED);
+    }
 
     /**
      * Writes a copy of [lib] with [column] at [at], makes it read-only with [lib]'s time (Messenger's unpacker checks only
-     * its own state file, and the old time keeps it that way), then moves it over [lib]. Any check that fails leaves
-     * [lib] as it was and takes the copy away.
+     * its own state file, and the old time keeps it that way), then moves it over [lib] under SoLoader's lock. Any check
+     * that fails leaves [lib] as it was and takes the copy away.
      */
     private static void replace(File lib, long at, byte[] column) throws IOException {
+        File lock = new File(lib.getParentFile(), LOCK);
+        if (!lock.isFile()) throw new Refused("Messenger's library folder has no unpack lock to take");
         File next = next(lib);
         long length = lib.length(), time = lib.lastModified();
         boolean moved = false;
@@ -237,12 +267,23 @@ final class MuteQuery {
             if (!next.setWritable(false, false) || next.canWrite()) {
                 throw new Refused("Can't make the mute check's new copy read-only");
             }
-            // An update that unpacked a new copy meanwhile wins, and the next start looks at that one.
-            if (lib.length() != length || lib.lastModified() != time) throw new Refused("Messenger replaced its startup library during the change");
-            swap.move(next, lib);
-            moved = true;
+            try (RandomAccessFile handle = new RandomAccessFile(lock, "rw"); FileLock held = hold(handle)) {
+                // An update that unpacked a new copy meanwhile wins, and the next start looks at that one.
+                if (lib.length() != length || lib.lastModified() != time) throw new Refused("Messenger replaced its startup library during the change");
+                swap.move(next, lib);
+                moved = true;
+            }
         } finally {
             if (!moved) discard(next);
+        }
+    }
+
+    /** SoLoader's unpack lock. This process unpacking right now holds it already, and the next start tries again. */
+    private static FileLock hold(RandomAccessFile handle) throws IOException {
+        try {
+            return handle.getChannel().lock();
+        } catch (OverlappingFileLockException busy) {
+            throw new Refused("Messenger was unpacking its libraries");
         }
     }
 
