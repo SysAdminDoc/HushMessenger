@@ -233,6 +233,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(NEARBY_SCANS).addAll(patchStage("Find nearby scans") { findNearbyScans(classes) })
     found.getValue(WIFI_IDENTITY).addAll(patchStage("Find Wi-Fi identity reads") { findWifiIdentityReads(classes) })
     found.getValue(PHONE_ID_SYNC).addAll(findPhoneIdSync(classes))
+    found.getValue(PASSKEY_LOGIN).addAll(findPasskeyLogin(classes))
     found.getValue(STORY_HOLD).addAll(findStoryHold(classes))
     found.getValue(CHAT_PREVIEW).addAll(findChatPreview(classes))
     found.getValue(CHAT_PREVIEW_SIZE).addAll(findChatPreviewSize(classes))

@@ -262,6 +262,49 @@ final class Chats {
     }
 
     /**
+     * passkey_login: the availability question of every credential provider in the build, an instance isAvailableOnDevice()Z
+     * with code behind it on a class that also declares onGetCredential. Taken only while Play services' provider is one
+     * of them, those providers share one interface and no other class in the build implements it. Mirrors PasskeyLogin.kt.
+     */
+    static List<Method> passkeyLogin(List<ClassDef> classes) {
+        var providers = new ArrayList<ClassDef>();
+        for (var cls : classes) {
+            boolean gets = false;
+            boolean asks = false;
+            for (var method : cls.getMethods()) {
+                if ("onGetCredential".equals(method.getName())) gets = true;
+                if (passkeyAvailability(method)) asks = true;
+            }
+            if (gets && asks) providers.add(cls);
+        }
+        boolean playServices = false;
+        for (var cls : providers) {
+            if ("Landroidx/credentials/playservices/CredentialProviderPlayServicesImpl;".equals(cls.getType())) playServices = true;
+        }
+        if (!playServices) return List.of();
+        Set<String> shared = null;
+        var covered = new HashSet<String>();
+        for (var cls : providers) {
+            var interfaces = new HashSet<String>(cls.getInterfaces());
+            if (shared == null) shared = interfaces;
+            else shared.retainAll(interfaces);
+            covered.add(cls.getType());
+        }
+        if (shared == null || shared.size() != 1) return List.of();
+        var only = shared.iterator().next();
+        for (var cls : classes) if (cls.getInterfaces().contains(only) && !covered.contains(cls.getType())) return List.of();
+        var checks = new ArrayList<Method>();
+        for (var cls : providers) for (var method : cls.getMethods()) if (passkeyAvailability(method)) checks.add(method);
+        return checks;
+    }
+
+    static boolean passkeyAvailability(Method method) {
+        return "isAvailableOnDevice".equals(method.getName()) && "Z".equals(method.getReturnType()) &&
+            method.getParameterTypes().isEmpty() && !AccessFlags.STATIC.isSet(method.getAccessFlags()) &&
+            method.getImplementation() != null;
+    }
+
+    /**
      * nearby_scans: the foreground location controller's one static (Context, FbUserSession, controller, J)V that names
      * the task it queues, and the app's one reader of WifiManager.getScanResults. Both are taken only while the app's
      * single WifiManager.startScan sits in the class that scheduler instantiates, its single BluetoothLeScanner.startScan

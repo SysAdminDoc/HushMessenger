@@ -230,6 +230,7 @@ public class CompatReport {
         PATCHES.put("Stop live connection logging", List.of("mqtt_telemetry"));
         PATCHES.put("Stop nearby scans", List.of("nearby_scans", "wifi_identity"));
         PATCHES.put("Stop app list and device ID sharing", List.of("phone_id_sync"));
+        PATCHES.put("Skip passkey sign-in", List.of("passkey_login"));
         PATCHES.put("Keep a message log", List.of("message_log", "unsent_recall", "unsent_clear", "message_log_button", "message_log_click",
             "quiet_log_check", "quiet_log_drop", "hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
         PATCHES.put("Auto reply", List.of("auto_reply"));
@@ -963,7 +964,7 @@ public class CompatReport {
     static final Set<String> NEEDS_A_LOCAL = Set.of("ad_events", "ai_commands", "ai_fab", "ai_mention_rows", "ai_menu", "ai_search",
         "ai_search_chip", "ai_summary", "allow_screenshot", "analytics_uploads", "app_icons", "app_themes", "attribution_uploads", "bubbles", "call_recording", "delta_unsent",
         "disappearing_swipe", "external_gallery", "facebook", "facebook_profile", "font_by_name", "font_repository", "growth_notes", "growth_story_card", "instant_gallery", "instants_button", "keep_unsent", "link_player",
-        "mqtt_telemetry", "nearby_scans", "original_photo", "people_story", "phone_id_sync", "people_tab", "recent_media", "stories", "system_camera",
+        "mqtt_telemetry", "nearby_scans", "original_photo", "passkey_login", "people_story", "phone_id_sync", "people_tab", "recent_media", "stories", "system_camera",
         "tab_badges", "typing", "unsent_indicator", "unsent_recall");
 
     /** More registers than the parameters take, as ControlHooks.kt's validateScratch asks. */

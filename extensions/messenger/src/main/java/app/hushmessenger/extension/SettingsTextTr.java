@@ -898,6 +898,8 @@ final class SettingsTextTr {
         {"blocked_list_pictures.description", "Gizlilik ve güvenlik altındaki engellediğin kişiler listesinde profil resimlerini gizler. Adlar ve Engeli kaldır düğmesi kalır."},
         {"restricted_notify.title", "Kısıtlanan sohbetler için bildir"},
         {"restricted_notify.description", "Kısıtladığın kişilerle olan sohbetler, uçtan uca şifreli olmadıkça diğer sohbetlerin gibi sana bildirim gönderir. Sessize aldığın bir sohbet sessiz kalır. Kısıtlanan kişiler yine de ne zaman aktif olduğunu veya mesajlarını ne zaman okuduğunu göremez."},
+        {"passkey_login.title", "Geçiş anahtarıyla girişi atla"},
+        {"passkey_login.description", "Giriş yaparken bu telefondaki geçiş anahtarı artık sunulmaz, böylece Facebook girişi oturum açtığın başka bir cihazdan onaylamanı ister, geçiş anahtarı olmayan bir hesapta yaptığı gibi. Yamalı bir Messenger, Facebook'un geçiş anahtarı kontrolünü geçemez ve bazı girişlerin tarayıcı kontrolünde dönüp durmasının nedeni bu. Açıkken Messenger şifreli yedeklemeleri için de geçiş anahtarı kullanamaz, bu yüzden bir giriş takılmadıkça kapalı bırak. Oturum açmadan bu ayarlara ulaşmak için Messenger'ın ana ekran simgesine uzun bas."},
         {"material_you.title", "Material You teması"},
         {"material_you.description", "Messenger'ın karanlık modunu Android 12 ve sonrasında duvar kağıdı renklerinle, Android 11'de sabit bir maviyle renklendirir. Önce Messenger'da karanlık modu aç. Açık mod, 'Açık modda vurgu rengi' seçeneğini açmadıkça kendi renklerini korur."},
         {"app_icons.title", "Uygulama simgelerinin kilidini aç"},

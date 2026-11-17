@@ -898,6 +898,8 @@ final class SettingsTextViVN {
         {"blocked_list_pictures.description", "Ẩn ảnh đại diện của những người bạn đã chặn trong danh sách chặn, ở mục 'Quyền riêng tư và an toàn'. Tên của họ và nút 'Bỏ chặn' vẫn hiển thị."},
         {"restricted_notify.title", "Thông báo cho phòng chat bị hạn chế"},
         {"restricted_notify.description", "Phòng chat với những người bạn đã hạn chế sẽ gửi thông báo cho bạn như các phòng chat khác, trừ khi phòng chat được mã hóa đầu cuối. Phòng chat bạn đã tắt thông báo vẫn im lặng. Người bị hạn chế vẫn không thấy khi nào bạn đang hoạt động hoặc đã đọc tin nhắn của họ."},
+        {"passkey_login.title", "Bỏ qua đăng nhập bằng mã khóa"},
+        {"passkey_login.description", "Khi đăng nhập, mã khóa trên điện thoại này không còn được đưa ra nữa, nên Facebook quay lại cách yêu cầu bạn phê duyệt lần đăng nhập từ một thiết bị khác mà bạn đang đăng nhập, giống như với tài khoản không có mã khóa. Messenger đã vá không thể vượt qua bước kiểm tra mã khóa của Facebook, và đó là lý do một số lần đăng nhập cứ quay vòng ở bước kiểm tra bằng trình duyệt. Khi bật, Messenger cũng không dùng được mã khóa cho bản sao lưu được mã hóa, vì vậy hãy để tắt trừ khi một lần đăng nhập bị kẹt. Nhấn giữ biểu tượng Messenger trên màn hình chính để mở phần cài đặt này mà không cần đăng nhập."},
         {"material_you.title", "Chủ đề Material You"},
         {"material_you.description", "Trong Android 12 trở lên, tô màu chế độ tối của Messenger theo bảng màu hình nền; trong Android 11, sử dụng màu xanh lam cố định. Vui lòng bật chế độ tối trong Messenger trước. Chế độ sáng giữ nguyên màu trừ khi bạn bật Màu nhấn cho chế độ sáng."},
         {"app_icons.title", "Mở khóa biểu tượng ứng dụng"},

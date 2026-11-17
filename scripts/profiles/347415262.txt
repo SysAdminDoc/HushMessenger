@@ -216,6 +216,8 @@ hook original_photo Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->g
 hook original_photo Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->transcodeImage(Ljava/lang/String;DDLjava/lang/String;Ljava/util/Map;)[B
 hook original_photo Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->transcodeImageAsync(Ljava/lang/String;DDLjava/lang/String;Ljava/util/Map;Lcom/facebook/msys/mci/TranscodeImageCompletionCallback;)V
 hook original_video Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->A05(Lcom/facebook/msys/mci/TranscodeVideoCompletionCallback;Lcom/facebook/msys/mci/VideoEdits;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
+hook passkey_login LX/S30;->isAvailableOnDevice()Z
+hook passkey_login Landroidx/credentials/playservices/CredentialProviderPlayServicesImpl;->isAvailableOnDevice()Z
 hook paste_photo LX/1i9;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook paste_photo LX/S2u;->EPP(Landroid/view/View;LX/0Uh;)LX/0Uh;
 hook people LX/1wh;->A0C()Z

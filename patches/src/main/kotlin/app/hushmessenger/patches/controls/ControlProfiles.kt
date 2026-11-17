@@ -250,6 +250,10 @@ internal val PROFILE_347415354 = ControlProfile(
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->transcodeImageAsync(Ljava/lang/String;DDLjava/lang/String;Ljava/util/Map;Lcom/facebook/msys/mci/TranscodeImageCompletionCallback;)V",
         ),
         "original_video" to setOf("Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->A05(Lcom/facebook/msys/mci/TranscodeVideoCompletionCallback;Lcom/facebook/msys/mci/VideoEdits;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V"),
+        "passkey_login" to setOf(
+            "LX/SDR;->isAvailableOnDevice()Z",
+            "Landroidx/credentials/playservices/CredentialProviderPlayServicesImpl;->isAvailableOnDevice()Z",
+        ),
         "paste_photo" to setOf(
             "LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
             "LX/SDI;->EP3(Landroid/view/View;LX/0Ui;)LX/0Ui;",
@@ -587,6 +591,10 @@ internal val PROFILE_347415280 = ControlProfile(
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->transcodeImageAsync(Ljava/lang/String;DDLjava/lang/String;Ljava/util/Map;Lcom/facebook/msys/mci/TranscodeImageCompletionCallback;)V",
         ),
         "original_video" to setOf("Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->A05(Lcom/facebook/msys/mci/TranscodeVideoCompletionCallback;Lcom/facebook/msys/mci/VideoEdits;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V"),
+        "passkey_login" to setOf(
+            "LX/bO5;->isAvailableOnDevice()Z",
+            "Landroidx/credentials/playservices/CredentialProviderPlayServicesImpl;->isAvailableOnDevice()Z",
+        ),
         "paste_photo" to setOf(
             "LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
             "LX/LrV;->EP6(Landroid/view/View;LX/0Ui;)LX/0Ui;",
@@ -924,6 +932,10 @@ internal val PROFILE_347415302 = ControlProfile(
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->transcodeImageAsync(Ljava/lang/String;DDLjava/lang/String;Ljava/util/Map;Lcom/facebook/msys/mci/TranscodeImageCompletionCallback;)V",
         ),
         "original_video" to setOf("Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->A05(Lcom/facebook/msys/mci/TranscodeVideoCompletionCallback;Lcom/facebook/msys/mci/VideoEdits;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V"),
+        "passkey_login" to setOf(
+            "LX/SDP;->isAvailableOnDevice()Z",
+            "Landroidx/credentials/playservices/CredentialProviderPlayServicesImpl;->isAvailableOnDevice()Z",
+        ),
         "paste_photo" to setOf(
             "LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
             "LX/SDG;->EP3(Landroid/view/View;LX/0Ui;)LX/0Ui;",
@@ -1261,6 +1273,10 @@ internal val PROFILE_347415262 = ControlProfile(
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->transcodeImageAsync(Ljava/lang/String;DDLjava/lang/String;Ljava/util/Map;Lcom/facebook/msys/mci/TranscodeImageCompletionCallback;)V",
         ),
         "original_video" to setOf("Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->A05(Lcom/facebook/msys/mci/TranscodeVideoCompletionCallback;Lcom/facebook/msys/mci/VideoEdits;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V"),
+        "passkey_login" to setOf(
+            "LX/S30;->isAvailableOnDevice()Z",
+            "Landroidx/credentials/playservices/CredentialProviderPlayServicesImpl;->isAvailableOnDevice()Z",
+        ),
         "paste_photo" to setOf(
             "LX/1i9;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
             "LX/S2u;->EPP(Landroid/view/View;LX/0Uh;)LX/0Uh;",

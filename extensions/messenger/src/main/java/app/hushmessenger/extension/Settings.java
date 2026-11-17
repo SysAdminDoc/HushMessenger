@@ -800,6 +800,16 @@ public final class Settings {
      */
     public static boolean stopPhoneIdSync() { return enabled("phone_id_sync"); }
 
+    /** Skip passkey sign-in, which answers the credential providers' availability check with a no. */
+    static final String PASSKEY_LOGIN = "passkey_login";
+
+    /**
+     * Asked by each of the credential providers the sign-in reaches passkeys through, when something wants to know
+     * whether this phone has a credential manager to ask. True answers no, which leaves the sign-in with no passkey to
+     * offer and sends it down the route it takes for an account that has none.
+     */
+    public static boolean skipPasskeySignIn() { return enabled(PASSKEY_LOGIN); }
+
     /**
      * Asked when a story card ends on its own, from its timer, its video or a failed load, just before Messenger moves to
      * the next card. True keeps the card on screen. Taps and swipes never ask.
