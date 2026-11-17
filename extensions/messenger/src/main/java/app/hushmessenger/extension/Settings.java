@@ -1626,6 +1626,24 @@ public final class Settings {
         return prefs != null && prefs.getBoolean(HIDE_DELIVERED, false);
     }
 
+    /** Appear offline: the switch that answers for Messenger's own active status, never for anyone else's. */
+    static final String APPEAR_OFFLINE = "appear_offline";
+
+    /**
+     * The status Messenger reports for you. Both hooks ask before they report: a status Messenger was already holding
+     * back stays held back, and with the switch on an available one turns into unavailable. What other people report
+     * comes in the way it always did, so the active dots keep working.
+     */
+    public static boolean availableToOthers(boolean available) {
+        if (!available) return false;
+        try {
+            return !enabled(APPEAR_OFFLINE);
+        } catch (RuntimeException error) {
+            hookFailed(APPEAR_OFFLINE, "Can't hold back your active status", error);
+            return true;
+        }
+    }
+
     /**
      * Mark chats read on this phone: chats opened while a Seen was held back, as "chat key:time read". Messenger
      * never hears about them, so the time is kept here and the chat list reads it back for a month.

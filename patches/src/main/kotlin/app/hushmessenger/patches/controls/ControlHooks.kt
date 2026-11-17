@@ -441,6 +441,8 @@ private class ControlScan(
     val peopleSearch = StringMatch(PEOPLE_SEARCH_SOURCE)
     val drawerRefresh = StringMatch(DRAWER_REFRESH)
     val notesTip = StringMatch(NOTES_TIP_SHEET)
+    val reportUserStatus = StringMatch(REPORT_USER_STATUS)
+    val foregroundAvailability = StringMatch(FOREGROUND_AVAILABILITY)
 
     fun visit(cls: ClassDef, original: String?, method: Method) {
         if ((cls.type == EPHEMERAL_VIEWER && (method.name in EPHEMERAL_DIALOGS || method.name == "onResume")) ||
@@ -531,6 +533,12 @@ private class ControlScan(
             !AccessFlags.STATIC.isSet(method.accessFlags) &&
             instructions.any { (it as? NarrowLiteralInstruction)?.narrowLiteral == FLAG_SECURE } &&
             refs.any { it.toString() == "Landroid/view/Window;->addFlags(I)V" }) add("allow_screenshot")
+        // Our own active status, reported in two places: the msys self-report and each MQTT client-settings publisher.
+        if (cls.type == PRESENCE_MANAGER && ret == "V" && params == listOf("Z") &&
+            !AccessFlags.STATIC.isSet(method.accessFlags) && refs.any { reportUserStatus.matches(it) }) add(APPEAR_OFFLINE)
+        if (ret == "V" && params.size == 2 && params[0] == FB_SHARED_PREFERENCES &&
+            !AccessFlags.STATIC.isSet(method.accessFlags) && refs.any { foregroundAvailability.matches(it) } &&
+            CLIENT_SETTINGS_TOPIC in strings) add(AVAILABILITY_SETTING)
         if (cls.type == MEDIA_TRANSCODER && method.hookId() in ORIGINAL_PHOTO_HOOKS) add("original_photo")
         if (cls.type == MEDIA_TRANSCODER && method.isVideoTranscode(strings)) {
             add(ORIGINAL_VIDEO)

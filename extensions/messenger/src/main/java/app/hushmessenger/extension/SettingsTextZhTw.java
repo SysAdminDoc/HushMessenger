@@ -867,6 +867,8 @@ final class SettingsTextZhTw {
         {"allow_screenshot.description", "允許擷取受保護的聊天媒體畫面，例如僅限查看一次的相片與 Quicksnap，並停用截圖通知。下方的開關會在一次性檢視畫面加入儲存按鈕。不會新增重播功能。"},
         {"secure_chat.title", "封鎖聊天室截圖"},
         {"secure_chat.description", "阻止在這支手機上對已開啟的聊天室截圖或錄製螢幕，並讓該聊天室不出現在應用程式切換畫面的預覽中。截圖由 Android 本身拒絕，因此適用於所有聊天室，而不只是限時訊息的聊天室。原本已開啟的聊天室需要重新開啟。和你聊天的人仍可以用自己的手機截圖。"},
+        {"appear_offline.title", "顯示為離線"},
+        {"appear_offline.description", "阻止 Messenger 告訴別人你正在使用中，而你仍然看得到誰在線上。Messenger 自己的使用中狀態設定會保持開啟，所以聊天室列表和「好友」分頁上的綠點照舊運作，只有 Messenger 對外回報關於你的狀態會改變。這項設定會在 Messenger 下次進入背景或回到前景時生效，因此重新啟動應用程式就會立刻套用。"},
         {"hide_read_receipts.title", "隱藏已讀標記"},
         {"hide_read_receipts.description", "開啟聊天室時，不再通知對方你已讀訊息，且該聊天室在本機仍維持未讀。手動標示為已讀或回覆時，會依 Messenger 原本的行為將聊天室標示為已讀，並向對方顯示已讀。尚未測試群組聊天室。Messenger 本身在「隱私和安全」中的「已讀標記」設定，可將聊天室標示為已讀而不向對方顯示已讀。其下的「隱藏已送達」也會在一般聊天室擋下已送達標記。"},
         {"mark_read_button.title", "標示為已讀按鈕"},

@@ -54,8 +54,11 @@ hook app_icons LX/7pR;->A02(Lcom/facebook/auth/usersession/FbUserSession;)Z
 hook app_icons LX/7pR;->A03(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)Z
 hook app_theme_pick LX/K02;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
 hook app_themes LX/JA7;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z
+hook appear_offline Lcom/facebook/presence/DefaultPresenceManager;->A0f(Z)V
 hook attribution_uploads Lcom/facebook/attribution/LatStatusJob;->A00(Lcom/facebook/attribution/LatStatusJob;Lcom/facebook/auth/usersession/FbUserSession;)V
 hook auto_reply Lcom/facebook/messaging/notify/type/NewMessageNotification;-><init>(Lcom/facebook/messaging/accountswitch/model/MessengerAccountType;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/911;LX/5aJ;Lcom/facebook/messaging/push/flags/ServerMessageAlertFlags;Lcom/facebook/push/constants/PushProperty;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ZZZZZZZ)V
+hook availability_setting LX/2QV;->onSharedPreferenceChanged(Lcom/facebook/prefs/shared/FbSharedPreferences;LX/2w1;)V
+hook availability_setting LX/3uL;->onSharedPreferenceChanged(Lcom/facebook/prefs/shared/FbSharedPreferences;LX/2w1;)V
 hook avatar_shape LX/2kK;->A09(Landroid/content/Context;Landroid/graphics/Path;Landroid/graphics/drawable/Drawable;Lcom/facebook/auth/usersession/FbUserSession;LX/2is;LX/2kR;LX/2l7;FIIZZ)V
 hook avatar_shape LX/2kK;->A0E(Z)V
 hook avatar_shape LX/2l7;->draw(Landroid/graphics/Canvas;)V
@@ -176,6 +179,7 @@ hook instant_gallery LX/Y5k;->EKX(LX/2rO;)V
 hook instants_button LX/1tj;->A0G(LX/1tj;)V
 hook instants_button LX/cPV;->A0Y(LX/cPV;)V
 hook invisible_buttons LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+hook ios_bars LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook keep_unsent LX/b7i;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V
 hook landscape_lock LX/07D;->A0K()Z
 hook landscape_media LX/7Lz;->A00(LX/7Lz;I)V
@@ -292,6 +296,7 @@ hook unsent_indicator LX/5h8;->CpT(I)Ljava/lang/String;
 hook unsent_indicator LX/Yx1;->CpT(I)Ljava/lang/String;
 hook unsent_indicator LX/cQj;->CpT(I)Ljava/lang/String;
 hook unsent_recall LX/9y7;->A00(Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
+hook view_once_anywhere LX/5GP;->render(LX/5Qz;LX/5pN;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;)V
 hook wifi_identity LX/1af;->A02()LX/auK;
 hook wifi_identity LX/38P;->BD3()Ljava/lang/String;
 hook wifi_identity LX/38P;->C4c()J

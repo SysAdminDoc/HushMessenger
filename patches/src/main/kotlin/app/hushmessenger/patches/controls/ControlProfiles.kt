@@ -87,8 +87,13 @@ internal val PROFILE_347415354 = ControlProfile(
         ),
         "app_theme_pick" to setOf("LX/Q5s;->invoke(Ljava/lang/Object;)Ljava/lang/Object;"),
         "app_themes" to setOf("LX/RvE;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
+        "appear_offline" to setOf("Lcom/facebook/presence/DefaultPresenceManager;->A0f(Z)V"),
         "attribution_uploads" to setOf("Lcom/facebook/attribution/LatStatusJob;->A00(Lcom/facebook/attribution/LatStatusJob;Lcom/facebook/auth/usersession/FbUserSession;)V"),
         "auto_reply" to setOf("Lcom/facebook/messaging/notify/type/NewMessageNotification;-><init>(Lcom/facebook/messaging/accountswitch/model/MessengerAccountType;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/90I;LX/5ay;Lcom/facebook/messaging/push/flags/ServerMessageAlertFlags;Lcom/facebook/push/constants/PushProperty;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ZZZZZZZ)V"),
+        "availability_setting" to setOf(
+            "LX/2QW;->onSharedPreferenceChanged(Lcom/facebook/prefs/shared/FbSharedPreferences;LX/2w2;)V",
+            "LX/3uv;->onSharedPreferenceChanged(Lcom/facebook/prefs/shared/FbSharedPreferences;LX/2w2;)V",
+        ),
         "avatar_shape" to setOf(
             "LX/2kL;->A09(Landroid/content/Context;Landroid/graphics/Path;Landroid/graphics/drawable/Drawable;Lcom/facebook/auth/usersession/FbUserSession;LX/2it;LX/2kS;LX/2l8;FIIZZ)V",
             "LX/2kL;->A0E(Z)V", "LX/2l8;->draw(Landroid/graphics/Canvas;)V", "LX/4fo;-><init>([FFZZZ)V",
@@ -419,8 +424,13 @@ internal val PROFILE_347415280 = ControlProfile(
         ),
         "app_theme_pick" to setOf("LX/K02;->invoke(Ljava/lang/Object;)Ljava/lang/Object;"),
         "app_themes" to setOf("LX/JA7;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
+        "appear_offline" to setOf("Lcom/facebook/presence/DefaultPresenceManager;->A0f(Z)V"),
         "attribution_uploads" to setOf("Lcom/facebook/attribution/LatStatusJob;->A00(Lcom/facebook/attribution/LatStatusJob;Lcom/facebook/auth/usersession/FbUserSession;)V"),
         "auto_reply" to setOf("Lcom/facebook/messaging/notify/type/NewMessageNotification;-><init>(Lcom/facebook/messaging/accountswitch/model/MessengerAccountType;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/911;LX/5aJ;Lcom/facebook/messaging/push/flags/ServerMessageAlertFlags;Lcom/facebook/push/constants/PushProperty;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ZZZZZZZ)V"),
+        "availability_setting" to setOf(
+            "LX/2QV;->onSharedPreferenceChanged(Lcom/facebook/prefs/shared/FbSharedPreferences;LX/2w1;)V",
+            "LX/3uL;->onSharedPreferenceChanged(Lcom/facebook/prefs/shared/FbSharedPreferences;LX/2w1;)V",
+        ),
         "avatar_shape" to setOf(
             "LX/2kK;->A09(Landroid/content/Context;Landroid/graphics/Path;Landroid/graphics/drawable/Drawable;Lcom/facebook/auth/usersession/FbUserSession;LX/2is;LX/2kR;LX/2l7;FIIZZ)V",
             "LX/2kK;->A0E(Z)V", "LX/2l7;->draw(Landroid/graphics/Canvas;)V", "LX/4f9;-><init>([FFZZZ)V",
@@ -751,8 +761,13 @@ internal val PROFILE_347415302 = ControlProfile(
         ),
         "app_theme_pick" to setOf("LX/Q5r;->invoke(Ljava/lang/Object;)Ljava/lang/Object;"),
         "app_themes" to setOf("LX/RvC;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
+        "appear_offline" to setOf("Lcom/facebook/presence/DefaultPresenceManager;->A0f(Z)V"),
         "attribution_uploads" to setOf("Lcom/facebook/attribution/LatStatusJob;->A00(Lcom/facebook/attribution/LatStatusJob;Lcom/facebook/auth/usersession/FbUserSession;)V"),
         "auto_reply" to setOf("Lcom/facebook/messaging/notify/type/NewMessageNotification;-><init>(Lcom/facebook/messaging/accountswitch/model/MessengerAccountType;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/90I;LX/5ay;Lcom/facebook/messaging/push/flags/ServerMessageAlertFlags;Lcom/facebook/push/constants/PushProperty;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ZZZZZZZ)V"),
+        "availability_setting" to setOf(
+            "LX/2QW;->onSharedPreferenceChanged(Lcom/facebook/prefs/shared/FbSharedPreferences;LX/2w2;)V",
+            "LX/3uv;->onSharedPreferenceChanged(Lcom/facebook/prefs/shared/FbSharedPreferences;LX/2w2;)V",
+        ),
         "avatar_shape" to setOf(
             "LX/2kL;->A09(Landroid/content/Context;Landroid/graphics/Path;Landroid/graphics/drawable/Drawable;Lcom/facebook/auth/usersession/FbUserSession;LX/2it;LX/2kS;LX/2l8;FIIZZ)V",
             "LX/2kL;->A0E(Z)V", "LX/2l8;->draw(Landroid/graphics/Canvas;)V", "LX/4fo;-><init>([FFZZZ)V",
@@ -1083,8 +1098,13 @@ internal val PROFILE_347415262 = ControlProfile(
         ),
         "app_theme_pick" to setOf("LX/N9v;->invoke(Ljava/lang/Object;)Ljava/lang/Object;"),
         "app_themes" to setOf("LX/3iz;->A00(Lcom/facebook/auth/usersession/FbUserSession;)Z"),
+        "appear_offline" to setOf("Lcom/facebook/presence/DefaultPresenceManager;->A0f(Z)V"),
         "attribution_uploads" to setOf("Lcom/facebook/attribution/LatStatusJob;->A00(Lcom/facebook/attribution/LatStatusJob;Lcom/facebook/auth/usersession/FbUserSession;)V"),
         "auto_reply" to setOf("Lcom/facebook/messaging/notify/type/NewMessageNotification;-><init>(Lcom/facebook/messaging/accountswitch/model/MessengerAccountType;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/91d;LX/5bU;Lcom/facebook/messaging/push/flags/ServerMessageAlertFlags;Lcom/facebook/push/constants/PushProperty;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ZZZZZZZ)V"),
+        "availability_setting" to setOf(
+            "LX/2Qw;->onSharedPreferenceChanged(Lcom/facebook/prefs/shared/FbSharedPreferences;LX/2wS;)V",
+            "LX/3vG;->onSharedPreferenceChanged(Lcom/facebook/prefs/shared/FbSharedPreferences;LX/2wS;)V",
+        ),
         "avatar_shape" to setOf(
             "LX/2kl;->A09(Landroid/content/Context;Landroid/graphics/Path;Landroid/graphics/drawable/Drawable;Lcom/facebook/auth/usersession/FbUserSession;LX/2jJ;LX/2ks;LX/2lY;FIIZZ)V",
             "LX/2kl;->A0E(Z)V", "LX/2lY;->draw(Landroid/graphics/Canvas;)V", "LX/4gK;-><init>([FFZZZ)V",

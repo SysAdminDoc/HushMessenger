@@ -539,6 +539,21 @@ final class Controls {
                     found.get("ai_search").add(method);
                 }
 
+                // appear_offline: the msys self-report, the one method on the presence manager that takes a boolean and
+                // writes the mailbox trace while reporting it
+                if ("Lcom/facebook/presence/DefaultPresenceManager;".equals(cls.getType()) && "V".equals(method.getReturnType()) &&
+                    !isStatic && paramTypes.equals(List.of("Z")) && strings.contains("UnifiedPresenceMailboxImpl.reportUserStatus")) {
+                    found.get("appear_offline").add(method);
+                }
+
+                // availability_setting: each legacy MQTT publisher that puts the foreground availability flag in the
+                // client settings it sends
+                if ("V".equals(method.getReturnType()) && !isStatic && paramTypes.size() == 2 &&
+                    "Lcom/facebook/prefs/shared/FbSharedPreferences;".equals(paramTypes.get(0)) &&
+                    strings.contains("make_user_available_when_in_foreground") && strings.contains("/set_client_settings")) {
+                    found.get("availability_setting").add(method);
+                }
+
                 // original_photo: the encrypted-chat photo transcoder's entry points, its config and its Java decode, named the same in every build
                 if ("Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;".equals(cls.getType()) &&
                     !isStatic && ORIGINAL_PHOTO_HOOKS.contains(hookId(method))) {
