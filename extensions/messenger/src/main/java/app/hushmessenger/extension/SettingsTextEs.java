@@ -585,6 +585,8 @@ final class SettingsTextEs {
         {"message_log_attachment", "Foto o archivo adjunto"},
         {"message_log_photo", "Foto"},
         {"message_log_photo_missing", "No se pudo mostrar esta foto."},
+        {"message_log_keep_photos", "Guardar las fotos en tamaño completo"},
+        {"message_log_keep_photos_help", "Descarga una foto al guardarla en el registro, con el tamaño que tenía al enviarse, así puedes verla aunque quien la envió la quite. Sin esto el registro guarda la vista previa pequeña de la notificación, y solo en chats que no están cifrados de extremo a extremo. Las fotos ocupan mucho más espacio que el resto del registro y se van cuando se va su mensaje."},
         {"message_log_keep_voice", "Guardar los mensajes de voz"},
         {"message_log_keep_voice_help", "Descarga un mensaje de voz al guardarlo en el registro, así puedes escucharlo aunque quien lo envió lo quite. Messenger solo lo descarga cuando lo reproduces, y por eso se pierde si lo quitan antes. Los clips ocupan más espacio que el resto del registro y se van cuando se va su mensaje."},
         {"message_log_clip_play", "Reproducir mensaje de voz"},

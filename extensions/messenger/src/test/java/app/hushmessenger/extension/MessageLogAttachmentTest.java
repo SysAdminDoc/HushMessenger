@@ -2,7 +2,10 @@ package app.hushmessenger.extension;
 
 import android.net.Uri;
 import com.facebook.messaging.model.attachment.Attachment;
+import com.facebook.messaging.model.attachment.AttachmentImageMap;
 import com.facebook.messaging.model.attachment.AudioData;
+import com.facebook.messaging.model.attachment.ImageData;
+import com.facebook.messaging.model.attachment.ImageUrl;
 import com.facebook.messaging.model.attachment.VideoData;
 import com.facebook.messaging.model.messages.Message;
 import java.io.File;
@@ -17,11 +20,13 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import static org.junit.Assert.*;
 
-/** Keeping a voice message's clip: finding its address on the message, fetching it, and pointing the entry at it. */
+/** Keeping a message's own media: finding its address, fetching it, and pointing the entry at the file. */
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = {28, 36})
-public class MessageLogVoiceTest {
+public class MessageLogAttachmentTest {
     private static final String ADDRESS = "https://cdn.example.com/audio.mp4?oe=6A1B2C3D";
+    private static final String SMALL = "https://cdn.example.com/photo-s.jpg?oe=6A1B2C3D";
+    private static final String BIG = "https://cdn.example.com/photo-l.jpg?oe=6A1B2C3D";
     private static final String THREAD = "thread-7";
     private static final String ID = "mid.100";
     /** Stands in for the fetch, so no test reaches a network. */
@@ -45,17 +50,18 @@ public class MessageLogVoiceTest {
         MessageLog.vault = new MessageLogTest.SoftwareVault();
         logFile().delete();
         MessageLogMedia.deleteAll(Settings.appContext);
-        download = MessageLogVoice.download;
+        download = MessageLogAttachment.download;
         asked.clear();
-        MessageLogVoice.download = address -> {
+        MessageLogAttachment.download = address -> {
             asked.add(address);
             return CLIP;
         };
-        Settings.preferences.edit().putBoolean(MessageLog.KEY, true).putBoolean(MessageLog.KEEP_VOICE, true).commit();
+        Settings.preferences.edit().putBoolean(MessageLog.KEY, true)
+            .putBoolean(MessageLog.KEEP_VOICE, true).putBoolean(MessageLog.KEEP_PHOTOS, true).commit();
     }
 
     @After public void tidy() {
-        MessageLogVoice.download = download;
+        MessageLogAttachment.download = download;
         MessageLog.retryLater = retryLater;
         logFile().delete();
         MessageLogMedia.deleteAll(Settings.appContext);
@@ -70,90 +76,151 @@ public class MessageLogVoiceTest {
         return Message.with(Attachment.audio(new AudioData(Uri.parse(ADDRESS))));
     }
 
+    private static Message photoMessage() {
+        return Message.with(Attachment.image(ImageData.of(
+            AttachmentImageMap.of(new ImageUrl(240, 180, SMALL)),
+            AttachmentImageMap.of(new ImageUrl(1440, 1920, BIG), new ImageUrl(480, 640, SMALL)))));
+    }
+
+    private static MessageLogAttachment.Found audio() {
+        return new MessageLogAttachment.Found(ADDRESS, MessageLogAttachment.AUDIO);
+    }
+
+    private static MessageLogAttachment.Found photo() {
+        return new MessageLogAttachment.Found(BIG, MessageLogAttachment.PHOTO);
+    }
+
+    private static String nameOf(String kind) {
+        return MessageLogAttachment.name(THREAD, ID, kind);
+    }
+
     @Test public void theAddressIsFoundThroughTheAttachmentsOwnTypes() {
-        assertEquals(ADDRESS, MessageLogVoice.address(voiceMessage()));
+        MessageLogAttachment.Found found = MessageLogAttachment.found(voiceMessage());
+        assertEquals(ADDRESS, found.address);
+        assertEquals(MessageLogAttachment.AUDIO, found.kind);
+    }
+
+    /** Messenger offers the same photo at several sizes, and only the biggest is worth keeping. */
+    @Test public void aPhotosBiggestAddressIsTheOneFound() {
+        MessageLogAttachment.Found found = MessageLogAttachment.found(photoMessage());
+        assertEquals(BIG, found.address);
+        assertEquals(MessageLogAttachment.PHOTO, found.kind);
+    }
+
+    /** A photo with no size against any address still gets kept, from the first address that's the message's own. */
+    @Test public void aPhotoWithNoSizesStillHasAnAddress() {
+        Message message = Message.with(Attachment.image(ImageData.of(null,
+            AttachmentImageMap.of(new ImageUrl(0, 0, BIG)))));
+        assertEquals(BIG, MessageLogAttachment.found(message).address);
     }
 
     @Test public void anotherKindOfAttachmentHasNoAddressToFind() {
-        assertNull(MessageLogVoice.address(Message.with(Attachment.video(new VideoData(Uri.parse(ADDRESS))))));
-        assertNull(MessageLogVoice.address(Message.with()));
-        assertNull(MessageLogVoice.address(Message.with(Attachment.audio(new AudioData(null)))));
-        assertNull(MessageLogVoice.address(new Object()));
-        assertNull(MessageLogVoice.address(null));
+        assertNull(MessageLogAttachment.found(Message.with(Attachment.video(new VideoData(Uri.parse(ADDRESS))))));
+        assertNull(MessageLogAttachment.found(Message.with()));
+        assertNull(MessageLogAttachment.found(Message.with(Attachment.audio(new AudioData(null)))));
+        assertNull(MessageLogAttachment.found(Message.with(Attachment.image(ImageData.of(null, null)))));
+        assertNull(MessageLogAttachment.found(new Object()));
+        assertNull(MessageLogAttachment.found(null));
     }
 
     /** Only the signed address the message came with. A file already on the phone is Messenger's to hand out, not ours. */
     @Test public void anAddressThatIsntTheMessagesOwnIsLeftAlone() {
         for (String address : new String[] {"file:///data/data/com.facebook.orca/clip.mp4", "content://media/external/audio/1",
             "http://cdn.example.com/audio.mp4"}) {
-            assertNull(address, MessageLogVoice.address(Message.with(Attachment.audio(new AudioData(Uri.parse(address))))));
+            assertNull(address, MessageLogAttachment.found(Message.with(Attachment.audio(new AudioData(Uri.parse(address))))));
+            assertNull(address, MessageLogAttachment.found(Message.with(Attachment.image(ImageData.of(null,
+                AttachmentImageMap.of(new ImageUrl(1440, 1920, address)))))));
         }
     }
 
-    @Test public void nothingIsReadWithTheSwitchOff() {
+    @Test public void nothingIsReadWithTheSwitchesOff() {
         Settings.preferences.edit().putBoolean(MessageLog.KEEP_VOICE, false).commit();
-        assertNull(MessageLogVoice.address(voiceMessage()));
+        assertNull(MessageLogAttachment.found(voiceMessage()));
+        assertEquals(BIG, MessageLogAttachment.found(photoMessage()).address);
+        Settings.preferences.edit().putBoolean(MessageLog.KEEP_PHOTOS, false).commit();
+        assertNull(MessageLogAttachment.found(photoMessage()));
         Settings.preferences.edit().putBoolean(MessageLog.KEEP_VOICE, true).putBoolean(MessageLog.KEY, false).commit();
-        assertNull(MessageLogVoice.address(voiceMessage()));
+        assertNull(MessageLogAttachment.found(voiceMessage()));
         Settings.preferences.edit().putBoolean(MessageLog.KEY, true).putBoolean("paused", true).commit();
-        assertNull(MessageLogVoice.address(voiceMessage()));
+        assertNull(MessageLogAttachment.found(voiceMessage()));
     }
 
-    /** The hook hands the message over before its text, and the address waits there for the log's own call. */
+    /** The hook hands the message over before its text, and what it found waits there for the log's own call. */
     @Test public void theHookHandsTheAddressOverWithTheMessage() {
         Settings.incomingMessageMedia(voiceMessage());
-        assertEquals(ADDRESS, Settings.takeIncomingMessageVoice());
-        assertNull(Settings.takeIncomingMessageVoice());
+        assertEquals(ADDRESS, Settings.takeIncomingMessageMedia().address);
+        assertNull(Settings.takeIncomingMessageMedia());
         Settings.incomingMessageMedia(voiceMessage());
         Settings.incomingMessageMedia(Message.with());
-        assertNull("a message with no clip clears what the one before it left", Settings.takeIncomingMessageVoice());
+        assertNull("a message with no media clears what the one before it left", Settings.takeIncomingMessageMedia());
     }
 
     /** The message stored, then its clip fetched and sealed where the log's screen plays it from. */
     @Test public void aClipIsKeptWithItsMessage() throws Exception {
         MessageLog.storeNow(null, THREAD, ID);
-        assertEquals(MessageLogVoice.name(THREAD, ID), MessageLogVoice.keepNow(THREAD, ID, ADDRESS));
+        assertEquals(nameOf(MessageLogAttachment.AUDIO), MessageLogAttachment.keepNow(THREAD, ID, audio()));
         assertEquals(List.of(ADDRESS), asked);
         List<MessageLog.Entry> entries = MessageLog.entries();
         assertEquals(1, entries.size());
         MessageLog.Entry kept = entries.get(0);
         assertTrue(kept.attachment);
-        assertEquals(MessageLogVoice.KIND, kept.mediaType);
-        assertEquals(MessageLogVoice.name(THREAD, ID), kept.media);
+        assertEquals(MessageLogAttachment.AUDIO, kept.mediaType);
+        assertEquals(nameOf(MessageLogAttachment.AUDIO), kept.media);
         assertArrayEquals(CLIP, MessageLogMedia.open(Settings.appContext, kept.media));
         assertTrue(Settings.hookErrors.isEmpty());
+    }
+
+    /** A photo takes the name the notification's own preview would have, so the entry only ever has one picture. */
+    @Test public void aPhotoIsKeptUnderThePicturesOwnName() throws Exception {
+        MessageLog.storeNow(null, THREAD, ID);
+        assertEquals(MessageLog.digest(THREAD + '\u0000' + ID), nameOf(MessageLogAttachment.PHOTO));
+        assertEquals(nameOf(MessageLogAttachment.PHOTO), MessageLogAttachment.keepNow(THREAD, ID, photo()));
+        assertEquals(List.of(BIG), asked);
+        MessageLog.Entry kept = MessageLog.entries().get(0);
+        assertEquals("", kept.mediaType);
+        assertEquals(nameOf(MessageLogAttachment.PHOTO), kept.media);
+        assertArrayEquals(CLIP, MessageLogMedia.open(Settings.appContext, kept.media));
     }
 
     /** The clip can land while the message is still waiting to be written, and then the one write carries both. */
     @Test public void aClipThatArrivesBeforeTheWriteGoesInWithIt() throws Exception {
         MessageLog.queue(null, THREAD, ID);
-        assertEquals(MessageLogVoice.name(THREAD, ID), MessageLogVoice.keepNow(THREAD, ID, ADDRESS));
+        assertEquals(nameOf(MessageLogAttachment.AUDIO), MessageLogAttachment.keepNow(THREAD, ID, audio()));
         MessageLog.drain();
         List<MessageLog.Entry> entries = MessageLog.entries();
         assertEquals(1, entries.size());
-        assertEquals(MessageLogVoice.KIND, entries.get(0).mediaType);
+        assertEquals(MessageLogAttachment.AUDIO, entries.get(0).mediaType);
         assertArrayEquals(CLIP, MessageLogMedia.open(Settings.appContext, entries.get(0).media));
     }
 
     /** Messenger builds one message's notification twice, and the second fetch is the one that isn't needed. */
     @Test public void theSameClipIsFetchedOnce() {
-        assertEquals(MessageLogVoice.name(THREAD, ID), MessageLogVoice.keepNow(THREAD, ID, ADDRESS));
-        assertEquals(MessageLogVoice.name(THREAD, ID), MessageLogVoice.keepNow(THREAD, ID, ADDRESS));
+        assertEquals(nameOf(MessageLogAttachment.AUDIO), MessageLogAttachment.keepNow(THREAD, ID, audio()));
+        assertEquals(nameOf(MessageLogAttachment.AUDIO), MessageLogAttachment.keepNow(THREAD, ID, audio()));
         assertEquals(List.of(ADDRESS), asked);
     }
 
-    @Test public void aMessageStaysLoggedWhenItsClipCantBeFetched() {
-        MessageLogVoice.download = address -> {
+    @Test public void aMessageStaysLoggedWhenItsMediaCantBeFetched() {
+        MessageLogAttachment.download = address -> {
             asked.add(address);
             return null;
         };
         MessageLog.storeNow(null, THREAD, ID);
-        assertEquals("", MessageLogVoice.keepNow(THREAD, ID, ADDRESS));
+        assertEquals("", MessageLogAttachment.keepNow(THREAD, ID, audio()));
         List<MessageLog.Entry> entries = MessageLog.entries();
         assertEquals(1, entries.size());
         assertTrue(entries.get(0).media.isEmpty());
         assertEquals("", entries.get(0).mediaType);
         assertFalse(new File(Settings.appContext.getFilesDir(), MessageLogMedia.DIR).isDirectory());
+    }
+
+    /** A file past the kind's own size isn't kept, so one huge photo can't push the rest of the log out. */
+    @Test public void mediaPastItsSizeIsntKept() {
+        MessageLogAttachment.download = address -> new byte[MessageLogAttachment.MAX_AUDIO_BYTES + 1];
+        MessageLog.storeNow(null, THREAD, ID);
+        assertEquals("", MessageLogAttachment.keepNow(THREAD, ID, audio()));
+        assertTrue(MessageLog.entries().get(0).media.isEmpty());
+        assertTrue(MessageLogAttachment.MAX_PHOTO_BYTES > MessageLogAttachment.MAX_AUDIO_BYTES);
     }
 
     /** A picture off the notification is what the log already had for this message, so it keeps it. */
@@ -164,7 +231,7 @@ public class MessageLogVoiceTest {
         dir.mkdirs();
         MessageLog.sealInto(dir, picture, "a picture".getBytes(StandardCharsets.UTF_8));
         assertTrue(MessageLog.attachNow(THREAD, ID, picture, ""));
-        assertFalse(MessageLog.attachNow(THREAD, ID, MessageLogVoice.name(THREAD, ID), MessageLogVoice.KIND));
+        assertFalse(MessageLog.attachNow(THREAD, ID, nameOf(MessageLogAttachment.AUDIO), MessageLogAttachment.AUDIO));
         List<MessageLog.Entry> entries = MessageLog.entries();
         assertEquals(picture, entries.get(0).media);
         assertEquals("", entries.get(0).mediaType);
@@ -172,17 +239,17 @@ public class MessageLogVoiceTest {
 
     /** A clip whose message isn't in the log has nothing to belong to, and the next write drops the file. */
     @Test public void aClipWithNoMessageIsntKept() {
-        assertFalse(MessageLog.attachNow(THREAD, ID, MessageLogVoice.name(THREAD, ID), MessageLogVoice.KIND));
+        assertFalse(MessageLog.attachNow(THREAD, ID, nameOf(MessageLogAttachment.AUDIO), MessageLogAttachment.AUDIO));
     }
 
     /** The kind is a column of its own, and a log written before it still reads the way it did. */
     @Test public void theKindSurvivesAWriteAndAnOlderLogStillReads() throws Exception {
         MessageLog.write(Settings.appContext, List.of(
-            new MessageLog.Entry(1_700_000_000_000L, THREAD, "", "Ana", "", ID, false, true, "a".repeat(64), MessageLogVoice.KIND),
+            new MessageLog.Entry(1_700_000_000_000L, THREAD, "", "Ana", "", ID, false, true, "a".repeat(64), MessageLogAttachment.AUDIO),
             new MessageLog.Entry(1_700_000_001_000L, THREAD, "", "Ana", "", "mid.101", false, true, "b".repeat(64))));
         List<MessageLog.Entry> back = MessageLog.read(logFile());
         assertEquals(2, back.size());
-        assertEquals(MessageLogVoice.KIND, back.get(0).mediaType);
+        assertEquals(MessageLogAttachment.AUDIO, back.get(0).mediaType);
         assertEquals("a".repeat(64), back.get(0).media);
         assertEquals("", back.get(1).mediaType);
         assertEquals("b".repeat(64), back.get(1).media);
@@ -200,24 +267,24 @@ public class MessageLogVoiceTest {
     /** An unsend marks the clip's message like any other, and the clip stays with it. */
     @Test public void anUnsentVoiceMessageKeepsItsClip() {
         MessageLog.storeNow(null, THREAD, ID);
-        assertEquals(MessageLogVoice.name(THREAD, ID), MessageLogVoice.keepNow(THREAD, ID, ADDRESS));
+        assertEquals(nameOf(MessageLogAttachment.AUDIO), MessageLogAttachment.keepNow(THREAD, ID, audio()));
         assertTrue(MessageLog.markNow(ID, THREAD, ""));
         MessageLog.Entry marked = MessageLog.entries().get(0);
         assertTrue(marked.unsent);
-        assertEquals(MessageLogVoice.KIND, marked.mediaType);
-        assertEquals(MessageLogVoice.name(THREAD, ID), marked.media);
+        assertEquals(MessageLogAttachment.AUDIO, marked.mediaType);
+        assertEquals(nameOf(MessageLogAttachment.AUDIO), marked.media);
     }
 
-    /** Clear takes the clips with the messages, and Undo puts both back. */
+    /** Clear takes the files with the messages, and Undo puts both back. */
     @Test public void clearAndUndoTakeTheClipAlong() throws Exception {
         MessageLog.storeNow(null, THREAD, ID);
-        assertEquals(MessageLogVoice.name(THREAD, ID), MessageLogVoice.keepNow(THREAD, ID, ADDRESS));
+        assertEquals(nameOf(MessageLogAttachment.AUDIO), MessageLogAttachment.keepNow(THREAD, ID, audio()));
         MessageLog.Cleared cleared = MessageLog.clearForUndo();
         assertTrue(cleared.cleared);
         assertTrue(MessageLog.entries().isEmpty());
         assertTrue(MessageLog.restore(cleared));
         MessageLog.Entry back = MessageLog.entries().get(0);
-        assertEquals(MessageLogVoice.KIND, back.mediaType);
+        assertEquals(MessageLogAttachment.AUDIO, back.mediaType);
         assertArrayEquals(CLIP, MessageLogMedia.open(Settings.appContext, back.media));
     }
 }

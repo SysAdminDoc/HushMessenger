@@ -49,17 +49,20 @@ import javax.crypto.spec.GCMParameterSpec;
  * Download/Messenger right before it's removed. That file isn't encrypted, so the switch starts off.
  *
  * A photo or other attachment has no text of its own, so it's logged with what its notification line said, and with the
- * picture Messenger put on that line when there is one ({@link MessageLogMedia}). A voice message's clip is fetched as the
- * message is logged, with {@link #KEEP_VOICE} on ({@link MessageLogVoice}). Names picked for chats in the log's
- * screen sit in a file of their own, sealed with the same key, so a clear takes them along.
+ * picture Messenger put on that line when there is one ({@link MessageLogMedia}). A photo at the size it was sent, and a
+ * voice message's clip, are fetched as the message is logged, with {@link #KEEP_PHOTOS} or {@link #KEEP_VOICE} on
+ * ({@link MessageLogAttachment}). Names picked for chats in the log's screen sit in a file of their own, sealed with the
+ * same key, so a clear takes them along.
  */
 public final class MessageLog {
     private MessageLog() {}
 
     static final String KEY = "message_log";
     static final String SAVE_EXPIRING = "message_log_save_expiring";
-    /** Fetch a voice message's clip as it's logged, so an unsend before the first play can't take it ({@link MessageLogVoice}). */
+    /** Fetch a voice message's clip as it's logged, so an unsend before the first play can't take it. */
     static final String KEEP_VOICE = "message_log_keep_voice";
+    /** Fetch a photo at the size it was sent as it's logged, rather than keeping the notification's preview of it. */
+    static final String KEEP_PHOTOS = "message_log_keep_photos";
     static final String FILE = "hush_message_log.bin";
     static final String DAMAGED = FILE + ".damaged";
     static final String KEY_ALIAS = "hushmessenger_message_log";
@@ -144,7 +147,7 @@ public final class MessageLog {
         public final boolean attachment;
         /** The kept picture's or clip's name in {@link MessageLogMedia}, empty when nothing was kept. */
         final String media;
-        /** What that file is: empty for a picture off the notification, {@link MessageLogVoice#KIND} for a voice clip. */
+        /** What that file is: empty for a picture, {@link MessageLogAttachment#AUDIO} for a voice clip. */
         public final String mediaType;
         Entry(long time, String thread, String text) {
             this(time, thread, text, "", "");
@@ -219,13 +222,13 @@ public final class MessageLog {
     }
 
     /**
-     * {@link #record} for a message that came with a voice clip at [voice]. The message is queued first, so the fetch
-     * that follows finds its entry to point at the clip.
+     * {@link #record} for a message that came with media at [found]. The message is queued first, so the fetch that
+     * follows finds its entry to point at the file.
      */
-    static void record(String text, String thread, String id, String voice) {
+    static void record(String text, String thread, String id, MessageLogAttachment.Found found) {
         record(text, thread, id);
-        if (voice != null && id != null && !id.isEmpty()) {
-            MessageLogVoice.keep(clip(thread == null ? "" : thread, MAX_THREAD_CHARS), clip(id, MAX_ID_CHARS), voice);
+        if (found != null && id != null && !id.isEmpty()) {
+            MessageLogAttachment.keep(clip(thread == null ? "" : thread, MAX_THREAD_CHARS), clip(id, MAX_ID_CHARS), found);
         }
     }
 
@@ -1055,7 +1058,7 @@ public final class MessageLog {
                 parts.length > 6 && "1".equals(parts[6]),
                 parts.length > 7 && !parts[7].isEmpty(),
                 parts.length > 7 && !NO_PICTURE.equals(parts[7]) ? clip(unescape(parts[7]), MAX_ID_CHARS) : "",
-                parts.length > 8 && MessageLogVoice.KIND.equals(parts[8]) ? MessageLogVoice.KIND : ""));
+                parts.length > 8 && MessageLogAttachment.AUDIO.equals(parts[8]) ? MessageLogAttachment.AUDIO : ""));
         }
         return entries;
     }

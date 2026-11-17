@@ -585,6 +585,8 @@ final class SettingsTextTr {
         {"message_log_attachment", "Fotoğraf veya ek"},
         {"message_log_photo", "Fotoğraf"},
         {"message_log_photo_missing", "Bu fotoğraf gösterilemedi."},
+        {"message_log_keep_photos", "Fotoğrafları tam boyutta sakla"},
+        {"message_log_keep_photos_help", "Fotoğraf kayda eklenirken gönderildiği boyutuyla indirilir, böylece gönderen geri çekse bile görebilirsin. Bu kapalıyken kayıt yalnızca bildirimdeki küçük ön izlemeyi tutar, o da sadece uçtan uca şifreli olmayan sohbetlerde. Fotoğraflar kaydın geri kalanından çok daha fazla yer kaplar ve mesajları gittiğinde onlar da gider."},
         {"message_log_keep_voice", "Sesli mesajları sakla"},
         {"message_log_keep_voice_help", "Sesli mesaj kayda eklenirken indirilir, böylece gönderen geri çekse bile dinleyebilirsin. Messenger onu yalnızca sen çaldığında indirir, bu yüzden ondan önceki bir geri çekme mesajı alıp götürür. Klipler kaydın geri kalanından daha fazla yer kaplar ve mesajları gittiğinde onlar da gider."},
         {"message_log_clip_play", "Sesli mesajı çal"},

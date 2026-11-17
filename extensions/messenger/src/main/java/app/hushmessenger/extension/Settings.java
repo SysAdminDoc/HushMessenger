@@ -460,6 +460,7 @@ public final class Settings {
         owners.put(CameraActivity.ASK, CameraActivity.KEY);
         owners.put(MessageLog.SAVE_EXPIRING, MessageLog.KEY);
         owners.put(MessageLog.KEEP_VOICE, MessageLog.KEY);
+        owners.put(MessageLog.KEEP_PHOTOS, MessageLog.KEY);
         owners.put(QuietChats.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.MENU_KEY, MessageLog.KEY);
@@ -1268,26 +1269,26 @@ public final class Settings {
     }
 
     /**
-     * The message object itself, handed over right after its id and before its text, for the voice clip its attachment
-     * points at. Only the address is read here, on Messenger's own thread; the fetch happens off it.
+     * The message object itself, handed over right after its id and before its text, for the photo or voice clip its
+     * attachment points at. Only the address is read here, on Messenger's own thread; the fetch happens off it.
      */
-    private static final ThreadLocal<String> INCOMING_VOICE = new ThreadLocal<>();
+    private static final ThreadLocal<MessageLogAttachment.Found> INCOMING_MEDIA = new ThreadLocal<>();
 
     public static void incomingMessageMedia(Object message) {
-        String address = MessageLogVoice.address(message);
-        if (address == null) INCOMING_VOICE.remove();
-        else INCOMING_VOICE.set(address);
+        MessageLogAttachment.Found found = MessageLogAttachment.found(message);
+        if (found == null) INCOMING_MEDIA.remove();
+        else INCOMING_MEDIA.set(found);
     }
 
-    static String takeIncomingMessageVoice() {
-        String address = INCOMING_VOICE.get();
-        INCOMING_VOICE.remove();
-        return address;
+    static MessageLogAttachment.Found takeIncomingMessageMedia() {
+        MessageLogAttachment.Found found = INCOMING_MEDIA.get();
+        INCOMING_MEDIA.remove();
+        return found;
     }
 
     /** The notification hook hands the message here; the log stores it off this thread and swallows its own failures. */
     public static void recordReceivedMessage(String text, String thread) {
-        MessageLog.record(text, thread, takeIncomingMessageId(), takeIncomingMessageVoice());
+        MessageLog.record(text, thread, takeIncomingMessageId(), takeIncomingMessageMedia());
     }
 
     /** The same notification hook asks this for an auto reply: on, not paused, and with at least one reply written. */

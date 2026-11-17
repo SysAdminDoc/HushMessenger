@@ -585,6 +585,8 @@ final class SettingsTextZhTw {
         {"message_log_attachment", "相片或附件"},
         {"message_log_photo", "相片"},
         {"message_log_photo_missing", "無法顯示這張相片。"},
+        {"message_log_keep_photos", "以原始大小保留相片"},
+        {"message_log_keep_photos_help", "相片寫進記錄時就以傳送時的大小下載，對方收回之後你還是看得到。沒開啟的話，記錄只會留下通知裡的小預覽圖，而且只有在沒有端對端加密的聊天室才有。相片比記錄的其他內容占去多很多空間，訊息消失時它們也一起消失。"},
         {"message_log_keep_voice", "保留語音訊息"},
         {"message_log_keep_voice_help", "語音訊息寫進記錄時就先下載，對方收回之後你還是能播放。Messenger 只在你播放時才下載，所以在那之前被收回就會跟著消失。語音檔比記錄的其他內容占空間，訊息消失時它們也一起消失。"},
         {"message_log_clip_play", "播放語音訊息"},

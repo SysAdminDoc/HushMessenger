@@ -25,8 +25,8 @@ final class MessageLogMedia {
     static final String DIR = "hush_message_log_media";
     /** A preview bigger than this isn't kept. Messenger's previews are made for a notification, so they're far smaller. */
     static final int MAX_BYTES = 1024 * 1024;
-    /** The largest of anything kept here, which is a voice clip. A read past it is a file this log can't have written. */
-    static final int MAX_ANY_BYTES = MessageLogVoice.MAX_BYTES;
+    /** The largest of anything kept here, which is a photo. A read past it is a file this log can't have written. */
+    static final int MAX_ANY_BYTES = MessageLogAttachment.MAX_PHOTO_BYTES;
     /** All the pictures and clips together. Undo after Clear holds them in memory, so this stays within reach. */
     static final long MAX_TOTAL_BYTES = 32L * 1024 * 1024;
     /** A name is the digest of the message's chat and id, so nothing in it can point outside the folder. */

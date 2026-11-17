@@ -604,7 +604,7 @@ final class MessageLogSheet {
         body.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
         body.setTextIsSelectable(true);
         ui.add(card, body, 8);
-        if (MessageLogVoice.KIND.equals(entry.mediaType)) {
+        if (MessageLogAttachment.AUDIO.equals(entry.mediaType)) {
             if (!entry.media.isEmpty()) messageLogClipRow(card, entry.media);
         } else if (!entry.media.isEmpty()) {
             ImageView picture = new ImageView(page);

@@ -7,7 +7,7 @@ import android.media.MediaPlayer;
 import java.io.IOException;
 
 /**
- * Plays a voice clip the message log kept ({@link MessageLogVoice}). The clip is opened from its sealed file into memory
+ * Plays a voice clip the message log kept ({@link MessageLogAttachment}). The clip is opened from its sealed file into memory
  * and played from there, so nothing is written out in the clear. One clip plays at a time: starting another stops the one
  * before it, and so does closing the log's sheet.
  */

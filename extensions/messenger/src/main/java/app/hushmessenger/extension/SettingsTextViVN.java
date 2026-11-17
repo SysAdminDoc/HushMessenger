@@ -585,6 +585,8 @@ final class SettingsTextViVN {
         {"message_log_attachment", "Ảnh hoặc tệp đính kèm"},
         {"message_log_photo", "Ảnh"},
         {"message_log_photo_missing", "Không thể hiển thị ảnh này."},
+        {"message_log_keep_photos", "Giữ ảnh ở kích cỡ đầy đủ"},
+        {"message_log_keep_photos_help", "Tải ảnh về ngay khi nó được ghi vào nhật ký, đúng kích cỡ lúc gửi, nên bạn vẫn xem được sau khi người gửi thu hồi. Không bật thì nhật ký chỉ giữ ảnh xem trước nhỏ từ thông báo, và chỉ trong những đoạn chat không được mã hóa đầu cuối. Ảnh chiếm nhiều dung lượng hơn hẳn phần còn lại của nhật ký, và chúng mất đi cùng với tin nhắn của mình."},
         {"message_log_keep_voice", "Giữ tin nhắn thoại"},
         {"message_log_keep_voice_help", "Tải tin nhắn thoại về ngay khi nó được ghi vào nhật ký, nên bạn vẫn nghe được sau khi người gửi thu hồi. Messenger chỉ tải khi bạn bấm phát, vì vậy một lần thu hồi trước đó sẽ mang nó đi. Các đoạn thoại chiếm nhiều dung lượng hơn phần còn lại của nhật ký, và chúng mất đi cùng với tin nhắn của mình."},
         {"message_log_clip_play", "Phát tin nhắn thoại"},
