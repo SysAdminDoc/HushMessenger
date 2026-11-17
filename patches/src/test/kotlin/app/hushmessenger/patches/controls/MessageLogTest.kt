@@ -324,6 +324,32 @@ class MessageLogTest {
         assertEquals(before, code.drop(code.size - before.size))
     }
 
+    /**
+     * #196: Hide messages with your words claims the same constructor, so a message holding one of the words can be
+     * marked before its notification goes up. One block serves both controls: the gate brings the message through for
+     * either switch, and whichever control gets there first, the other finds its work done and leaves the method alone.
+     */
+    @Test fun hidingMessagesSharesTheLogsNotificationHook() {
+        val classes = messageLogFixture()
+        val found = mirroredControls(classes)
+        validateControls(found, setOf(MESSAGE_LOG))
+        val ctor = ctorOf(classes)
+        val before = ctor.code()
+        injectControl(HIDDEN_WORDS, mapOf(MESSAGE_LOG to listOf(ctor)))
+        val hidden = ctor.code()
+        assertEquals("$SETTINGS->logReceivedMessages()Z", reference(0, hidden))
+        assertEquals("$SETTINGS->recordReceivedMessage(Ljava/lang/String;Ljava/lang/String;)V", reference(24, hidden))
+        assertEquals(before, hidden.drop(hidden.size - before.size))
+        // The log on as well adds nothing: both gates are read inside the one extension call.
+        injectControl(MESSAGE_LOG, mapOf(MESSAGE_LOG to listOf(ctor)))
+        assertEquals(hidden, ctor.code())
+        // Auto reply reads its own gate, so its block still goes in next to theirs.
+        injectControl(AUTO_REPLY, mapOf(AUTO_REPLY to listOf(ctor)))
+        val both = ctor.code()
+        assertEquals("$SETTINGS->autoReplyWanted()Z", reference(0, both))
+        assertEquals(hidden, both.drop(both.size - hidden.size))
+    }
+
     @Test fun aMissingTextGetterRefusesTheSwitchBeforeAnyEdit() {
         val classes = messageLogFixture(bodyGetter = "const-string v0, \"snippet\"\niget-object v0, v1, $BODY_FIELD\nreturn-object v0")
         mirroredControls(classes)

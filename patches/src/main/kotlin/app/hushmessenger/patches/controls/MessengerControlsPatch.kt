@@ -541,11 +541,13 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 }
                 injectControl(key, methods)
                 for ((old, new) in built) { host.methods.remove(old); host.directMethods.remove(old); host.methods.add(new); host.directMethods.add(new) }
-            } else if (key == "keep_unsent") {
+            } else if (key == "keep_unsent" || key == HIDDEN_WORDS) {
                 // Built before the first edit, so a row class without the helper's getters stops the patch with Messenger
-                // untouched. Only encrypted chats' CQL rows take the helper.
+                // untouched. Only encrypted chats' CQL rows take the helper, and both controls that read a row's text
+                // call the same one, so the control that got there first leaves nothing to add.
                 val rows = methods["unsent_indicator"].orEmpty().filter { it.validateUnsentIndicator() }.map { it.definingClass }.distinct()
                 val helpers = rows.map { mutableClassDefBy(it) to unsentRowHelper(it) }
+                    .filter { (row, _) -> row.methods.none { it.name == UNSENT_ROW_HELPER } }
                 for ((row, _) in helpers) row.checkUnsentRowHelper()
                 injectControl(key, methods)
                 for ((row, helper) in helpers) row.addUnsentRowHelper(helper)
@@ -856,6 +858,14 @@ val readChatsLocallyPatch = controlPatch("read_chats_locally", "Mark chats read 
 val markReadButtonPatch = controlPatch("mark_read_button", "Mark as read button", "Puts Messenger's Mark as read icon in a chat's top bar while Hide read receipts is on. Opening the chat still sends nothing, and a tap on the icon sends Seen and marks the chat read. When the bar is full it takes the place of the chat details button (tapping the chat's name opens the same page), or of another button that isn't for calls when a chat doesn't have one, so the call buttons stay put.", "Privacy", MARK_READ_BAR, MARK_READ_CLICK)
 @Suppress("unused")
 val keepUnsentPatch = controlPatch("keep_unsent", "Keep unsent messages", "Keeps messages on screen after someone unsends them, marked [unsent]. In end-to-end encrypted chats it keeps the words Messenger already showed you, in the chat or a notification, until Messenger restarts. Group chats aren't tested.", "Privacy", "keep_unsent", "unsent_indicator", "delta_unsent", UNSENT_RECALL, UNSENT_CLEAR)
+/**
+ * Hide messages with your words shares three hooks with other controls instead of adding its own: the row text getter
+ * Keep unsent messages reads, and the new-message notification pair the message log and Log chats that don't notify
+ * read. Each hook's block runs both controls' gates, so either one works alone and neither changes with the other on.
+ */
+internal const val HIDDEN_WORDS = "hidden_words"
+@Suppress("unused")
+val hiddenWordsPatch = controlPatch("hidden_words", "Hide messages with your words", "Hides messages that have words you choose, which you type below separated by commas. A message that arrives with one of them shows as [hidden] in the chat instead of its words, and no notification goes up for it. Nothing is sent back and nothing is deleted, so the message is still there for whoever sent it, and the messages you send go out as they always did. The chat list's last line still shows Messenger's own preview of the message.", "Privacy", "unsent_indicator", MESSAGE_LOG, QUIET_LOG_DROP)
 @Suppress("unused")
 val appearOfflinePatch = controlPatch("appear_offline", "Appear offline", "Stops Messenger from telling people you're active, while you keep seeing who else is. Messenger's own Active status setting stays on, so the green dots in your chat list and the People tab work as they always did, and only what Messenger reports about you changes. It takes effect the next time Messenger goes to the background or comes back, so restarting it makes the change land right away.", "Privacy", APPEAR_OFFLINE, AVAILABILITY_SETTING)
 @Suppress("unused")

@@ -1065,14 +1065,19 @@ public final class Settings {
     /** The same check for a chat that notifies. A restricted chat let on only for the log still counts as quiet. */
     public static void loudChat(Object thread) { QuietChats.notifies(thread); }
 
-    /** The notification manager asks this before it reads anything off a new message. */
-    public static boolean logQuietChats() { return QuietChats.wanted(); }
+    /**
+     * The notification manager asks this before it reads anything off a new message. Hide messages with your words
+     * reads the same message, to keep a hidden one's notification down, so either switch brings it through.
+     */
+    public static boolean logQuietChats() { return QuietChats.wanted() || HiddenWords.wanted(); }
 
     /**
      * A new message's notification, right before it goes up. True drops it, since its chat was let on only for the log.
      * The sender's name goes to the log now: there's no notification to read it from later.
      */
     public static boolean dropQuiet(Object thread, String id, String sender) {
+        // A message holding one of your hidden words goes nowhere, whatever its chat does about notifications.
+        if (HiddenWords.marked(id)) return true;
         if (!QuietChats.isQuiet(thread)) return false;
         MessageLog.noteSender(String.valueOf(thread), id, sender);
         return true;
@@ -1296,8 +1301,12 @@ public final class Settings {
         return enabled("original_video") ? -1 : comparison;
     }
 
-    /** The notification hook asks this before it reads a message, so nothing is read when the switch is off or paused. */
-    public static boolean logReceivedMessages() { return wouldUse("message_log"); }
+    /**
+     * The notification hook asks this before it reads a message, so nothing is read when the switch is off or paused.
+     * Hide messages with your words rides the same hook, so either switch brings the message through, and each path
+     * below checks its own switch again.
+     */
+    public static boolean logReceivedMessages() { return wouldUse(MessageLog.KEY) || HiddenWords.wanted(); }
 
     /**
      * The message's own id, which the notification hook hands over just before the text and thread (the constructor it
@@ -1320,6 +1329,11 @@ public final class Settings {
     private static final ThreadLocal<MessageLogAttachment.Found> INCOMING_MEDIA = new ThreadLocal<>();
 
     public static void incomingMessageMedia(Object message) {
+        // Only the log keeps attachments. With the hook on for hidden words alone, nothing here is read.
+        if (!wouldUse(MessageLog.KEY)) {
+            INCOMING_MEDIA.remove();
+            return;
+        }
         MessageLogAttachment.Found found = MessageLogAttachment.found(message);
         if (found == null) INCOMING_MEDIA.remove();
         else INCOMING_MEDIA.set(found);
@@ -1331,9 +1345,15 @@ public final class Settings {
         return found;
     }
 
-    /** The notification hook hands the message here; the log stores it off this thread and swallows its own failures. */
+    /**
+     * The notification hook hands the message here; the log stores it off this thread and swallows its own failures.
+     * A message holding one of your hidden words is marked first, so its notification is dropped a moment later.
+     */
     public static void recordReceivedMessage(String text, String thread) {
-        MessageLog.record(text, thread, takeIncomingMessageId(), takeIncomingMessageMedia());
+        String id = takeIncomingMessageId();
+        MessageLogAttachment.Found media = takeIncomingMessageMedia();
+        HiddenWords.received(text, id);
+        if (wouldUse(MessageLog.KEY)) MessageLog.record(text, thread, id, media);
     }
 
     /** The same notification hook asks this for an auto reply: on, not paused, and with at least one reply written. */
@@ -2112,9 +2132,9 @@ public final class Settings {
     }
 
     public static String labelKeptUnsent(String text, String messageId) {
-        if (!wouldUse("keep_unsent") || text == null) return text;
-        if (isKeptUnsent(messageId)) return "[unsent] " + text;
-        return text;
+        if (text == null) return text;
+        if (wouldUse("keep_unsent") && isKeptUnsent(messageId)) return HiddenWords.mask("[unsent] " + text);
+        return HiddenWords.mask(text);
     }
 
     public static boolean suppressUnsent(boolean original, String messageId) {
@@ -2136,12 +2156,16 @@ public final class Settings {
         }
     });
 
-    /** Whether an encrypted chat's rows go through {@link #labelKeptUnsentRow} at all. */
+    /**
+     * Whether an encrypted chat's rows go through {@link #labelKeptUnsentRow} at all. Hide messages with your words
+     * reads the same rows, to show {@link HiddenWords#MASK} instead of a message's words, so either switch sends them
+     * through and each path inside checks its own switch again.
+     */
     public static boolean watchesUnsentRows() {
-        if (!wouldUse("keep_unsent")) return false;
+        boolean unsent = wouldUse("keep_unsent");
         // Reads the words kept by an earlier run, on its own thread, before the first row asks for them.
-        UnsentWords.warmUp();
-        return true;
+        if (unsent) UnsentWords.warmUp();
+        return unsent || HiddenWords.wanted();
     }
 
     /**
@@ -2207,7 +2231,15 @@ public final class Settings {
      */
     public static String labelKeptUnsentRow(String text, String messageId, String threadingId, long timestamp, long senderId,
                                             int contentType, int contentSubtype) {
+        return HiddenWords.mask(keptUnsentRowText(text, messageId, threadingId, timestamp, senderId, contentType, contentSubtype));
+    }
+
+    /** The same row's text, before hidden words are taken out of it. Keep unsent messages' own half. */
+    private static String keptUnsentRowText(String text, String messageId, String threadingId, long timestamp, long senderId,
+                                            int contentType, int contentSubtype) {
         try {
+            // Rows reach here for hidden words alone, and nothing below is this control's business then.
+            if (!wouldUse("keep_unsent")) return text;
             String key = threadingId != null && !threadingId.isEmpty() ? threadingId : messageId;
             if (key == null || key.isEmpty()) return text;
             boolean hasText = text != null && !text.isEmpty();

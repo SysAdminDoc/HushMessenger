@@ -268,6 +268,9 @@ internal fun MutableMethod.injectAutoReply() = injectIncomingMessage("$SETTINGS-
  * extension reads what it needs off it by type, so no field of its own has to be recorded per build.
  */
 private fun MutableMethod.injectIncomingMessage(gate: String, sink: String, media: String? = null) {
+    // Two controls can select one of these hooks, and each gate's block only has to go in once.
+    if (implementation?.instructions?.toList().orEmpty()
+            .any { ((it as? ReferenceInstruction)?.reference as? MethodReference)?.toString() == gate }) return
     validateMessageLog()
     val contract = messageLogContract!!
     // Written on the id's own line, so the block keeps its shape when no handover goes with it.

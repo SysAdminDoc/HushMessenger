@@ -349,6 +349,9 @@ final class SettingsText {
         ENGLISH.put("facebook_keep_profile_help", "Leaves the Profile button on a chat's details page and the View profile button at the top of a new chat, so you can still open the person's Facebook profile. The other Facebook shortcuts stay hidden.");
         ENGLISH.put("avatar_shape_rounded", "Round the corners");
         ENGLISH.put("avatar_shape_rounded_help", "Gives the squares rounded corners instead of sharp ones.");
+        ENGLISH.put("hidden_words_words", "Words to hide");
+        ENGLISH.put("hidden_words_hint", "Up to %1$d characters, separated by commas");
+        ENGLISH.put("hidden_words_help", "A whole word has to match, so \"ok\" doesn't hide \"okay\". Capital letters don't matter.");
         ENGLISH.put("home_header_words", "Words");
         ENGLISH.put("home_header_words_hint", "Up to %1$d characters");
         ENGLISH.put("home_header_none", "No words or picture yet, so Messenger's wordmark stays.");

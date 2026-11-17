@@ -1561,10 +1561,25 @@ private fun MutableMethod.readsOneCqlColumn(getter: String, moveResult: Opcode, 
         implementation!!.registerCount == 4 && !AccessFlags.STATIC.isSet(accessFlags)
 }
 
+/**
+ * Which route the text hook already carries, for a getter two controls selected: true for an encrypted chat's row,
+ * which calls the class's own helper, false for the list wrapper's row, which calls the extension straight. Null while
+ * the getter is still stock. Both controls share one block, so the second one through leaves it alone.
+ */
+internal fun MutableMethod.unsentIndicatorRouted(): Boolean? {
+    val calls = implementation?.instructions?.toList().orEmpty()
+        .mapNotNull { ((it as? ReferenceInstruction)?.reference as? DexMethodReference) }
+    if (calls.any { it.name == UNSENT_ROW_HELPER }) return true
+    if (calls.any { it.definingClass == SETTINGS && it.name == "labelKeptUnsent" }) return false
+    return null
+}
+
 /** Whether the text hook sits in an encrypted chat's CQL row class (true) or the list wrapper other chats use (false). */
 internal fun MutableMethod.validateUnsentIndicator(): Boolean {
     if (returnType != "Ljava/lang/String;") throw PatchException("Messenger controls: unsent_indicator hook must return String")
     if (parameterTypes != listOf("I")) throw PatchException("Messenger controls: unsent_indicator hook must take one int param")
+    // Already routed by the other control that selected this getter: the stock-body checks below no longer apply.
+    unsentIndicatorRouted()?.let { return it }
     if (readsOneCqlColumn("getString(II)Ljava/lang/String;", Opcode.MOVE_RESULT_OBJECT, Opcode.RETURN_OBJECT)) {
         if (messageOtidGetterName.isEmpty()) throw PatchException("Messenger controls: unsent_indicator hook needs the row's threading id getter")
         if (messageTimestampGetterName.isEmpty() || messageSenderGetterName.isEmpty() || messageContentTypeGetterName.isEmpty() ||
@@ -1584,6 +1599,8 @@ internal fun MutableMethod.validateUnsentIndicator(): Boolean {
 }
 
 internal fun MutableMethod.injectUnsentIndicator() {
+    // The block is in already, put there by the other control sharing this getter, and it serves both.
+    if (unsentIndicatorRouted() != null) return
     val cql = validateUnsentIndicator()
     val code = implementation!!.instructions.toList()
     val returnIndex = code.indexOfLast { it.opcode == Opcode.RETURN_OBJECT }

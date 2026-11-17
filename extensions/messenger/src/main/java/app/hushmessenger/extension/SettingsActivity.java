@@ -66,6 +66,7 @@ public final class SettingsActivity extends Activity {
     private final ChoicesBackup backup = new ChoicesBackup(this);
     private final FontFileRow fontFile = new FontFileRow(this);
     private final HomeHeaderRow homeHeader = new HomeHeaderRow(this);
+    private final HiddenWordsRow hiddenWords = new HiddenWordsRow(this);
     private final TabIconsRow tabIcons = new TabIconsRow(this);
     private final MessageActionsRow messageActions = new MessageActionsRow(this);
     private final ChatMenuItemsRow chatMenuItems = new ChatMenuItemsRow(this);
@@ -240,6 +241,7 @@ public final class SettingsActivity extends Activity {
         {"mark_read_button", "Mark as read button", "Puts Messenger's Mark as read icon in a chat's top bar while Hide read receipts is on. Opening the chat still sends nothing. Tap the icon when you want the sender to see Seen, and the chat turns read here too. When the bar is full it takes the place of the chat details button (tapping the chat's name opens the same page), or of another button that isn't for calls when a chat doesn't have one, so the call buttons stay put.", "privacy"},
         {"read_chats_locally", "Mark chats read on this phone", "Clears the unread look of a chat you've opened while Hide read receipts is on, so the chat list stops showing it bold with a count. Nothing goes to Messenger, so the other person still isn't told you read it. A new message in the chat brings the unread look back.", "privacy"},
         {"keep_unsent", "Keep unsent messages", "Keeps messages on screen after someone unsends them. In encrypted chats it keeps the words you already saw in the chat or a notification, and still has them after Messenger restarts. Group chats aren't tested. Your own unsends may be limited.", "privacy"},
+        {"hidden_words", "Hide messages with your words", "Hides messages that have words you choose. Type them below, separated by commas. A message that arrives with one of them shows as [hidden] in the chat instead of its words, and no notification goes up for it. Nothing is sent back and nothing is deleted, so the message is still there for whoever sent it, and the messages you send go out as they always did. The chat list's last line still shows Messenger's own preview of the message.", "privacy"},
         {"anonymous_stories", "View stories anonymously", "Opens other people's stories without adding you to their viewer list. Messenger still marks them as seen on your side.", "privacy"},
         {"save_stories", "Save any story", "Adds Save to the More options menu on other people's stories, so you can keep the photo or video on your phone.", "privacy"},
         {"blocked_list_pictures", "Hide pictures on the Blocked list", "Hides people's profile pictures on the list of people you've blocked, under Privacy and safety. Their names and Unblock stay.", "privacy"},
@@ -466,6 +468,7 @@ public final class SettingsActivity extends Activity {
         // Leaving settings makes a Quick setup or a Clear final, one still running included.
         started = false;
         homeHeader.saveWords();
+        hiddenWords.saveWords();
         messageLog.stop();
         endUndo();
         Settings.preferences.unregisterOnSharedPreferenceChangeListener(preferenceListener);
@@ -1055,6 +1058,7 @@ public final class SettingsActivity extends Activity {
             if ("bubbles".equals(spec[0]) || "facebook".equals(spec[0]) || Settings.TAB_BADGES.equals(spec[0]) || OwnFont.KEY.equals(spec[0])
                     || MessageLog.KEY.equals(spec[0]) || AutoReply.KEY.equals(spec[0]) || Settings.AVATAR_SHAPE.equals(spec[0])
                     || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0]) || ChatHiding.KEY.equals(spec[0])
+                    || HiddenWords.KEY.equals(spec[0])
                     || TabIcons.KEY.equals(spec[0])
                     || MessageActions.KEY.equals(spec[0]) || ChatMenuItems.KEY.equals(spec[0]) || CameraActivity.KEY.equals(spec[0])
                     || InvisibleButtons.KEY.equals(spec[0]) || QuietMode.KEY.equals(spec[0])
@@ -1089,6 +1093,7 @@ public final class SettingsActivity extends Activity {
                 else if (SpecialContacts.KEY.equals(spec[0])) specialContacts.addTo(wrapper);
                 else if (OwnFont.KEY.equals(spec[0])) fontFile.addTo(wrapper);
                 else if (HomeHeader.KEY.equals(spec[0])) homeHeader.addTo(wrapper);
+                else if (HiddenWords.KEY.equals(spec[0])) hiddenWords.addTo(wrapper);
                 else if (TabIcons.KEY.equals(spec[0])) tabIcons.addTo(wrapper);
                 else if (MessageActions.KEY.equals(spec[0])) messageActions.addTo(wrapper);
                 else if (ChatMenuItems.KEY.equals(spec[0])) chatMenuItems.addTo(wrapper);
@@ -1866,6 +1871,7 @@ public final class SettingsActivity extends Activity {
     private void applyQuickSetup(String name) {
         // Words typed a moment ago count as there, so iPhone look never writes over them.
         homeHeader.saveWords();
+        hiddenWords.saveWords();
         java.util.Map<String, Boolean> values = QuickSetups.values(name);
         // Turning a control off never needs this phone to run it, so Back to defaults also clears one it can't.
         java.util.function.Predicate<String> settable = "defaults".equals(name) ? Settings.installed::contains
@@ -1898,6 +1904,7 @@ public final class SettingsActivity extends Activity {
      */
     private void undoQuickSetup(java.util.Map<String, Boolean> changes, java.util.Map<String, Boolean> before, String words) {
         homeHeader.saveWords();
+        hiddenWords.saveWords();
         SharedPreferences.Editor edit = Settings.preferences.edit();
         int restored = 0;
         if (words != null && words.equals(Settings.preferences.getString(HomeHeader.TEXT, ""))) {
@@ -2227,6 +2234,7 @@ public final class SettingsActivity extends Activity {
                 + text.get("call_captions_duck_help");
             if (HomeHeader.KEY.equals(spec[0])) inside = text.get("home_header_words") + " " + text.get("home_header_choose") + " "
                 + text.get("home_header_help", HomeHeaderPicture.MAX_MEGABYTES);
+            if (HiddenWords.KEY.equals(spec[0])) inside = text.get("hidden_words_words") + " " + text.get("hidden_words_help");
             if (TabIcons.KEY.equals(spec[0])) {
                 inside = text.get("tab_icons_choose") + " " + text.get("tab_icons_help", HomeHeaderPicture.MAX_MEGABYTES);
                 for (String tab : TabIcons.SHOWN) inside += " " + text.get("tab_icons_tab_" + tab);
