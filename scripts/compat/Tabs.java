@@ -379,6 +379,7 @@ final class Tabs {
     }
 
     static final String TAB_CONFIG_TRACE = "MessengerTabConfigurationCreator.createTabConfiguration";
+    static final String TAB_ICON_TRACE = "TabBarPresenter.createRenderInfo";
     static final Set<String> HIDABLE_TABS = Set.of("PEOPLE", "JEWEL", "AI", "MUSE");
 
     /**
@@ -402,6 +403,21 @@ final class Tabs {
             if (strings.contains("tabIconContentDescription") && strings.contains("title")) found.add(method);
         }
         for (var method : found) if (titleStore(method) < 0) return List.of();
+        return found;
+    }
+
+    /**
+     * tab_icons: the one method that builds every tab's render info, found by the name Messenger traces it under.
+     * The patch proves the icon sites inside it. Mirrors TabIcons.kt.
+     */
+    static List<Method> tabIconBuilders(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (method.getImplementation() == null) continue;
+            for (var i : method.getImplementation().getInstructions())
+                if (i instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference sr &&
+                    TAB_ICON_TRACE.equals(sr.getString())) { found.add(method); break; }
+        }
         return found;
     }
 

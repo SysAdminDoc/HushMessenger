@@ -66,6 +66,7 @@ public final class SettingsActivity extends Activity {
     private final ChoicesBackup backup = new ChoicesBackup(this);
     private final FontFileRow fontFile = new FontFileRow(this);
     private final HomeHeaderRow homeHeader = new HomeHeaderRow(this);
+    private final TabIconsRow tabIcons = new TabIconsRow(this);
     private final MessageActionsRow messageActions = new MessageActionsRow(this);
     private final ChatMenuItemsRow chatMenuItems = new ChatMenuItemsRow(this);
     private final MenuRowsRow menuRows = new MenuRowsRow(this);
@@ -120,7 +121,7 @@ public final class SettingsActivity extends Activity {
     boolean started;
     static final int UNDO_MILLIS = 10_000;
     static final int SAVE_CHOICES = 7101, READ_CHOICES = 7102, PICK_FONT = 7103, PICK_AUTO_REPLY_PICTURE = 7104, SAVE_MESSAGE_LOG = 7105,
-        PICK_HOME_HEADER = 7106;
+        PICK_HOME_HEADER = 7106, PICK_TAB_ICON = 7107;
     /**
      * The switch for each way back in (#22, HushFacebook#146), and the help and reason each was built with. Turning one
      * way off can change what the others say or whether they can turn off, so they're rebuilt when that changes.
@@ -141,7 +142,7 @@ public final class SettingsActivity extends Activity {
     /** Switches whose effect hasn't been confirmed on a phone. Each shows the Experimental badge. */
     /** The switches that take a way into these settings away, each with a reason when it can't turn on. */
     static final Set<String> WAYS_IN = Set.of("hide_menu_row", Settings.HIDE_ICON_SHORTCUTS, Settings.HIDE_LOGO_PRESS);
-    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", "chat_menu_items", "quiet_calls", "save_voice", "gallery_to_chat", PastePhoto.KEY, InstantGallery.KEY, "call_recording", "inbox_search_bar", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY, CallCaptions.KEY);
+    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", "chat_menu_items", "quiet_calls", "save_voice", "gallery_to_chat", PastePhoto.KEY, InstantGallery.KEY, "call_recording", "inbox_search_bar", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY, CallCaptions.KEY, TabIcons.KEY);
     static final String[][] CONTROLS = {
         {"people", "Hide People You May Know", "Hides suggested people in chats, search and stories, and on the People and Notifications tabs. Good if you only want people you know.", "inbox"},
         {"friend_requests", "Hide friend request cards", "Hides friend request cards in your chat list. It doesn't accept or decline anyone.", "inbox"},
@@ -170,6 +171,7 @@ public final class SettingsActivity extends Activity {
         {"tab_settings_show", "Show settings tab", "Puts Messenger's own settings tab at the end of the bar at the bottom, with your picture on it, so your account settings are one tap away. Restart Messenger to see the tab.", "tab_bar"},
         {"tab_badges", "Hide tab badges", "Hides the red dots and counts on the tabs at the bottom and on the Facebook button at the top. Turn on Keep for any you still want. Restart Messenger to see the change.", "tab_bar"},
         {"hide_tab_labels", "Hide tab labels", "Takes the words off the tabs at the bottom and leaves the icons on their own. Screen readers still name every tab. Restart Messenger to see the change.", "tab_bar"},
+        {"tab_icons", "Your own tab icons", "Swaps the icons in the bar at the bottom for plain outlined ones, and lets you put your own picture on any tab. Restart Messenger to see the change.", "tab_bar"},
         {"tab_notifications", "Hide Notifications tab", "Hides the Notifications tab in the bar at the bottom. Restart Messenger to see the tab go.", "tab_bar"},
         {"tab_stories", "Hide Stories tab", "Hides the Stories tab in the bar at the bottom. Restart Messenger to see the tab go.", "tab_bar"},
         {"tab_bar_scroll_away", "Hide the tab bar while scrolling", "Slides the tab bar at the bottom out of the way as you scroll down your chats and brings it back when you scroll up. Restart Messenger to see the change.", "tab_bar"},
@@ -863,6 +865,8 @@ public final class SettingsActivity extends Activity {
         }
         // The header is drawn once as the chat list opens, so new words or a new picture wait for a restart.
         if (Settings.installed.contains(HomeHeader.KEY)) values.put(HomeHeader.KEY, HomeHeader.inUse(this));
+        // The bar at the bottom is built once as Messenger opens, so a picked tab icon waits for a restart too.
+        if (Settings.installed.contains(TabIcons.KEY)) values.put(TabIcons.KEY, TabIcons.inUse(this));
         return values;
     }
 
@@ -1030,6 +1034,7 @@ public final class SettingsActivity extends Activity {
             if ("bubbles".equals(spec[0]) || "facebook".equals(spec[0]) || Settings.TAB_BADGES.equals(spec[0]) || OwnFont.KEY.equals(spec[0])
                     || MessageLog.KEY.equals(spec[0]) || AutoReply.KEY.equals(spec[0]) || Settings.AVATAR_SHAPE.equals(spec[0])
                     || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0]) || ChatHiding.KEY.equals(spec[0])
+                    || TabIcons.KEY.equals(spec[0])
                     || MessageActions.KEY.equals(spec[0]) || ChatMenuItems.KEY.equals(spec[0]) || CameraActivity.KEY.equals(spec[0])
                     || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])
                     || MenuBlur.KEY.equals(spec[0]) || "hide_read_receipts".equals(spec[0])
@@ -1060,6 +1065,7 @@ public final class SettingsActivity extends Activity {
                 else if (SpecialContacts.KEY.equals(spec[0])) specialContacts.addTo(wrapper);
                 else if (OwnFont.KEY.equals(spec[0])) fontFile.addTo(wrapper);
                 else if (HomeHeader.KEY.equals(spec[0])) homeHeader.addTo(wrapper);
+                else if (TabIcons.KEY.equals(spec[0])) tabIcons.addTo(wrapper);
                 else if (MessageActions.KEY.equals(spec[0])) messageActions.addTo(wrapper);
                 else if (ChatMenuItems.KEY.equals(spec[0])) chatMenuItems.addTo(wrapper);
                 else if (CallCaptions.KEY.equals(spec[0])) {
@@ -1872,6 +1878,10 @@ public final class SettingsActivity extends Activity {
             homeHeader.pictureResult(result, data);
             return;
         }
+        if (request == PICK_TAB_ICON) {
+            tabIcons.pictureResult(result, data);
+            return;
+        }
         if (request == PICK_FONT) {
             // Cancelled: nothing to do and nothing to say.
             if (result != RESULT_OK || data == null || data.getData() == null) return;
@@ -2129,6 +2139,10 @@ public final class SettingsActivity extends Activity {
                 + text.get("call_captions_duck_help");
             if (HomeHeader.KEY.equals(spec[0])) inside = text.get("home_header_words") + " " + text.get("home_header_choose") + " "
                 + text.get("home_header_help", HomeHeaderPicture.MAX_MEGABYTES);
+            if (TabIcons.KEY.equals(spec[0])) {
+                inside = text.get("tab_icons_choose") + " " + text.get("tab_icons_help", HomeHeaderPicture.MAX_MEGABYTES);
+                for (String tab : TabIcons.SHOWN) inside += " " + text.get("tab_icons_tab_" + tab);
+            }
             if (QuietCalls.KEY.equals(spec[0])) {
                 inside = text.get(QuietCalls.CHOSEN_ONLY) + " " + text.get("quiet_calls_chosen_help");
                 for (String[] chat : QuietCalls.recent()) inside += " " + chat[1];

@@ -203,6 +203,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(FACEBOOK_PROFILE_HEADER).addAll(findProfileHeader(classes))
     found.getValue(TAB_CONFIG).addAll(findTabConfig(classes))
     found.getValue(TAB_LABELS).addAll(findTabLabels(classes))
+    found.getValue(TAB_ICONS).addAll(findTabIcons(classes))
     found.getValue(AI_MENTIONS).addAll(findAiMentions(classes))
     found.getValue(AI_COMMANDS).addAll(findAiCommands(classes))
     val searchBars = findAiSearchHint(classes)

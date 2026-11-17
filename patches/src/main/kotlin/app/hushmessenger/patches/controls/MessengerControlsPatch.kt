@@ -169,6 +169,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         TAB_BADGES -> validateTabBadges()
         TAB_CONFIG -> validateTabConfig()
         TAB_LABELS -> validateTabLabels()
+        TAB_ICONS -> validateTabIcons()
         FACEBOOK_BADGE -> validateFacebookBadge()
         FACEBOOK_PROFILE_HEADER -> validateProfileHeader()
         AI_MENTIONS -> validateAiMentions()
@@ -313,6 +314,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             TAB_BADGES -> method.injectTabBadges()
             TAB_CONFIG -> method.injectTabConfig()
             TAB_LABELS -> method.injectTabLabels()
+            TAB_ICONS -> method.injectTabIcons()
             FACEBOOK_BADGE -> method.injectFacebookBadge()
             FACEBOOK_PROFILE_HEADER -> method.injectProfileHeader()
             AI_MENTIONS -> method.injectAiMentions()
@@ -642,6 +644,9 @@ val hideStoriesTabPatch = controlPatch("tab_stories", "Hide Stories tab", "Hides
 @Suppress("unused")
 val hideTabLabelsPatch = controlPatch("hide_tab_labels", "Hide tab labels", "Takes the words off the tabs at the bottom and leaves the icons on their own. Screen readers still name every tab. Restart Messenger to see the change.",
     "Tab bar", TAB_LABELS)
+@Suppress("unused")
+val tabIconsPatch = controlPatch("tab_icons", "Your own tab icons", "Swaps the icons in the bar at the bottom for plain outlined ones, and lets you put your own picture on any tab. Restart Messenger to see the change.",
+    "Tab bar", TAB_ICONS)
 @Suppress("unused")
 val hideTabBadgesPatch = controlPatch("tab_badges", "Hide tab badges", "Hides the red dots and counts on the tabs at the bottom and on the Facebook button at the top. Turn on Keep for any you still want. Restart Messenger to see the change.",
     "Tab bar", TAB_BADGES, FACEBOOK_BADGE)

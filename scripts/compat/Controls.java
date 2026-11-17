@@ -73,6 +73,7 @@ final class Controls {
         found.get("facebook_profile_header").addAll(profileHeaders(classes));
         found.get("tab_config").addAll(tabConfigurations(classes));
         found.get("tab_labels").addAll(tabDescriptions(classes));
+        found.get("tab_icons").addAll(tabIconBuilders(classes));
         found.get("ai_mentions").addAll(aiMentionDispatchers(classes));
         found.get("ai_commands").addAll(aiCommandLists(classes));
         var searchBars = searchBarBuilders(classes);

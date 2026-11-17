@@ -274,6 +274,7 @@ hook tab_bar_scroll_away LX/1u9;->DVG()Z
 hook tab_bar_scroll_away LX/1u9;->FGl()Z
 hook tab_bar_scroll_away LX/4dY;->A03(Landroid/view/View;LX/4dY;I)Z
 hook tab_config LX/1k7;->A02(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;)LX/1ks;
+hook tab_icons LX/1sr;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/1sr;Lcom/google/common/collect/ImmutableList;IZ)Lcom/google/common/collect/ImmutableList;
 hook tab_labels LX/1tC;-><init>(LX/1t8;Ljava/lang/String;Ljava/lang/String;Z)V
 hook tab_notifications LX/1iW;->A09(LX/1iW;)Z
 hook tab_people LX/1iW;->A0E(LX/1iW;)Z
