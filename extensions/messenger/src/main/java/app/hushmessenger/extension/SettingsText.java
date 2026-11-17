@@ -208,6 +208,10 @@ final class SettingsText {
         ENGLISH.put("call_recording_unsupported", "This needs Android 10 or newer. Your choice is saved.");
         ENGLISH.put("call_recording_start", "Record");
         ENGLISH.put("call_recording_stop_pill", "Recording, tap to stop");
+        ENGLISH.put("call_recording_stop_time", "Stop %1$s");
+        ENGLISH.put("call_recording_paused_time", "Paused %1$s");
+        ENGLISH.put("call_recording_pause", "Pause");
+        ENGLISH.put("call_recording_resume", "Resume");
         ENGLISH.put("call_recording_on", "Recording this call");
         ENGLISH.put("call_recording_stop", "Stop");
         ENGLISH.put("call_recording_channel", "Call recording");
