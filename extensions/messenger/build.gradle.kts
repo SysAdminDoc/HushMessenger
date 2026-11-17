@@ -6,6 +6,54 @@ extension {
     name = "extensions/messenger.mpe"
 }
 
+/**
+ * Writes NOTICE into a Java constant, so Source and licenses shows exactly the file the repository ships. Morphe's
+ * section 7b notice has to reach the person using the app, and a hand-kept copy would drift from NOTICE the first
+ * time either changed.
+ */
+abstract class GenerateLicenseNotice : DefaultTask() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val notice: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun generate() {
+        val text = notice.get().asFile.readText(Charsets.UTF_8).replace("\r\n", "\n")
+        val literal = buildString {
+            for (ch in text) {
+                when (ch) {
+                    '\\' -> append("\\\\")
+                    '"' -> append("\\\"")
+                    '\n' -> append("\\n")
+                    else -> if (ch.code < 0x20 || ch.code > 0x7e) append("\\u%04x".format(ch.code)) else append(ch)
+                }
+            }
+        }
+        val directory = outputDir.get().asFile.resolve("app/hushmessenger/extension")
+        directory.mkdirs()
+        directory.resolve("LicenseNotice.java").writeText(
+            "package app.hushmessenger.extension;\n\n" +
+                "/** Generated from NOTICE by :extensions:messenger:generateLicenseNotice. Do not edit. */\n" +
+                "final class LicenseNotice {\n" +
+                "    static final String TEXT = \"$literal\";\n\n" +
+                "    private LicenseNotice() {\n    }\n}\n",
+            Charsets.UTF_8,
+        )
+    }
+}
+
+val generateLicenseNotice = tasks.register<GenerateLicenseNotice>("generateLicenseNotice") {
+    notice.set(rootProject.layout.projectDirectory.file("NOTICE"))
+    outputDir.set(layout.buildDirectory.dir("generated/source/licenseNotice"))
+}
+
+extensions.getByType<com.android.build.api.variant.ApplicationAndroidComponentsExtension>().onVariants { variant ->
+    variant.sources.java?.addGeneratedSourceDirectory(generateLicenseNotice, GenerateLicenseNotice::outputDir)
+}
+
 android {
     namespace = "app.hushmessenger.extension"
     defaultConfig {
@@ -68,4 +116,9 @@ tasks.withType<Test>().configureEach {
     // One worker holds a Robolectric sandbox per SDK (28, 36, and 30 with native graphics for the font tests).
     // Gradle's 512 MB default filled up with all three, and the worker then spun in GC at exit instead of ending.
     maxHeapSize = "1g"
+    // LicenseNoticeTest holds NOTICE against the copy generated into the extension. NOTICE sits outside this module, so
+    // without this Gradle calls the tests up to date after NOTICE changes and the comparison never runs.
+    inputs.file(rootProject.layout.projectDirectory.file("NOTICE"))
+        .withPropertyName("licenseNotice")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
 }

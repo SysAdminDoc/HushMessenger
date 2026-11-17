@@ -53,6 +53,7 @@ public final class SettingsActivity extends Activity {
     /** The bar title's visibility as last set here, so it changes only when what it should show does. */
     private int barTitleShown = -1;
     private EditText search;
+    private SettingsDialog licenses;
     private boolean compact, scrollHeader, binding, lightTheme, recreatingTheme;
     private int restoreControlsScroll = -1, restoreAppScroll = -1;
     private final List<Switch> switches = new ArrayList<>();
@@ -481,6 +482,7 @@ public final class SettingsActivity extends Activity {
         messageLog.destroy();
         backup.destroy();
         updates.cancelUpdateCheck();
+        if (licenses != null) licenses.dialog.dismiss();
         super.onDestroy();
     }
 
@@ -1763,8 +1765,8 @@ public final class SettingsActivity extends Activity {
             logOut.setContentDescription(text.get("log_out") + ". " + text.get("log_out_unavailable"));
         }
         addOverview(content, logOut, 16, false);
-        addOverview(content, linkPanel("source_licenses", "source", SettingsIcons.LICENSE, true,
-            () -> openPage("https://github.com/SysAdminDoc/HushMessenger#credits")), 16, false);
+        // NOTICE itself, in the app, so Morphe's notice reaches whoever uses it with no page to load.
+        addOverview(content, linkPanel("source_licenses", "source", SettingsIcons.LICENSE, true, this::showLicenses), 16, false);
         // Built when tapped, so the controls listed are the ones on right then.
         addOverview(content, linkPanel("report_problem", "report", SettingsIcons.BUG, true,
             () -> openPage(ProblemReport.issueUrl(reportFacts()))), 16, false);
@@ -2336,6 +2338,17 @@ public final class SettingsActivity extends Activity {
             }
         }
         feedback(text.get("open_help"), Toast.LENGTH_LONG);
+    }
+
+    private void showLicenses() {
+        if (licenses != null && licenses.dialog.isShowing()) return;
+        if (isFinishing() || isDestroyed()) return;
+        licenses = LicenseSheet.show(this);
+    }
+
+    /** For tests: the Source and licenses sheet last opened, or null. */
+    SettingsDialog licensesSheet() {
+        return licenses;
     }
 
     /** Opens a web page in the phone's browser, or says why it couldn't. */

@@ -490,6 +490,8 @@ final class SettingsText {
         ENGLISH.put("log_out_unavailable", "Messenger's Log out wasn't found in this build, so use the one in Messenger's menu.");
         ENGLISH.put("log_out_failed", "Messenger's Log out didn't open. The one in Messenger's menu still works.");
         ENGLISH.put("source", "Source and licenses");
+        ENGLISH.put("licenses_hint", "What HushMessenger carries from the projects it's built on. The notices stay in English, like the licenses they come from.");
+        ENGLISH.put("licenses_source", "Source code");
         ENGLISH.put("no_browser", "No web browser found on this phone");
         ENGLISH.put("page_blocked", "Your phone didn't allow opening that page");
         ENGLISH.put("support", "Support HushMessenger");
@@ -520,7 +522,7 @@ final class SettingsText {
         ENGLISH.put("quick_undone_many", "Put back %d controls");
         ENGLISH.put("undo", "Undo");
         ENGLISH.put("undo_action", "Undo %s");
-        ENGLISH.put("credits", "GPL-3.0. Includes work from De-Vanced, ReVanced, Doom and Messenger Cleaner.");
+        ENGLISH.put("credits", "GPL-3.0. Includes work from Morphe, De-Vanced, ReVanced, Doom and Messenger Cleaner.");
         ENGLISH.put("independent", "Independent of Meta and Morphe.");
         ENGLISH.put("clipboard", "HushMessenger setup");
         ENGLISH.put("copied", "Setup copied");
