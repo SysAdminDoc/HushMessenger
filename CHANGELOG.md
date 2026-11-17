@@ -67,6 +67,7 @@
 - For developers, `scripts/phone.ps1` drives a phone under the shared device lease. It takes and releases the lease and checks its token before every adb call. It refuses the power and sleep keys and holds back input while a call is up or another app is in front. Each dump is fresh and lists the labeled rows with the point to tap.
 - For developers, the build runs on Gradle 9.9.1, which fixes the three Gradle security advisories published on November 10. Set `GITHUB_ACTOR` and `GITHUB_TOKEN` for every build, as the README's build steps say. With only `gpr.user` and `gpr.key` in gradle.properties, the Morphe settings plugin now stops before the build starts.
 - For developers, patches that search all of Messenger's code now share one class list that leaves the extension's own classes out. `Keep a renamed copy working` and `Install beside Meta apps` still looked at those, and a match there rewrites Hush's code instead of Messenger's.
+- For developers, `WholePatchTest` patches the real 587 stock APK three ways: the default patches, the defaults plus `Clone install under another package name`, and the defaults plus `GmsCore support` and `Spoof package version`. It fails when a patch breaks or changes extension code it isn't meant to fill in. Put back the old dedup scan and it catches the CloneCompat rewrite behind #185. Like the other fixture tests, it needs `HUSH_NATIVE_FIXTURES`.
 
 ## 0.30.0 (2026-11-14)
 
