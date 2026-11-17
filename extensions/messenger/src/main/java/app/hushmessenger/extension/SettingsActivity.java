@@ -88,6 +88,8 @@ public final class SettingsActivity extends Activity {
     /** The switch for each chat that called lately under Quiet incoming calls, or null while the page isn't built. */
     private LinearLayout quietCallers;
     private final List<Switch> quietCallerSwitches = new ArrayList<>();
+    private LinearLayout recordCallers;
+    private final List<Switch> recordCallerSwitches = new ArrayList<>();
     private final List<String[]> installedControls = new ArrayList<>();
     private final List<LinearLayout> groups = new ArrayList<>();
     private final List<Button> tabs = new ArrayList<>();
@@ -427,6 +429,7 @@ public final class SettingsActivity extends Activity {
         refreshChoices();
         if (hiddenChats != null) fillHiddenChats();
         if (quietCallers != null) fillQuietCallers();
+        fillRecordCallers();
         messageActions.fill(null);
         chatMenuItems.fill(null);
         invisibleButtons.fill(null);
@@ -1085,7 +1088,9 @@ public final class SettingsActivity extends Activity {
                 else if (ChatMenuItems.KEY.equals(spec[0])) chatMenuItems.addTo(wrapper);
                 else if (InvisibleButtons.KEY.equals(spec[0])) invisibleButtons.addTo(wrapper);
                 else if (CallRecording.KEY.equals(spec[0])) {
-                    callRecording.addTo(wrapper);
+                    callRecording.addScopeTo(wrapper);
+                    addRecordCallChats(wrapper);
+                    callRecording.addKeepTo(wrapper);
                     ui.add(wrapper, controlRow(CallRecordings.NOTIFY, text.format(CallRecordings.NOTIFY),
                         text.format("call_recording_notify_help"), false), 8);
                 }
@@ -1168,6 +1173,38 @@ public final class SettingsActivity extends Activity {
             int before = switches.size();
             ui.add(quietCallers, controlRow(QuietCalls.CHAT_PREFIX + chat[0], chat[1], "", false), 8);
             quietCallerSwitches.addAll(switches.subList(before, switches.size()));
+        }
+    }
+
+    /** A switch for each chat that called lately, shown only while Only chosen chats is the scope picked (#193). */
+    private void addRecordCallChats(LinearLayout content) {
+        recordCallers = ui.column();
+        recordCallers.setTag("call_recording_recent_list");
+        ui.add(content, recordCallers, 0);
+        fillRecordCallers();
+    }
+
+    /** Filled again on every return, so a chat that called while settings sat behind Messenger shows up here too. */
+    void fillRecordCallers() {
+        if (recordCallers == null) return;
+        switches.removeAll(recordCallerSwitches);
+        recordCallerSwitches.clear();
+        recordCallers.removeAllViews();
+        if (!CallRecordings.CHOSEN.equals(CallRecordings.scope())) {
+            recordCallers.setVisibility(View.GONE);
+            return;
+        }
+        recordCallers.setVisibility(View.VISIBLE);
+        List<String[]> chats = QuietCalls.recent();
+        if (chats.isEmpty()) {
+            TextView none = ui.text(text.get("call_recording_recent_empty"), 13, ui.muted, false);
+            none.setTag("call_recording_recent_empty");
+            ui.add(recordCallers, none, 8);
+        }
+        for (String[] chat : chats) {
+            int before = switches.size();
+            ui.add(recordCallers, controlRow(CallRecordings.CHAT_PREFIX + chat[0], chat[1], "", false), 8);
+            recordCallerSwitches.addAll(switches.subList(before, switches.size()));
         }
     }
 
@@ -1472,7 +1509,7 @@ public final class SettingsActivity extends Activity {
             : CameraActivity.ASK.equals(key) ? CameraActivity.KEY
             : StoryEye.KEY.equals(key) ? StoryEye.OWNER
             : CallCaptions.SPEAK.equals(key) || CallCaptions.DUCK.equals(key) ? CallCaptions.KEY
-            : CallRecordings.NOTIFY.equals(key) ? CallRecording.KEY
+            : CallRecordings.NOTIFY.equals(key) || key.startsWith(CallRecordings.CHAT_PREFIX) ? CallRecording.KEY
             : ViewOnceSave.KEY.equals(key) ? "allow_screenshot"
             : FloatingMenu.KEY.equals(key) ? MenuBlur.KEY
             : Settings.HIDE_DELIVERED.equals(key) ? "hide_read_receipts"
@@ -2178,7 +2215,11 @@ public final class SettingsActivity extends Activity {
                 for (String[] chat : QuietCalls.recent()) inside += " " + chat[1];
             }
             if (CallRecording.KEY.equals(spec[0])) {
-                inside = text.get("call_recording_keep") + " " + text.get("call_recording_keep_help");
+                inside = text.get(CallRecordings.SCOPE) + " " + text.get("call_recording_scope_help");
+                for (String scope : CallRecordings.SCOPES) inside += " " + text.get(CallRecordings.SCOPE + "_" + scope);
+                if (CallRecordings.CHOSEN.equals(CallRecordings.scope()))
+                    for (String[] chat : QuietCalls.recent()) inside += " " + chat[1];
+                inside += " " + text.get("call_recording_keep") + " " + text.get("call_recording_keep_help");
                 for (String days : CallRecordings.KEEP_CHOICES)
                     inside += " " + text.get("0".equals(days) ? "call_recording_keep_all" : "call_recording_keep_days", days);
                 inside += " " + text.get(CallRecordings.NOTIFY) + " " + text.get("call_recording_notify_help");

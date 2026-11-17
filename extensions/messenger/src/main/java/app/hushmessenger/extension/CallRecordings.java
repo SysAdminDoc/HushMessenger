@@ -36,6 +36,16 @@ final class CallRecordings {
     /** Every recording's name starts with this, which is how the tidy-up knows its own. */
     static final String PREFIX = "Call ";
 
+    /** Which calls record themselves, with no tap on the button. */
+    static final String SCOPE = "call_recording_scope";
+    /** Nothing records itself, which is how it arrives. */
+    static final String TAP = "tap";
+    static final String ALL = "all";
+    static final String CHOSEN = "chosen";
+    static final List<String> SCOPES = Arrays.asList(TAP, ALL, CHOSEN);
+    /** One switch per chat, this prefix and the chat's key, so each binds like any other switch. */
+    static final String CHAT_PREFIX = "call_recording_chat_";
+
     private static final String CHANNEL = "hush_call_recordings";
     private static final int NOTIFICATION = 193;
 
@@ -50,6 +60,29 @@ final class CallRecordings {
         } catch (RuntimeException notANumber) {
             return 0;
         }
+    }
+
+    /** Which calls record themselves. Anything else in the store reads as only the ones you tap Record on. */
+    static String scope() {
+        String saved = Settings.preferences == null ? null : Settings.preferences.getString(SCOPE, TAP);
+        return SCOPES.contains(saved) ? saved : TAP;
+    }
+
+    /**
+     * Whether the call in front of the person now records itself, where [name] is who the call screen says it's with.
+     * An incoming call brings its chat with it; an outgoing one has no notification to name it, so the screen's name
+     * is matched against the chats that have called before. A call nothing can place is left to the button.
+     */
+    static boolean wants(String name) {
+        String scope = scope();
+        if (ALL.equals(scope)) return true;
+        if (!CHOSEN.equals(scope) || Settings.preferences == null) return false;
+        String chat = QuietCalls.ringingChat();
+        if (chat != null) return Settings.preferences.getBoolean(CHAT_PREFIX + chat, false);
+        if (name == null || name.trim().isEmpty()) return false;
+        for (String[] called : QuietCalls.recent())
+            if (called[1].equalsIgnoreCase(name.trim()) && Settings.preferences.getBoolean(CHAT_PREFIX + called[0], false)) return true;
+        return false;
     }
 
     /**

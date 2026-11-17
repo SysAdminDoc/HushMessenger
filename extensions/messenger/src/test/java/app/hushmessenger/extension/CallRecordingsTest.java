@@ -206,6 +206,68 @@ public class CallRecordingsTest {
         }
     }
 
+    @Test public void callsRecordThemselvesOnlyOnceTheScopeIsChanged() {
+        assertEquals(CallRecordings.TAP, CallRecordings.scope());
+        assertFalse(CallRecordings.wants("Alex Kim"));
+        Settings.preferences.edit().putString(CallRecordings.SCOPE, "something else entirely").commit();
+        assertEquals(CallRecordings.TAP, CallRecordings.scope());
+        Settings.preferences.edit().putString(CallRecordings.SCOPE, CallRecordings.ALL).commit();
+        assertTrue(CallRecordings.wants(null));
+    }
+
+    @Test public void aChosenChatIsTheOneRingingOrTheNameOnTheScreen() {
+        Settings.preferences.edit().putString(CallRecordings.SCOPE, CallRecordings.CHOSEN).commit();
+        QuietCalls.resetForTests();
+        assertFalse("Nothing to go on", CallRecordings.wants(null));
+
+        QuietCalls.incoming("t_17", 0);
+        assertFalse("That chat isn't switched on", CallRecordings.wants(null));
+        Settings.preferences.edit().putBoolean(CallRecordings.CHAT_PREFIX + "t_17", true).commit();
+        assertTrue(CallRecordings.wants(null));
+
+        // An outgoing call rings nobody, so the name on the call screen is what's left to match.
+        QuietCalls.resetForTests();
+        Settings.preferences.edit().putString(QuietCalls.RECENT, "t_17\tAlex Kim\nt_9\tSam Ortiz").commit();
+        assertTrue(CallRecordings.wants("alex kim"));
+        assertFalse(CallRecordings.wants("Sam Ortiz"));
+        assertFalse(CallRecordings.wants("   "));
+    }
+
+    @Test public void settingsOffersTheScopeAndListsTheChosenChats() {
+        Settings.preferences.edit().putBoolean(CallRecording.KEY, true)
+            .putString(QuietCalls.RECENT, "t_17\tAlex Kim").commit();
+        try (var page = org.robolectric.Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            android.view.View root = page.get().getWindow().getDecorView();
+            android.widget.RadioButton tap = root.findViewWithTag("call_recording_scope_tap");
+            android.widget.RadioButton chosen = root.findViewWithTag("call_recording_scope_chosen");
+            android.view.View list = root.findViewWithTag("call_recording_recent_list");
+            assertNotNull(tap);
+            assertNotNull(root.findViewWithTag("call_recording_scope_all"));
+            assertTrue("Only when I tap Record to start with", tap.isChecked());
+            assertEquals(android.view.View.GONE, list.getVisibility());
+
+            chosen.performClick();
+            org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle();
+            assertEquals(CallRecordings.CHOSEN, Settings.preferences.getString(CallRecordings.SCOPE, null));
+            assertEquals(android.view.View.VISIBLE, list.getVisibility());
+            assertNotNull("The chat that called has a switch", root.findViewWithTag(CallRecordings.CHAT_PREFIX + "t_17"));
+            assertNull(root.findViewWithTag("call_recording_recent_empty"));
+
+            tap.performClick();
+            org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle();
+            assertEquals(android.view.View.GONE, list.getVisibility());
+        }
+    }
+
+    @Test public void withNobodyHavingCalledTheListSaysSo() {
+        Settings.preferences.edit().putBoolean(CallRecording.KEY, true)
+            .putString(CallRecordings.SCOPE, CallRecordings.CHOSEN).commit();
+        try (var page = org.robolectric.Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            android.view.View root = page.get().getWindow().getDecorView();
+            assertNotNull(root.findViewWithTag("call_recording_recent_empty"));
+        }
+    }
+
     /** The rows sit inside the control's block, so searching their own words has to reach them. */
     @Test public void theNewRowsTurnUpInASearch() {
         Settings.preferences.edit().putBoolean(CallRecording.KEY, true).commit();
@@ -214,7 +276,8 @@ public class CallRecordingsTest {
             android.widget.EditText find = root.findViewWithTag("find_control");
             android.view.View nothing = root.findViewWithTag("empty_state");
             assertNotNull(find);
-            for (String words : new String[] {"notify when a call is saved", "keep recordings", "for 30 days"}) {
+            for (String words : new String[] {"notify when a call is saved", "keep recordings", "for 30 days",
+                    "calls to record", "only when i tap record"}) {
                 find.setText(words);
                 org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle();
                 assertEquals("Searching " + words, android.view.View.GONE, nothing.getVisibility());
@@ -230,7 +293,9 @@ public class CallRecordingsTest {
         assertEquals("Notify when a call is saved", SettingsText.ENGLISH.get(CallRecordings.NOTIFY));
         for (String id : new String[] {"call_recording_keep", "call_recording_keep_help", "call_recording_keep_all",
                 "call_recording_keep_days", "call_recording_keep_picked", CallRecordings.NOTIFY, "call_recording_notify_help",
-                "call_recording_saved_channel", "call_recording_saved_title", "call_recording_share"}) {
+                "call_recording_saved_channel", "call_recording_saved_title", "call_recording_share",
+                CallRecordings.SCOPE, "call_recording_scope_tap", "call_recording_scope_all", "call_recording_scope_chosen",
+                "call_recording_scope_help", "call_recording_scope_picked", "call_recording_recent_empty"}) {
             assertNotNull("English " + id, SettingsText.ENGLISH.get(id));
         }
     }

@@ -106,6 +106,10 @@ public final class CallRecording {
     private static TextView pausePill;
     private static Session session;
     private static BroadcastReceiver stopReceiver;
+    /** Messenger itself, for a call that records itself with no screen of its own in front. */
+    private static Context application;
+    /** Whether the call in progress has already had its one look at the chosen scope. */
+    private static boolean startedThisCall;
     /** Keeps the time on the button going while a recording runs. */
     private static final Runnable TICKING = CallRecording::refreshPill;
 
@@ -123,6 +127,8 @@ public final class CallRecording {
         pausePill = null;
         session = null;
         stopReceiver = null;
+        application = null;
+        startedThisCall = false;
         MAIN.removeCallbacks(TICKING);
         store = new SharedAudio();
         CallCaptions.resetForTests();
@@ -281,7 +287,10 @@ public final class CallRecording {
         try {
             callActive = running;
             MAIN.post(() -> {
-                if (!callActive && session != null) session.finishUp();
+                if (!callActive) {
+                    if (session != null) session.finishUp();
+                    startedThisCall = false;
+                }
                 CallCaptions.call(callActive);
                 refresh();
             });
@@ -291,8 +300,9 @@ public final class CallRecording {
     }
 
     /** Watches for which of Messenger's screens is showing. It does nothing else until a call starts. */
-    static void register(Application application) {
-        application.registerActivityLifecycleCallbacks(new Screens());
+    static void register(Application messenger) {
+        application = messenger;
+        messenger.registerActivityLifecycleCallbacks(new Screens());
     }
 
     static final class Screens implements Application.ActivityLifecycleCallbacks {
@@ -319,8 +329,32 @@ public final class CallRecording {
     }
 
     private static void refresh() {
+        autoStart();
         refreshPill();
         CallCaptions.screen(top);
+    }
+
+    /**
+     * Starts a recording on its own when Calls to record asks for it (#193). It runs again on every screen change
+     * while the call is up, since an outgoing call is only named once its screen is in front, and it gives up on the
+     * call once it has started one.
+     */
+    private static void autoStart() {
+        try {
+            if (!callActive || session != null || startedThisCall) return;
+            if (!Settings.wouldUse(KEY) || !Settings.available(KEY)) return;
+            Context context = top != null ? top.getApplicationContext() : application;
+            if (context == null) return;
+            String name = CallName.of(top == null ? null : top.findViewById(android.R.id.content));
+            if (!CallRecordings.wants(name)) return;
+            startedThisCall = true;
+            session = new Session(context, name);
+            session.start();
+            showNotification(context);
+        } catch (RuntimeException error) {
+            Settings.hookFailedPrivately(KEY, "Couldn't start the recording on its own", error);
+            session = null;
+        }
     }
 
     private static void refreshPill() {
@@ -455,6 +489,8 @@ public final class CallRecording {
 
     private static void tapped(Context screen) {
         try {
+            // A tap settles this call either way, so a scope that records on its own doesn't start it up again.
+            startedThisCall = true;
             if (session != null) {
                 session.finishUp();
                 return;

@@ -217,6 +217,13 @@ final class SettingsText {
         ENGLISH.put("call_recording_channel", "Call recording");
         ENGLISH.put("call_recording_saved", "Call saved to %1$s");
         ENGLISH.put("call_recording_failed", "Couldn't record this call");
+        ENGLISH.put("call_recording_scope", "Calls to record");
+        ENGLISH.put("call_recording_scope_tap", "Only when I tap Record");
+        ENGLISH.put("call_recording_scope_all", "Every call");
+        ENGLISH.put("call_recording_scope_chosen", "Only chosen chats");
+        ENGLISH.put("call_recording_scope_help", "A call starts recording itself as soon as it begins. Only chosen chats records the people you switch on below, and an outgoing call is matched by the name on the call screen.");
+        ENGLISH.put("call_recording_scope_picked", "Calls to record: %1$s");
+        ENGLISH.put("call_recording_recent_empty", "Chats show up here once they call you, newest first.");
         ENGLISH.put("call_recording_keep", "Keep recordings");
         ENGLISH.put("call_recording_keep_all", "Keep them all");
         ENGLISH.put("call_recording_keep_days", "For %1$s days");
