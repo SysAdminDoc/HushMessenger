@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.LocaleList;
 import android.text.TextUtils;
 import android.view.View;
+import java.text.NumberFormat;
 import java.util.IllegalFormatException;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -72,6 +73,9 @@ final class SettingsText {
     String count(String id, int count) { return get(id + (count == 1 ? "_one" : "_many"), count); }
 
     String number(int count) { return String.format(locale, "%d", count); }
+
+    /** [percent] the way this language writes a percentage ("25%", "25 %", "%25"), for placing inside other text. */
+    String percent(int percent) { return NumberFormat.getPercentInstance(locale).format(percent / 100.0); }
 
     String display(String english) {
         if (english.isEmpty()) return english;
@@ -316,7 +320,11 @@ final class SettingsText {
         ENGLISH.put("message_actions_empty_sent", "Press and hold a message you sent, and its actions show up here.");
         ENGLISH.put("message_actions_empty_got", "Press and hold a message you got, and its actions show up here.");
         ENGLISH.put("chat_menu_items_empty", "Press and hold a chat in your chat list, and its menu's items show up here.");
-        ENGLISH.put("invisible_buttons_empty", "Open a chat once, and every button it shows you turns up here.");
+        ENGLISH.put("invisible_buttons_empty", "Use Messenger for a bit, and every button it shows you turns up here.");
+        ENGLISH.put("invisible_buttons_level_choice", "%1$s for %2$s");
+        ENGLISH.put("invisible_buttons_invisible", "Invisible now");
+        ENGLISH.put("invisible_buttons_visible", "Back to normal");
+        ENGLISH.put("invisible_buttons_level", "Now %1$s visible");
         ENGLISH.put("message_actions_hidden_label", "%1$s (hidden)");
         ENGLISH.put("message_actions_move_up", "Move %1$s up");
         ENGLISH.put("message_actions_move_down", "Move %1$s down");

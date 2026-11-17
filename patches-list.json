@@ -3224,7 +3224,7 @@
         },
         {
             "name": "Invisible buttons",
-            "description": "Picks buttons in a chat to draw at nothing while they keep their place, their size and what they do, so a tap still lands. Good for a button you keep hitting by mistake or one you'd rather not look at. Pick them in HushMessenger settings, where every button a chat has shown you is listed by the name a screen reader says for it. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "Makes buttons you pick invisible or partly see-through while they keep their place, their size and what they do, so a tap still lands. Works on the chat list, inside chats and in menus, HushMessenger's own buttons included. Good for a button you keep hitting by mistake or one you'd rather not look at. Pick them in HushMessenger settings, where every button Messenger has shown you is listed by the name a screen reader says for it. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Theme",
             "dependencies": [

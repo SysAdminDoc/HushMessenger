@@ -911,7 +911,7 @@ val menuBlurPatch = controlPatch("menu_blur", "Blur behind menus",
     "Theme", MENU_BLUR)
 @Suppress("unused")
 val invisibleButtonsPatch = controlPatch("invisible_buttons", "Invisible buttons",
-    "Picks buttons in a chat to draw at nothing while they keep their place, their size and what they do, so a tap still lands. Good for a button you keep hitting by mistake or one you'd rather not look at. Pick them in HushMessenger settings, where every button a chat has shown you is listed by the name a screen reader says for it.",
+    "Makes buttons you pick invisible or partly see-through while they keep their place, their size and what they do, so a tap still lands. Works on the chat list, inside chats and in menus, HushMessenger's own buttons included. Good for a button you keep hitting by mistake or one you'd rather not look at. Pick them in HushMessenger settings, where every button Messenger has shown you is listed by the name a screen reader says for it.",
     "Theme", INVISIBLE_BUTTONS)
 @Suppress("unused")
 val iosBarsPatch = controlPatch("ios_bars", "Translucent chat bars",
