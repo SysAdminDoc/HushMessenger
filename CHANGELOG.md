@@ -62,6 +62,7 @@
 - For developers, the release walk finds the message log and auto reply buttons on a phone set to large text. It used to give up after a fixed number of swipes, and at 200% text the Controls list ran longer than that. It now searches down to the end of the list and back up, and the walk receipt records the phone's text size.
 - For developers, `CompatReport` only prints the "list this build" hints for what the patch sources don't declare yet. A release re-records every supported build, so the old hints made builds that had been supported for days look missing.
 - For developers, the release walk can run on a phone someone uses every day. Before each tap, key, app start and install it checks for a call (a ringing phone and app calls count too) and for another app in front, and either one stops the walk as PARTIAL. `-RestoreApp` keeps a copy of the Messenger that was installed and puts it back afterward, with its chat head and notification permissions as they were. Messenger's notification prompt gets one Back and is never answered. Without `-Serial` the walk takes the first free device on the walk list in `HUSH_RELEASE_CONFIG`.
+- For developers, `CompatReport --record-control <control> <stock APK dir>` records a new control's hooks for every supported build at once. It runs over each recorded build's stock APK, writes the hook lines into the records and the ids into `ControlProfiles.kt`, and writes nothing when a build finds no hook or two builds sharing a profile disagree.
 
 ## 0.30.0 (2026-11-14)
 

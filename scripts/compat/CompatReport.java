@@ -874,6 +874,93 @@ public class CompatReport {
         return 0;
     }
 
+    static final String CONTROL_PROFILES = "controls/ControlProfiles.kt";
+
+    /**
+     * --record-control: a control's hooks in every recorded build, read from the stock APKs in [apkDir] (matched by
+     * their recorded SHA-256) and written into each record and each profile in ControlProfiles.kt. --save holds a build
+     * to the recorded hook counts, so a control none of the records has yet gets its ids here instead of by hand. The
+     * builds one profile serves must resolve to the same methods, or nothing is written.
+     */
+    static int recordControl(String key, Path apkDir) throws Exception {
+        if (!CONTROL_KEYS.contains(key)) {
+            System.err.println(key + " isn't a control. Add it to PATCHES and its finder to Controls.findControls first.");
+            return 2;
+        }
+        var records = new TreeMap<String, Path>();
+        var builds = new TreeMap<String, Profile>();
+        try (var files = Files.list(PROFILES)) {
+            for (var file : files.filter(f -> f.toString().endsWith(".txt")).sorted().toList()) {
+                var build = Profile.read(file);
+                records.put(build.code, file);
+                builds.put(build.code, build);
+            }
+        }
+        var apks = new HashMap<String, File>();
+        try (var files = Files.list(apkDir)) {
+            for (var file : files.filter(f -> f.toString().endsWith(".apk")).sorted().toList()) apks.put(sha256(file.toFile()), file.toFile());
+        }
+        var missing = builds.values().stream().filter(b -> !apks.containsKey(b.sha256)).map(b -> b.code).toList();
+        if (!missing.isEmpty()) {
+            System.err.println("No APK in " + apkDir + " has the recorded SHA-256 of build " + String.join(", ", missing));
+            return 2;
+        }
+        var source = scriptDir().getParent().resolve(PATCH_SOURCES + CONTROL_PROFILES);
+        var original = Files.readString(source);
+        boolean crlf = original.contains("\r\n");
+        var kotlin = original.replace("\r\n", "\n");
+        var families = new TreeMap<String, String>();
+        var mapped = Pattern.compile("(?m)^\\s*(\\d+) to PROFILE_(\\d+),$").matcher(kotlin);
+        while (mapped.find()) families.put(mapped.group(1), mapped.group(2));
+        if (!families.keySet().equals(builds.keySet())) {
+            System.err.println(CONTROL_PROFILES + " maps builds " + families.keySet() + ", but scripts/profiles records " + builds.keySet());
+            return 2;
+        }
+
+        var found = new TreeMap<String, Set<String>>();
+        for (var build : builds.values()) {
+            var ids = findControls(loadDex(apks.get(build.sha256))).get(key).stream().map(CompatReport::hookId)
+                .collect(Collectors.toCollection(TreeSet::new));
+            System.out.println(build.code + ": " + (ids.isEmpty() ? "nothing found" : String.join(", ", ids)));
+            found.put(build.code, ids);
+        }
+        var problems = new ArrayList<String>();
+        found.forEach((code, ids) -> { if (ids.isEmpty()) problems.add(code + " has no " + key + " hook"); });
+        var profiles = new TreeSet<>(families.values());
+        for (var profile : profiles) {
+            var served = families.entrySet().stream().filter(e -> e.getValue().equals(profile)).map(Map.Entry::getKey).toList();
+            var shapes = served.stream().map(found::get).distinct().toList();
+            if (shapes.size() > 1) {
+                problems.add("PROFILE_" + profile + " serves " + String.join(", ", served) + ", which don't resolve to the same methods");
+            }
+        }
+        if (!problems.isEmpty()) {
+            System.out.println();
+            System.out.println("Nothing written:");
+            for (var problem : problems) System.out.println("       " + problem);
+            return 1;
+        }
+
+        for (var build : builds.values()) {
+            build.hooks.put(key, found.get(build.code));
+            Files.writeString(records.get(build.code), String.join("\n", build.lines()) + "\n");
+        }
+        for (var profile : profiles) {
+            var head = "internal val PROFILE_" + profile + " = ControlProfile(\n";
+            int start = kotlin.indexOf(head);
+            int end = start < 0 ? -1 : kotlin.indexOf("\n)\n", start);
+            if (end < 0) {
+                System.err.println(CONTROL_PROFILES + " has no PROFILE_" + profile + " declaration to replace");
+                return 2;
+            }
+            kotlin = kotlin.substring(0, start) + kotlinProfile(builds.get(profile)) + kotlin.substring(end + 3);
+        }
+        Files.writeString(source, crlf ? kotlin.replace("\n", "\r\n") : kotlin);
+        System.out.println();
+        System.out.println("Wrote " + key + " into " + builds.size() + " records and " + profiles.size() + " profiles in " + CONTROL_PROFILES + ".");
+        return 0;
+    }
+
     static String sha256(File apk) throws Exception {
         var digest = MessageDigest.getInstance("SHA-256");
         try (var in = new FileInputStream(apk); var out = new DigestOutputStream(OutputStream.nullOutputStream(), digest)) {
@@ -1465,9 +1552,13 @@ public class CompatReport {
         if (args.length == 2 && "--kotlin".equals(args[0])) {
             System.exit(printKotlin(Path.of(args[1])));
         }
+        if (args.length == 3 && "--record-control".equals(args[0])) {
+            System.exit(recordControl(args[1], Path.of(args[2])));
+        }
         if (args.length < 1 || (args.length > 3 && args.length != 5) || (args.length > 1 && !"--save".equals(args[1]))) {
             System.err.println("Usage: CompatReport <apk> [--save <profiles dir> <desktop.jar> <bundle.mpp>]");
             System.err.println("       CompatReport --kotlin <recorded build .txt>");
+            System.err.println("       CompatReport --record-control <control> <stock APK dir>");
             System.exit(2);
         }
         File apk = new File(args[0]);
