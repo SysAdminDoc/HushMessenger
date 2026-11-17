@@ -221,6 +221,7 @@ public class CompatReport {
         PATCHES.put("Paste a photo into the chat", List.of("paste_photo"));
         PATCHES.put("Send Instants from your gallery", List.of("instant_gallery"));
         PATCHES.put("Special contacts", List.of("special_contacts", "hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
+        PATCHES.put("Play video links in the chat", List.of("link_player"));
         PATCHES.put("Stop analytics uploads", List.of("analytics_uploads"));
         PATCHES.put("Stop ad attribution uploads", List.of("attribution_uploads"));
         PATCHES.put("Stop inbox and ad link logging", List.of("ad_events"));
@@ -956,7 +957,7 @@ public class CompatReport {
      */
     static final Set<String> NEEDS_A_LOCAL = Set.of("ad_events", "ai_commands", "ai_fab", "ai_mention_rows", "ai_menu", "ai_search",
         "ai_search_chip", "ai_summary", "allow_screenshot", "analytics_uploads", "app_icons", "app_themes", "attribution_uploads", "bubbles", "call_recording", "delta_unsent",
-        "disappearing_swipe", "external_gallery", "facebook", "facebook_profile", "font_by_name", "font_repository", "growth_notes", "growth_story_card", "instant_gallery", "instants_button", "keep_unsent",
+        "disappearing_swipe", "external_gallery", "facebook", "facebook_profile", "font_by_name", "font_repository", "growth_notes", "growth_story_card", "instant_gallery", "instants_button", "keep_unsent", "link_player",
         "mqtt_telemetry", "nearby_scans", "original_photo", "people_story", "phone_id_sync", "people_tab", "recent_media", "stories", "system_camera",
         "tab_badges", "typing", "unsent_indicator", "unsent_recall");
 

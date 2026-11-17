@@ -426,6 +426,18 @@ final class Controls {
                     found.get("browser").add(method);
                 }
 
+                // link_player: the message handler's opener, then the launcher's two own void entries, one of them
+                // static on every tested build. Mirrors LinkPlayer.kt.
+                if ("V".equals(method.getReturnType())) {
+                    boolean chatOpen = paramTypes.size() == 7 && paramTypes.get(6).startsWith("L") &&
+                        paramTypes.subList(0, 6).equals(List.of("Landroid/content/Context;", "Landroid/net/Uri;",
+                            "Landroid/net/Uri;", BUBBLE_SESSION, MENU_MESSAGE, THREAD_KEY));
+                    boolean launch = MESSENGER_BROWSER_LAUNCHER.equals(cls.getType()) && paramTypes.size() == 5 &&
+                        paramTypes.subList(0, 3).equals(List.of("Landroid/content/Context;", "Landroid/net/Uri;", BUBBLE_SESSION)) &&
+                        paramTypes.get(3).startsWith("L") && paramTypes.get(4).startsWith("L");
+                    if (chatOpen || launch) found.get("link_player").add(method);
+                }
+
                 // people_jewel, kept once discovery knows the preference getter. It takes the suggestions logger, then its owner.
                 if ("Z".equals(method.getReturnType()) && isStatic && paramTypes.size() == 2 && paramTypes.get(1).equals(cls.getType())) {
                     var refIds = refs.stream().map(Object::toString).collect(Collectors.toSet());

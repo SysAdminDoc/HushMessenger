@@ -201,6 +201,11 @@ internal val PROFILE_347415354 = ControlProfile(
         "keep_unsent" to setOf("LX/OkZ;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
         "landscape_lock" to setOf("LX/07D;->A0K()Z"),
         "landscape_media" to setOf("LX/7LD;->A00(LX/7LD;I)V"),
+        "link_player" to setOf(
+            "LX/8Wg;->A0F(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/59J;)V",
+            "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0B(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;LX/4sl;)V",
+            "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0I(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;LX/59J;LX/4sl;)V",
+        ),
         "local_chat_search" to setOf(
             "LX/NCJ;->FBm(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
             "LX/NCJ;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
@@ -524,6 +529,11 @@ internal val PROFILE_347415280 = ControlProfile(
         "keep_unsent" to setOf("LX/b7i;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
         "landscape_lock" to setOf("LX/07D;->A0K()Z"),
         "landscape_media" to setOf("LX/7Lz;->A00(LX/7Lz;I)V"),
+        "link_player" to setOf(
+            "LX/8XS;->A0F(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/58e;)V",
+            "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0C(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;LX/4s6;)V",
+            "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0J(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;LX/58e;LX/4s6;)V",
+        ),
         "local_chat_search" to setOf(
             "LX/Mpa;->FBp(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
             "LX/Mpa;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
@@ -847,6 +857,11 @@ internal val PROFILE_347415302 = ControlProfile(
         "keep_unsent" to setOf("LX/OkY;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
         "landscape_lock" to setOf("LX/07D;->A0K()Z"),
         "landscape_media" to setOf("LX/7LD;->A00(LX/7LD;I)V"),
+        "link_player" to setOf(
+            "LX/8Wg;->A0F(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/59J;)V",
+            "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0B(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;LX/4sl;)V",
+            "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0I(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;LX/59J;LX/4sl;)V",
+        ),
         "local_chat_search" to setOf(
             "LX/NCI;->FBm(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
             "LX/NCI;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
@@ -1170,6 +1185,11 @@ internal val PROFILE_347415262 = ControlProfile(
         "keep_unsent" to setOf("LX/Xaj;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
         "landscape_lock" to setOf("LX/07D;->A0K()Z"),
         "landscape_media" to setOf("LX/7MZ;->A00(LX/7MZ;I)V"),
+        "link_player" to setOf(
+            "LX/8Y2;->A0F(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/59p;)V",
+            "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0B(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;LX/4tH;)V",
+            "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0I(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;LX/59p;LX/4tH;)V",
+        ),
         "local_chat_search" to setOf(
             "LX/NI1;->FCI(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V",
             "LX/NI1;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",

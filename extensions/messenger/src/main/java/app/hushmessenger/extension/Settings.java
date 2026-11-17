@@ -742,6 +742,20 @@ public final class Settings {
         }
     }
 
+    /**
+     * Asked as a link is about to open, with the screen it was tapped on and the link itself. True means Hush has it
+     * playing in the chat and Messenger's opener stops there. Everything else, a link that isn't a video page and any
+     * failure included, answers false and the link opens the way it always did, so a tap is never swallowed.
+     */
+    public static boolean playVideoLink(android.content.Context context, android.net.Uri link) {
+        try {
+            return enabled(LinkPlayer.KEY) && LinkPlayer.play(context, link);
+        } catch (RuntimeException | LinkageError error) {
+            hookFailedPrivately(LinkPlayer.KEY, "Can't play that link in the chat", error);
+            return false;
+        }
+    }
+
     static final String MQTT_TELEMETRY = "mqtt_telemetry";
     /** The topics Messenger publishes its own connection logging on. Messages, typing and presence use other topics. */
     static final Set<String> MQTT_TELEMETRY_TOPICS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("/mqtt_health_stats", "/fbns_exp_logging")));

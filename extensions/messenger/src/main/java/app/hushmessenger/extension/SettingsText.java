@@ -737,6 +737,11 @@ final class SettingsText {
         ENGLISH.put("chat_jump_none", "No messages on or after that day");
         ENGLISH.put("chat_jump_no_dates", "Can't read the dates in this chat");
         ENGLISH.put("chat_jump_no_list", "Can't find this chat's messages");
+        ENGLISH.put("link_player_play", "Play");
+        ENGLISH.put("link_player_pause", "Pause");
+        ENGLISH.put("link_player_replay", "Play again");
+        ENGLISH.put("link_player_full_screen", "Full screen");
+        ENGLISH.put("link_player_open", "Open in %1$s");
     }
 
     static String english(String id) {

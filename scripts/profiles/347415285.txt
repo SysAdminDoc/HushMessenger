@@ -178,6 +178,9 @@ hook instants_button LX/cPV;->A0Y(LX/cPV;)V
 hook keep_unsent LX/b7i;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V
 hook landscape_lock LX/07D;->A0K()Z
 hook landscape_media LX/7Lz;->A00(LX/7Lz;I)V
+hook link_player LX/8XS;->A0F(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/58e;)V
+hook link_player Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0C(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;LX/4s6;)V
+hook link_player Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0J(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;LX/58e;LX/4s6;)V
 hook local_chat_search LX/Mpa;->FBp(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V
 hook local_chat_search LX/Mpa;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook local_read LX/2ab;->A0J(Lcom/facebook/messaging/model/threads/ThreadSummary;)Z

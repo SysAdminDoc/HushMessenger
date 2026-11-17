@@ -225,6 +225,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(AD_EVENTS).addAll(findAdEvents(classes))
     found.getValue(DWELL_TRACKING).addAll(findDwellTracking(classes))
     found.getValue(MQTT_TELEMETRY).addAll(findMqttTelemetry(classes))
+    found.getValue(LINK_PLAYER).addAll(findLinkPlayer(classes))
     findPinnedChats(classes).forEach { (hook, methods) -> found.getValue(hook).addAll(methods) }
     val hiddenChats = findHiddenChats(classes)
     hiddenChats.forEach { (hook, methods) -> found.getValue(hook).addAll(methods) }

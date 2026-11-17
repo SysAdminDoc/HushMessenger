@@ -72,6 +72,7 @@
         <meta-data android:name="hush.feature.attribution_uploads" android:value="true" />
         <meta-data android:name="hush.feature.ad_events" android:value="true" />
         <meta-data android:name="hush.feature.dwell_tracking" android:value="true" />
+        <meta-data android:name="hush.feature.link_player" android:value="true" />
         <meta-data android:name="hush.feature.mqtt_telemetry" android:value="true" />
         <meta-data android:name="hush.feature.pinned_chats" android:value="true" />
         <meta-data android:name="hush.feature.hidden_chats" android:value="true" />

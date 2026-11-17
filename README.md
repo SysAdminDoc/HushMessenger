@@ -139,6 +139,7 @@ These screenshots come from the code on this page, so they can be a step ahead o
 | Paste a photo into the chat | A photo you paste lands above the chat's message box instead of going out by itself, so you can add a caption or back out. Pasted text and the keyboard's GIFs work as they did. Reopen the chat after you turn this on. Experimental. |
 | Send Instants from your gallery | The Instants shutter opens your gallery app instead of taking a photo. The photo you pick goes out as the Instant, cut to fit. Back out and nothing is sent. Experimental. |
 | Open web links externally | Opens http and https links in your default browser. |
+| Play video links in the chat | A shared YouTube, TikTok, Instagram or Facebook video plays in a window over the chat instead of sending you off to the app or the browser. The video comes from the site's own player, and the window keeps no cookies. Shortened links (youtu.be aside), Facebook stories and anything that isn't a video page open the way they always did. Experimental. |
 | Slide chats in and out | Slides a chat in from the side when you open it and back out when you leave. |
 | Hold stories at the end | A story stays on screen when it ends, photo or video, until you tap or swipe to the next one. The last one stays open until you close it. Experimental. |
 | Ignore the swipe up for disappearing messages | Swiping up at the bottom of a chat no longer turns on disappearing messages. |

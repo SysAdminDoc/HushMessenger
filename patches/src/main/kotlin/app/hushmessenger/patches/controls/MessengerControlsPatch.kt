@@ -200,6 +200,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         AD_EVENTS -> validateAdEvent()
         DWELL_TRACKING -> validateDwellTracking()
         MQTT_TELEMETRY -> validateMqttTelemetry()
+        LINK_PLAYER -> validateLinkPlayer()
         PINNED_CHATS -> validatePinnedChatLimit()
         PIN_ROWS -> pinRowSummary() ?: throw PatchException("Messenger controls: the Pin row's check changed (${hookId()})")
         PIN_ASK -> if (!isPinAsk()) throw PatchException("Messenger controls: the pin call changed (${hookId()})")
@@ -337,6 +338,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             AD_EVENTS -> method.injectAdEvent()
             DWELL_TRACKING -> method.injectDwellTracking()
             MQTT_TELEMETRY -> method.injectMqttTelemetry()
+            LINK_PLAYER -> method.injectLinkPlayer()
             PINNED_CHATS -> method.injectPinnedChatLimit()
             PIN_ROWS -> method.injectPinRow()
             PIN_ASK -> method.injectPinStep(PINNING_CALL)
@@ -685,6 +687,10 @@ val hideEventPromptsPatch = controlPatch("event_prompts", "Hide event prompts", 
 val suppressTypingPatch = controlPatch("typing", "Hide typing indicator", "Stops Messenger from showing others when you're typing, even in end-to-end encrypted chats.", "Conversations", "typing", "typing_mailbox")
 @Suppress("unused")
 val externalBrowserPatch = controlPatch("external_browser", "Open web links externally", "Opens web links (http and https) in your default browser instead of inside Messenger. Other link types work as before.", "Links and bubbles", "browser")
+@Suppress("unused")
+val linkPlayerPatch = controlPatch("link_player", "Play video links in the chat",
+    "Plays a shared YouTube, TikTok, Instagram or Facebook video in a window over the chat instead of sending you to the app or the browser. The video comes from the site's own player, so nothing is downloaded and the window keeps no cookies. Shortened links (youtu.be aside), Facebook stories and anything that isn't a video page open the way they always did.",
+    "Links and bubbles")
 @Suppress("unused")
 val enableBubblesPatch = controlPatch("bubbles", "Allow chat bubbles", "Lets you pick Stock, Chat heads or Android bubbles for floating chats. Needs Android 11 or newer. Chat heads also needs Messenger's own Chat heads switch, and Android bubbles need Messenger's bubbles allowed in Android's notification settings.", "Links and bubbles", "bubbles", "bubble_mode")
 @Suppress("unused")
