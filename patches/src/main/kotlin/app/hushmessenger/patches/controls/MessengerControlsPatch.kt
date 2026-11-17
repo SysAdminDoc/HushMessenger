@@ -1,6 +1,7 @@
 package app.hushmessenger.patches.controls
 
 import app.hushmessenger.patches.MessengerTarget
+import app.hushmessenger.patches.messengerClasses
 import app.hushmessenger.patches.coexist.validateVersionCode
 import app.morphe.patcher.patch.BytecodePatch
 import app.morphe.patcher.patch.PatchException
@@ -84,8 +85,7 @@ internal val settingsExtension = bytecodePatch(description = "Load HushMessenger
     extendWith("extensions/messenger.mpe")
     execute {
         activeProfile = controlProfileFor(packageMetadata.versionCode)
-        val classes = mutableListOf<com.android.tools.smali.dexlib2.iface.ClassDef>()
-        patchStage("Read Messenger bytecode") { classDefForEach { classes.add(it) } }
+        val classes = patchStage("Read Messenger bytecode") { messengerClasses() }
         communityInboxContract = patchStage("Find community routes") { findCommunityInbox(classes) }
         discoveredControls = patchStage("Find runtime controls") { findControls(classes, communityInboxContract) }
         logoLongPressSites = findLogoLongPress(classes)

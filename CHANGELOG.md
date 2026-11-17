@@ -66,6 +66,7 @@
 - For developers, `scripts/new_control.py <key>` starts a new control. One run writes the patch and test stubs, the settings row, empty translations, the manifest line and the catalog and README rows, then lists what's left to write by hand. If any file doesn't look the way it expects, it leaves every file alone.
 - For developers, `scripts/phone.ps1` drives a phone under the shared device lease. It takes and releases the lease and checks its token before every adb call. It refuses the power and sleep keys and holds back input while a call is up or another app is in front. Each dump is fresh and lists the labeled rows with the point to tap.
 - For developers, the build runs on Gradle 9.9.1, which fixes the three Gradle security advisories published on November 10. Set `GITHUB_ACTOR` and `GITHUB_TOKEN` for every build, as the README's build steps say. With only `gpr.user` and `gpr.key` in gradle.properties, the Morphe settings plugin now stops before the build starts.
+- For developers, patches that search all of Messenger's code now share one class list that leaves the extension's own classes out. `Keep a renamed copy working` and `Install beside Meta apps` still looked at those, and a match there rewrites Hush's code instead of Messenger's.
 
 ## 0.30.0 (2026-11-14)
 
