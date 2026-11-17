@@ -187,6 +187,34 @@ final class Extras {
         return posters;
     }
 
+    /**
+     * quiet_mode: the app's only (Notification, FbUserSession, MessagingNotification, String, int)Z method that also
+     * reaches the compat notify, a (String, int, Notification)V call, which is what makes it the messaging
+     * notification poster rather than the wrapper that delegates to it. Mirrors QuietMode.kt.
+     */
+    static List<Method> quietModeNotify(List<ClassDef> classes) {
+        var poster = List.of("Landroid/app/Notification;", "Lcom/facebook/auth/usersession/FbUserSession;",
+            "Lcom/facebook/messaging/notify/type/MessagingNotification;", "Ljava/lang/String;", "I");
+        var compatNotify = List.of("Ljava/lang/String;", "I", "Landroid/app/Notification;");
+        var posters = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (method.getImplementation() == null || !"Z".equals(method.getReturnType()) || !params(method).equals(poster)) continue;
+            for (var i : instructions(method)) {
+                if (i instanceof ReferenceInstruction ri && ri.getReference() instanceof MethodReference target &&
+                    "V".equals(target.getReturnType())) {
+                    var types = new ArrayList<String>();
+                    for (var t : target.getParameterTypes()) types.add(t.toString());
+                    if (types.equals(compatNotify)) {
+                        posters.add(method);
+                        break;
+                    }
+                }
+            }
+        }
+        if (posters.size() != 1 || mediaTargets(posters.get(0)).contains(0)) return List.of();
+        return posters;
+    }
+
     static final String CAR_EXTENSIONS = "android.car.EXTENSIONS";
     static final String CAR_CONVERSATION = "car_conversation";
     static final String PUT_BUNDLE = "Landroid/os/Bundle;->putBundle(Ljava/lang/String;Landroid/os/Bundle;)V";

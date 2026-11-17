@@ -3770,7 +3770,7 @@
             "name": "Notify for restricted chats",
             "description": "Chats with people you've restricted notify you like your other chats. A chat you've muted stays quiet. Restricted people still can't see when you're active or when you've read their messages. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
-            "category": "Privacy",
+            "category": "Notifications",
             "dependencies": [
                 {
                     "type": "BytecodePatch",
@@ -4302,6 +4302,63 @@
                     "type": "ResourcePatch",
                     "name": null,
                     "description": "Record HushMessenger capability: quiet_calls",
+                    "dependencies": [
+                        {
+                            "type": "ResourcePatch",
+                            "name": null,
+                            "description": "Install HushMessenger settings",
+                            "dependencies": []
+                        }
+                    ]
+                }
+            ],
+            "compatiblePackages": [
+                {
+                    "packageName": "com.facebook.orca",
+                    "name": "Messenger",
+                    "description": null,
+                    "apkFileType": "APK",
+                    "appIconColor": "#0084FF",
+                    "signatures": [
+                        "911d604446084ca7f4760b775bfc160fa8702441240a7258645d7a72c4312d27",
+                        "e3f9e1e0cf99d0e56a055ba65e241b3399f7cea524326b0cdd6ec1327ed0fdc1"
+                    ],
+                    "targets": [
+                        {
+                            "version": "587.0.0.54.96",
+                            "versionCodes": null,
+                            "isExperimental": false,
+                            "minSdk": 28,
+                            "description": "Stock builds 347415262, 347415267, 347415268, 347415280, 347415281, 347415284, 347415285, 347415295, 347415299, 347415301, 347415302, 347415333, 347415337, 347415348, 347415350, 347415351, 347415352, 347415354 and 347415355; checked again during patching"
+                        }
+                    ]
+                }
+            ],
+            "options": []
+        },
+        {
+            "name": "Quiet mode",
+            "description": "A break from Messenger. Pick 15 minutes, an hour, two hours, eight hours or until you end it yourself, and nothing from Messenger makes a sound or vibrates for that long. Messages and calls still arrive and wait in the notification shade, so nothing goes missing. Every night, under it, does the same between two times you pick. Anyone on your Special contacts list still comes through. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "default": true,
+            "category": "Notifications",
+            "dependencies": [
+                {
+                    "type": "BytecodePatch",
+                    "name": null,
+                    "description": "Load HushMessenger runtime controls",
+                    "dependencies": [
+                        {
+                            "type": "ResourcePatch",
+                            "name": null,
+                            "description": "Install HushMessenger settings",
+                            "dependencies": []
+                        }
+                    ]
+                },
+                {
+                    "type": "ResourcePatch",
+                    "name": null,
+                    "description": "Record HushMessenger capability: quiet_mode",
                     "dependencies": [
                         {
                             "type": "ResourcePatch",

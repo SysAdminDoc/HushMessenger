@@ -238,6 +238,7 @@ hook quiet_call_notification Lcom/facebook/rtc/notification/RtcNotificationForeg
 hook quiet_call_ring LX/B7s;->run()V
 hook quiet_log_check LX/HHR;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 hook quiet_log_drop Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0C(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V
+hook quiet_mode LX/76j;->A01(Landroid/app/Notification;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/MessagingNotification;Ljava/lang/String;I)Z
 hook recent_media LX/APq;->A01(LX/5Qz;Lkotlin/jvm/functions/Function0;)V
 hook reels_badge LX/4Qk;->A09(LX/4Qk;)Z
 hook reply_read LX/9qx;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/54O;LX/4np;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/D5N;LX/57u;LX/54N;LX/D31;LX/5pN;LX/5Qz;LX/5JS;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4nw;Ljava/lang/String;)V

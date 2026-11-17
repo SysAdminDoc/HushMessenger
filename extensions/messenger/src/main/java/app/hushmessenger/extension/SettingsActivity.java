@@ -73,6 +73,7 @@ public final class SettingsActivity extends Activity {
     private final MenuRowsRow menuRows = new MenuRowsRow(this);
     private final CallCaptionsRow callCaptions = new CallCaptionsRow(this);
     private final SpecialContactsRow specialContacts = new SpecialContactsRow(this);
+    private final QuietModeRow quietMode = new QuietModeRow(this);
     private final SharedPreferences.OnSharedPreferenceChangeListener preferenceListener = (preferences, key) -> {
         if (key == null || "paused".equals(key) || Settings.SUB_SWITCHES.containsKey(key) || Settings.installed.contains(key))
             backup.choicesChanged();
@@ -140,10 +141,10 @@ public final class SettingsActivity extends Activity {
     // Process-wide so a page recreated by the theme switch can still replace the last toast.
     static Toast toast;
     static final String SUPPORT_PAGE = "https://ko-fi.com/X8K126YVER";
-    /** Switches whose effect hasn't been confirmed on a phone. Each shows the Experimental badge. */
     /** The switches that take a way into these settings away, each with a reason when it can't turn on. */
     static final Set<String> WAYS_IN = Set.of("hide_menu_row", Settings.HIDE_ICON_SHORTCUTS, Settings.HIDE_LOGO_PRESS);
-    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", "chat_menu_items", "quiet_calls", "save_voice", "gallery_to_chat", PastePhoto.KEY, InstantGallery.KEY, "call_recording", "inbox_search_bar", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY, CallCaptions.KEY, TabIcons.KEY, LinkPlayer.KEY);
+    /** Switches whose effect hasn't been confirmed on a phone. Each shows the Experimental badge. */
+    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", "chat_menu_items", "quiet_calls", QuietMode.KEY, "save_voice", "gallery_to_chat", PastePhoto.KEY, InstantGallery.KEY, "call_recording", "inbox_search_bar", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY, CallCaptions.KEY, TabIcons.KEY, LinkPlayer.KEY);
     static final String[][] CONTROLS = {
         {"people", "Hide People You May Know", "Hides suggested people in chats, search and stories, and on the People and Notifications tabs. Good if you only want people you know.", "inbox"},
         {"friend_requests", "Hide friend request cards", "Hides friend request cards in your chat list. It doesn't accept or decline anyone.", "inbox"},
@@ -196,6 +197,8 @@ public final class SettingsActivity extends Activity {
         {"local_chat_search", "Search saved messages", "Adds a button to a chat's search results that searches the messages saved on this phone. It helps with old chats Messenger's own search finds nothing in. It works in chats that aren't end-to-end encrypted, and it can only find what the phone has loaded, so scroll up in the chat first.", "conversations"},
         {"chat_jump", "Jump to the first message or a date", "Long press a chat's name at the top of the chat to jump to its first message or to a day you pick. An arrow at the bottom left of a chat goes to its first message, and a long press on the arrow asks for a day. Tapping one of the dates between the messages opens the same day picker on that day. Messenger loads a chat a page at a time, so it scrolls back with a count on screen until it gets there, and Cancel stops it. It can only go as far back as Messenger can load.", "conversations"},
         {"landscape", "Allow landscape", "Lets Messenger turn sideways with your phone, for a wider keyboard and bigger photos and videos. It follows your phone's auto-rotate setting. Calls, the camera, payments and a few other screens stay upright. Restart Messenger after you change it.", "conversations"},
+        {"quiet_mode", "Quiet mode", "A break from Messenger. Pick 15 minutes, an hour, two hours, eight hours or until you end it yourself, and nothing from Messenger makes a sound or vibrates for that long. Messages and calls still arrive and wait in the notification shade, so nothing goes missing while you're away from it. Every night, under it, does the same between two times you pick. Anyone on your Special contacts list still comes through, whether they message you or call.", "notifications"},
+        {"restricted_notify", "Notify for restricted chats", "Chats with people you've restricted notify you like your other chats, unless they're end-to-end encrypted. A chat you've muted stays quiet. Restricted people still can't see when you're active or when you've read their messages.", "notifications"},
         {"quiet_calls", "Quiet incoming calls", "Calls still come in, but Messenger doesn't ring, vibrate or pop the call up over your screen. The call waits in the notification shade with Answer and Decline. A call you miss still shows in the chat. Only chosen chats keeps this to the chats you pick, and every other call rings. If the Facebook app is on your phone, it can still ring for the same call.", "calls"},
         {"call_recording", "Record calls", "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it. Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first.", "calls"},
         {"call_captions", "Live captions on calls", "Shows what the other people say during a call as captions over Messenger. Your phone makes them itself, and it can translate them into your language and read them aloud. It needs Android 13 or newer with speech recognition on the phone. While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it.", "calls"},
@@ -233,7 +236,6 @@ public final class SettingsActivity extends Activity {
         {"anonymous_stories", "View stories anonymously", "Opens other people's stories without adding you to their viewer list. Messenger still marks them as seen on your side.", "privacy"},
         {"save_stories", "Save any story", "Adds Save to the More options menu on other people's stories, so you can keep the photo or video on your phone.", "privacy"},
         {"blocked_list_pictures", "Hide pictures on the Blocked list", "Hides people's profile pictures on the list of people you've blocked, under Privacy and safety. Their names and Unblock stay.", "privacy"},
-        {"restricted_notify", "Notify for restricted chats", "Chats with people you've restricted notify you like your other chats, unless they're end-to-end encrypted. A chat you've muted stays quiet. Restricted people still can't see when you're active or when you've read their messages.", "privacy"},
         {"material_you", "Material You theme", "Colors Messenger's dark mode with your wallpaper colors on Android 12 and newer, and a fixed blue on Android 11. Turn on dark mode in Messenger first. Light mode keeps its colors unless you turn on Light mode accent.", "theme"},
         {"app_icons", "Unlock app icons", "Lets you pick any icon in Messenger's App icon setting without a subscription. Messenger decides whether that setting shows for you. Turning this off can bring the default icon back.", "theme"},
         {"app_themes", "Unlock app themes", "Lets you pick any theme in Messenger's Theme setting without a subscription, so light mode can get a color too. Messenger still decides which themes it offers your account.", "theme"},
@@ -429,6 +431,7 @@ public final class SettingsActivity extends Activity {
         invisibleButtons.fill(null);
         menuRows.fill(null);
         specialContacts.fill(null);
+        quietMode.fill();
         updates.syncUpdateChoice(false);
         showGmsCoreNotice();
     }
@@ -1043,7 +1046,7 @@ public final class SettingsActivity extends Activity {
                     || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0]) || ChatHiding.KEY.equals(spec[0])
                     || TabIcons.KEY.equals(spec[0])
                     || MessageActions.KEY.equals(spec[0]) || ChatMenuItems.KEY.equals(spec[0]) || CameraActivity.KEY.equals(spec[0])
-                    || InvisibleButtons.KEY.equals(spec[0])
+                    || InvisibleButtons.KEY.equals(spec[0]) || QuietMode.KEY.equals(spec[0])
                     || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])
                     || MenuBlur.KEY.equals(spec[0]) || "hide_read_receipts".equals(spec[0])
                     || ("allow_screenshot".equals(spec[0]) && Build.VERSION.SDK_INT >= 29)) {
@@ -1069,6 +1072,8 @@ public final class SettingsActivity extends Activity {
                     for (String keep : Settings.KEEP_BADGES.values()) ui.add(wrapper, controlRow(keep, text.format(keep), "", false), 8);
                 }
                 else if (QuietCalls.KEY.equals(spec[0])) addQuietCallChats(wrapper);
+                else if (QuietMode.KEY.equals(spec[0])) quietMode.addTo(wrapper,
+                    controlRow(QuietMode.DAILY, text.format(QuietMode.DAILY), text.format("quiet_mode_daily_help"), false));
                 else if (ChatHiding.KEY.equals(spec[0])) addHiddenChats(wrapper);
                 else if (SpecialContacts.KEY.equals(spec[0])) specialContacts.addTo(wrapper);
                 else if (OwnFont.KEY.equals(spec[0])) fontFile.addTo(wrapper);
@@ -1193,6 +1198,12 @@ public final class SettingsActivity extends Activity {
             row.addView(unhide, new LinearLayout.LayoutParams(ui.largeText ? -1 : -2, -2));
             ui.add(content, row, 8);
         }
+    }
+
+    /** Turns a control on the way a tap on its own switch would, for a row under it that can't work with it off. */
+    void turnOn(String key) {
+        Switch control = getWindow().getDecorView().findViewWithTag(key);
+        if (control != null && !control.isChecked()) control.performClick();
     }
 
     /** One choice of a RadioGroup, in the page's colors. */
@@ -1461,7 +1472,8 @@ public final class SettingsActivity extends Activity {
             : MessageLogButton.KEY.equals(key) || MessageLogButton.MENU_KEY.equals(key) || MessageLogButton.CHAT_KEY.equals(key)
                 || MessageLog.SAVE_EXPIRING.equals(key)
                 || QuietChats.KEY.equals(key) ? MessageLog.KEY
-            : QuietCalls.CHOSEN_ONLY.equals(key) || key.startsWith(QuietCalls.CHAT_PREFIX) ? QuietCalls.KEY : key;
+            : QuietCalls.CHOSEN_ONLY.equals(key) || key.startsWith(QuietCalls.CHAT_PREFIX) ? QuietCalls.KEY
+            : QuietMode.DAILY.equals(key) ? QuietMode.KEY : key;
         String section = "";
         for (String[] spec : CONTROLS) if (spec[0].equals(parent)) { section = spec[3]; break; }
         return SettingsIcons.forKey(key, sectionIcon(section));
@@ -1476,6 +1488,7 @@ public final class SettingsActivity extends Activity {
             case "tab_bar": return SettingsIcons.TAB_BAR;
             case "stickers": return SettingsIcons.LIKE;
             case "conversations": return SettingsIcons.WRITING;
+            case "notifications": return SettingsIcons.NOTIFICATIONS;
             case "calls": return SettingsIcons.PHONE;
             case "photos_videos": return SettingsIcons.STORIES;
             case "links_bubbles": return SettingsIcons.LINKS;
@@ -2155,6 +2168,10 @@ public final class SettingsActivity extends Activity {
             if (QuietCalls.KEY.equals(spec[0])) {
                 inside = text.get(QuietCalls.CHOSEN_ONLY) + " " + text.get("quiet_calls_chosen_help");
                 for (String[] chat : QuietCalls.recent()) inside += " " + chat[1];
+            }
+            if (QuietMode.KEY.equals(spec[0])) {
+                inside = text.get("quiet_mode_break") + " " + text.get(QuietMode.DAILY) + " " + text.get("quiet_mode_daily_help");
+                for (int minutes : QuietMode.BREAKS) inside += " " + QuietMode.breakChoice(text, minutes);
             }
             if (MessageLog.KEY.equals(spec[0])) {
                 inside = text.get("message_log_keep");

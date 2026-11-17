@@ -233,6 +233,7 @@ public class CompatReport {
             "quiet_log_check", "quiet_log_drop", "hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
         PATCHES.put("Auto reply", List.of("auto_reply"));
         PATCHES.put("Quiet incoming calls", List.of("quiet_call_ring", "quiet_call_notification"));
+        PATCHES.put("Quiet mode", List.of("quiet_mode", "quiet_call_ring", "quiet_call_notification"));
         PATCHES.put("Android Auto messages", List.of("car_messages", "car_extension_gate"));
         PATCHES.put("Search saved messages", List.of("local_chat_search"));
         PATCHES.put("Jump to the first message or a date", List.of("chat_jump"));

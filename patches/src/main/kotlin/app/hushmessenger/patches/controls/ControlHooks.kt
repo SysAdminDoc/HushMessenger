@@ -249,6 +249,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(STORY_RING).addAll(findStoryRing(classes))
     found.getValue(QUIET_CALL_RING).addAll(findQuietCallRing(classes))
     found.getValue(QUIET_CALL_NOTIFICATION).addAll(findQuietCallNotification(classes))
+    found.getValue(QUIET_MODE).addAll(findQuietModeNotify(classes))
     found.getValue(CAR_MESSAGES).addAll(findCarMessages(classes))
     found.getValue(CAR_EXTENSION_GATE).addAll(findCarExtensionGate(classes))
     found.getValue(LOCAL_CHAT_SEARCH).addAll(findLocalChatSearch(classes))

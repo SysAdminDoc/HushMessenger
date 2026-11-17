@@ -121,6 +121,7 @@ final class Controls {
         found.get("story_ring").addAll(storyRing(classes));
         found.get("quiet_call_ring").addAll(quietCallRing(classes));
         found.get("quiet_call_notification").addAll(quietCallNotification(classes));
+        found.get("quiet_mode").addAll(quietModeNotify(classes));
         found.get("car_messages").addAll(carMessages(classes));
         found.get("car_extension_gate").addAll(carExtensionGate(classes));
         found.get("local_chat_search").addAll(localChatSearch(classes));

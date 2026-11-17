@@ -231,6 +231,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         STORY_RING -> validateStoryRing()
         QUIET_CALL_RING -> validateQuietCallRing()
         QUIET_CALL_NOTIFICATION -> validateQuietCallNotification()
+        QUIET_MODE -> validateQuietModeNotify()
         CAR_MESSAGES -> validateCarMessages()
         CAR_EXTENSION_GATE -> validateCarExtensionGate()
         LOCAL_CHAT_SEARCH -> validateLocalChatSearch()
@@ -368,6 +369,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             STORY_RING -> method.injectStoryRing()
             QUIET_CALL_RING -> method.injectQuietCallRing()
             QUIET_CALL_NOTIFICATION -> method.injectQuietCallNotification()
+            QUIET_MODE -> method.injectQuietModeNotify()
             CAR_MESSAGES -> method.injectCarMessages()
             CAR_EXTENSION_GATE -> method.injectCarExtensionGate()
             LOCAL_CHAT_SEARCH -> method.injectLocalChatSearch()
@@ -737,6 +739,10 @@ val quietIncomingCallsPatch = controlPatch("quiet_calls", "Quiet incoming calls"
     "Calls still come in, but Messenger doesn't ring, vibrate or pop the call up over your screen. The call waits in the notification shade with Answer and Decline. A call you miss still shows in the chat. Only chosen chats keeps this to the chats you pick, and every other call rings. If the Facebook app is on your phone, it can still ring for the same call.", "Calls",
     QUIET_CALL_RING, QUIET_CALL_NOTIFICATION)
 @Suppress("unused")
+val quietModePatch = controlPatch("quiet_mode", "Quiet mode",
+    "A break from Messenger. Pick 15 minutes, an hour, two hours, eight hours or until you end it yourself, and nothing from Messenger makes a sound or vibrates for that long. Messages and calls still arrive and wait in the notification shade, so nothing goes missing. Every night, under it, does the same between two times you pick. Anyone on your Special contacts list still comes through.", "Notifications",
+    QUIET_MODE, QUIET_CALL_RING, QUIET_CALL_NOTIFICATION)
+@Suppress("unused")
 val carMessagesPatch = controlPatch("car_messages", "Android Auto messages",
     "Lets Android Auto read your Messenger messages out loud and send the replies you speak, through its own messaging screen. Android Auto only shows apps installed from the Play Store. Unknown sources in its developer settings opens that up on a desktop head unit, and a real car can still leave Messenger out. Playing a message aloud marks the chat read and shows Seen, even with Hide read receipts on.", "Conversations",
     CAR_MESSAGES, CAR_EXTENSION_GATE)
@@ -824,7 +830,7 @@ val blockedListPicturesPatch = controlPatch("blocked_list_pictures", "Hide pictu
     "Hides people's profile pictures on the list of people you've blocked, under Privacy and safety. Their names and Unblock stay.", "Privacy")
 @Suppress("unused")
 val restrictedNotifyPatch = controlPatch("restricted_notify", "Notify for restricted chats",
-    "Chats with people you've restricted notify you like your other chats. A chat you've muted stays quiet. Restricted people still can't see when you're active or when you've read their messages.", "Privacy")
+    "Chats with people you've restricted notify you like your other chats. A chat you've muted stays quiet. Restricted people still can't see when you're active or when you've read their messages.", "Notifications")
 @Suppress("unused")
 val unlockAppIconsPatch = controlPatch("app_icons", "Unlock app icons", "Lets you pick any icon in Messenger's App icon setting without a subscription. Messenger still decides whether that setting shows for your account.", "Theme")
 @Suppress("unused")

@@ -456,6 +456,7 @@ public final class Settings {
         owners.put(Settings.AVATAR_ROUNDED, Settings.AVATAR_SHAPE);
         for (String keep : KEEP_BADGES.values()) owners.put(keep, TAB_BADGES);
         owners.put(QuietCalls.CHOSEN_ONLY, QuietCalls.KEY);
+        owners.put(QuietMode.DAILY, QuietMode.KEY);
         owners.put(CameraActivity.ASK, CameraActivity.KEY);
         owners.put(MessageLog.SAVE_EXPIRING, MessageLog.KEY);
         owners.put(QuietChats.KEY, MessageLog.KEY);
@@ -814,7 +815,9 @@ public final class Settings {
      * notification. True takes Messenger's own ringtone-off path and posts the notification without the pop-up. With
      * Only chosen chats on, only a call from a chosen chat gets true.
      */
-    public static boolean quietIncomingCalls() { return QuietCalls.chosen() && enabled(QuietCalls.KEY); }
+    public static boolean quietIncomingCalls() {
+        return (QuietCalls.chosen() && enabled(QuietCalls.KEY)) || QuietMode.call();
+    }
 
     /** What Android tells an app that can't see the phone's location about the Wi-Fi network it's on. */
     static final String HIDDEN_WIFI_NAME = "<unknown ssid>";
