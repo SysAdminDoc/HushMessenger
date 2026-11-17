@@ -179,6 +179,7 @@ final class SettingsTextZhTw {
         {"message_actions_empty_sent", "按住一則你傳送的訊息，它的動作就會顯示在這裡。"},
         {"message_actions_empty_got", "按住一則你收到的訊息，它的動作就會顯示在這裡。"},
         {"chat_menu_items_empty", "按住聊天清單中的一個聊天室，它的選單項目就會顯示在這裡。"},
+        {"invisible_buttons_empty", "開啟一個聊天室一次，它顯示給你的每個按鈕就會出現在這裡。"},
         {"message_actions_hidden_label", "%1$s（已隱藏）"},
         {"message_actions_move_up", "將%1$s上移"},
         {"message_actions_move_down", "將%1$s下移"},
@@ -836,5 +837,7 @@ final class SettingsTextZhTw {
         {"custom_font.description", "以手機字型取代 Meta 字型來顯示 Messenger 文字，也可使用下方選取的 .ttf 或 .otf 字型檔案，並調整大小或上下位置。表情符號不受影響。重新啟動 Messenger 後即可看到變更。"},
         {"menu_blur.title", "選單背景模糊"},
         {"menu_blur.description", "長按聊天室或訊息時跳出的選單，以及 Messenger 其他的彈出選單和面板，背後的畫面會像 iPhone 一樣變模糊。需要 Android 12 以上。"},
+        {"invisible_buttons.title", "隱形按鈕"},
+        {"invisible_buttons.description", "把你在下面挑選的按鈕畫成看不見，但位置、大小和功能都不變，所以點下去照樣有用。聊天室顯示給你的每個按鈕都會用螢幕閱讀器唸出的名稱列在這裡，所以先開啟一個聊天室一次來填滿清單。"},
     };
 }

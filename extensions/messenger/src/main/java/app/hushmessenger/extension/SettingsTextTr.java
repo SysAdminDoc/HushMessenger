@@ -179,6 +179,7 @@ final class SettingsTextTr {
         {"message_actions_empty_sent", "Gönderdiğin bir mesaja basılı tuttuğunda işlemleri burada görünür."},
         {"message_actions_empty_got", "Aldığın bir mesaja basılı tuttuğunda işlemleri burada görünür."},
         {"chat_menu_items_empty", "Sohbet listende bir sohbete basılı tuttuğunda menüsündeki öğeler burada görünür."},
+        {"invisible_buttons_empty", "Bir sohbeti bir kez aç, sana gösterdiği her düğme burada görünür."},
         {"message_actions_hidden_label", "%1$s (gizli)"},
         {"message_actions_move_up", "%1$s öğesini yukarı taşı"},
         {"message_actions_move_down", "%1$s öğesini aşağı taşı"},
@@ -836,5 +837,7 @@ final class SettingsTextTr {
         {"custom_font.description", "Messenger'ın metnini Meta'nın yazı tipi yerine telefonunun yazı tipiyle ya da aşağıdan seçtiğin bir .ttf veya .otf yazı tipi dosyasıyla gösterir. Bu yazı tipini büyütüp küçültebilir, yukarı veya aşağı taşıyabilirsin. Emojiler değişmez. Değişikliği görmek için Messenger'ı yeniden başlat."},
         {"menu_blur.title", "Menülerin arkasını bulanıklaştır"},
         {"menu_blur.description", "Bir sohbete veya mesaja basılı tuttuğunda açılan menünün ve Messenger'ın diğer açılır menülerinin ve sayfalarının arkasındaki ekranı iPhone'daki gibi bulanıklaştırır. Android 12 veya daha yenisi gerekir."},
+        {"invisible_buttons.title", "Görünmez düğmeler"},
+        {"invisible_buttons.description", "Aşağıda seçtiğin düğmeleri görünmez çizer ama yeri, boyutu ve yaptığı iş aynı kalır, yani dokunuş hâlâ işler. Bir sohbetin sana gösterdiği her düğme, ekran okuyucunun söylediği adla listelenir, bu yüzden listeyi doldurmak için bir sohbeti bir kez aç."},
     };
 }

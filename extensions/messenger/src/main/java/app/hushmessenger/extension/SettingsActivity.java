@@ -69,6 +69,7 @@ public final class SettingsActivity extends Activity {
     private final TabIconsRow tabIcons = new TabIconsRow(this);
     private final MessageActionsRow messageActions = new MessageActionsRow(this);
     private final ChatMenuItemsRow chatMenuItems = new ChatMenuItemsRow(this);
+    private final InvisibleButtonsRow invisibleButtons = new InvisibleButtonsRow(this);
     private final MenuRowsRow menuRows = new MenuRowsRow(this);
     private final CallCaptionsRow callCaptions = new CallCaptionsRow(this);
     private final SpecialContactsRow specialContacts = new SpecialContactsRow(this);
@@ -240,6 +241,7 @@ public final class SettingsActivity extends Activity {
         {"home_header", "Your own home header", "Puts words or a picture of your own at the top of the chat list in place of Messenger's wordmark. Type the words or choose the picture below. With neither, the wordmark stays. Restart Messenger to see a change.", "theme"},
         {"custom_font", "Use your own font", "Shows Messenger's text in your phone's font instead of Meta's, or in a .ttf or .otf font file you choose below, which you can also make larger or smaller and move up or down. Emoji don't change. Restart Messenger to see a change.", "theme"},
         {"menu_blur", "Blur behind menus", "Blurs the screen behind the menu you get when you press and hold a chat or a message, and behind Messenger's other pop-up menus and sheets, like on an iPhone. It needs Android 12 or newer.", "theme"},
+        {"invisible_buttons", "Invisible buttons", "Draws buttons you pick below at nothing while they keep their place, their size and what they do, so a tap still lands on them. Every button a chat has shown you is listed by the name a screen reader says for it, so open a chat once to fill the list.", "theme"},
     };
 
     static final String DRAWER_ALIAS = "app.hushmessenger.extension.SettingsLauncher";
@@ -424,6 +426,7 @@ public final class SettingsActivity extends Activity {
         if (quietCallers != null) fillQuietCallers();
         messageActions.fill(null);
         chatMenuItems.fill(null);
+        invisibleButtons.fill(null);
         menuRows.fill(null);
         specialContacts.fill(null);
         updates.syncUpdateChoice(false);
@@ -1040,6 +1043,7 @@ public final class SettingsActivity extends Activity {
                     || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0]) || ChatHiding.KEY.equals(spec[0])
                     || TabIcons.KEY.equals(spec[0])
                     || MessageActions.KEY.equals(spec[0]) || ChatMenuItems.KEY.equals(spec[0]) || CameraActivity.KEY.equals(spec[0])
+                    || InvisibleButtons.KEY.equals(spec[0])
                     || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])
                     || MenuBlur.KEY.equals(spec[0]) || "hide_read_receipts".equals(spec[0])
                     || ("allow_screenshot".equals(spec[0]) && Build.VERSION.SDK_INT >= 29)) {
@@ -1072,6 +1076,7 @@ public final class SettingsActivity extends Activity {
                 else if (TabIcons.KEY.equals(spec[0])) tabIcons.addTo(wrapper);
                 else if (MessageActions.KEY.equals(spec[0])) messageActions.addTo(wrapper);
                 else if (ChatMenuItems.KEY.equals(spec[0])) chatMenuItems.addTo(wrapper);
+                else if (InvisibleButtons.KEY.equals(spec[0])) invisibleButtons.addTo(wrapper);
                 else if (CallCaptions.KEY.equals(spec[0])) {
                     callCaptions.addTo(wrapper);
                     ui.add(wrapper, controlRow(CallCaptions.SPEAK, text.format(CallCaptions.SPEAK), text.format("call_captions_speak_help"), false), 8);

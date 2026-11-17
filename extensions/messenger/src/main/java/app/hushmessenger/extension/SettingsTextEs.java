@@ -179,6 +179,7 @@ final class SettingsTextEs {
         {"message_actions_empty_sent", "Mantén presionado un mensaje que enviaste y sus acciones aparecerán aquí."},
         {"message_actions_empty_got", "Mantén presionado un mensaje que recibiste y sus acciones aparecerán aquí."},
         {"chat_menu_items_empty", "Mantén presionado un chat de tu lista de chats y los elementos de su menú aparecerán aquí."},
+        {"invisible_buttons_empty", "Abre un chat una vez y cada botón que te muestre aparecerá aquí."},
         {"message_actions_hidden_label", "%1$s (sin mostrar)"},
         {"message_actions_move_up", "Subir %1$s"},
         {"message_actions_move_down", "Bajar %1$s"},
@@ -837,5 +838,7 @@ final class SettingsTextEs {
         {"custom_font.description", "Muestra el texto de Messenger con la fuente de tu teléfono en lugar de la de Meta, o con un archivo de fuente .ttf u .otf que elijas abajo, que además puedes hacer más grande o más pequeña y mover hacia arriba o hacia abajo. Los emojis no cambian. Reinicia Messenger para ver un cambio."},
         {"menu_blur.title", "Desenfocar detrás de los menús"},
         {"menu_blur.description", "Desenfoca la pantalla detrás del menú que aparece al mantener presionado un chat o un mensaje, y detrás de los otros menús emergentes y paneles de Messenger, como en un iPhone. Necesita Android 12 o posterior."},
+        {"invisible_buttons.title", "Botones invisibles"},
+        {"invisible_buttons.description", "Dibuja los botones que elijas abajo en nada, pero conservan su lugar, su tamaño y lo que hacen, así que un toque sigue llegando. Cada botón que un chat te ha mostrado aparece con el nombre que dice un lector de pantalla, así que abre un chat una vez para llenar la lista."},
     };
 }

@@ -179,6 +179,7 @@ final class SettingsTextViVN {
         {"message_actions_empty_sent", "Nhấn giữ một tin nhắn bạn gửi, các thao tác của nó sẽ hiện ở đây."},
         {"message_actions_empty_got", "Nhấn giữ một tin nhắn bạn nhận, các thao tác của nó sẽ hiện ở đây."},
         {"chat_menu_items_empty", "Nhấn giữ một phòng chat trong danh sách trò chuyện, các mục trong menu của nó sẽ hiện ở đây."},
+        {"invisible_buttons_empty", "Mở một đoạn chat một lần, mọi nút nó hiện cho bạn sẽ xuất hiện ở đây."},
         {"message_actions_hidden_label", "%1$s (đã ẩn)"},
         {"message_actions_move_up", "Đưa %1$s lên"},
         {"message_actions_move_down", "Đưa %1$s xuống"},
@@ -836,5 +837,7 @@ final class SettingsTextViVN {
         {"custom_font.description", "Thay thế phông chữ Meta bằng phông chữ điện thoại để hiển thị văn bản Messenger, hoặc bạn có thể sử dụng tệp phông chữ .ttf hoặc .otf được chọn bên dưới, đồng thời điều chỉnh kích thước hoặc vị trí lên xuống. Biểu tượng cảm xúc không bị ảnh hưởng. Có thể thấy thay đổi sau khi khởi động lại Messenger."},
         {"menu_blur.title", "Làm mờ phía sau menu"},
         {"menu_blur.description", "Làm mờ màn hình phía sau menu hiện ra khi bạn nhấn giữ một đoạn chat hoặc một tin nhắn, cùng các menu và bảng bật lên khác của Messenger, giống như trên iPhone. Cần Android 12 trở lên."},
+        {"invisible_buttons.title", "Nút vô hình"},
+        {"invisible_buttons.description", "Vẽ các nút bạn chọn bên dưới thành vô hình nhưng vẫn giữ nguyên vị trí, kích thước và chức năng, nên một lần nhấn vẫn trúng. Mọi nút một đoạn chat đã hiện cho bạn đều được liệt kê theo tên mà trình đọc màn hình gọi, vì vậy hãy mở một đoạn chat một lần để lấp danh sách."},
     };
 }

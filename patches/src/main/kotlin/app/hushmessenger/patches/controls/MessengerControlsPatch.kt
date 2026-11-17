@@ -234,7 +234,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         CAR_MESSAGES -> validateCarMessages()
         CAR_EXTENSION_GATE -> validateCarExtensionGate()
         LOCAL_CHAT_SEARCH -> validateLocalChatSearch()
-        CHAT_JUMP, SECURE_CHAT -> validateChatJump()
+        CHAT_JUMP, SECURE_CHAT, INVISIBLE_BUTTONS -> validateChatJump()
         CALL_RECORDING -> validateCallRecording()
         HOME_HEADER -> validateHomeHeader()
         TEXT_STYLE -> validateTextStyleField()
@@ -373,6 +373,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             LOCAL_CHAT_SEARCH -> method.injectLocalChatSearch()
             CHAT_JUMP -> method.injectChatJump()
             SECURE_CHAT -> method.injectSecureChat()
+            INVISIBLE_BUTTONS -> method.injectInvisibleButtons()
             CALL_RECORDING -> method.injectCallRecording()
             HOME_HEADER -> method.injectHomeHeader()
             TEXT_STYLE -> method.injectTextStyleField()
@@ -845,6 +846,10 @@ val customFontPatch = controlPatch("custom_font", "Use your own font",
 val menuBlurPatch = controlPatch("menu_blur", "Blur behind menus",
     "Blurs the screen behind the menu you get when you press and hold a chat or a message, and behind Messenger's other pop-up menus and sheets, like on an iPhone. Needs Android 12 or newer.",
     "Theme", MENU_BLUR)
+@Suppress("unused")
+val invisibleButtonsPatch = controlPatch("invisible_buttons", "Invisible buttons",
+    "Picks buttons in a chat to draw at nothing while they keep their place, their size and what they do, so a tap still lands. Good for a button you keep hitting by mistake or one you'd rather not look at. Pick them in HushMessenger settings, where every button a chat has shown you is listed by the name a screen reader says for it.",
+    "Theme", INVISIBLE_BUTTONS)
 private var anonymousStoriesApplied = false
 
 private val anonymousStoriesResources = resourcePatch(description = "Record HushMessenger capability: anonymous_stories") {

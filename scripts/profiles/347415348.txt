@@ -175,6 +175,7 @@ hook inbox_search_bar LX/2dK;->render(LX/28H;)LX/1FW;
 hook instant_gallery LX/MNd;->EKq(LX/2rp;)V
 hook instants_button LX/1u9;->A0G(LX/1u9;)V
 hook instants_button LX/Yxa;->A0Z(LX/Yxa;)V
+hook invisible_buttons LX/1i9;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook keep_unsent LX/Xaj;->A02(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V
 hook landscape_lock LX/07D;->A0K()Z
 hook landscape_media LX/7MZ;->A00(LX/7MZ;I)V

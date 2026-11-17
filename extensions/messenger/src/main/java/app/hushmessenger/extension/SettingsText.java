@@ -275,6 +275,7 @@ final class SettingsText {
         ENGLISH.put("message_actions_empty_sent", "Press and hold a message you sent, and its actions show up here.");
         ENGLISH.put("message_actions_empty_got", "Press and hold a message you got, and its actions show up here.");
         ENGLISH.put("chat_menu_items_empty", "Press and hold a chat in your chat list, and its menu's items show up here.");
+        ENGLISH.put("invisible_buttons_empty", "Open a chat once, and every button it shows you turns up here.");
         ENGLISH.put("message_actions_hidden_label", "%1$s (hidden)");
         ENGLISH.put("message_actions_move_up", "Move %1$s up");
         ENGLISH.put("message_actions_move_down", "Move %1$s down");

@@ -598,10 +598,11 @@ private class ControlScan(
             if (original == CHAT_FRAGMENT_NAME) add("chat_fragment")
             if (original == "M4TabNavigationFragment") add("chat_inbox")
         }
-        // Two controls open at the chat's own view handover: the jump menu and the screenshot block.
+        // Three controls open at the chat's own view handover: the jump menu, the screenshot block and the dimmer.
         if (original == CHAT_FRAGMENT_NAME && method.isChatJumpView()) {
             add(CHAT_JUMP)
             add(SECURE_CHAT)
+            add(INVISIBLE_BUTTONS)
         }
         // Chats on Messenger's older route open in this fragment, which loads its own animation.
         if (original == "ThreadViewFragment" && method.name == "onCreateAnimation" &&
