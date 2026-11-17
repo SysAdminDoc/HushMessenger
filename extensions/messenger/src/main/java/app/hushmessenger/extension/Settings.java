@@ -459,6 +459,7 @@ public final class Settings {
         owners.put(QuietMode.DAILY, QuietMode.KEY);
         owners.put(CameraActivity.ASK, CameraActivity.KEY);
         owners.put(MessageLog.SAVE_EXPIRING, MessageLog.KEY);
+        owners.put(MessageLog.KEEP_VOICE, MessageLog.KEY);
         owners.put(QuietChats.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.MENU_KEY, MessageLog.KEY);
@@ -1266,8 +1267,28 @@ public final class Settings {
         return id;
     }
 
+    /**
+     * The message object itself, handed over right after its id and before its text, for the voice clip its attachment
+     * points at. Only the address is read here, on Messenger's own thread; the fetch happens off it.
+     */
+    private static final ThreadLocal<String> INCOMING_VOICE = new ThreadLocal<>();
+
+    public static void incomingMessageMedia(Object message) {
+        String address = MessageLogVoice.address(message);
+        if (address == null) INCOMING_VOICE.remove();
+        else INCOMING_VOICE.set(address);
+    }
+
+    static String takeIncomingMessageVoice() {
+        String address = INCOMING_VOICE.get();
+        INCOMING_VOICE.remove();
+        return address;
+    }
+
     /** The notification hook hands the message here; the log stores it off this thread and swallows its own failures. */
-    public static void recordReceivedMessage(String text, String thread) { MessageLog.record(text, thread, takeIncomingMessageId()); }
+    public static void recordReceivedMessage(String text, String thread) {
+        MessageLog.record(text, thread, takeIncomingMessageId(), takeIncomingMessageVoice());
+    }
 
     /** The same notification hook asks this for an auto reply: on, not paused, and with at least one reply written. */
     public static boolean autoReplyWanted() { return AutoReply.wanted(); }

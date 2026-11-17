@@ -212,6 +212,7 @@ final class MessageLogSheet {
         hideFromRecents(dialog);
         dialog.setOnDismissListener(dismissed -> {
             showInRecents();
+            MessageLogClip.stop();
             if (messageLogDialog == dismissed) {
                 messageLogDialog = null;
                 messageLogList = null;
@@ -603,7 +604,9 @@ final class MessageLogSheet {
         body.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
         body.setTextIsSelectable(true);
         ui.add(card, body, 8);
-        if (!entry.media.isEmpty()) {
+        if (MessageLogVoice.KIND.equals(entry.mediaType)) {
+            if (!entry.media.isEmpty()) messageLogClipRow(card, entry.media);
+        } else if (!entry.media.isEmpty()) {
             ImageView picture = new ImageView(page);
             picture.setTag("message_log_photo");
             picture.setContentDescription(text.get("message_log_photo"));
@@ -642,6 +645,43 @@ final class MessageLogSheet {
         String chat = !picked.isEmpty() ? picked : !entry.chat.isEmpty() ? entry.chat : index == null ? "" : index.groupName(entry.thread);
         if (entry.sender.isEmpty()) return chat.isEmpty() ? text.get("message_log_unknown_thread") : chat;
         return chat.isEmpty() ? entry.sender : text.get("message_log_in_group", entry.sender, chat);
+    }
+
+    /**
+     * The Play button on a voice message's card. It opens and plays the clip off the main thread, turns into Stop while
+     * the clip runs, and says so in its place when the clip can't be played.
+     */
+    private void messageLogClipRow(LinearLayout card, String name) {
+        SettingsUi ui = page.ui;
+        SettingsText text = page.text;
+        Button play = ui.button(text.get(MessageLogClip.playing(name) ? "message_log_clip_stop" : "message_log_clip_play"));
+        play.setTag("message_log_clip");
+        ui.add(card, play, 8);
+        TextView missing = ui.text(text.get("message_log_clip_missing"), 13, ui.muted, false);
+        missing.setTag("message_log_clip_missing");
+        missing.setVisibility(View.GONE);
+        ui.add(card, missing, 8);
+        Context context = page.getApplicationContext();
+        LinearLayout results = messageLogResults;
+        play.setOnClickListener(clicked -> {
+            if (MessageLogClip.playing(name)) {
+                MessageLogClip.stop();
+                return;
+            }
+            play.setEnabled(false);
+            MESSAGE_LOG_PICTURES.execute(() -> {
+                boolean started = MessageLogClip.play(context, name, () -> page.runOnUiThread(() -> {
+                    if (messageLogResults != results || page.isFinishing() || page.isDestroyed()) return;
+                    play.setText(text.get("message_log_clip_play"));
+                }));
+                page.runOnUiThread(() -> {
+                    if (messageLogResults != results || page.isFinishing() || page.isDestroyed()) return;
+                    play.setEnabled(true);
+                    play.setText(text.get(started ? "message_log_clip_stop" : "message_log_clip_play"));
+                    if (!started) missing.setVisibility(View.VISIBLE);
+                });
+            });
+        });
     }
 
     /** Opens the picture off the main thread and shows it once it's ready. One that can't be opened says so in its place. */

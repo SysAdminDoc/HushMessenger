@@ -683,6 +683,11 @@ final class SettingsText {
         ENGLISH.put("message_log_attachment", "Photo or attachment");
         ENGLISH.put("message_log_photo", "Photo");
         ENGLISH.put("message_log_photo_missing", "This photo couldn't be shown.");
+        ENGLISH.put("message_log_keep_voice", "Keep voice messages");
+        ENGLISH.put("message_log_keep_voice_help", "Downloads a voice message as it's logged, so you can still play it after the sender unsends it. Messenger only downloads one when you play it, which is why an unsend before that takes it away. Clips use more space than the rest of the log, and they go when their message does.");
+        ENGLISH.put("message_log_clip_play", "Play voice message");
+        ENGLISH.put("message_log_clip_stop", "Stop");
+        ENGLISH.put("message_log_clip_missing", "This voice message couldn't be played.");
         ENGLISH.put("message_log_button", "Button at the top of Chats");
         ENGLISH.put("message_log_button_help", "Puts a clock next to the new message button. Tap it to open the log.");
         ENGLISH.put("message_log_menu_row", "Row in the Menu tab");
