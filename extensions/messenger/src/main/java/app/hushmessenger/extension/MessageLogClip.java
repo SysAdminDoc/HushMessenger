@@ -4,12 +4,13 @@ import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.MediaDataSource;
 import android.media.MediaPlayer;
+import android.view.Surface;
 import java.io.IOException;
 
 /**
- * Plays a voice clip the message log kept ({@link MessageLogAttachment}). The clip is opened from its sealed file into memory
- * and played from there, so nothing is written out in the clear. One clip plays at a time: starting another stops the one
- * before it, and so does closing the log's sheet.
+ * Plays a voice clip or a video the message log kept ({@link MessageLogAttachment}). The file is opened from its sealed copy
+ * into memory and played from there, so nothing is written out in the clear. One plays at a time: starting another stops the
+ * one before it, and so does closing the log's sheet.
  */
 final class MessageLogClip {
     private MessageLogClip() {}
@@ -31,11 +32,20 @@ final class MessageLogClip {
      * answer is whether it started at all.
      */
     static boolean play(Context context, String name, Runnable stopped) {
+        return play(context, name, null, null, stopped);
+    }
+
+    /**
+     * The same for a video, shown on [surface]. [sized] is told the video's own width and height once they're known, so
+     * the view holding the surface can take the shape of the video rather than stretching it.
+     */
+    static boolean play(Context context, String name, Surface surface,
+                        java.util.function.BiConsumer<Integer, Integer> sized, Runnable stopped) {
         byte[] clip;
         try {
             clip = MessageLogMedia.open(context, name);
         } catch (Exception unreadable) {
-            Settings.hookFailedPrivately(MessageLog.KEY, "Can't open a voice message in the log", unreadable);
+            Settings.hookFailedPrivately(MessageLog.KEY, "Can't open a message's media in the log", unreadable);
             return false;
         }
         if (clip == null || clip.length == 0) return false;
@@ -43,7 +53,8 @@ final class MessageLogClip {
         MediaPlayer player = new MediaPlayer();
         try {
             player.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build());
+                .setContentType(surface == null ? AudioAttributes.CONTENT_TYPE_SPEECH : AudioAttributes.CONTENT_TYPE_MOVIE).build());
+            if (surface != null) player.setSurface(surface);
             player.setDataSource(new Bytes(clip));
             player.setOnCompletionListener(done -> stop());
             player.setOnErrorListener((failed, what, extra) -> {
@@ -51,6 +62,7 @@ final class MessageLogClip {
                 return true;
             });
             player.prepare();
+            if (sized != null) sized.accept(player.getVideoWidth(), player.getVideoHeight());
             synchronized (MessageLogClip.class) {
                 playing = player;
                 playingName = name;
@@ -60,7 +72,7 @@ final class MessageLogClip {
             return true;
         } catch (Throwable unplayable) {
             player.release();
-            Settings.hookFailedPrivately(MessageLog.KEY, "Can't play a voice message in the log", unplayable);
+            Settings.hookFailedPrivately(MessageLog.KEY, "Can't play a message's media in the log", unplayable);
             return false;
         }
     }

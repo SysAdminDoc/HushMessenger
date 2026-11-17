@@ -461,6 +461,7 @@ public final class Settings {
         owners.put(MessageLog.SAVE_EXPIRING, MessageLog.KEY);
         owners.put(MessageLog.KEEP_VOICE, MessageLog.KEY);
         owners.put(MessageLog.KEEP_PHOTOS, MessageLog.KEY);
+        owners.put(MessageLog.KEEP_VIDEOS, MessageLog.KEY);
         owners.put(QuietChats.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.KEY, MessageLog.KEY);
         owners.put(MessageLogButton.MENU_KEY, MessageLog.KEY);

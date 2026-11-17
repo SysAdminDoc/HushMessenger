@@ -27,14 +27,19 @@ public class MessageLogAttachmentTest {
     private static final String ADDRESS = "https://cdn.example.com/audio.mp4?oe=6A1B2C3D";
     private static final String SMALL = "https://cdn.example.com/photo-s.jpg?oe=6A1B2C3D";
     private static final String BIG = "https://cdn.example.com/photo-l.jpg?oe=6A1B2C3D";
+    /** A video's own address and the thumbnail Messenger sends beside it, which look alike on the message. */
+    private static final String MOVIE = "https://cdn.example.com/video.mp4?oe=6A1B2C3D";
+    private static final String THUMB = "https://cdn.example.com/video-thumb.jpg?oe=6A1B2C3D";
     private static final String THREAD = "thread-7";
     private static final String ID = "mid.100";
     /** Stands in for the fetch, so no test reaches a network. */
     private static final byte[] CLIP = "ftypM4A clip bytes".getBytes(StandardCharsets.UTF_8);
 
     private java.util.function.Function<String, byte[]> download;
+    private java.util.function.ToLongFunction<String> measure;
     private java.util.function.LongConsumer retryLater;
     private final List<String> asked = new java.util.ArrayList<>();
+    private final List<String> measured = new java.util.ArrayList<>();
 
     @Before public void reset() {
         Settings.initialize(RuntimeEnvironment.getApplication());
@@ -51,17 +56,25 @@ public class MessageLogAttachmentTest {
         logFile().delete();
         MessageLogMedia.deleteAll(Settings.appContext);
         download = MessageLogAttachment.download;
+        measure = MessageLogAttachment.measure;
         asked.clear();
+        measured.clear();
         MessageLogAttachment.download = address -> {
             asked.add(address);
             return CLIP;
         };
-        Settings.preferences.edit().putBoolean(MessageLog.KEY, true)
-            .putBoolean(MessageLog.KEEP_VOICE, true).putBoolean(MessageLog.KEEP_PHOTOS, true).commit();
+        // What the server says about a video and its thumbnail, which is how the two are told apart.
+        MessageLogAttachment.measure = address -> {
+            measured.add(address);
+            return MOVIE.equals(address) ? 2_000_000 : THUMB.equals(address) ? 40_000 : -1;
+        };
+        Settings.preferences.edit().putBoolean(MessageLog.KEY, true).putBoolean(MessageLog.KEEP_VOICE, true)
+            .putBoolean(MessageLog.KEEP_PHOTOS, true).putBoolean(MessageLog.KEEP_VIDEOS, true).commit();
     }
 
     @After public void tidy() {
         MessageLogAttachment.download = download;
+        MessageLogAttachment.measure = measure;
         MessageLog.retryLater = retryLater;
         logFile().delete();
         MessageLogMedia.deleteAll(Settings.appContext);
@@ -82,6 +95,10 @@ public class MessageLogAttachmentTest {
             AttachmentImageMap.of(new ImageUrl(1440, 1920, BIG), new ImageUrl(480, 640, SMALL)))));
     }
 
+    private static Message videoMessage() {
+        return Message.with(Attachment.video(new VideoData(Uri.parse(MOVIE), Uri.parse(THUMB))));
+    }
+
     private static MessageLogAttachment.Found audio() {
         return new MessageLogAttachment.Found(ADDRESS, MessageLogAttachment.AUDIO);
     }
@@ -90,20 +107,24 @@ public class MessageLogAttachmentTest {
         return new MessageLogAttachment.Found(BIG, MessageLogAttachment.PHOTO);
     }
 
+    private static MessageLogAttachment.Found video() {
+        return new MessageLogAttachment.Found(new String[] {MOVIE, THUMB}, MessageLogAttachment.VIDEO);
+    }
+
     private static String nameOf(String kind) {
         return MessageLogAttachment.name(THREAD, ID, kind);
     }
 
     @Test public void theAddressIsFoundThroughTheAttachmentsOwnTypes() {
         MessageLogAttachment.Found found = MessageLogAttachment.found(voiceMessage());
-        assertEquals(ADDRESS, found.address);
+        assertEquals(ADDRESS, found.address());
         assertEquals(MessageLogAttachment.AUDIO, found.kind);
     }
 
     /** Messenger offers the same photo at several sizes, and only the biggest is worth keeping. */
     @Test public void aPhotosBiggestAddressIsTheOneFound() {
         MessageLogAttachment.Found found = MessageLogAttachment.found(photoMessage());
-        assertEquals(BIG, found.address);
+        assertEquals(BIG, found.address());
         assertEquals(MessageLogAttachment.PHOTO, found.kind);
     }
 
@@ -111,11 +132,23 @@ public class MessageLogAttachmentTest {
     @Test public void aPhotoWithNoSizesStillHasAnAddress() {
         Message message = Message.with(Attachment.image(ImageData.of(null,
             AttachmentImageMap.of(new ImageUrl(0, 0, BIG)))));
-        assertEquals(BIG, MessageLogAttachment.found(message).address);
+        assertEquals(BIG, MessageLogAttachment.found(message).address());
+    }
+
+    /**
+     * A video arrives with its own address and its thumbnail's, both the same type and neither marked, so both are
+     * carried off Messenger's thread and nothing is asked over the network while the message is being logged.
+     */
+    @Test public void bothOfAVideosAddressesAreCarried() {
+        MessageLogAttachment.Found found = MessageLogAttachment.found(videoMessage());
+        assertEquals(MessageLogAttachment.VIDEO, found.kind);
+        assertArrayEquals(new String[] {MOVIE, THUMB}, found.addresses);
+        assertEquals(List.of(), measured);
+        assertEquals(List.of(), asked);
     }
 
     @Test public void anotherKindOfAttachmentHasNoAddressToFind() {
-        assertNull(MessageLogAttachment.found(Message.with(Attachment.video(new VideoData(Uri.parse(ADDRESS))))));
+        assertNull(MessageLogAttachment.found(Message.with(Attachment.video(new VideoData(null)))));
         assertNull(MessageLogAttachment.found(Message.with()));
         assertNull(MessageLogAttachment.found(Message.with(Attachment.audio(new AudioData(null)))));
         assertNull(MessageLogAttachment.found(Message.with(Attachment.image(ImageData.of(null, null)))));
@@ -136,7 +169,9 @@ public class MessageLogAttachmentTest {
     @Test public void nothingIsReadWithTheSwitchesOff() {
         Settings.preferences.edit().putBoolean(MessageLog.KEEP_VOICE, false).commit();
         assertNull(MessageLogAttachment.found(voiceMessage()));
-        assertEquals(BIG, MessageLogAttachment.found(photoMessage()).address);
+        assertEquals(BIG, MessageLogAttachment.found(photoMessage()).address());
+        Settings.preferences.edit().putBoolean(MessageLog.KEEP_VIDEOS, false).commit();
+        assertNull(MessageLogAttachment.found(videoMessage()));
         Settings.preferences.edit().putBoolean(MessageLog.KEEP_PHOTOS, false).commit();
         assertNull(MessageLogAttachment.found(photoMessage()));
         Settings.preferences.edit().putBoolean(MessageLog.KEEP_VOICE, true).putBoolean(MessageLog.KEY, false).commit();
@@ -148,7 +183,7 @@ public class MessageLogAttachmentTest {
     /** The hook hands the message over before its text, and what it found waits there for the log's own call. */
     @Test public void theHookHandsTheAddressOverWithTheMessage() {
         Settings.incomingMessageMedia(voiceMessage());
-        assertEquals(ADDRESS, Settings.takeIncomingMessageMedia().address);
+        assertEquals(ADDRESS, Settings.takeIncomingMessageMedia().address());
         assertNull(Settings.takeIncomingMessageMedia());
         Settings.incomingMessageMedia(voiceMessage());
         Settings.incomingMessageMedia(Message.with());
@@ -180,6 +215,47 @@ public class MessageLogAttachmentTest {
         assertEquals("", kept.mediaType);
         assertEquals(nameOf(MessageLogAttachment.PHOTO), kept.media);
         assertArrayEquals(CLIP, MessageLogMedia.open(Settings.appContext, kept.media));
+    }
+
+    /** The video, not the thumbnail beside it: the server says how big each is, and a thumbnail is a fraction of its video. */
+    @Test public void theBiggerOfAVideosAddressesIsTheOneKept() throws Exception {
+        MessageLog.storeNow(null, THREAD, ID);
+        assertEquals(nameOf(MessageLogAttachment.VIDEO), MessageLogAttachment.keepNow(THREAD, ID, video()));
+        assertEquals(List.of(MOVIE, THUMB), measured);
+        assertEquals(List.of(MOVIE), asked);
+        MessageLog.Entry kept = MessageLog.entries().get(0);
+        assertEquals(MessageLogAttachment.VIDEO, kept.mediaType);
+        assertEquals(nameOf(MessageLogAttachment.VIDEO), kept.media);
+        assertArrayEquals(CLIP, MessageLogMedia.open(Settings.appContext, kept.media));
+        assertNotEquals(nameOf(MessageLogAttachment.PHOTO), kept.media);
+        assertTrue(Settings.hookErrors.isEmpty());
+    }
+
+    /** Some servers won't answer how big a file is, and then the only way left to tell the two apart is to fetch both. */
+    @Test public void bothAreFetchedWhenNothingSaysHowBigTheyAre() throws Exception {
+        byte[] movie = new byte[4096];
+        MessageLogAttachment.measure = address -> {
+            measured.add(address);
+            return -1;
+        };
+        MessageLogAttachment.download = address -> {
+            asked.add(address);
+            return MOVIE.equals(address) ? movie : CLIP;
+        };
+        MessageLog.storeNow(null, THREAD, ID);
+        assertEquals(nameOf(MessageLogAttachment.VIDEO), MessageLogAttachment.keepNow(THREAD, ID, video()));
+        assertEquals(List.of(MOVIE, THUMB), asked);
+        assertArrayEquals(movie, MessageLogMedia.open(Settings.appContext, MessageLog.entries().get(0).media));
+    }
+
+    /** A video is the largest thing the log keeps, and one past that size leaves its message logged without it. */
+    @Test public void aVideoPastItsSizeIsntKept() {
+        MessageLogAttachment.download = address -> new byte[MessageLogAttachment.MAX_VIDEO_BYTES + 1];
+        MessageLog.storeNow(null, THREAD, ID);
+        assertEquals("", MessageLogAttachment.keepNow(THREAD, ID, video()));
+        assertTrue(MessageLog.entries().get(0).media.isEmpty());
+        assertEquals(MessageLogAttachment.MAX_VIDEO_BYTES, MessageLogMedia.MAX_ANY_BYTES);
+        assertTrue(MessageLogAttachment.MAX_VIDEO_BYTES > MessageLogAttachment.MAX_PHOTO_BYTES);
     }
 
     /** The clip can land while the message is still waiting to be written, and then the one write carries both. */
@@ -246,13 +322,16 @@ public class MessageLogAttachmentTest {
     @Test public void theKindSurvivesAWriteAndAnOlderLogStillReads() throws Exception {
         MessageLog.write(Settings.appContext, List.of(
             new MessageLog.Entry(1_700_000_000_000L, THREAD, "", "Ana", "", ID, false, true, "a".repeat(64), MessageLogAttachment.AUDIO),
-            new MessageLog.Entry(1_700_000_001_000L, THREAD, "", "Ana", "", "mid.101", false, true, "b".repeat(64))));
+            new MessageLog.Entry(1_700_000_001_000L, THREAD, "", "Ana", "", "mid.101", false, true, "b".repeat(64)),
+            new MessageLog.Entry(1_700_000_002_000L, THREAD, "", "Ana", "", "mid.102", false, true, "c".repeat(64), MessageLogAttachment.VIDEO)));
         List<MessageLog.Entry> back = MessageLog.read(logFile());
-        assertEquals(2, back.size());
+        assertEquals(3, back.size());
         assertEquals(MessageLogAttachment.AUDIO, back.get(0).mediaType);
         assertEquals("a".repeat(64), back.get(0).media);
         assertEquals("", back.get(1).mediaType);
         assertEquals("b".repeat(64), back.get(1).media);
+        assertEquals(MessageLogAttachment.VIDEO, back.get(2).mediaType);
+        assertEquals("c".repeat(64), back.get(2).media);
     }
 
     /** A kind the log doesn't know reads as a picture, which is what every entry before this was. */

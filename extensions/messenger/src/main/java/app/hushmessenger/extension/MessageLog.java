@@ -49,9 +49,9 @@ import javax.crypto.spec.GCMParameterSpec;
  * Download/Messenger right before it's removed. That file isn't encrypted, so the switch starts off.
  *
  * A photo or other attachment has no text of its own, so it's logged with what its notification line said, and with the
- * picture Messenger put on that line when there is one ({@link MessageLogMedia}). A photo at the size it was sent, and a
- * voice message's clip, are fetched as the message is logged, with {@link #KEEP_PHOTOS} or {@link #KEEP_VOICE} on
- * ({@link MessageLogAttachment}). Names picked for chats in the log's screen sit in a file of their own, sealed with the
+ * picture Messenger put on that line when there is one ({@link MessageLogMedia}). A photo at the size it was sent, a
+ * video and a voice message's clip are fetched as the message is logged, with {@link #KEEP_PHOTOS},
+ * {@link #KEEP_VIDEOS} or {@link #KEEP_VOICE} on ({@link MessageLogAttachment}). Names picked for chats in the log's screen sit in a file of their own, sealed with the
  * same key, so a clear takes them along.
  */
 public final class MessageLog {
@@ -63,6 +63,8 @@ public final class MessageLog {
     static final String KEEP_VOICE = "message_log_keep_voice";
     /** Fetch a photo at the size it was sent as it's logged, rather than keeping the notification's preview of it. */
     static final String KEEP_PHOTOS = "message_log_keep_photos";
+    /** Fetch a video as it's logged, so an unsend before it's opened can't take it. */
+    static final String KEEP_VIDEOS = "message_log_keep_videos";
     static final String FILE = "hush_message_log.bin";
     static final String DAMAGED = FILE + ".damaged";
     static final String KEY_ALIAS = "hushmessenger_message_log";
@@ -147,7 +149,10 @@ public final class MessageLog {
         public final boolean attachment;
         /** The kept picture's or clip's name in {@link MessageLogMedia}, empty when nothing was kept. */
         final String media;
-        /** What that file is: empty for a picture, {@link MessageLogAttachment#AUDIO} for a voice clip. */
+        /**
+         * What that file is: empty for a picture, {@link MessageLogAttachment#AUDIO} for a voice clip,
+         * {@link MessageLogAttachment#VIDEO} for a video.
+         */
         public final String mediaType;
         Entry(long time, String thread, String text) {
             this(time, thread, text, "", "");
@@ -1058,13 +1063,18 @@ public final class MessageLog {
                 parts.length > 6 && "1".equals(parts[6]),
                 parts.length > 7 && !parts[7].isEmpty(),
                 parts.length > 7 && !NO_PICTURE.equals(parts[7]) ? clip(unescape(parts[7]), MAX_ID_CHARS) : "",
-                parts.length > 8 && MessageLogAttachment.AUDIO.equals(parts[8]) ? MessageLogAttachment.AUDIO : ""));
+                parts.length > 8 ? kind(parts[8]) : ""));
         }
         return entries;
     }
 
     /** The eighth column of an attachment the notification showed no picture for. */
     private static final String NO_PICTURE = "-";
+
+    /** A kind this log knows how to show, else the empty kind, which is the picture every entry before kinds was. */
+    private static String kind(String written) {
+        return MessageLogAttachment.AUDIO.equals(written) || MessageLogAttachment.VIDEO.equals(written) ? written : "";
+    }
 
     /** Writes the whole log, or deletes the file when nothing is left, then drops the pictures no entry keeps. */
     private static void save(Context context, List<Entry> entries) throws Exception {

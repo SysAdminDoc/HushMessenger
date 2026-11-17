@@ -1116,6 +1116,8 @@ public final class SettingsActivity extends Activity {
                     ui.add(wrapper, controlRow(QuietChats.KEY, text.format(QuietChats.KEY), text.format("message_log_quiet_chats_help"), false), 8);
                     ui.add(wrapper, controlRow(MessageLog.KEEP_PHOTOS, text.format(MessageLog.KEEP_PHOTOS),
                         text.format("message_log_keep_photos_help"), false), 8);
+                    ui.add(wrapper, controlRow(MessageLog.KEEP_VIDEOS, text.format(MessageLog.KEEP_VIDEOS),
+                        text.format("message_log_keep_videos_help"), false), 8);
                     ui.add(wrapper, controlRow(MessageLog.KEEP_VOICE, text.format(MessageLog.KEEP_VOICE),
                         text.format("message_log_keep_voice_help"), false), 8);
                     if (Build.VERSION.SDK_INT >= 29) ui.add(wrapper, controlRow(MessageLog.SAVE_EXPIRING,
@@ -2261,6 +2263,7 @@ public final class SettingsActivity extends Activity {
                 inside += " " + text.get(QuietChats.KEY) + " " + text.get("message_log_quiet_chats_help");
                 inside += " " + text.get(MessageLog.KEEP_VOICE) + " " + text.get("message_log_keep_voice_help");
                 inside += " " + text.get(MessageLog.KEEP_PHOTOS) + " " + text.get("message_log_keep_photos_help");
+                inside += " " + text.get(MessageLog.KEEP_VIDEOS) + " " + text.get("message_log_keep_videos_help");
                 if (Build.VERSION.SDK_INT >= 29) inside += " " + text.get(MessageLog.SAVE_EXPIRING) + " " + text.get("message_log_save_expiring_help");
             }
             boolean match = SettingsSearch.matches(terms, spec[1], spec[2],
