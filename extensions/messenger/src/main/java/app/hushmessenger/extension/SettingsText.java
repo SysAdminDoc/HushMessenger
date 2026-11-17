@@ -231,6 +231,12 @@ final class SettingsText {
         ENGLISH.put("call_recording_folder_reset", "Use the default");
         ENGLISH.put("call_recording_folder_picked", "Recordings folder: %1$s");
         ENGLISH.put("call_recording_folder_refused", "Couldn't use that folder. Pick one you can write to.");
+        ENGLISH.put("call_recording_format", "Save calls as");
+        ENGLISH.put("call_recording_format_wav", "WAV, the best quality");
+        ENGLISH.put("call_recording_format_ogg", "OGG Opus, about a tenth the size");
+        ENGLISH.put("call_recording_format_help", "An hour of call is around 115 MB as a WAV and nearer 10 MB as Opus, and the voices sound much the same. WAV plays in anything, where a few older players don't know Opus.");
+        ENGLISH.put("call_recording_format_picked", "Save calls as: %1$s");
+        ENGLISH.put("call_recording_format_unavailable", "This phone has no Opus encoder, so calls are saved as WAV whichever you pick.");
         ENGLISH.put("call_recording_keep", "Keep recordings");
         ENGLISH.put("call_recording_keep_all", "Keep them all");
         ENGLISH.put("call_recording_keep_days", "For %1$s days");

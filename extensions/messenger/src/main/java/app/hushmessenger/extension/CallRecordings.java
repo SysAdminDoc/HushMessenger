@@ -48,6 +48,11 @@ final class CallRecordings {
     /** One switch per chat, this prefix and the chat's key, so each binds like any other switch. */
     static final String CHAT_PREFIX = "call_recording_chat_";
 
+    /** What a recording is written as: a plain WAV, or Opus in an OGG for a file a tenth the size. */
+    static final String FORMAT = "call_recording_format";
+    static final String WAV = "wav", OGG = "ogg";
+    static final List<String> FORMATS = Arrays.asList(WAV, OGG);
+
     /** The folder recordings are written to, as a tree the person picked. Empty for the phone's own. */
     static final String FOLDER = "call_recording_folder";
     /** What a picked folder is held with, so it still opens after a restart. */
@@ -67,6 +72,20 @@ final class CallRecordings {
         } catch (RuntimeException notANumber) {
             return 0;
         }
+    }
+
+    /** What's written down for the format, whether or not this phone can manage it. */
+    static String formatPicked() {
+        String saved = Settings.preferences == null ? null : Settings.preferences.getString(FORMAT, WAV);
+        return FORMATS.contains(saved) ? saved : WAV;
+    }
+
+    /**
+     * The format a recording started now would be written in. Opus needs an encoder, and a phone without one gets the
+     * WAV rather than a file that was never written, so this is asked before the file is named.
+     */
+    static VoiceMessages.Format format() {
+        return OGG.equals(formatPicked()) && CallOpus.available() ? VoiceMessages.Format.OGG : VoiceMessages.Format.WAV;
     }
 
     /** The folder picked for recordings, or null for the phone's own. */

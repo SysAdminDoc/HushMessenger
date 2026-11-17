@@ -87,6 +87,11 @@ public final class CallRecording {
         default Uri uri() {
             return null;
         }
+
+        /** The file itself, which a format written through Android's own muxer needs. Null when there's no such thing. */
+        default java.io.FileDescriptor descriptor() {
+            return null;
+        }
     }
 
     static volatile Store store = new Saving();
@@ -584,7 +589,7 @@ public final class CallRecording {
     static String name(Date when, String with) {
         String who = fileSafe(with);
         return "Call " + (who.isEmpty() ? "" : "with " + who + " ")
-            + new SimpleDateFormat("yyyy-MM-dd HH.mm.ss", Locale.ROOT).format(when) + "." + VoiceMessages.Format.WAV.extension;
+            + new SimpleDateFormat("yyyy-MM-dd HH.mm.ss", Locale.ROOT).format(when) + "." + CallRecordings.format().extension;
     }
 
     /** Longest a name can run in a file's name, leaving room for the date and the folder it goes in. */
@@ -610,6 +615,21 @@ public final class CallRecording {
             one = one.substring(0, one.offsetByCodePoints(0, LONGEST_NAME)).trim();
         }
         return one;
+    }
+
+    /**
+     * How the file is written: Opus when that's what the name says, since the format is settled before the file is
+     * made, and the plain WAV otherwise. An encoder that won't start takes the WAV rather than the call (#193).
+     */
+    private static CallMix.Sink sink(Target target, String name) throws IOException {
+        if (name.endsWith("." + VoiceMessages.Format.OGG.extension) && target.descriptor() != null) {
+            try {
+                return new CallOpus(target.descriptor());
+            } catch (IOException | RuntimeException unusable) {
+                Settings.hookFailedPrivately(KEY, "Couldn't record this call as Opus", unusable);
+            }
+        }
+        return new CallMix.Wav(target.channel());
     }
 
     /** One recording, on a thread of its own, since writing the file shouldn't hold up the call or Messenger's screens. */
@@ -673,7 +693,7 @@ public final class CallRecording {
             String saved = name(new Date(), with);
             try {
                 target = store.open(context, saved);
-                mix = new CallMix(target.channel());
+                mix = new CallMix(sink(target, saved));
                 listening = this;
                 try {
                     while (!mix.full() && !stopped()) mix.pump(elapsed());
@@ -689,6 +709,7 @@ public final class CallRecording {
                 Settings.hookFailedPrivately(KEY, "Couldn't record a call", error);
             } finally {
                 try {
+                    if (mix != null) mix.release();
                     if (target != null) target.close(kept);
                 } catch (IOException | RuntimeException error) {
                     Settings.hookFailedPrivately(KEY, "Couldn't finish a call recording", error);
@@ -736,7 +757,7 @@ public final class CallRecording {
         @Override public Target open(Context context, String name) throws IOException {
             ContentResolver resolver = context.getContentResolver();
             Uri parent = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree));
-            Uri item = DocumentsContract.createDocument(resolver, parent, VoiceMessages.Format.WAV.mime, name);
+            Uri item = DocumentsContract.createDocument(resolver, parent, CallRecordings.format().mime, name);
             if (item == null) throw new IOException("The folder picked made no file");
             ParcelFileDescriptor descriptor;
             try {
@@ -764,6 +785,10 @@ public final class CallRecording {
                 @Override public Uri uri() {
                     return item;
                 }
+
+                @Override public java.io.FileDescriptor descriptor() {
+                    return descriptor.getFileDescriptor();
+                }
             };
         }
 
@@ -787,7 +812,7 @@ public final class CallRecording {
             ContentResolver resolver = context.getContentResolver();
             ContentValues values = new ContentValues();
             values.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
-            values.put(MediaStore.MediaColumns.MIME_TYPE, VoiceMessages.Format.WAV.mime);
+            values.put(MediaStore.MediaColumns.MIME_TYPE, CallRecordings.format().mime);
             values.put(MediaStore.MediaColumns.RELATIVE_PATH, folder());
             // Never pending: a crash has to leave a file people can find, and Android removes pending ones after a week.
             Uri item = resolver.insert(VoiceMessages.SharedAudio.collection(), values);
@@ -817,6 +842,10 @@ public final class CallRecording {
 
                 @Override public Uri uri() {
                     return item;
+                }
+
+                @Override public java.io.FileDescriptor descriptor() {
+                    return descriptor.getFileDescriptor();
                 }
             };
         }

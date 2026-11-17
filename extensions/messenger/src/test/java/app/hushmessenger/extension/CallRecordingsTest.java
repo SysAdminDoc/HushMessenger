@@ -32,6 +32,8 @@ public class CallRecordingsTest {
         Settings.hookErrors.clear();
         CrashGuard.resetForTests();
         CallRecording.resetForTests();
+        // The codec list is the phone's own, so a test that adds an encoder mustn't leave it for the next one.
+        org.robolectric.shadows.ShadowMediaCodecList.reset();
         assertTrue("Record calls has to be a control the bundle carries", Settings.installed.contains(CallRecording.KEY));
     }
 
@@ -301,9 +303,102 @@ public class CallRecordingsTest {
                 "call_recording_scope_help", "call_recording_scope_picked", "call_recording_recent_empty",
                 CallRecordings.FOLDER, "call_recording_folder_help", "call_recording_folder_default",
                 "call_recording_folder_choose", "call_recording_folder_reset", "call_recording_folder_picked",
-                "call_recording_folder_refused"}) {
+                "call_recording_folder_refused", CallRecordings.FORMAT, "call_recording_format_wav",
+                "call_recording_format_ogg", "call_recording_format_help", "call_recording_format_picked",
+                "call_recording_format_unavailable"}) {
             assertNotNull("English " + id, SettingsText.ENGLISH.get(id));
         }
+    }
+
+    @Test public void callsAreSavedAsWavUntilOpusIsPicked() {
+        assertEquals(CallRecordings.WAV, CallRecordings.formatPicked());
+        assertEquals(VoiceMessages.Format.WAV, CallRecordings.format());
+        assertTrue(CallRecording.name(new java.util.Date()).endsWith(".wav"));
+
+        Settings.preferences.edit().putString(CallRecordings.FORMAT, CallRecordings.OGG).commit();
+        assertEquals(CallRecordings.OGG, CallRecordings.formatPicked());
+    }
+
+    @Test public void aFormatNobodyCouldHavePickedReadsAsTheWav() {
+        for (String odd : new String[] {"", "mp3", "opus "}) {
+            Settings.preferences.edit().putString(CallRecordings.FORMAT, odd).commit();
+            assertEquals("Reading " + odd, CallRecordings.WAV, CallRecordings.formatPicked());
+        }
+    }
+
+    /** A phone with no Opus encoder writes the WAV rather than nothing, whatever the setting says. */
+    @Test public void withNoOpusEncoderThePickStillSavesTheWav() {
+        Settings.preferences.edit().putString(CallRecordings.FORMAT, CallRecordings.OGG).commit();
+        assertFalse(CallOpus.available());
+        assertEquals(VoiceMessages.Format.WAV, CallRecordings.format());
+        assertTrue(CallRecording.name(new java.util.Date()).endsWith(".wav"));
+    }
+
+    @Test public void withAnOpusEncoderThePickNamesTheFileOgg() {
+        withAnOpusEncoder();
+        Settings.preferences.edit().putString(CallRecordings.FORMAT, CallRecordings.OGG).commit();
+        assertTrue(CallOpus.available());
+        assertEquals(VoiceMessages.Format.OGG, CallRecordings.format());
+        assertEquals("audio/ogg", CallRecordings.format().mime);
+        String saved = CallRecording.name(new java.util.Date(), "Alex Kim");
+        assertTrue(saved, saved.startsWith(CallRecordings.PREFIX) && saved.endsWith(".ogg"));
+    }
+
+    /** The tidy-up goes by the name, so an Opus recording is swept up the same way a WAV one is. */
+    @Test public void theTidyUpTakesAwayOpusRecordingsToo() throws Exception {
+        withAnOpusEncoder();
+        Folder folder = Folder.register("opus.folder");
+        long now = System.currentTimeMillis();
+        folder.add("Call 2026-01-01 09.00.00.ogg", now - TimeUnit.DAYS.toMillis(60));
+        Settings.preferences.edit().putString(CallRecordings.FOLDER, tree("opus.folder", "root").toString())
+            .putString(CallRecordings.FORMAT, CallRecordings.OGG).putString(CallRecordings.KEEP, "30").commit();
+
+        assertEquals(1, CallRecordings.clean(app, now));
+        assertTrue(folder.names().isEmpty());
+    }
+
+    @Test public void settingsOffersTheFormatAndSaysWhenThePhoneCant() {
+        Settings.preferences.edit().putBoolean(CallRecording.KEY, true).commit();
+        try (var page = org.robolectric.Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            android.view.View root = page.get().getWindow().getDecorView();
+            android.widget.RadioButton wav = root.findViewWithTag("call_recording_format_wav");
+            android.widget.RadioButton ogg = root.findViewWithTag("call_recording_format_ogg");
+            assertNotNull(wav);
+            assertTrue("WAV to start with", wav.isChecked());
+            assertNotNull("A phone with no encoder is told so", root.findViewWithTag("call_recording_format_unavailable"));
+
+            ogg.performClick();
+            org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle();
+            assertEquals(CallRecordings.OGG, Settings.preferences.getString(CallRecordings.FORMAT, null));
+            assertTrue(ogg.isChecked());
+            assertFalse(wav.isChecked());
+        }
+    }
+
+    @Test public void theFormatRowTurnsUpInASearch() {
+        Settings.preferences.edit().putBoolean(CallRecording.KEY, true).commit();
+        try (var page = org.robolectric.Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            android.view.View root = page.get().getWindow().getDecorView();
+            android.widget.EditText find = root.findViewWithTag("find_control");
+            android.view.View nothing = root.findViewWithTag("empty_state");
+            for (String words : new String[] {"save calls as", "ogg opus", "a tenth the size"}) {
+                find.setText(words);
+                org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle();
+                assertEquals("Searching " + words, android.view.View.GONE, nothing.getVisibility());
+            }
+        }
+    }
+
+    /** Puts an Opus encoder on the phone, which Robolectric's own list has none of. */
+    private static void withAnOpusEncoder() {
+        android.media.MediaFormat opus = android.media.MediaFormat.createAudioFormat(CallOpus.MIME, CallMix.RATE, 1);
+        org.robolectric.shadows.ShadowMediaCodecList.addCodec(
+            org.robolectric.shadows.MediaCodecInfoBuilder.newBuilder()
+                .setName("test.opus.encoder")
+                .setIsEncoder(true)
+                .setCapabilities(org.robolectric.shadows.MediaCodecInfoBuilder.CodecCapabilitiesBuilder.newBuilder()
+                    .setMediaFormat(opus).setIsEncoder(true).build())
+                .build());
     }
 
     @Test public void recordingsGoToThePhonesOwnFolderUntilOneIsPicked() {

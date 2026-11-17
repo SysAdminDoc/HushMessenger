@@ -21,6 +21,7 @@ final class CallRecordingRow {
     private final SettingsActivity page;
     private final List<RadioButton> choices = new ArrayList<>();
     private final List<RadioButton> scopes = new ArrayList<>();
+    private final List<RadioButton> formats = new ArrayList<>();
     private TextView folder;
     private Button useDefault;
 
@@ -62,6 +63,36 @@ final class CallRecordingRow {
         page.ui.add(content, useDefault, 8);
         page.ui.add(content, page.ui.text(page.text.get("call_recording_folder_help"), 13, page.ui.muted, false), 8);
         fill();
+    }
+
+    /** What a recording is written as. Opus is only worth offering on a phone that can encode it. */
+    void addFormatTo(LinearLayout content) {
+        page.ui.add(content, page.ui.text(page.text.get(CallRecordings.FORMAT), 15, page.ui.text, true), 8);
+        RadioGroup group = new RadioGroup(page);
+        group.setTag("call_recording_format_choices");
+        group.setOrientation(LinearLayout.VERTICAL);
+        for (String format : CallRecordings.FORMATS) {
+            RadioButton choice = page.radio(CallRecordings.FORMAT + "_" + format,
+                page.text.get(CallRecordings.FORMAT + "_" + format));
+            choice.setOnClickListener(clicked -> pickFormat(format));
+            group.addView(choice, new RadioGroup.LayoutParams(-1, -2));
+            formats.add(choice);
+        }
+        page.ui.add(content, group, 4);
+        if (!CallOpus.available()) {
+            TextView without = page.ui.text(page.text.get("call_recording_format_unavailable"), 13, page.ui.muted, false);
+            without.setTag("call_recording_format_unavailable");
+            page.ui.add(content, without, 4);
+        }
+        page.ui.add(content, page.ui.text(page.text.get("call_recording_format_help"), 13, page.ui.muted, false), 8);
+        fill();
+    }
+
+    private void pickFormat(String format) {
+        if (Settings.preferences != null) Settings.preferences.edit().putString(CallRecordings.FORMAT, format).apply();
+        fill();
+        page.feedback(page.text.get("call_recording_format_picked",
+            page.text.format(CallRecordings.FORMAT + "_" + format)), Toast.LENGTH_SHORT);
     }
 
     private void pickFolder() {
@@ -114,6 +145,8 @@ final class CallRecordingRow {
         for (RadioButton choice : choices) choice.setChecked(choice.getTag().equals("call_recording_keep_" + now));
         String scope = CallRecordings.scope();
         for (RadioButton choice : scopes) choice.setChecked(choice.getTag().equals(CallRecordings.SCOPE + "_" + scope));
+        String format = CallRecordings.formatPicked();
+        for (RadioButton choice : formats) choice.setChecked(choice.getTag().equals(CallRecordings.FORMAT + "_" + format));
     }
 
     private String label(String days) {
