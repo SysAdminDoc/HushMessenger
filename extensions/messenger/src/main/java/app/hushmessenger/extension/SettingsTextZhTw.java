@@ -785,6 +785,8 @@ final class SettingsTextZhTw {
         {"attribution_uploads.description", "停止讀取手機廣告 ID，並將其與廣告追蹤設定傳送給 Meta 的工作。廣告 ID 本身不會變更。"},
         {"ad_events.title", "停止記錄收件匣與廣告連結活動"},
         {"ad_events.description", "停止 Messenger 記錄的兩種報告。一種記錄畫面上顯示了聊天清單的哪個部分，Messenger 將其歸類為收件匣廣告資料；另一種記錄你是透過哪則廣告的連結開啟聊天室。"},
+        {"dwell_tracking.title", "停止記錄注視時間"},
+        {"dwell_tracking.description", "停止 Messenger 在你離開畫面時送出的報告，該報告記錄你看每項內容多久、依什麼順序看，以及回頭看了幾次。同時也停止將這些時間複製到 Messenger 的使用歷程紀錄。"},
         {"mqtt_telemetry.title", "停止記錄即時連線活動"},
         {"mqtt_telemetry.description", "丟棄 Messenger 透過即時連線（MQTT）傳送的連線狀況報告與推播紀錄。Messenger 大部分資料會透過其他管道傳送，因此通常可攔下的內容不多。訊息、通話與上線狀態仍可正常運作。"},
         {"nearby_scans.title", "停止附近裝置與網路掃描"},

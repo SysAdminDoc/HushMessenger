@@ -785,6 +785,8 @@ final class SettingsTextTr {
         {"attribution_uploads.description", "Telefonunun reklam kimliğini okuyup reklam izleme ayarınla birlikte Meta'ya gönderen işi durdurur. Kimliğin kendisi değişmez."},
         {"ad_events.title", "Gelen kutusu ve reklam bağlantısı kaydını durdur"},
         {"ad_events.description", "Messenger'ın kaydettiği iki raporu durdurur. Biri sohbet listenin hangi kısmının ekranda olduğunu bildirir ve Messenger bunu gelen kutusu reklamları altında kaydeder. Diğeri, bir reklamdaki bağlantı bir sohbet açtığında seni hangi reklamın getirdiğini bildirir."},
+        {"dwell_tracking.title", "Ekrana bakma süresi kaydını durdur"},
+        {"dwell_tracking.description", "Bir ekrandan çıktığında Messenger'ın gönderdiği raporu durdurur. Bu rapor, ekrandaki her şeye ne kadar baktığını, hangi sırayla baktığını ve kaç kez geri döndüğünü bildirir. Bu sürelerin Messenger'ın kullanım yolculuğu kaydına giden kopyasını da durdurur."},
         {"mqtt_telemetry.title", "Canlı bağlantı kaydını durdur"},
         {"mqtt_telemetry.description", "Messenger'ın canlı bağlantısı (MQTT) üzerinden gönderdiği durum raporlarını ve anlık bildirim kayıtlarını engeller. Messenger trafiğinin çoğunu başka bir yoldan gönderdiği için çoğu zaman engellenecek pek bir şey olmaz. Mesajlar, aramalar ve aktif durumu çalışmaya devam eder."},
         {"nearby_scans.title", "Yakındaki taramaları durdur"},

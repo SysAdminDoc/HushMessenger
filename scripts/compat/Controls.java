@@ -98,6 +98,7 @@ final class Controls {
         found.get("analytics_uploads").addAll(inProcessUploadStarts(classes, stringTables));
         found.get("attribution_uploads").addAll(attributionUploads(classes));
         found.get("ad_events").addAll(adEvents(classes));
+        found.get("dwell_tracking").addAll(dwellTracking(classes));
         found.get("mqtt_telemetry").addAll(mqttTelemetry(classes));
         pinnedChats(classes).forEach((hook, methods) -> found.get(hook).addAll(methods));
         hiddenChats(classes, inboxTypes).forEach((hook, methods) -> found.get(hook).addAll(methods));

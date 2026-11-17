@@ -100,6 +100,7 @@ hook delta_unsent LX/5h8;->DXB(I)Z
 hook delta_unsent LX/Yx1;->DXB(I)Z
 hook delta_unsent LX/cQj;->DXB(I)Z
 hook disappearing_swipe Lcom/facebook/messaging/threadview/overscroll/ui/OverScrollActionBehavior;->onStartNestedScroll(Landroidx/coordinatorlayout/widget/CoordinatorLayout;Landroid/view/View;Landroid/view/View;Landroid/view/View;II)Z
+hook dwell_tracking LX/Rxa;->A02(LX/Rxa;Ljava/lang/String;J)V
 hook emoji_drawer LX/5km;->DKT()Z
 hook emoji_drawer LX/AOv;->A0R(LX/HP3;)Z
 hook emoji_drawer Lcom/facebook/mobileconfig/factory/MobileConfigUnsafeContext;->A04()Z

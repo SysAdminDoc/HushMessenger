@@ -198,6 +198,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         ANALYTICS_UPLOADS -> validateAnalyticsUpload()
         ATTRIBUTION_UPLOADS -> validateAttributionUpload()
         AD_EVENTS -> validateAdEvent()
+        DWELL_TRACKING -> validateDwellTracking()
         MQTT_TELEMETRY -> validateMqttTelemetry()
         PINNED_CHATS -> validatePinnedChatLimit()
         PIN_ROWS -> pinRowSummary() ?: throw PatchException("Messenger controls: the Pin row's check changed (${hookId()})")
@@ -334,6 +335,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             ANALYTICS_UPLOADS -> method.injectAnalyticsUpload()
             ATTRIBUTION_UPLOADS -> method.injectAttributionUpload()
             AD_EVENTS -> method.injectAdEvent()
+            DWELL_TRACKING -> method.injectDwellTracking()
             MQTT_TELEMETRY -> method.injectMqttTelemetry()
             PINNED_CHATS -> method.injectPinnedChatLimit()
             PIN_ROWS -> method.injectPinRow()
@@ -783,6 +785,9 @@ val stopAttributionUploadsPatch = controlPatch("attribution_uploads", "Stop ad a
 @Suppress("unused")
 val stopAdEventsPatch = controlPatch("ad_events", "Stop inbox and ad link logging",
     "Stops two reports Messenger logs. One says which part of your chat list was on screen, which Messenger files under inbox ads. The other says which ad brought you in when a link from an ad opens a chat.", "Tracking")
+@Suppress("unused")
+val stopDwellTrackingPatch = controlPatch("dwell_tracking", "Stop attention time logging",
+    "Stops the report Messenger files when you leave a screen, which says how long you looked at each thing on it, in what order, and how often you came back. It also stops the copy of those timings that goes onto Messenger's journey log.", "Tracking")
 @Suppress("unused")
 val stopMqttLoggingPatch = controlPatch("mqtt_telemetry", "Stop live connection logging",
     "Drops the health reports and push logging Messenger sends over its live connection (MQTT). Messenger sends most of its traffic another way, so there's often little for it to drop. Messages, calls and active status keep working.", "Tracking")

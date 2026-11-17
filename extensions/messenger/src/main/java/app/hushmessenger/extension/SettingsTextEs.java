@@ -786,6 +786,8 @@ final class SettingsTextEs {
         {"attribution_uploads.description", "Detiene la tarea que lee el ID de publicidad de tu teléfono y lo envía a Meta junto con tu ajuste de seguimiento de anuncios. El ID en sí no cambia."},
         {"ad_events.title", "Detener el registro de la bandeja y de los enlaces de anuncios"},
         {"ad_events.description", "Detiene dos informes que registra Messenger. Uno indica qué parte de tu lista de chats estaba en pantalla, algo que Messenger clasifica como anuncios de la bandeja de entrada. El otro indica qué anuncio te trajo cuando un enlace de un anuncio abre un chat."},
+        {"dwell_tracking.title", "Detener el registro del tiempo de atención"},
+        {"dwell_tracking.description", "Detiene el informe que Messenger envía cuando sales de una pantalla, donde consta cuánto tiempo miraste cada elemento, en qué orden y cuántas veces volviste. También detiene la copia de esos tiempos que va al registro de recorrido de Messenger."},
         {"mqtt_telemetry.title", "Detener el registro de la conexión en vivo"},
         {"mqtt_telemetry.description", "Descarta los informes de estado y el registro de notificaciones push que Messenger envía por su conexión en vivo (MQTT). Messenger envía la mayor parte de su tráfico por otra vía, así que a menudo hay poco que descartar. Los mensajes, las llamadas y el estado de actividad siguen funcionando."},
         {"nearby_scans.title", "Detener la búsqueda de redes cercanas"},

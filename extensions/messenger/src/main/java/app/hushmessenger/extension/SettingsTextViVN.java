@@ -785,6 +785,8 @@ final class SettingsTextViVN {
         {"attribution_uploads.description", "Dừng công việc đọc ID quảng cáo của điện thoại và gửi nó cùng với cài đặt theo dõi quảng cáo cho Meta. ID quảng cáo tự nó sẽ không thay đổi."},
         {"ad_events.title", "Ngừng ghi lại hoạt động liên kết hộp thư đến và quảng cáo"},
         {"ad_events.description", "Dừng hai loại báo cáo được ghi lại bởi Messenger. Một loại ghi lại phần nào của danh sách trò chuyện được hiển thị trên màn hình, Messenger phân loại là dữ liệu quảng cáo hộp thư đến; loại kia ghi lại liên kết quảng cáo nào bạn đã dùng để mở phòng chat."},
+        {"dwell_tracking.title", "Ngừng ghi lại thời gian bạn chú ý"},
+        {"dwell_tracking.description", "Dừng báo cáo mà Messenger gửi khi bạn rời khỏi một màn hình, trong đó ghi lại bạn đã nhìn mỗi thứ bao lâu, theo thứ tự nào và quay lại bao nhiêu lần. Nó cũng dừng bản sao của những mốc thời gian đó được ghi vào nhật ký hành trình của Messenger."},
         {"mqtt_telemetry.title", "Ngừng ghi lại hoạt động kết nối thời gian thực"},
         {"mqtt_telemetry.description", "Hủy bỏ báo cáo trạng thái kết nối và nhật ký đẩy do Messenger gửi qua kết nối thời gian thực (MQTT). Hầu hết dữ liệu của Messenger được truyền qua các kênh khác, vì vậy thường có rất ít nội dung bị chặn. Tin nhắn, cuộc gọi và trạng thái trực tuyến sẽ vẫn hoạt động bình thường."},
         {"nearby_scans.title", "Ngừng quét thiết bị và mạng lân cận"},

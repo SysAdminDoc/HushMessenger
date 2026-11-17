@@ -727,6 +727,21 @@ public final class Settings {
     /** Asked before the inbox visibility event and the ad deep link's entry event are logged; true drops that one event. */
     public static boolean stopAdEvents() { return enabled("ad_events"); }
 
+    static final String DWELL_TRACKING = "dwell_tracking";
+    /**
+     * Messenger's own yes or no on filing an attention report, and on copying its timestamps onto the journey log,
+     * answered no while the switch is on. The session's own bookkeeping and map cleanup run either way, and a failure
+     * here hands back the answer Messenger gave.
+     */
+    public static boolean dwellLogged(boolean would) {
+        try {
+            return would && !enabled(DWELL_TRACKING);
+        } catch (RuntimeException error) {
+            hookFailed(DWELL_TRACKING, "Can't drop the attention report", error);
+            return would;
+        }
+    }
+
     static final String MQTT_TELEMETRY = "mqtt_telemetry";
     /** The topics Messenger publishes its own connection logging on. Messages, typing and presence use other topics. */
     static final Set<String> MQTT_TELEMETRY_TOPICS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("/mqtt_health_stats", "/fbns_exp_logging")));

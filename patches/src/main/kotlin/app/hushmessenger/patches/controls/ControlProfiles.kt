@@ -133,6 +133,7 @@ internal val PROFILE_347415354 = ControlProfile(
         "delivery_receipt" to setOf("LX/OkY;->A02(Lcom/facebook/auth/usersession/FbUserSession;LX/PMW;Lcom/google/common/base/Optional;Ljava/lang/String;)V"),
         "delta_unsent" to setOf("LX/5hn;->DX0(I)Z", "LX/W2u;->DX0(I)Z", "LX/cNC;->DX0(I)Z"),
         "disappearing_swipe" to setOf("Lcom/facebook/messaging/threadview/overscroll/ui/OverScrollActionBehavior;->onStartNestedScroll(Landroidx/coordinatorlayout/widget/CoordinatorLayout;Landroid/view/View;Landroid/view/View;Landroid/view/View;II)Z"),
+        "dwell_tracking" to setOf("LX/S5K;->A02(LX/S5K;Ljava/lang/String;J)V"),
         "emoji_drawer" to setOf(
             "LX/5lR;->DKJ()Z", "LX/AOq;->A0R(LX/HRn;)Z",
             "Lcom/facebook/mobileconfig/factory/MobileConfigUnsafeContext;->A04()Z",
@@ -455,6 +456,7 @@ internal val PROFILE_347415280 = ControlProfile(
         "delivery_receipt" to setOf("LX/Uml;->A02(Lcom/facebook/auth/usersession/FbUserSession;LX/VMD;Lcom/google/common/base/Optional;Ljava/lang/String;)V"),
         "delta_unsent" to setOf("LX/5h8;->DXB(I)Z", "LX/Yx1;->DXB(I)Z", "LX/cQj;->DXB(I)Z"),
         "disappearing_swipe" to setOf("Lcom/facebook/messaging/threadview/overscroll/ui/OverScrollActionBehavior;->onStartNestedScroll(Landroidx/coordinatorlayout/widget/CoordinatorLayout;Landroid/view/View;Landroid/view/View;Landroid/view/View;II)Z"),
+        "dwell_tracking" to setOf("LX/Rxa;->A02(LX/Rxa;Ljava/lang/String;J)V"),
         "emoji_drawer" to setOf(
             "LX/5km;->DKT()Z", "LX/AOv;->A0R(LX/HP3;)Z",
             "Lcom/facebook/mobileconfig/factory/MobileConfigUnsafeContext;->A04()Z",
@@ -777,6 +779,7 @@ internal val PROFILE_347415302 = ControlProfile(
         "delivery_receipt" to setOf("LX/OkX;->A02(Lcom/facebook/auth/usersession/FbUserSession;LX/PMV;Lcom/google/common/base/Optional;Ljava/lang/String;)V"),
         "delta_unsent" to setOf("LX/5hn;->DX0(I)Z", "LX/W2s;->DX0(I)Z", "LX/cNC;->DX0(I)Z"),
         "disappearing_swipe" to setOf("Lcom/facebook/messaging/threadview/overscroll/ui/OverScrollActionBehavior;->onStartNestedScroll(Landroidx/coordinatorlayout/widget/CoordinatorLayout;Landroid/view/View;Landroid/view/View;Landroid/view/View;II)Z"),
+        "dwell_tracking" to setOf("LX/S5I;->A02(LX/S5I;Ljava/lang/String;J)V"),
         "emoji_drawer" to setOf(
             "LX/5lR;->DKJ()Z", "LX/AOq;->A0R(LX/HRm;)Z",
             "Lcom/facebook/mobileconfig/factory/MobileConfigUnsafeContext;->A04()Z",
@@ -1099,6 +1102,7 @@ internal val PROFILE_347415262 = ControlProfile(
         "delivery_receipt" to setOf("LX/Olp;->A03(Lcom/facebook/auth/usersession/FbUserSession;LX/PEF;Lcom/google/common/base/Optional;Ljava/lang/String;)V"),
         "delta_unsent" to setOf("LX/5iJ;->DXO(I)Z", "LX/cZQ;->DXO(I)Z", "LX/cZZ;->DXO(I)Z"),
         "disappearing_swipe" to setOf("Lcom/facebook/messaging/threadview/overscroll/ui/OverScrollActionBehavior;->onStartNestedScroll(Landroidx/coordinatorlayout/widget/CoordinatorLayout;Landroid/view/View;Landroid/view/View;Landroid/view/View;II)Z"),
+        "dwell_tracking" to setOf("LX/bD6;->A02(LX/bD6;Ljava/lang/String;J)V"),
         "emoji_drawer" to setOf(
             "LX/5lx;->DKf()Z", "LX/AQp;->A0R(LX/HTp;)Z",
             "Lcom/facebook/mobileconfig/factory/MobileConfigUnsafeContext;->A04()Z",

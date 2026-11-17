@@ -916,6 +916,24 @@ final class Menus {
         return events;
     }
 
+    /**
+     * dwell_tracking: the dwell session manager's own end-of-session method, static (manager, session id, time)V, named
+     * by the two reports it files, fb_ads_fine_grained_dwell and fine_grained_dwell_timestamps. Mirrors DwellTracking.kt.
+     */
+    static List<Method> dwellTracking(List<ClassDef> classes) {
+        var reports = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (method.getImplementation() == null || !"V".equals(method.getReturnType())) continue;
+            if (!AccessFlags.STATIC.isSet(method.getAccessFlags())) continue;
+            var params = new ArrayList<String>();
+            for (var t : method.getParameterTypes()) params.add(t.toString());
+            if (!params.equals(List.of(method.getDefiningClass(), "Ljava/lang/String;", "J"))) continue;
+            var strings = literals(method);
+            if (strings.contains("fb_ads_fine_grained_dwell") && strings.contains("fine_grained_dwell_timestamps")) reports.add(method);
+        }
+        return reports;
+    }
+
     static Set<String> literals(Method method) {
         var strings = new HashSet<String>();
         for (var i : instructions(method))
