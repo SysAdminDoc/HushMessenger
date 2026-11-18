@@ -11,7 +11,7 @@ fixture, and wires the key into MessengerControlsPatch (validate, inject, the pa
 SyntheticProfile, ControlDiscoveryTest, both ExpectedTotals, Settings, SettingsActivity (the CONTROLS row, and
 EXPERIMENTAL unless --stable), every SettingsText table (rows left empty for the translations), the extension
 manifest, SettingsNavigationTest when it lists the section, CompatReport's PATCHES row, Controls.findControls and the
-finder's mirror in scripts/compat/<family>.java, and the README's switch table.
+finder's mirror in scripts/compat/<family>.java.
 
 The new control goes after --after (by default the last control in its section) wherever a list has an order. Every
 edit is worked out before anything is written, and one missing anchor means nothing changes.
@@ -416,15 +416,9 @@ class {camel}Test {{
                 f"    static List<Method> {lower}(List<ClassDef> classes) {{\n        return new ArrayList<>();\n    }}\n")
         tree.set(family, text[:closing].rstrip("\n") + "\n" + stub + text[closing:])
 
-    def readme() -> None:
-        rel = "README.md"
-        text = tree.read(rel)
-        row = f"| {args.title} | {description}{'' if args.stable else ' Experimental.'} |\n"
-        tree.set(rel, insert_after(text, row, [rf"^\| {re.escape(after_row[1])} \|"], rel))
-
     for action in (control_file, test_file, controls_patch, patch_declaration, control_hooks, synthetic_profile,
                    discovery_test, totals, settings, settings_activity, *(lambda n=n: locale(n) for n in LOCALES),
-                   manifest, navigation_test, compat, readme):
+                   manifest, navigation_test, compat):
         step(action)
     if problems:
         raise Missing("\n".join(problems))
