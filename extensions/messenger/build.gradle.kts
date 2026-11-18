@@ -124,7 +124,7 @@ dependencies {
     compileOnly(files(messengerStubs))
     testImplementation(files(messengerStubs))
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.robolectric:robolectric:4.17")
+    testImplementation("org.robolectric:robolectric:4.18")
 }
 
 dependencyLocking { lockAllConfigurations() }
