@@ -81,6 +81,7 @@
 - For developers, the extension tests run on Robolectric 4.18, the release with the Android 17 (SDK 37) fixes. The eight suites that act as Messenger 587 on Android 17 run on that SDK, and every test class kept its count.
 - For developers, the settings translations live in `extensions/messenger/src/main/l10n` now, one tab-separated file per language with an id and its text on each line. The build writes the Java tables from them, so translating no longer means editing escaped Java strings. `scripts/new_control.py` adds a new control's empty rows to those files.
 - For developers, every patch is built with the patcher's `patch()` now, in place of the deprecated `bytecodePatch` and `resourcePatch`. Patch code reaches Messenger through the patcher's global functions, and the tests that run one patch on its own set up the same patcher context a real run has. Each entry in `patches-list.json` now lists its `type` as `Patch`.
+- For developers, the GitHub release notes leave out the Docs and Checks bullets and the What was checked list now. They're still here in the changelog, and publish still checks the walk receipt before anything goes out.
 
 ## 0.30.0 (2026-11-14)
 
