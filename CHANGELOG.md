@@ -79,6 +79,7 @@
 - For developers, `scripts/release/release.ps1 -Version X -Summary <file>` runs a whole release from one command. It cuts and commits the release, builds and checks the bundle, walks the whole app on the first free device, then publishes and updates the source index. When a step fails, fix it, commit and run the same command again, and it picks up where it stopped. `-Stage` still runs a single stage by hand.
 - For developers, the README is down to install, settings, help, verifying a download, building and credits. It no longer lists every switch, since each one describes itself in settings and search finds it, so `scripts/new_control.py` stopped adding a README row.
 - For developers, the extension tests run on Robolectric 4.18, the release with the Android 17 (SDK 37) fixes. The eight suites that act as Messenger 587 on Android 17 run on that SDK, and every test class kept its count.
+- For developers, the settings translations live in `extensions/messenger/src/main/l10n` now, one tab-separated file per language with an id and its text on each line. The build writes the Java tables from them, so translating no longer means editing escaped Java strings. `scripts/new_control.py` adds a new control's empty rows to those files.
 
 ## 0.30.0 (2026-11-14)
 
