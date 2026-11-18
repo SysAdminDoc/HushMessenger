@@ -166,7 +166,7 @@ python scripts/check_install.py --apk .\messenger-signed.apk --stock-apk .\messe
 
 ## Build from source
 
-You need JDK 21, Android SDK 36 and GitHub Packages credentials for the Morphe Gradle plugin. Set `ANDROID_HOME` to your SDK directory.
+You need JDK 21, Android SDK 36 and GitHub Packages credentials for the Morphe Gradle plugin, either in `GITHUB_ACTOR` and `GITHUB_TOKEN` as below or as `gpr.user` and `gpr.key` in your own gradle.properties. Set `ANDROID_HOME` to your SDK directory.
 
 ```powershell
 $env:GITHUB_ACTOR = gh api user --jq .login
