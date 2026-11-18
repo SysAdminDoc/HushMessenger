@@ -125,7 +125,7 @@ final class FloatingMenu {
         LinearLayout card = card(context, sources, labels, density);
         int width = (int) (WIDTH_DP * density);
         int height = height(sources.size(), density);
-        Rect anchor = bounds.apply(panel);
+        Rect anchor = resting(panel);
         View message = pressed(host, overlay, anchor, density);
         Rect bubble = message == null ? null : bounds.apply(message);
         int gap = (int) (GAP_DP * density), edge = (int) (EDGE_DP * density);
@@ -133,7 +133,7 @@ final class FloatingMenu {
         if (rise > 0) {
             anchor.offset(0, -rise);
             if (bubble != null) bubble.offset(0, -rise);
-            panel.setTranslationY(panel.getTranslationY() - rise);
+            panel.setTranslationY(-rise);
             lift.accept(rise);
         }
         Rect placed = place(anchor, bubble, frame, width, height, gap, edge);
@@ -378,6 +378,16 @@ final class FloatingMenu {
             view = view.getParent() instanceof View ? (View) view.getParent() : null;
         }
         return false;
+    }
+
+    /**
+     * Where a view sits once Messenger's slide on it is over: its place on screen without its own translation. The emoji
+     * row waits under its place, invisible, for a few frames before sliding up, so where it is right now says nothing.
+     */
+    static Rect resting(View view) {
+        Rect box = new Rect(bounds.apply(view));
+        box.offset(-Math.round(view.getTranslationX()), -Math.round(view.getTranslationY()));
+        return box;
     }
 
     /** Where a view is on screen. */
