@@ -1695,10 +1695,12 @@ public final class SettingsActivity extends Activity {
                 ui.add(quick, ui.text(text.get("quick_" + name + "_help"), 13, ui.muted, false), 8);
             }
             quickSection = section(content, "quick_setups", quick);
-            // A long press anywhere on the section hides it, header, buttons and help lines included.
+            // A long press anywhere on the section hides it. The help lines and rules pass their touches to the card,
+            // so only the header and the buttons need their own: a long-clickable help line or 1 dp rule reads to
+            // TalkBack as an unnamed or too-small button.
             holdToHide(quickSection.getChildAt(0));
             holdToHide(quick);
-            for (int i = 0; i < quick.getChildCount(); i++) holdToHide(quick.getChildAt(i));
+            for (int i = 0; i < quick.getChildCount(); i++) if (quick.getChildAt(i).isClickable()) holdToHide(quick.getChildAt(i));
             showQuickSetups();
         }
         LinearLayout appearance = ui.panel();
