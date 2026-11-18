@@ -11,7 +11,10 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * The menu a long press on a message opens, where Messenger draws it inside the chat (#162, #176). On 587 that's
@@ -48,6 +51,8 @@ final class InChatMenu implements ViewTreeObserver.OnPreDrawListener, View.OnAtt
     /** The emoji row moved up to make room for the card, and where it was moved to. */
     private View raised;
     private float raisedTo;
+    /** The menus dressed right now. */
+    static final Set<View> up = Collections.newSetFromMap(new WeakHashMap<>());
 
     private InChatMenu(View menu, FrameLayout chat, boolean blur, boolean card) {
         this.menu = menu;
@@ -55,6 +60,15 @@ final class InChatMenu implements ViewTreeObserver.OnPreDrawListener, View.OnAtt
         this.blur = blur;
         this.card = card;
         this.deadline = SystemClock.uptimeMillis() + WAIT_MS;
+    }
+
+    /** Whether a dressed menu is open in [view]'s window, so what HushMessenger keeps over the chat can make way for it. */
+    static boolean isUp(View view) {
+        View root = view.getRootView();
+        for (View open : up) {
+            if (open.isAttachedToWindow() && open.getRootView() == root) return true;
+        }
+        return false;
     }
 
     /**
@@ -128,6 +142,7 @@ final class InChatMenu implements ViewTreeObserver.OnPreDrawListener, View.OnAtt
 
     /** Blurs the chat and floats the card. */
     private void dress() {
+        up.add(menu);
         float density = chat.getResources().getDisplayMetrics().density;
         if (blur) {
             View message = FloatingMenu.pressed(chat, menu, seen, density);
@@ -180,6 +195,7 @@ final class InChatMenu implements ViewTreeObserver.OnPreDrawListener, View.OnAtt
      * when this runs, so the two views only hide here and leave the chat on the next turn of the loop.
      */
     private void undo() {
+        up.remove(menu);
         if (raised != null) raised.setTranslationY(0f);
         raised = null;
         for (View view : blurred) MenuBlur.screenEffect.accept(view, 0f);
@@ -206,6 +222,7 @@ final class InChatMenu implements ViewTreeObserver.OnPreDrawListener, View.OnAtt
         int rise;
         private final int[] at = new int[2];
         private final int[] origin = new int[2];
+        private final Rect showing = new Rect();
 
         Lift(Context context, View message) {
             super(context);
@@ -221,10 +238,17 @@ final class InChatMenu implements ViewTreeObserver.OnPreDrawListener, View.OnAtt
         @Override protected void onDraw(Canvas canvas) {
             canvas.drawColor(SHADE);
             if (message == null || !message.isAttachedToWindow() || message.getVisibility() != View.VISIBLE) return;
+            // A message running off the list stops where the list does, as it does in the chat.
+            if (!message.getLocalVisibleRect(showing)) return;
             message.getLocationInWindow(at);
             getLocationInWindow(origin);
             int saved = canvas.save();
             canvas.translate(at[0] - origin[0], at[1] - origin[1] - rise);
+            canvas.clipRect(showing);
+            // draw() skips the view's own layer, and a Like tints itself with a blend that needs one to stay on the glyph.
+            if (message.getLayerType() != View.LAYER_TYPE_NONE) {
+                canvas.saveLayer(showing.left, showing.top, showing.right, showing.bottom, null);
+            }
             message.draw(canvas);
             canvas.restoreToCount(saved);
         }
