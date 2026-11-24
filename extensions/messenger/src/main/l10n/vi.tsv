@@ -745,6 +745,8 @@ inbox_typing.title	Đang nhập trong danh sách đoạn chat
 inbox_typing.description	Viết 'đang nhập' lên tin nhắn cuối của một đoạn chat trong danh sách khi người kia đang nhập, thay vì chỉ hiện khi bạn đã vào đoạn chat. Messenger đã có sẵn phần này và máy chủ của Meta vẫn tắt nó. Khởi động lại Messenger để nó bắt đầu.
 inbox_search_bar.title	Giữ thanh tìm kiếm
 inbox_search_bar.description	Đưa thanh tìm kiếm trở lại đầu danh sách trò chuyện khi Messenger đã thay nó bằng biểu tượng tìm kiếm. Có hiệu lực sau khi khởi động lại Messenger. Nếu bạn chưa nhận được biểu tượng đó, sẽ không có thay đổi nào xảy ra.
+longer_notes.title	Viết ghi chú dài hơn
+longer_notes.description	Cho phép nhập tối đa 500 ký tự trong ghi chú thay vì 60. Facebook quyết định ghi chú dài có đăng được hay không.
 chat_preview.title	Xem trước phòng chat khi nhấn giữ
 chat_preview.description	Nhấn giữ một phòng chat để xem nhanh trong bản xem trước của chính Messenger, kèm menu của phòng chat ở bên dưới, mà không cần mở phòng chat.
 chat_preview_size.title	Bản xem trước phòng chat lớn hơn

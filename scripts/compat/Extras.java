@@ -674,4 +674,57 @@ final class Extras {
         return found.size() == 1 ? found : List.of();
     }
 
+    private static final String NOTE_SCREEN = "Lcom/facebook/presence/note/ui/creation/NotesCreationFragment;";
+
+    private static FieldReference noteField(Instruction i) {
+        return i instanceof ReferenceInstruction r && r.getReference() instanceof FieldReference f ? f : null;
+    }
+
+    /** Whether the instruction at storeAt stores the note's text filter after its limit. Mirrors noteLimitAt in LongerNotes.kt. */
+    private static boolean isNoteLimitStore(Method method, List<Instruction> code, int storeAt) {
+        var store = code.get(storeAt);
+        if (store.getOpcode() != Opcode.IPUT_OBJECT) return false;
+        var filterField = noteField(store);
+        if (filterField == null || !"Landroid/text/InputFilter;".equals(filterField.getType())) return false;
+        int filter = ((TwoRegisterInstruction) store).getRegisterA();
+        int composer = ((TwoRegisterInstruction) store).getRegisterB();
+        int at = storeAt - 1;
+        for (; at >= 0; at--) {
+            var i = code.get(at);
+            var field = noteField(i);
+            if (i.getOpcode() == Opcode.IPUT && field != null && field.getDefiningClass().equals(filterField.getDefiningClass())
+                && "I".equals(field.getType()) && ((TwoRegisterInstruction) i).getRegisterB() == composer) break;
+            if (CompatReport.writes(i, filter) || CompatReport.writes(i, composer)) return false;
+        }
+        if (at < 0) return false;
+        int limit = ((TwoRegisterInstruction) code.get(at)).getRegisterA();
+        int loadAt = at - 1;
+        while (loadAt >= 0 && !CompatReport.writes(code.get(loadAt), limit)) loadAt--;
+        if (loadAt < 0) return false;
+        var load = code.get(loadAt);
+        if (load.getOpcode() != Opcode.CONST_16 || ((NarrowLiteralInstruction) load).getNarrowLiteral() != 60) return false;
+        var targets = mediaTargets(method);
+        for (int i = loadAt + 1; i <= storeAt; i++) if (targets.contains(i) || code.get(i) instanceof OffsetInstruction) return false;
+        return true;
+    }
+
+    /** Whether the method hands the note limit to the composer in exactly one place. Mirrors noteLimitSite. */
+    private static boolean hasNoteLimitSite(Method method) {
+        if (method.getImplementation() == null) return false;
+        var code = instructions(method);
+        int sites = 0;
+        for (int at = 0; at < code.size(); at++) if (isNoteLimitStore(method, code, at)) sites++;
+        return sites == 1;
+    }
+
+    /** longer_notes: the note screen's state method, only while exactly one method has its shape. Mirrors findLongerNotes. */
+    static List<Method> longerNotes(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) {
+            if (!NOTE_SCREEN.equals(cls.getType())) continue;
+            for (var method : cls.getMethods()) if (hasNoteLimitSite(method)) found.add(method);
+        }
+        return found.size() == 1 ? found : List.of();
+    }
+
 }

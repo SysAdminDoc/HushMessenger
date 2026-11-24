@@ -171,6 +171,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         "emoji_typeface" -> validateEmojiTypeface()
         EMOJI_DRAWER -> validateEmojiDrawer()
         INBOX_SEARCH_BAR -> validateSearchBar()
+        LONGER_NOTES -> validateLongerNotes()
         EMOJI_SEARCH -> validateEmojiSearch()
         TAB_BADGES -> validateTabBadges()
         TAB_CONFIG -> validateTabConfig()
@@ -328,6 +329,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             "emoji_typeface" -> method.injectEmojiTypeface()
             EMOJI_DRAWER -> method.injectEmojiDrawer()
             INBOX_SEARCH_BAR -> method.injectSearchBar()
+            LONGER_NOTES -> method.injectLongerNotes()
             EMOJI_SEARCH -> method.injectEmojiSearch()
             TAB_BADGES -> method.injectTabBadges()
             TAB_CONFIG -> method.injectTabConfig()
@@ -658,6 +660,9 @@ val inboxTypingPatch = controlPatch("inbox_typing", "Typing in your chat list",
 @Suppress("unused")
 val keepSearchBarPatch = controlPatch("inbox_search_bar", "Keep the search bar",
     "Brings back the search bar at the top of your chat list when Messenger has swapped it for a search icon. Restart Messenger after changing it. If Messenger never gave you the icon, nothing changes.", "Inbox")
+@Suppress("unused")
+val longerNotesPatch = controlPatch("longer_notes", "Write longer notes",
+    "Type more than 60 characters in a note.", "Inbox", LONGER_NOTES)
 @Suppress("unused")
 val hideMarkReadPatch = controlPatch("mark_read_action", "Hide Mark as read", "Hides Mark as read in the menu you get when you press and hold a chat in your chat list, so you can't mark a chat read by accident. Mark as unread stays.", "Chat menu")
 @Suppress("unused")

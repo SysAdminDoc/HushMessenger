@@ -171,6 +171,7 @@ public class CompatReport {
         PATCHES.put("Typing in your chat list", List.of("inbox_typing"));
         PATCHES.put("Put your words above the photo", List.of("media_caption"));
         PATCHES.put("Keep the search bar", List.of("inbox_search_bar"));
+        PATCHES.put("Write longer notes", List.of("longer_notes"));
         PATCHES.put("Preview chats on long press", List.of("chat_preview"));
         PATCHES.put("Bigger chat preview", List.of("chat_preview_size"));
         PATCHES.put("Hide Mark as read", List.of("mark_read_action"));

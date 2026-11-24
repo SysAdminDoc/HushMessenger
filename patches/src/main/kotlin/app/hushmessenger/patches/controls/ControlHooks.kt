@@ -137,7 +137,7 @@ private fun sharedChecks(): List<WalkCheck> = listOf(
     inboundCopies, tempFolderChecks, configHolders, playoutSwitches, playoutWriters, recordHandovers, recentMediaDetectors,
     attributionUploads, instantCaptures, pinLimitLoaders, sharedFlagReaders, aiMentionShapes, headerRenders, logBars,
     ringMountClasses, roundingPrinterClasses, legacyRoundings, tileShapeFlags, messageDebugStrings,
-    profileMenuBuilders, profileCallRows, recoveryCodeRows,
+    profileMenuBuilders, profileCallRows, recoveryCodeRows, noteLimitMethods,
 )
 
 /** Match semantics first, then require the exact set the build's profile records. */
@@ -200,6 +200,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     if (changedViewer) found.getValue("screenshot_viewers").clear() else screenshotViewerRefusal = null
     found.getValue(EMOJI_DRAWER).addAll(connectEmojiDrawer(scan.drawerReaders, scan.drawerAnchors, scan.drawerInterfaces))
     found.getValue(INBOX_SEARCH_BAR).addAll(connectSearchBar(scan.searchIconReaders, scan.searchIconAnchors))
+    found.getValue(LONGER_NOTES).addAll(findLongerNotes(classes))
     found.getValue(EMOJI_SEARCH).addAll(findEmojiSearch(classes))
     found.getValue(TAB_BADGES).addAll(findTabBadges(classes))
     found.getValue(FACEBOOK_BADGE).addAll(findFacebookBadge(classes))

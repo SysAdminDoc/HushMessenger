@@ -745,6 +745,8 @@ inbox_typing.title	Escribiendo en tu lista de chats
 inbox_typing.description	Pone «escribiendo» sobre el último mensaje de un chat de tu lista mientras la otra persona escribe, en vez de mostrarlo solo cuando ya estás dentro del chat. Messenger ya lo trae y el servidor de Meta lo mantiene apagado. Reinicia Messenger para que empiece.
 inbox_search_bar.title	Mantener la barra de búsqueda
 inbox_search_bar.description	Recupera la barra de búsqueda en la parte superior de tu lista de chats cuando Messenger la cambió por un icono de búsqueda. Reinicia Messenger para ver el cambio. No cambia nada si nunca te apareció el icono.
+longer_notes.title	Escribir notas más largas
+longer_notes.description	Permite escribir hasta 500 caracteres en una nota en lugar de 60. Facebook decide si una nota larga se publica.
 chat_preview.title	Vista previa de chats al mantener presionado
 chat_preview.description	Mantén presionado un chat para echarle un vistazo en la vista previa de Messenger, con el menú del chat debajo, sin abrir el chat.
 chat_preview_size.title	Vista previa de chat más grande

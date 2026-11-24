@@ -195,6 +195,7 @@ hook link_player Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;-
 hook local_chat_search LX/NI1;->FCI(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V
 hook local_chat_search LX/NI1;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook local_read LX/2b2;->A0J(Lcom/facebook/messaging/model/threads/ThreadSummary;)Z
+hook longer_notes Lcom/facebook/presence/note/ui/creation/NotesCreationFragment;->A0F(LX/Kzx;Lcom/facebook/presence/note/ui/creation/NotesCreationFragment;)V
 hook mark_read_action LX/Jda;->A0D()Z
 hook mark_read_action LX/Jdb;->A0P()Z
 hook mark_read_bar LX/7PJ;->FEG(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/75Z;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V

@@ -4,6 +4,7 @@
 
 ### New
 
+- `Write longer notes` is a new switch under Inbox, and it starts off. The note box takes up to 500 characters instead of 60, and Facebook still decides whether a long note goes through. Refs #199.
 - `Show the 40-character code option` is a new switch under Privacy, and it starts off. Some accounts see `More options` in Message storage where `Generate 40-character code` used to be. With this on you get both rows, and the code row opens Messenger's own setup. Refs #197.
 - `Chat bar buttons in the + menu` is a new switch under Conversations, and it starts off. The camera, gallery and mic sit in a row beside the message box and leave it very little room. With this on, only + stays there. Those buttons move into the menu + opens, and tapping one does what it always did. Needs Android 10 or newer. Refs #198.
 - `Hide profile menu items` is a new switch under Chat menu, and it starts off. Tapping someone's picture beside their message opens a menu with View profile, the call options and more. Tap one picture once and those items show up under the switch, where you can hide the ones you never use. The menu always keeps at least one. `Ask before a call` now asks on that menu's Audio call and Video call too. Refs #201.

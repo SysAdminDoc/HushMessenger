@@ -3133,5 +3133,8 @@ public final class Settings {
     /** Whether Show the 40-character code option is on. */
     public static boolean recoveryCodeRow() { return enabled("recovery_code_row"); }
 
+    /** Whether Write longer notes is on. */
+    public static boolean longerNotes() { return enabled("longer_notes"); }
+
     private Settings() { }
 }

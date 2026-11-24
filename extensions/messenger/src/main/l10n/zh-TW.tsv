@@ -745,6 +745,8 @@ inbox_typing.title	聊天清單顯示正在輸入
 inbox_typing.description	對方正在輸入時，在你清單中該聊天的最後一則訊息上寫出正在輸入，而不是只有進入聊天後才看得到。Messenger 本來就帶著這個功能，是 Meta 的伺服器把它關著。重新啟動 Messenger 就會開始。
 inbox_search_bar.title	保留搜尋列
 inbox_search_bar.description	當 Messenger 把聊天清單頂端的搜尋列換成搜尋圖示時，把搜尋列找回來。重新啟動 Messenger 後生效。若你尚未取得搜尋圖示，則不會有任何變更。
+longer_notes.title	撰寫較長的便利貼
+longer_notes.description	讓便利貼最多可輸入 500 個字元，而不是 60 個。較長的便利貼能否發布由 Facebook 決定。
 chat_preview.title	長按預覽聊天室
 chat_preview.description	長按聊天室，就能在 Messenger 內建的預覽中快速看一眼，下方附上聊天室選單，不必開啟聊天室。
 chat_preview_size.title	放大聊天室預覽

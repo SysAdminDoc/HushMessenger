@@ -67,6 +67,7 @@ final class Controls {
         if (community != null) found.get("community_inbox").add(community.render());
         found.get("emoji_drawer").addAll(emojiDrawerReaders(classes));
         found.get("inbox_search_bar").addAll(searchIconReaders(classes));
+        found.get("longer_notes").addAll(longerNotes(classes));
         found.get("emoji_search").addAll(emojiSearchWatchers(classes));
         found.get("tab_badges").addAll(tabBadgeDispatchers(classes));
         found.get("facebook_badge").addAll(facebookBadgeChecks(classes));
