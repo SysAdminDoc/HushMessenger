@@ -88,6 +88,7 @@
         <meta-data android:name="hush.feature.nearby_scans" android:value="true" />
         <meta-data android:name="hush.feature.phone_id_sync" android:value="true" />
         <meta-data android:name="hush.feature.passkey_login" android:value="true" />
+        <meta-data android:name="hush.feature.recovery_code_row" android:value="true" />
         <meta-data android:name="hush.feature.message_log" android:value="true" />
         <meta-data android:name="hush.feature.auto_reply" android:value="true" />
         <meta-data android:name="hush.feature.appear_offline" android:value="true" />

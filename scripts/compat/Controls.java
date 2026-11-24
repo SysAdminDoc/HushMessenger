@@ -106,6 +106,7 @@ final class Controls {
         found.get("wifi_identity").addAll(wifiIdentityReads(classes));
         found.get("phone_id_sync").addAll(phoneIdSync(classes));
         found.get("passkey_login").addAll(passkeyLogin(classes));
+        found.get("recovery_code_row").addAll(recoveryCodeRow(classes));
         found.get("story_hold").addAll(storyHold(classes));
         found.get("inbox_typing").addAll(inboxTyping(classes));
         found.get("media_caption").addAll(mediaCaption(classes));

@@ -257,6 +257,7 @@ hook quiet_log_check LX/CxP;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object
 hook quiet_log_drop Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0C(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V
 hook quiet_mode LX/75x;->A01(Landroid/app/Notification;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/MessagingNotification;Ljava/lang/String;I)Z
 hook recent_media LX/APl;->A01(LX/5Re;Lkotlin/jvm/functions/Function0;)V
+hook recovery_code_row LX/Tup;->render(LX/27r;)LX/1F6;
 hook reels_badge LX/4RO;->A09(LX/4RO;)Z
 hook reply_read LX/9qs;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/553;LX/4oU;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/D5R;LX/58Z;LX/552;LX/D36;LX/5q2;LX/5Re;LX/5K7;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4ob;Ljava/lang/String;)V
 hook restricted_notify LX/CxP;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;

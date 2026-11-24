@@ -602,4 +602,76 @@ final class Extras {
         if (!senders.equals(List.of(sync))) return List.of();
         return List.of(lists.get(0), syncs.get(0));
     }
+
+    /** One side of a picked row in Message storage. Mirrors RecoveryArm in RecoveryCodeRow.kt. */
+    private record RecoveryArm(int title, String label, int owner, int text) { }
+
+    private static final Set<List<Integer>> RECOVERY_ROW_TITLES =
+        Set.of(List.of(0x7f14178d, 0x7f14178f), List.of(0x7f14178f, 0x7f141791));
+
+    private static List<Integer> recoveryArguments(Instruction i) {
+        if (i.getOpcode() != Opcode.INVOKE_STATIC || !(i instanceof FiveRegisterInstruction call)) return null;
+        int[] all = {call.getRegisterC(), call.getRegisterD(), call.getRegisterE(), call.getRegisterF(), call.getRegisterG()};
+        var used = new ArrayList<Integer>();
+        for (int n = 0; n < call.getRegisterCount(); n++) used.add(all[n]);
+        return used;
+    }
+
+    private static MethodReference recoveryCall(Instruction i) {
+        return i instanceof ReferenceInstruction r && r.getReference() instanceof MethodReference m ? m : null;
+    }
+
+    /** The four instructions of a side, or null. Mirrors recoveryArm in RecoveryCodeRow.kt. */
+    private static RecoveryArm recoveryArm(List<Instruction> code, int at, int flag) {
+        if (at < 0 || at + 3 >= code.size()) return null;
+        var title = code.get(at); var lookup = code.get(at + 1); var result = code.get(at + 2); var rowCode = code.get(at + 3);
+        if (title.getOpcode() != Opcode.CONST || ((OneRegisterInstruction) title).getRegisterA() != flag) return null;
+        if (rowCode.getOpcode() != Opcode.CONST_16 || ((OneRegisterInstruction) rowCode).getRegisterA() != flag) return null;
+        if (result.getOpcode() != Opcode.MOVE_RESULT_OBJECT) return null;
+        int text = ((OneRegisterInstruction) result).getRegisterA();
+        var label = recoveryCall(lookup); var arguments = recoveryArguments(lookup);
+        if (label == null || arguments == null || text == flag || arguments.size() != 2 || arguments.get(1) != flag) return null;
+        var types = label.getParameterTypes();
+        if (!"Ljava/lang/String;".equals(label.getReturnType()) || types.isEmpty() || !"I".equals(types.get(types.size() - 1).toString())) return null;
+        return new RecoveryArm(((NarrowLiteralInstruction) title).getNarrowLiteral(), label.toString(), arguments.get(0), text);
+    }
+
+    /** Whether this is the Message storage page's render method. Mirrors recoveryCodeSite in RecoveryCodeRow.kt. */
+    private static boolean isRecoveryCodeRender(Method method) {
+        if (!"render".equals(method.getName()) || AccessFlags.STATIC.isSet(method.getAccessFlags()) || "V".equals(method.getReturnType())
+            || method.getParameterTypes().size() != 1 || method.getImplementation() == null) return false;
+        var code = instructions(method);
+        var picks = new ArrayList<int[]>();
+        for (int at = 0; at < code.size(); at++) {
+            if (code.get(at).getOpcode() != Opcode.IF_EQZ) continue;
+            int flag = ((OneRegisterInstruction) code.get(at)).getRegisterA();
+            var chosen = recoveryArm(code, at + 1, flag);
+            int addAt = at + 5;
+            if (chosen == null || addAt >= code.size()) continue;
+            var call = recoveryCall(code.get(addAt)); var arguments = recoveryArguments(code.get(addAt));
+            if (call == null || arguments == null || !call.getDefiningClass().equals(method.getDefiningClass()) || !"V".equals(call.getReturnType())) continue;
+            var types = call.getParameterTypes().stream().map(Object::toString).toList();
+            if (types.size() != 4 || !"Ljava/lang/String;".equals(types.get(2)) || !"I".equals(types.get(3)) || arguments.size() != 4
+                || arguments.get(2) != chosen.text() || arguments.get(3) != flag) continue;
+            int elseAt = mediaTarget(code, at);
+            var otherwise = recoveryArm(code, elseAt, flag);
+            if (otherwise == null || !otherwise.label().equals(chosen.label()) || otherwise.owner() != chosen.owner() || otherwise.text() != chosen.text()) continue;
+            int backAt = elseAt + 4;
+            if (backAt >= code.size()) continue;
+            var back = code.get(backAt).getOpcode();
+            if (back != Opcode.GOTO && back != Opcode.GOTO_16 && back != Opcode.GOTO_32) continue;
+            if (mediaTarget(code, backAt) != addAt) continue;
+            picks.add(new int[] {at + 1, otherwise.title()});
+        }
+        return picks.size() == 2 && RECOVERY_ROW_TITLES.contains(List.of(picks.get(0)[1], picks.get(1)[1]))
+            && !mediaTargets(method).contains(picks.get(1)[0]);
+    }
+
+    /** recovery_code_row: the page's render method, only while exactly one method has its shape. Mirrors findRecoveryCodeRow. */
+    static List<Method> recoveryCodeRow(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) if (isRecoveryCodeRender(method)) found.add(method);
+        return found.size() == 1 ? found : List.of();
+    }
+
 }

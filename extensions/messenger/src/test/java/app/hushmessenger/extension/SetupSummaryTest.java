@@ -75,7 +75,8 @@ public class SetupSummaryTest {
             assertFalse(text.contains("private-"));
             assertFalse(text.contains("account-secret"));
             assertFalse(text.contains("account_id"));
-            assertFalse(text.contains("recovery_code"));
+            // The 40-character code row's own switch is a control like any other. The code itself never shows.
+            assertFalse(text.replace("recovery_code_row", "").contains("recovery_code"));
             assertEquals(before, Settings.preferences.getAll());
             assertNull(Shadows.shadowOf(activity).getNextStartedActivity());
             if (Build.VERSION.SDK_INT < 33) assertEquals("Setup copied", ShadowToast.getTextOfLatestToast());

@@ -221,6 +221,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         WIFI_IDENTITY -> validateWifiIdentity()
         PHONE_ID_SYNC -> validatePhoneIdSync()
         PASSKEY_LOGIN -> validatePasskeyLogin()
+        RECOVERY_CODE_ROW -> validateRecoveryCodeRow()
         STORY_HOLD -> validateStoryHold()
         CHAT_PREVIEW -> validateChatPreview()
         CHAT_PREVIEW_SIZE -> validateChatPreviewSize()
@@ -370,6 +371,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             WIFI_IDENTITY -> method.injectWifiIdentity()
             PHONE_ID_SYNC -> method.injectPhoneIdSync()
             PASSKEY_LOGIN -> method.injectPasskeyLogin()
+            RECOVERY_CODE_ROW -> method.injectRecoveryCodeRow()
             STORY_HOLD -> method.injectStoryHold()
             CHAT_PREVIEW -> method.injectChatPreview()
             CHAT_PREVIEW_SIZE -> method.injectChatPreviewSize()
@@ -881,6 +883,9 @@ val secureChatPatch = controlPatch("secure_chat", "Block screenshots in chats",
 val skipPasskeyLoginPatch = controlPatch("passkey_login", "Skip passkey sign-in",
     "Signing in no longer offers a passkey from this phone, so Facebook falls back to approving the login from another device you're signed in on, the way it does for an account with no passkey. A patched Messenger can't pass Facebook's passkey check, and that's what leaves some logins going round the browser check again and again. While it's on, Messenger can't use a passkey for its encrypted backups either, so leave it off unless a login is stuck. Turn it on in HushMessenger settings > Controls. A long press on Messenger's home screen icon opens those settings when the login won't let you through.",
     "Privacy")
+@Suppress("unused")
+val recoveryCodeRowPatch = controlPatch("recovery_code_row", "Show the 40-character code option",
+    "Bring back the 40-character recovery code row in Message storage.", "Privacy", RECOVERY_CODE_ROW)
 @Suppress("unused")
 val hideReadReceiptsPatch = controlPatch("hide_read_receipts", "Hide read receipts", "Opening a chat no longer tells people you read their message, and the chat stays unread on this phone. Marking it read yourself or replying in it marks it read and shows Seen, like Messenger does. Group chats aren't tested. Hide Delivered, under it, also holds back the Delivered tick in ordinary chats. Messenger's own Read receipts setting under Privacy & safety marks chats read without showing Seen.", "Privacy", HIDE_READ_RECEIPTS, REPLY_READ, DELIVERY_RECEIPT)
 @Suppress("unused")
