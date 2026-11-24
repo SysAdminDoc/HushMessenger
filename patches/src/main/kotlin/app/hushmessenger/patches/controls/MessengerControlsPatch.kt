@@ -105,6 +105,7 @@ internal val settingsExtension = patch(description = "Load HushMessenger runtime
         mutableClassDefBy(HOST_SCREENS).methods.single { it.hookId() == ORIGINAL_BUILD }
             .writeOriginalBuild(originalBuild(packageMetadata.versionName, packageMetadata.versionCode))
         resolveLogoutRoute(classes, mutableClassDefBy(HOST_SCREENS).methods.singleOrNull { it.hookId() == LOGOUT_ROUTE })
+        resolveAiUserRoute(classes, mutableClassDefBy(HOST_SCREENS).methods.singleOrNull { it.hookId() == AI_USER_ROUTE })
     }
     finalize {
         discoveredControls = emptyMap()

@@ -2,6 +2,8 @@ package app.hushmessenger.extension;
 
 import android.os.Looper;
 import com.facebook.messaging.model.threadkey.ThreadKey;
+import com.facebook.messaging.model.threads.ThreadSummary;
+import com.facebook.user.model.User;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,7 +22,7 @@ import static org.junit.Assert.*;
 @Config(sdk = {28, 36})
 public class SearchSectionsTest {
     /** Messenger's section types, by the names its enum gives them. */
-    enum Type { NULL_STATE_SUGGESTIONS, NULL_STATE_RECENTLY_VIEWED_REELS, NULL_STATE_AI_BOTS, NULL_STATE_SEE_ALL_AI_BOTS, NULL_STATE_CONTACTS }
+    enum Type { NULL_STATE_SUGGESTIONS, NULL_STATE_RECENTLY_VIEWED_REELS, NULL_STATE_AI_BOTS, NULL_STATE_SEE_ALL_AI_BOTS, NULL_STATE_CONTACTS, SERVER_BLENDED }
 
     enum Item { CONTACT, PAGE, CONNECTED_AI_BOT, USER_GENERATED_CHARACTER_BOT, META_AI_VOICE }
 
@@ -39,6 +41,18 @@ public class SearchSectionsTest {
         final ThreadKey A01;
         Row(Item item, ThreadKey key) { A00 = item; A01 = key; }
     }
+
+    /** A row as a typed search builds it: the person it found or the chat, next to the type search filed it under. */
+    static final class Found {
+        final User A0F;
+        final ThreadSummary A07;
+        final ThreadKey A06 = null;
+        final Object A0A;
+        Found(Item item, User user, ThreadSummary chat) { A0A = item; A0F = user; A07 = chat; }
+    }
+
+    /** What the patch writes into the extension once it has proved Messenger's own check. */
+    private static final String AI_USER_ROUTE = "Lcom/facebook/user/model/User;->A0A()Z";
 
     static final class Params {
         final int A00 = 3;
@@ -120,6 +134,47 @@ public class SearchSectionsTest {
             SearchSections.items(Type.NULL_STATE_CONTACTS, rows));
         assertEquals(Collections.emptyList(), SearchSections.items(Type.NULL_STATE_AI_BOTS, Collections.singletonList(contact)));
         assertTrue(Settings.lastActive("meta_ai") > 0);
+    }
+
+    @Test public void aBotThatSearchFiledUnderPagesGoesByMessengersOwnCheck() {
+        turnOn("meta_ai");
+        SearchSections.useAiUserRoute(AI_USER_ROUTE);
+        Found verifiedBot = new Found(Item.PAGE, new User("Meta AI", "AiBot", false), null);
+        Found cachedBot = new Found(Item.PAGE, new User("Meta AI", null, true), null);
+        Found namesake = new Found(Item.CONTACT, new User("Meta AI", "User", false), null);
+        Found page = new Found(Item.PAGE, new User("Meta", "Page", false), null);
+        Found botChat = new Found(Item.CONTACT, null, new ThreadSummary("Meta AI", key(ThreadType.AI_BOT)));
+        Found chat = new Found(Item.CONTACT, null, new ThreadSummary("Mom", key(ThreadType.ONE_TO_ONE)));
+        Found groupWithBot = new Found(Item.CONTACT, null, new ThreadSummary("Trip", key(ThreadType.GROUP)));
+        // A chat that sits under another holds both keys, and people's chats stay whichever of the two is the AI's.
+        Found underAi = new Found(Item.CONTACT, null, new ThreadSummary("Trip plans", key(ThreadType.AI_BOT), key(ThreadType.GROUP)));
+        Found aiUnderGroup = new Found(Item.CONTACT, null, new ThreadSummary("Trip", key(ThreadType.GROUP), key(ThreadType.AI_BOT)));
+        Found empty = new Found(Item.CONTACT, null, new ThreadSummary("Draft", null));
+        List<Found> rows = Arrays.asList(verifiedBot, namesake, cachedBot, page, botChat, chat, groupWithBot, underAi, aiUnderGroup, empty);
+        assertEquals("A person or a page with the bot's name stays", Arrays.asList(namesake, page, chat, groupWithBot, underAi, aiUnderGroup, empty),
+            SearchSections.items(Type.SERVER_BLENDED, rows));
+        assertTrue(Settings.lastActive("meta_ai") > 0);
+
+        reset();
+        SearchSections.useAiUserRoute(AI_USER_ROUTE);
+        assertSame("Off leaves every row", rows, SearchSections.items(Type.SERVER_BLENDED, rows));
+        assertTrue(Settings.activeAt.isEmpty());
+    }
+
+    @Test public void withoutMessengersCheckAPersonsRowGoesByItsTypesAlone() {
+        turnOn("meta_ai");
+        Found verifiedBot = new Found(Item.PAGE, new User("Meta AI", "AiBot", false), null);
+        Found typedBot = new Found(Item.CONNECTED_AI_BOT, new User("Meta AI", "AiBot", false), null);
+        List<Found> rows = Arrays.asList(verifiedBot, typedBot);
+        // The extension as built names no route, so nothing of Messenger's is called until the patch writes one.
+        assertEquals("", HostScreens.aiUserRoute());
+        assertEquals(Collections.singletonList(verifiedBot), SearchSections.items(Type.SERVER_BLENDED, rows));
+        for (String route : new String[] {null, "", "A0A", "Lcom/facebook/user/model/User;->A0D()Ljava/lang/String;",
+            "Lcom/facebook/user/model/User;->A01()Z", "Lcom/facebook/user/model/User;->gone()Z",
+            "Lcom/facebook/user/model/UserKey;->A0A()Z", "Lapp/hushmessenger/extension/Settings;->running()Z"}) {
+            SearchSections.useAiUserRoute(route);
+            assertEquals(String.valueOf(route), Collections.singletonList(verifiedBot), SearchSections.items(Type.SERVER_BLENDED, rows));
+        }
     }
 
     @Test public void searchSwitchesAloneLeaveTheRowsAlone() {

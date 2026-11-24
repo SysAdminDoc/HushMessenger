@@ -3,8 +3,10 @@ package app.hushmessenger.extension;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +21,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * their way in. A section says what it is with a type of Messenger's own ("NULL_STATE_RECENTLY_VIEWED_REELS"), and a row
  * with an item type ("CONNECTED_AI_BOT"), so both are read by name off whatever enum the object holds. The class and
  * field names change with every build, so nothing here names them.
+ *
+ * The row's type doesn't always say it. Search files a verified bot under pages before it looks at what it is, and a
+ * chat you already have with one is filed like any other chat. So a row that holds a person is also put to Messenger's
+ * own "is this user an AI bot", the check its search labels the row with, and a row that holds a chat goes by that
+ * chat's thread type. The patch proves that check and writes its name into HostScreens.aiUserRoute; without it a
+ * person's row goes by its types alone.
  *
  * Opening a chat goes through one launcher, which the patch asks first: with Block Meta AI chats on, a chat whose thread
  * type is one of Meta AI's never opens, from search, a link or the chat list. A group with an AI bot in it still opens,
@@ -44,9 +52,18 @@ public final class SearchSections {
     static final Set<String> AI_THREADS = Set.of("AI_BOT", "BIZ_AI_AGENT", "AI_PROFILE", "AI_AGENT");
     private static final String META_AI_THREAD = "META_AI_";
     private static final String THREAD_KEY = "com.facebook.messaging.model.threadkey.ThreadKey";
+    private static final String THREAD_SUMMARY = "com.facebook.messaging.model.threads.ThreadSummary";
+    private static final String USER = "com.facebook.user.model.User";
+    private static final String USER_CHECK_OWNER = "L" + USER.replace('.', '/') + ";->";
+    private static final String USER_CHECK_SHAPE = "()Z";
+    /** The types of field a row is read through, besides its enums. */
+    private static final Set<String> HELD = Set.of(THREAD_KEY, THREAD_SUMMARY, USER);
 
-    /** Each class's fields that can hold an enum or a thread key, found once. */
+    /** Each class's fields that can hold an enum, a thread key, a chat or a person, found once. */
     private static final Map<Class<?>, List<Field>> FIELDS = new ConcurrentHashMap<>();
+    /** Messenger's own AI bot check, looked up from the patch's route the first time a row holds a person. */
+    private static volatile Method aiUser;
+    private static volatile boolean aiUserLooked;
 
     private SearchSections() { }
 
@@ -109,10 +126,16 @@ public final class SearchSections {
         }
     }
 
-    static boolean aiRow(Object item) throws IllegalAccessException {
+    static boolean aiRow(Object item) throws ReflectiveOperationException {
         for (String name : enumNames(item)) if (AI_ROWS.contains(name) || aiThread(name)) return true;
         Object key = threadKey(item);
-        return key != null && aiThreadKey(key);
+        if (key != null && aiThreadKey(key)) return true;
+        // A chat you already have comes as its summary, and the summary holds the key.
+        Object chat = held(item, THREAD_SUMMARY);
+        if (chat != null && aiChat(chat)) return true;
+        Object user = held(item, USER);
+        Method check = user == null ? null : aiUser();
+        return check != null && Boolean.TRUE.equals(check.invoke(user));
     }
 
     /**
@@ -131,6 +154,23 @@ public final class SearchSections {
             Settings.hookFailedPrivately(AI_CHATS, "Can't check the chat being opened", error);
             return false;
         }
+    }
+
+    /**
+     * Whether [chat] is one of Meta AI's: it holds a thread key, and every key it holds is an AI one. A chat inside a
+     * community or under another chat holds that one's key next to its own, and the summary doesn't say which is which,
+     * so a chat that also holds a key of people's stays.
+     */
+    private static boolean aiChat(Object chat) throws IllegalAccessException {
+        boolean any = false;
+        for (Field field : fields(chat.getClass())) {
+            if (!THREAD_KEY.equals(field.getType().getName())) continue;
+            Object key = field.get(chat);
+            if (key == null) continue;
+            if (!aiThreadKey(key)) return false;
+            any = true;
+        }
+        return any;
     }
 
     private static boolean aiThreadKey(Object key) throws IllegalAccessException {
@@ -155,12 +195,46 @@ public final class SearchSections {
 
     /** The thread key [owner] holds in one of its own fields, or null. */
     private static Object threadKey(Object owner) throws IllegalAccessException {
+        return held(owner, THREAD_KEY);
+    }
+
+    /** What [owner] holds in a field of the class named [type], or null. */
+    private static Object held(Object owner, String type) throws IllegalAccessException {
         for (Field field : fields(owner.getClass())) {
-            if (!THREAD_KEY.equals(field.getType().getName())) continue;
+            if (!type.equals(field.getType().getName())) continue;
             Object value = field.get(owner);
             if (value != null) return value;
         }
         return null;
+    }
+
+    /**
+     * The patch's proof, "Lcom/facebook/user/model/User;->name()Z", as that instance check of User's, or null. Only a
+     * check of User's own that takes nothing and answers yes or no is ever called.
+     */
+    static Method aiUserCheck(String route, ClassLoader loader) {
+        if (route == null || !route.startsWith(USER_CHECK_OWNER) || !route.endsWith(USER_CHECK_SHAPE)) return null;
+        String name = route.substring(USER_CHECK_OWNER.length(), route.length() - USER_CHECK_SHAPE.length());
+        try {
+            Method check = Class.forName(USER, false, loader).getDeclaredMethod(name);
+            if (Modifier.isStatic(check.getModifiers()) || check.getReturnType() != boolean.class) return null;
+            check.setAccessible(true);
+            return check;
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException error) {
+            Log.w("HushMessenger", "Messenger's AI bot check doesn't resolve", error);
+            return null;
+        }
+    }
+
+    private static Method aiUser() {
+        if (!aiUserLooked) useAiUserRoute(HostScreens.aiUserRoute());
+        return aiUser;
+    }
+
+    /** Takes [route] as the patch's proof. The extension reads its own once; tests hand in theirs. */
+    static void useAiUserRoute(String route) {
+        aiUser = aiUserCheck(route, SearchSections.class.getClassLoader());
+        aiUserLooked = true;
     }
 
     private static List<Field> fields(Class<?> type) {
@@ -171,7 +245,7 @@ public final class SearchSections {
             for (Field field : at.getDeclaredFields()) {
                 if (Modifier.isStatic(field.getModifiers())) continue;
                 Class<?> kind = field.getType();
-                if (!kind.isEnum() && !THREAD_KEY.equals(kind.getName()) && kind != Object.class && kind != Enum.class) continue;
+                if (!kind.isEnum() && !HELD.contains(kind.getName()) && kind != Object.class && kind != Enum.class) continue;
                 try {
                     field.setAccessible(true);
                     found.add(field);
@@ -187,6 +261,8 @@ public final class SearchSections {
 
     static void resetForTests() {
         FIELDS.clear();
+        aiUser = null;
+        aiUserLooked = false;
     }
 
     private static void say(String message) {
