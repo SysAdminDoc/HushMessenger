@@ -740,6 +740,10 @@ chat_jump_next	Ngày đó không có tin nhắn, đây là tin nhắn tiếp the
 chat_jump_none	Không có tin nhắn nào từ ngày đó trở đi
 chat_jump_no_dates	Không đọc được ngày trong đoạn chat này
 chat_jump_no_list	Không tìm thấy tin nhắn của đoạn chat này
+chat_page_buttons	Nút lên một trang và xuống một trang
+chat_page_buttons_help	Thêm hai nút phía trên mũi tên để cuộn đoạn chat lên hoặc xuống mỗi lần một màn hình, giúp đọc lại đoạn chat dài mà không phải vuốt đi vuốt lại.
+chat_page_up	Lên một trang
+chat_page_down	Xuống một trang
 link_player_play	Phát
 link_player_pause	Tạm dừng
 link_player_replay	Phát lại

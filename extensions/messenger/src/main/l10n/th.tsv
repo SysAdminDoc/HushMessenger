@@ -740,6 +740,10 @@ chat_jump_next	ไม่มีข้อความในวันนั้น �
 chat_jump_none	ไม่มีข้อความในหรือหลังจากวันนั้น
 chat_jump_no_dates	ไม่สามารถอ่านวันที่ในแชทนี้ได้
 chat_jump_no_list	ไม่พบข้อความของแชทนี้
+chat_page_buttons	ปุ่มเลื่อนขึ้นและเลื่อนลงทีละหน้า
+chat_page_buttons_help	เพิ่มปุ่มสองปุ่มเหนือลูกศรที่เลื่อนแชทขึ้นหรือลงทีละหนึ่งหน้าจอ ให้อ่านย้อนแชทยาวๆ ได้โดยไม่ต้องปัดซ้ำไปซ้ำมา
+chat_page_up	เลื่อนขึ้นหนึ่งหน้า
+chat_page_down	เลื่อนลงหนึ่งหน้า
 link_player_play	เล่น
 link_player_pause	หยุดชั่วคราว
 link_player_replay	เล่นอีกครั้ง

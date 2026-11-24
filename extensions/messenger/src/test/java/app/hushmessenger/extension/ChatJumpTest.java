@@ -232,7 +232,7 @@ public class ChatJumpTest {
 
     /** Messenger's list as the window sees it: [older] pages above, a page more each time it's pulled. */
     public static final class Messages extends RecyclerView {
-        int older = 3, newer, rows = 20, pulls, moved;
+        int older = 3, newer, rows = 20, pulls, moved, total;
 
         public Messages(Context context) {
             super(context);
@@ -245,6 +245,7 @@ public class ChatJumpTest {
         @Override public void scrollBy(int x, int y) {
             pulls++;
             moved = y;
+            total += y;
             if (y < 0 && older > 0) {
                 older--;
                 rows += 20;
@@ -675,7 +676,75 @@ public class ChatJumpTest {
         assertEquals(View.VISIBLE, arrow.getVisibility());
     }
 
+    private ChatJump.Arrow arrowWithPages() {
+        on(true);
+        Settings.preferences.edit().putBoolean(ChatJump.PAGES, true).commit();
+        openChat();
+        ChatJump.Arrow arrow = ChatJump.arrowOn(chat);
+        assertNotNull("no arrow on the chat", arrow);
+        return arrow;
+    }
+
+    /** #207: with their switch on, page buttons sit over the arrow, each up while its way has more to show. */
+    @Test public void thePageButtonsShowWhereThereIsMoreToRead() {
+        ChatJump.Arrow arrow = arrowWithPages();
+        assertSame(content(), arrow.pageUp.getParent());
+        assertSame(content(), arrow.pageDown.getParent());
+        assertEquals("Page up", arrow.pageUp.getContentDescription());
+        assertEquals("Page down", arrow.pageDown.getContentDescription());
+        assertTrue(((ChatJump.Chevron) arrow.pageUp.getDrawable()).up);
+        assertFalse(((ChatJump.Chevron) arrow.pageDown.getDrawable()).up);
+        // At the newest message there's older to go back to and nothing newer.
+        assertEquals(View.VISIBLE, arrow.pageUp.getVisibility());
+        assertEquals(View.GONE, arrow.pageDown.getVisibility());
+        assertEquals(View.GONE, arrow.button.getVisibility());
+        scrolledUp();
+        assertEquals(View.VISIBLE, arrow.pageDown.getVisibility());
+        int first = ((FrameLayout.LayoutParams) arrow.button.getLayoutParams()).bottomMargin;
+        int down = ((FrameLayout.LayoutParams) arrow.pageDown.getLayoutParams()).bottomMargin;
+        int up = ((FrameLayout.LayoutParams) arrow.pageUp.getLayoutParams()).bottomMargin;
+        assertTrue("stacked over the arrow, page up on top", first < down && down < up);
+        list.older = 0;
+        arrow.onScrollChanged();
+        assertEquals(View.GONE, arrow.pageUp.getVisibility());
+    }
+
     /** #207: a page moves most of a screen in one short slide, so the last lines read stay in sight. */
+    @Test public void aPageButtonMovesTheChatMostOfAScreen() {
+        ChatJump.Arrow arrow = arrowWithPages();
+        list.older = 1000;
+        scrolledUp();
+        int page = Math.round(list.getHeight() * ChatJump.PAGE_SHARE);
+        assertTrue(page > 1);
+        arrow.pageDown.performClick();
+        idle(2 * ChatJump.PAGE_MS);
+        assertEquals(page, list.total);
+        assertTrue("a slide, not one jump", list.pulls > 2);
+        list.total = 0;
+        arrow.pageUp.performClick();
+        idle(2 * ChatJump.PAGE_MS);
+        assertEquals(-page, list.total);
+        assertNull("a page isn't a jump", ChatJump.running);
+        assertTrue(Settings.hookErrors.isEmpty());
+    }
+
+    @Test public void noPageButtonsWithTheirSwitchOff() {
+        on(true);
+        openChat();
+        assertNull(ChatJump.arrowOn(chat).pageUp);
+        assertNull(ChatJump.arrowOn(chat).pageDown);
+        assertEquals(2, content().getChildCount());
+        assertEquals(ChatJump.KEY, Settings.SUB_SWITCHES.get(ChatJump.PAGES));
+    }
+
+    @Test public void thePageSwitchAloneAddsNothing() {
+        Settings.preferences.edit().putBoolean(ChatJump.PAGES, true).commit();
+        on(false);
+        openChat();
+        assertNull(ChatJump.arrowOn(chat));
+        assertEquals(1, content().getChildCount());
+    }
+
     @Test public void noArrowGoesUpWithTheSwitchOff() {
         on(false);
         openChat();

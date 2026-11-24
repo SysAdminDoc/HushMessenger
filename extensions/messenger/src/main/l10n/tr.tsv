@@ -740,6 +740,10 @@ chat_jump_next	O gün mesaj yok, işte sonraki mesaj
 chat_jump_none	O gün veya sonrasında mesaj yok
 chat_jump_no_dates	Bu sohbetteki tarihler okunamıyor
 chat_jump_no_list	Bu sohbetin mesajları bulunamıyor
+chat_page_buttons	Sayfa yukarı ve sayfa aşağı düğmeleri
+chat_page_buttons_help	Okun üstüne, sohbeti her seferinde bir ekran yukarı veya aşağı kaydıran iki düğme koyar. Uzun bir sohbeti tekrar tekrar kaydırmadan geriye doğru okumak için.
+chat_page_up	Sayfa yukarı
+chat_page_down	Sayfa aşağı
 link_player_play	Oynat
 link_player_pause	Duraklat
 link_player_replay	Yeniden oynat

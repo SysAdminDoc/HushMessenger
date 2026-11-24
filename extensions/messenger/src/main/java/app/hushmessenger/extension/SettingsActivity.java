@@ -1124,6 +1124,8 @@ public final class SettingsActivity extends Activity {
                     text.format(FloatingMenu.KEY), text.format("floating_menu_help"), false), 8);
                 else if ("hide_read_receipts".equals(spec[0])) ui.add(wrapper, controlRow(Settings.HIDE_DELIVERED,
                     text.format(Settings.HIDE_DELIVERED), text.format("hide_delivered_help"), false), 8);
+                else if (ChatJump.KEY.equals(spec[0])) ui.add(wrapper, controlRow(ChatJump.PAGES,
+                    text.format(ChatJump.PAGES), text.format("chat_page_buttons_help"), false), 8);
                 else if (Settings.TAB_BADGES.equals(spec[0])) {
                     for (String keep : Settings.KEEP_BADGES.values()) ui.add(wrapper, controlRow(keep, text.format(keep), "", false), 8);
                 }
@@ -2310,6 +2312,7 @@ public final class SettingsActivity extends Activity {
             if ("allow_screenshot".equals(spec[0])) inside = text.get(ViewOnceSave.KEY) + " " + text.get("save_view_once_help");
             if (MenuBlur.KEY.equals(spec[0])) inside = text.get(FloatingMenu.KEY) + " " + text.get("floating_menu_help");
             if ("hide_read_receipts".equals(spec[0])) inside = text.get(Settings.HIDE_DELIVERED) + " " + text.get("hide_delivered_help");
+            if (ChatJump.KEY.equals(spec[0])) inside = text.get(ChatJump.PAGES) + " " + text.get("chat_page_buttons_help");
             if (CallCaptions.KEY.equals(spec[0])) inside = text.get("call_captions_heard_title") + " " + text.get("call_captions_shown_title") + " "
                 + text.get(CallCaptions.SPEAK) + " " + text.get("call_captions_speak_help") + " " + text.get(CallCaptions.DUCK) + " "
                 + text.get("call_captions_duck_help");

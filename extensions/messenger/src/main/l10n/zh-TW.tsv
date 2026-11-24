@@ -740,6 +740,10 @@ chat_jump_next	那一天沒有訊息，這是下一則
 chat_jump_none	那一天以後沒有訊息
 chat_jump_no_dates	讀不到這個聊天室的日期
 chat_jump_no_list	找不到這個聊天室的訊息
+chat_page_buttons	上一頁和下一頁按鈕
+chat_page_buttons_help	在箭頭上方放兩個按鈕，每次把聊天室往上或往下移動一整個畫面，讓你不用一直滑動就能往回閱讀很長的聊天。
+chat_page_up	上一頁
+chat_page_down	下一頁
 link_player_play	播放
 link_player_pause	暫停
 link_player_replay	重新播放

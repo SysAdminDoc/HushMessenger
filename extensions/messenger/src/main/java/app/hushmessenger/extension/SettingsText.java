@@ -847,6 +847,10 @@ final class SettingsText {
         ENGLISH.put("chat_jump_none", "No messages on or after that day");
         ENGLISH.put("chat_jump_no_dates", "Can't read the dates in this chat");
         ENGLISH.put("chat_jump_no_list", "Can't find this chat's messages");
+        ENGLISH.put("chat_page_buttons", "Page up and page down buttons");
+        ENGLISH.put("chat_page_buttons_help", "Puts two buttons over the arrow that move the chat a screen up or down at a time, for reading back through a long chat without swiping over and over.");
+        ENGLISH.put("chat_page_up", "Page up");
+        ENGLISH.put("chat_page_down", "Page down");
         ENGLISH.put("link_player_play", "Play");
         ENGLISH.put("link_player_pause", "Pause");
         ENGLISH.put("link_player_replay", "Play again");

@@ -740,6 +740,10 @@ chat_jump_next	No hay nada ese día, así que este es el siguiente mensaje
 chat_jump_none	No hay mensajes ese día ni después
 chat_jump_no_dates	No se pueden leer las fechas de este chat
 chat_jump_no_list	No se encuentran los mensajes de este chat
+chat_page_buttons	Botones de página arriba y página abajo
+chat_page_buttons_help	Pone dos botones sobre la flecha que mueven el chat una pantalla hacia arriba o hacia abajo cada vez, para releer un chat largo sin deslizar una y otra vez.
+chat_page_up	Página arriba
+chat_page_down	Página abajo
 link_player_play	Reproducir
 link_player_pause	Pausar
 link_player_replay	Volver a reproducir
