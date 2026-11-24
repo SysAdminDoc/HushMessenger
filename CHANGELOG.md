@@ -10,6 +10,7 @@
 ### Changed and fixed
 
 - Typing Meta AI's name into search still brought the bot up at the top of the results with `Hide Meta AI` on. A typed search hides it now too, along with the other AI bots. Refs #204.
+- The `Page up and page down buttons` switch shows up under `Jump to the first message or a date` now. It never made it into settings in 0.31.0, so there was no way to turn the buttons on. Refs #207.
 
 ## 0.31.0 (2026-11-25)
 

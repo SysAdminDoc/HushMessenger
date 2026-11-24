@@ -56,6 +56,22 @@ public class SettingsNavigationTest {
         }
     }
 
+    /** #207 on a phone: `Page up and page down buttons` was nowhere in settings. Every switch under another gets a row. */
+    @Test public void everySwitchThatSitsUnderAnotherHasItsRow() {
+        assertTrue(Settings.installed.contains(ChatJump.KEY));
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            View root = screen.get().getWindow().getDecorView();
+            java.util.List<String> missing = new java.util.ArrayList<>();
+            for (java.util.Map.Entry<String, String> sub : Settings.SUB_SWITCHES.entrySet()) {
+                if (!Settings.installed.contains(sub.getValue())) continue;
+                // The log's Menu row switch adds to the Menu row control, so it only shows where that one is installed.
+                if (MessageLogButton.MENU_KEY.equals(sub.getKey()) && !Settings.installed.contains("menu_row")) continue;
+                if (root.findViewWithTag(sub.getKey()) == null) missing.add(sub.getKey() + " under " + sub.getValue());
+            }
+            assertEquals("[]", missing.toString());
+        }
+    }
+
     /** #207: searching for a reset leads to Back to defaults on the App tab, and brings back a hidden Quick setups. */
     @Test public void searchingResetLeadsToBackToDefaults() {
         Settings.preferences.edit().putBoolean(SettingsActivity.HIDE_QUICK_SETUPS, true).commit();
