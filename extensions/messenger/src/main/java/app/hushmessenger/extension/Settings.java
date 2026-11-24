@@ -788,8 +788,8 @@ public final class Settings {
 
     static final String DWELL_TRACKING = "dwell_tracking";
     /**
-     * Messenger's own yes or no on filing an attention report, and on copying its timestamps onto the journey log,
-     * answered no while the switch is on. The session's own bookkeeping and map cleanup run either way, and a failure
+     * Messenger's own yes or no on filing an attention report (and, on a build that still makes one, on copying its
+     * timestamps onto the journey log), answered no while the switch is on. The session's own bookkeeping and map cleanup run either way, and a failure
      * here hands back the answer Messenger gave.
      */
     public static boolean dwellLogged(boolean would) {

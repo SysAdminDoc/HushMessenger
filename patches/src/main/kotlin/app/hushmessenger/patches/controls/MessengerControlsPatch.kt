@@ -880,7 +880,7 @@ val stopAdEventsPatch = controlPatch("ad_events", "Stop inbox and ad link loggin
     "Stops two reports Messenger logs. One says which part of your chat list was on screen, which Messenger files under inbox ads. The other says which ad brought you in when a link from an ad opens a chat.", "Tracking")
 @Suppress("unused")
 val stopDwellTrackingPatch = controlPatch("dwell_tracking", "Stop attention time logging",
-    "Stops the report Messenger files when you leave a screen, which says how long you looked at each thing on it, in what order, and how often you came back. It also stops the copy of those timings that goes onto Messenger's journey log.", "Tracking")
+    "Stops the report Messenger files when you leave a screen, which says how long you looked at each thing on it, in what order, and how often you came back.", "Tracking")
 @Suppress("unused")
 val stopMqttLoggingPatch = controlPatch("mqtt_telemetry", "Stop live connection logging",
     "Drops the health reports and push logging Messenger sends over its live connection (MQTT). Messenger sends most of its traffic another way, so there's often little for it to drop. Messages, calls and active status keep working.", "Tracking")
