@@ -675,6 +675,7 @@ public class ChatJumpTest {
         assertEquals(View.VISIBLE, arrow.getVisibility());
     }
 
+    /** #207: a page moves most of a screen in one short slide, so the last lines read stay in sight. */
     @Test public void noArrowGoesUpWithTheSwitchOff() {
         on(false);
         openChat();

@@ -69,6 +69,7 @@ way_logo	長按「聊天室」頂端的 Messenger 標誌即可開啟此設定畫
 way_drawer	從應用程式抽屜開啟 HushMessenger 設定。
 way_shortcuts_hidden	已隱藏主畫面上 Messenger 圖示的「Patch controls（修補功能控制）」與「Restart Messenger（重新啟動 Messenger）」捷徑。
 drawer_search	應用程式抽屜圖示設定
+reset_search	重設設定
 drawer_root	以 Root Mount 安裝時，不需要使用「隱藏應用程式抽屜圖示」，因為沒有獨立的設定圖示可隱藏。
 drawer_missing	無法使用「隱藏應用程式抽屜圖示」。此修補套件未提供可隱藏的設定圖示。
 drawer_requires_menu	若要隱藏應用程式抽屜圖示，請先套用「從選單開啟設定」修補功能，確保仍能找到此設定畫面。否則圖示會保留。
@@ -520,8 +521,8 @@ none_installed	尚未安裝任何控制項。請在 Morphe Manager 中選取修�
 no_matches	沒有符合的控制項。
 results_one	顯示 %d 個，共安裝 %d 個控制項
 results_many	顯示 %d 個，共安裝 %d 個控制項
-group_count_one	%d 個控制項
-group_count_many	%d 個控制項
+group_on	%1$d/%2$d
+group_on_help	已開啟 %1$d 個，共 %2$d 個
 open_help	從應用程式抽屜開啟 Messenger
 message_log_view	查看紀錄
 search_clear	清除

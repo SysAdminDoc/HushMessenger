@@ -174,6 +174,7 @@ final class SettingsText {
         ENGLISH.put("way_drawer", "Open HushMessenger settings from your app drawer.");
         ENGLISH.put("way_shortcuts_hidden", "Patch controls and Restart Messenger are hidden from Messenger's home screen icon.");
         ENGLISH.put("drawer_search", "App drawer icon settings");
+        ENGLISH.put("reset_search", "Reset settings");
         ENGLISH.put("drawer_root", "Hide app drawer icon isn't needed on Root Mount. There is no separate settings icon to hide.");
         ENGLISH.put("drawer_missing", "Hide app drawer icon isn't available. This patch bundle has no settings icon to hide.");
         ENGLISH.put("drawer_requires_menu", "To hide the app drawer icon, patch in Open settings from menu first, so you can still find these settings. Without it, the icon stays.");
@@ -627,8 +628,8 @@ final class SettingsText {
         ENGLISH.put("no_matches", "No matching controls.");
         ENGLISH.put("results_one", "%d of %d installed control");
         ENGLISH.put("results_many", "%d of %d installed controls");
-        ENGLISH.put("group_count_one", "%d control");
-        ENGLISH.put("group_count_many", "%d controls");
+        ENGLISH.put("group_on", "%1$d/%2$d");
+        ENGLISH.put("group_on_help", "%1$d of %2$d on");
         ENGLISH.put("open_help", "Open Messenger from your app drawer");
         ENGLISH.put("message_log_view", "View log");
         ENGLISH.put("search_clear", "Clear");

@@ -69,6 +69,7 @@ way_logo	Mantén presionado el logo de Messenger en la parte superior de Chats p
 way_drawer	Abre los ajustes de HushMessenger desde el cajón de aplicaciones.
 way_shortcuts_hidden	Patch controls y Restart Messenger están ocultos en el icono de Messenger de la pantalla de inicio.
 drawer_search	Ajustes del icono del cajón de aplicaciones
+reset_search	Restablecer ajustes
 drawer_root	Ocultar el icono del cajón de aplicaciones no hace falta en Root Mount. No hay un icono de ajustes aparte que ocultar.
 drawer_missing	Ocultar el icono del cajón de aplicaciones no está disponible. Este paquete de parches no tiene icono de ajustes que ocultar.
 drawer_requires_menu	Para ocultar el icono del cajón de aplicaciones, primero aplica el parche Open settings from menu, así podrás seguir encontrando estos ajustes. Sin él, el icono se queda.
@@ -520,8 +521,8 @@ none_installed	No hay controles instalados. Elige parches en Morphe Manager y vu
 no_matches	Ningún control coincide.
 results_one	%d de %d control instalado
 results_many	%d de %d controles instalados
-group_count_one	%d control
-group_count_many	%d controles
+group_on	%1$d/%2$d
+group_on_help	%1$d de %2$d activados
 open_help	Abre Messenger desde el cajón de aplicaciones
 message_log_view	Ver registro
 search_clear	Borrar

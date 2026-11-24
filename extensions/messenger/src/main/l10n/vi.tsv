@@ -69,6 +69,7 @@ way_logo	Nhấn giữ logo Messenger ở đầu 'Đoạn chat' để mở màn h
 way_drawer	Mở Cài đặt HushMessenger từ ngăn kéo ứng dụng.
 way_shortcuts_hidden	Đã ẩn phím tắt 'Điều khiển bản vá (Patch controls)' và 'Khởi động lại Messenger (Restart Messenger)' của biểu tượng Messenger trên màn hình chính.
 drawer_search	Cài đặt biểu tượng ngăn kéo ứng dụng
+reset_search	Đặt lại cài đặt
 drawer_root	Khi cài đặt bằng Root Mount, không cần sử dụng 'Ẩn biểu tượng trong ngăn kéo ứng dụng' vì không có biểu tượng cài đặt riêng để ẩn.
 drawer_missing	Không thể sử dụng 'Ẩn biểu tượng trong ngăn kéo ứng dụng'. Gói bản vá này không cung cấp biểu tượng cài đặt có thể ẩn.
 drawer_requires_menu	Để ẩn biểu tượng trong ngăn kéo ứng dụng, trước tiên hãy áp dụng tính năng vá 'Mở cài đặt từ menu' để đảm bảo bạn vẫn có thể tìm thấy màn hình cài đặt này. Nếu không, biểu tượng sẽ được giữ lại.
@@ -520,8 +521,8 @@ none_installed	Chưa cài đặt điều khiển nào. Vui lòng chọn tính n�
 no_matches	Không có điều khiển phù hợp.
 results_one	Hiển thị %d / tổng số %d điều khiển đã cài đặt
 results_many	Hiển thị %d / tổng số %d điều khiển đã cài đặt
-group_count_one	%d điều khiển
-group_count_many	%d điều khiển
+group_on	%1$d/%2$d
+group_on_help	Đang bật %1$d trên %2$d
 open_help	Mở Messenger từ ngăn kéo ứng dụng
 message_log_view	Xem nhật ký
 search_clear	Xóa

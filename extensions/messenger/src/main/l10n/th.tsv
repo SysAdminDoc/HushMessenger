@@ -69,6 +69,7 @@ way_logo	กดค้างที่โลโก้ Messenger ด้านบน
 way_drawer	เปิดการตั้งค่า HushMessenger จากหน้ารวมแอปของคุณ
 way_shortcuts_hidden	Patch controls และ Restart Messenger ถูกซ่อนจากไอคอน Messenger บนหน้าจอหลัก
 drawer_search	การตั้งค่าไอคอนในหน้ารวมแอป
+reset_search	รีเซ็ตการตั้งค่า
 drawer_root	ไม่จำเป็นต้องซ่อนไอคอนในหน้ารวมแอปบน Root Mount เนื่องจากไม่มีไอคอนการตั้งค่าแยกต่างหากให้ซ่อน
 drawer_missing	ตัวเลือกซ่อนไอคอนในหน้ารวมแอปไม่พร้อมใช้งาน ชุดแพตช์นี้ไม่มีไอคอนการตั้งค่าให้ซ่อน
 drawer_requires_menu	หากต้องการซ่อนไอคอนในหน้ารวมแอป ให้แพตช์ "เปิดการตั้งค่าจากเมนู" ก่อน เพื่อให้คุณยังคงค้นหาการตั้งค่านี้ได้ หากไม่มี ไอคอนจะยังคงอยู่
@@ -520,8 +521,8 @@ none_installed	ยังไม่ได้ติดตั้งการคว�
 no_matches	ไม่พบการควบคุมที่ตรงกัน
 results_one	แสดง %d จากการควบคุมที่ติดตั้งไว้ทั้งหมด %d รายการ
 results_many	แสดง %d จากการควบคุมที่ติดตั้งไว้ทั้งหมด %d รายการ
-group_count_one	การควบคุม %d รายการ
-group_count_many	การควบคุม %d รายการ
+group_on	%1$d/%2$d
+group_on_help	เปิดอยู่ %1$d จาก %2$d
 open_help	เปิด Messenger จากหน้ารวมแอป
 message_log_view	ดูประวัติข้อความ
 search_clear	ล้าง

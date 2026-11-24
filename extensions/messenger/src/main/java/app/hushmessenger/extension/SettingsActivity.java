@@ -114,7 +114,7 @@ public final class SettingsActivity extends Activity {
     private final Set<String> searchClosed = new java.util.HashSet<>();
     private TextView searchStatus, enabledCount, setupNote;
     private Button safeModeAction, clearQuery;
-    private Button drawerSearchLink, batteryUse;
+    private Button drawerSearchLink, resetSearchLink, batteryUse;
     private LinearLayout emptyState;
     /** Shown above both pages while a change waits for Messenger to restart. */
     private LinearLayout restartRow;
@@ -1035,6 +1035,11 @@ public final class SettingsActivity extends Activity {
             showPage("app");
         });
         ui.add(content, drawerSearchLink, 8);
+        resetSearchLink = ui.button(text.get("reset_search"));
+        resetSearchLink.setTag("find_reset");
+        resetSearchLink.setVisibility(View.GONE);
+        resetSearchLink.setOnClickListener(view -> openReset());
+        ui.add(content, resetSearchLink, 8);
         // HushGram's list switch: every section open on one page, or each folded under its heading. It stays through a
         // search, so nothing above the field moves while a word is typed.
         viewToggle = linkPanel("view_toggle", "show_as_list", SettingsIcons.MENU, false, this::flipSectionView);
@@ -2219,7 +2224,39 @@ public final class SettingsActivity extends Activity {
         updateBarTitle();
     }
 
+    /** Each section's heading counts the switches on out of those on show, like 8/9 (#207). During a search, out of its matches. */
+    private void updateTallies() {
+        for (LinearLayout group : groups) {
+            int shown = 0, on = 0;
+            for (int i = 0; i < controlRows.size(); i++) {
+                if (!controlRows.get(i).getTag().equals(group.getTag()) || controlRows.get(i).getVisibility() != View.VISIBLE) continue;
+                shown++;
+                if (Settings.preferences.getBoolean(installedControls.get(i)[0], false)) on++;
+            }
+            TextView tally = (TextView) ((LinearLayout) group.getChildAt(0)).getChildAt(1);
+            String counted = text.get("group_on", on, shown);
+            if (!counted.contentEquals(tally.getText())) tally.setText(counted);
+            tally.setContentDescription(text.get("group_on_help", on, shown));
+        }
+    }
+
+    /** Search's way to Back to defaults, which lives in Quick setups on the App tab (#207). A hidden Quick setups comes back. */
+    private void openReset() {
+        if (quickSetupsHidden()) {
+            Settings.preferences.edit().putBoolean(HIDE_QUICK_SETUPS, false).apply();
+            showQuickSetups();
+        }
+        if (openSections.add("quick_setups")) {
+            saveSections();
+            bindSection("quick_setups");
+        }
+        showPage("app");
+        View reset = quickPanel.findViewWithTag("quick_defaults");
+        reset.post(() -> reset.requestRectangleOnScreen(new android.graphics.Rect(0, 0, reset.getWidth(), reset.getHeight()), true));
+    }
+
     private void updateSetup() {
+        updateTallies();
         if (enabledCount == null) return;
         int enabled = 0, saved = 0;
         for (String[] spec : installedControls) if (Settings.preferences.getBoolean(spec[0], false)) {
@@ -2317,14 +2354,14 @@ public final class SettingsActivity extends Activity {
             controlRows.get(i).setVisibility(match ? View.VISIBLE : View.GONE);
             if (match) visible++;
         }
+        resetSearchLink.setVisibility(quickPanel != null && query.trim().length() >= 2 && SettingsSearch.matches(terms, "reset default defaults restore "
+            + text.get("reset_search") + " " + text.get("quick_defaults")) ? View.VISIBLE : View.GONE);
         for (LinearLayout group : groups) {
             int count = 0;
             for (View row : controlRows) if (row.getTag().equals(group.getTag()) && row.getVisibility() == View.VISIBLE) count++;
             group.setVisibility(count == 0 ? View.GONE : View.VISIBLE);
-            TextView tally = (TextView) ((LinearLayout) group.getChildAt(0)).getChildAt(1);
-            tally.setText(text.number(count));
-            tally.setContentDescription(text.count("group_count", count));
         }
+        updateTallies();
         // A search shows every match, so the sections it found open for as long as it's typed.
         searching = !terms.isEmpty();
         searchClosed.clear();

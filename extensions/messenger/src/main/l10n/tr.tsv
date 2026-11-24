@@ -69,6 +69,7 @@ way_logo	Bu ayarları açmak için Sohbetler'in üstündeki Messenger logosuna u
 way_drawer	HushMessenger ayarlarını uygulama çekmecenden aç.
 way_shortcuts_hidden	'Patch controls' ve 'Restart Messenger', Messenger'ın ana ekran simgesinden gizlendi.
 drawer_search	Uygulama çekmecesi simgesi ayarları
+reset_search	Ayarları sıfırla
 drawer_root	Root Mount'ta 'Uygulama çekmecesi simgesini gizle' gerekmez. Gizlenecek ayrı bir ayarlar simgesi yok.
 drawer_missing	'Uygulama çekmecesi simgesini gizle' kullanılamıyor. Bu yama paketinde gizlenecek ayarlar simgesi yok.
 drawer_requires_menu	Uygulama çekmecesi simgesini gizlemek için önce 'Open settings from menu' yamasını ekle, böylece bu ayarları yine bulabilirsin. O olmadan simge kalır.
@@ -520,8 +521,8 @@ none_installed	Yüklü kontrol yok. Morphe Manager'da yamaları seç ve Messenge
 no_matches	Eşleşen kontrol yok.
 results_one	%d / %d yüklü kontrol
 results_many	%d / %d yüklü kontrol
-group_count_one	%d kontrol
-group_count_many	%d kontrol
+group_on	%1$d/%2$d
+group_on_help	%2$d ayardan %1$d tanesi açık
 open_help	Messenger'ı uygulama çekmecenden aç
 message_log_view	Kaydı görüntüle
 search_clear	Temizle
