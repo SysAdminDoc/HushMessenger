@@ -29,6 +29,7 @@
         <meta-data android:name="hush.feature.tab_notifications" android:value="true" />
         <meta-data android:name="hush.feature.tab_stories" android:value="true" />
         <meta-data android:name="hush.feature.tab_settings_show" android:value="true" />
+        <meta-data android:name="hush.feature.tab_instants_show" android:value="true" />
         <meta-data android:name="hush.feature.tab_badges" android:value="true" />
         <meta-data android:name="hush.feature.hide_tab_labels" android:value="true" />
         <meta-data android:name="hush.feature.tab_icons" android:value="true" />

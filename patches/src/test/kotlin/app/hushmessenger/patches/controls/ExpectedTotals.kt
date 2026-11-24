@@ -6,11 +6,11 @@ package app.hushmessenger.patches.controls
  */
 internal object ExpectedTotals {
     /** Settings controls, each its own patch. */
-    const val CONTROLS = 118
+    const val CONTROLS = 119
     /** Controls whose description sends people to HushMessenger settings > Controls. */
-    const val DIRECTED_CONTROLS = 117
+    const val DIRECTED_CONTROLS = 118
     /** Controls declared through controlPatch, whose injection HookInjectionReplayTest replays on the real builds. */
-    const val REPLAYED_CONTROLS = 113
+    const val REPLAYED_CONTROLS = 114
     /** Hook methods per 587 build, armv7 and the 347415280 family included. Three of them read the emoji drawer flag (586: seven). */
     const val HOOKS_587 = 328
     /** The complete synthetic discovery fixture, one method per expected hook. */

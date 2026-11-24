@@ -512,6 +512,8 @@ tab_people_show_pending_on	La pestaña Personas aparece cuando Messenger se rein
 tab_people_show_pending_off	La pestaña Personas desaparece cuando Messenger se reinicie
 tab_settings_show_pending_on	La pestaña de ajustes aparece cuando Messenger se reinicie
 tab_settings_show_pending_off	La pestaña de ajustes desaparece cuando Messenger se reinicie
+tab_instants_show_pending_on	La pestaña Instants aparece cuando Messenger se reinicie
+tab_instants_show_pending_off	La pestaña Instants desaparece cuando Messenger se reinicie
 tab_notifications_pending_on	La pestaña Notificaciones se oculta cuando Messenger se reinicie
 tab_notifications_pending_off	La pestaña Notificaciones vuelve cuando Messenger se reinicie
 tab_stories_pending_on	La pestaña Historias se oculta cuando Messenger se reinicie
@@ -809,6 +811,8 @@ tab_people_show.title	Mostrar la pestaña Personas
 tab_people_show.description	Vuelve a poner la pestaña Personas en la barra inferior, justo después de Chats, en las cuentas en las que Messenger la quitó. Si los dos están activados, gana Ocultar la pestaña Personas. Reinicia Messenger para ver la pestaña.
 tab_settings_show.title	Mostrar la pestaña de ajustes
 tab_settings_show.description	Pone la pestaña de ajustes de Messenger al final de la barra inferior, con tu foto, para tener los ajustes de tu cuenta a un toque. Reinicia Messenger para ver la pestaña.
+tab_instants_show.title	Mostrar la pestaña Instants
+tab_instants_show.description	Pone Instants en el centro de la barra inferior, donde Messenger lo tiene en algunas cuentas. Activa también Ocultar el botón Instants para quitar el + de Chats. Reinicia Messenger para ver la pestaña.
 tab_badges.title	Ocultar indicadores de las pestañas
 tab_badges.description	Oculta los puntos rojos y los contadores de las pestañas de abajo y del botón de Facebook de arriba. Activa Mantener en los que todavía quieras ver. Reinicia Messenger para ver el cambio.
 hide_tab_labels.title	Ocultar los nombres de las pestañas

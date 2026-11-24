@@ -715,6 +715,8 @@ val showPeopleTabPatch = controlPatch("tab_people_show", "Show People tab", "Put
 @Suppress("unused")
 val showSettingsTabPatch = controlPatch("tab_settings_show", "Show settings tab", "Puts Messenger's own settings tab at the end of the bar at the bottom, with your picture on it, so your account settings are one tap away. Restart Messenger to see the tab.", "Tab bar", TAB_CONFIG)
 @Suppress("unused")
+val showInstantsTabPatch = controlPatch("tab_instants_show", "Show Instants tab", "Puts Instants in the middle of the bar at the bottom, where Messenger has it on some accounts. Turn on Hide the Instants button too to take the + out of Chats. Restart Messenger to see the tab.", "Tab bar", TAB_CONFIG)
+@Suppress("unused")
 val hideNotificationsTabPatch = controlPatch("tab_notifications", "Hide Notifications tab", "Hides the Notifications tab in the bar at the bottom. Restart Messenger to see the tab go.", "Tab bar", TAB_NOTIFICATIONS, TAB_CONFIG)
 @Suppress("unused")
 val hideStoriesTabPatch = controlPatch("tab_stories", "Hide Stories tab", "Hides the Stories tab in the bar at the bottom. Restart Messenger to see the tab go.", "Tab bar", TAB_CONFIG)

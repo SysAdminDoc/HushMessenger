@@ -186,6 +186,7 @@ public class CompatReport {
         PATCHES.put("Hide People tab", List.of("tab_people", "tab_config"));
         PATCHES.put("Show People tab", List.of("tab_config"));
         PATCHES.put("Show settings tab", List.of("tab_config"));
+        PATCHES.put("Show Instants tab", List.of("tab_config"));
         PATCHES.put("Hide Notifications tab", List.of("tab_notifications", "tab_config"));
         PATCHES.put("Hide Stories tab", List.of("tab_config"));
         PATCHES.put("Hide tab labels", List.of("tab_labels"));

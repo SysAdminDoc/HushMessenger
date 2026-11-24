@@ -512,6 +512,8 @@ tab_people_show_pending_on	Kişiler sekmesi, Messenger yeniden başladıktan son
 tab_people_show_pending_off	Kişiler sekmesi, Messenger yeniden başladıktan sonra kaybolur
 tab_settings_show_pending_on	Ayarlar sekmesi, Messenger yeniden başladıktan sonra görünür
 tab_settings_show_pending_off	Ayarlar sekmesi, Messenger yeniden başladıktan sonra kaybolur
+tab_instants_show_pending_on	Instants sekmesi, Messenger yeniden başladıktan sonra görünür
+tab_instants_show_pending_off	Instants sekmesi, Messenger yeniden başladıktan sonra kaybolur
 tab_notifications_pending_on	Bildirimler sekmesi, Messenger yeniden başladıktan sonra gizlenir
 tab_notifications_pending_off	Bildirimler sekmesi, Messenger yeniden başladıktan sonra geri gelir
 tab_stories_pending_on	Hikayeler sekmesi, Messenger yeniden başladıktan sonra gizlenir
@@ -809,6 +811,8 @@ tab_people_show.title	Kişiler sekmesini göster
 tab_people_show.description	Messenger'ın Kişiler sekmesini kaldırdığı hesaplarda onu alttaki çubuğa, Sohbetler'in hemen sağına geri koyar. İkisi de açıksa 'Kişiler sekmesini gizle' geçerli olur. Sekmeyi görmek için Messenger'ı yeniden başlat.
 tab_settings_show.title	Ayarlar sekmesini göster
 tab_settings_show.description	Messenger'ın kendi ayarlar sekmesini, fotoğrafınla birlikte alttaki çubuğun sonuna koyar, böylece hesap ayarların tek dokunuş uzakta olur. Sekmeyi görmek için Messenger'ı yeniden başlat.
+tab_instants_show.title	Instants sekmesini göster
+tab_instants_show.description	Instants'ı alttaki çubuğun ortasına, Messenger'ın bazı hesaplarda koyduğu yere koyar. + düğmesini Sohbetler'den kaldırmak için 'Instants düğmesini gizle'yi de aç. Sekmeyi görmek için Messenger'ı yeniden başlat.
 tab_badges.title	Sekme rozetlerini gizle
 tab_badges.description	Alttaki sekmelerdeki ve üstteki Facebook düğmesindeki kırmızı noktaları ve sayıları gizler. Görmeye devam etmek istediğin rozetler için ilgili 'rozetini koru' anahtarını aç. Değişikliği görmek için Messenger'ı yeniden başlat.
 hide_tab_labels.title	Sekme adlarını gizle

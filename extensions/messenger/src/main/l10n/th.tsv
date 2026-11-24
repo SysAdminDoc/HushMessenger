@@ -512,6 +512,8 @@ tab_people_show_pending_on	แท็บผู้คนจะแสดงขึ�
 tab_people_show_pending_off	แท็บผู้คนจะหายไปหลังจากเริ่มต้น Messenger ใหม่
 tab_settings_show_pending_on	แท็บการตั้งค่าจะแสดงขึ้นหลังจากเริ่มต้น Messenger ใหม่
 tab_settings_show_pending_off	แท็บการตั้งค่าจะหายไปหลังจากเริ่มต้น Messenger ใหม่
+tab_instants_show_pending_on	แท็บ Instants จะแสดงขึ้นหลังจากเริ่มต้น Messenger ใหม่
+tab_instants_show_pending_off	แท็บ Instants จะหายไปหลังจากเริ่มต้น Messenger ใหม่
 tab_notifications_pending_on	แท็บการแจ้งเตือนจะถูกซ่อนหลังจากเริ่มต้น Messenger ใหม่
 tab_notifications_pending_off	แท็บการแจ้งเตือนจะกลับมาแสดงหลังจากเริ่มต้น Messenger ใหม่
 tab_stories_pending_on	แท็บสตอรี่จะถูกซ่อนหลังจากเริ่มต้น Messenger ใหม่
@@ -809,6 +811,8 @@ tab_people_show.title	แสดงแท็บผู้คน
 tab_people_show.description	นำแท็บผู้คนกลับมาไว้ที่แถบด้านล่าง ต่อจากแท็บแชท สำหรับบัญชีที่ Messenger นำแท็บนี้ออกไป เริ่มต้น Messenger ใหม่อีกครั้งเพื่อดูการเปลี่ยนแปลง
 tab_settings_show.title	แสดงแท็บการตั้งค่า
 tab_settings_show.description	เพิ่มแท็บการตั้งค่าของ Messenger ไว้ท้ายแถบด้านล่าง พร้อมรูปของคุณ เพื่อให้เข้าถึงการตั้งค่าบัญชีได้ด้วยการแตะครั้งเดียว เริ่มต้น Messenger ใหม่อีกครั้งเพื่อดูแท็บนี้
+tab_instants_show.title	แสดงแท็บ Instants
+tab_instants_show.description	วาง Instants ไว้ตรงกลางแถบด้านล่าง ตรงที่ Messenger วางไว้ในบางบัญชี เปิด ซ่อนปุ่ม Instants ด้วยเพื่อเอาปุ่ม + ออกจากแชท เริ่มต้น Messenger ใหม่อีกครั้งเพื่อดูแท็บนี้
 tab_badges.title	ซ่อนป้ายแจ้งเตือนบนแท็บ
 tab_badges.description	ซ่อนจุดสีแดงและตัวเลขแจ้งเตือนบนแท็บด้านล่างและปุ่ม Facebook ด้านบน โดยสวิตช์ย่อยด้านล่างสามารถเลือกเปิดไว้ตามต้องการได้ มีผลหลังจากเริ่มต้น Messenger ใหม่
 hide_tab_labels.title	ซ่อนชื่อแท็บ

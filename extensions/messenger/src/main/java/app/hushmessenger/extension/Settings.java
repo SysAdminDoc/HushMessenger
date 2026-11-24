@@ -310,8 +310,10 @@ public final class Settings {
     static final String SHOW_PEOPLE_TAB = "tab_people_show";
     /** Puts Messenger's own settings tab in the bar on accounts whose gate for it says no. */
     static final String SHOW_SETTINGS_TAB = "tab_settings_show";
+    /** Puts Messenger's creation tab, the one Instants lives in, in the bar on accounts whose layout leaves it out. */
+    static final String SHOW_INSTANTS_TAB = "tab_instants_show";
     /** Bottom tabs with a switch of their own, held for the run like the Meta AI tab. */
-    static final List<String> BOTTOM_TABS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications", "tab_stories", SHOW_PEOPLE_TAB, SHOW_SETTINGS_TAB));
+    static final List<String> BOTTOM_TABS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications", "tab_stories", SHOW_PEOPLE_TAB, SHOW_SETTINGS_TAB, SHOW_INSTANTS_TAB));
     /** First answer this process gave for each of {@link #BOTTOM_TABS}, by key, once the bottom bar asked. */
     static final ConcurrentHashMap<String, Boolean> bottomTabs = new ConcurrentHashMap<>();
 
@@ -341,16 +343,18 @@ public final class Settings {
      * marks the open tab by its place in this full list, so a hidden tab ahead of it lit up its neighbor (with People
      * hidden, opening Notifications showed Menu as open). Dropping the hidden tabs here keeps the two in step; every other
      * tab and its order stay as Messenger built them. Show People tab puts People back right after Chats when the server
-     * left it out, unless Hide People tab is on too, and Show settings tab puts Messenger's settings tab at the end.
+     * left it out, unless Hide People tab is on too, Show settings tab puts Messenger's settings tab at the end, and Show
+     * Instants tab puts Instants in the middle once the others have had their say.
      */
     public static <T> List<T> visibleTabs(List<T> tabs) {
         try {
-            List<T> kept = new ArrayList<>(tabs.size() + 2);
-            boolean hasPeople = false, hasSettings = false;
+            List<T> kept = new ArrayList<>(tabs.size() + 3);
+            boolean hasPeople = false, hasSettings = false, hasInstants = false;
             for (T tab : tabs) {
                 String name = tab instanceof Enum ? ((Enum<?>) tab).name() : null;
                 if ("PEOPLE".equals(name)) hasPeople = true;
                 else if (SETTINGS_TAB.equals(name)) hasSettings = true;
+                else if (INSTANTS_TAB.equals(name)) hasInstants = true;
                 String key = name == null ? null : barTabKey(name);
                 if (key == null || !("meta_ai".equals(key) ? hideMetaAiTab() : hideBottomTab(key))) kept.add(tab);
             }
@@ -358,6 +362,10 @@ public final class Settings {
             if (added) activeAt.put(SHOW_PEOPLE_TAB, System.currentTimeMillis());
             if (!hasSettings && heldBottomTab(SHOW_SETTINGS_TAB) && addSettingsTab(kept)) {
                 activeAt.put(SHOW_SETTINGS_TAB, System.currentTimeMillis());
+                added = true;
+            }
+            if (!hasInstants && heldBottomTab(SHOW_INSTANTS_TAB) && addInstantsTab(kept)) {
+                activeAt.put(SHOW_INSTANTS_TAB, System.currentTimeMillis());
                 added = true;
             }
             return added || kept.size() != tabs.size() ? kept : tabs;
@@ -415,8 +423,32 @@ public final class Settings {
         return false;
     }
 
+    /** Messenger's own name for the tab Instants lives in, in its bottom-bar tab enum. */
+    static final String INSTANTS_TAB = "CREATION";
+
+    /**
+     * Puts the creation constant of the list's own tab enum in the middle of the bar. Messenger's own layouts with that tab
+     * put it third, after Chats and one more tab (Chats, Meta AI, Instants, Notifications, or Chats, Friends, Instants,
+     * Meta AI, Notifications), and the middle gives that place on both. False, with the list untouched, when the list
+     * holds no tab of that enum or the enum has no creation constant.
+     */
+    private static <T> boolean addInstantsTab(List<T> tabs) {
+        for (T tab : tabs) {
+            if (!(tab instanceof Enum)) continue;
+            for (Object constant : ((Enum<?>) tab).getDeclaringClass().getEnumConstants()) {
+                if (!INSTANTS_TAB.equals(((Enum<?>) constant).name())) continue;
+                @SuppressWarnings("unchecked") T instants = (T) constant;
+                tabs.add((tabs.size() + 1) / 2, instants);
+                return true;
+            }
+            break;
+        }
+        hookFailed(SHOW_INSTANTS_TAB, "Can't find the Instants tab", new IllegalStateException("no " + INSTANTS_TAB + " tab"));
+        return false;
+    }
+
     /** Every switch that changes the bottom bar's tabs, so each one's list goes through {@link #visibleTabs}. */
-    static final List<String> TAB_CONTROLS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications", "tab_stories", "meta_ai", SHOW_PEOPLE_TAB, SHOW_SETTINGS_TAB));
+    static final List<String> TAB_CONTROLS = Collections.unmodifiableList(Arrays.asList("tab_people", "tab_notifications", "tab_stories", "meta_ai", SHOW_PEOPLE_TAB, SHOW_SETTINGS_TAB, SHOW_INSTANTS_TAB));
 
     /**
      * The switch that hides a bottom tab, by the tab's constant in Messenger's tab enum, or null for a tab with none. MUSE
