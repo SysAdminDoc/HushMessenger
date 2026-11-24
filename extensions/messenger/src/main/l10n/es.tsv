@@ -362,6 +362,13 @@ theme_accent_red	Rojo
 theme_accent_orange	Naranja
 theme_accent_green	Verde
 theme_accent_teal	Verde azulado
+theme_codes	Códigos de color
+theme_code_accent	Acento
+theme_code_neutral	Fondo
+theme_codes_use	Usar estos colores
+theme_codes_help	Escribe códigos de seis dígitos como #E1306C. El acento tiñe los azules de Messenger y el fondo tiñe sus grises. Deja uno vacío para mantener el de Messenger.
+theme_codes_invalid	Eso no es un código de color. Prueba uno como #E1306C.
+theme_codes_empty	Escribe primero un código de color.
 theme_paste	Usar el tema copiado
 theme_copy	Copiar tema
 theme_clear	Volver a los colores del fondo de pantalla

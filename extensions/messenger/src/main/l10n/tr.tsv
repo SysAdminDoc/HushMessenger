@@ -362,6 +362,13 @@ theme_accent_red	Kırmızı
 theme_accent_orange	Turuncu
 theme_accent_green	Yeşil
 theme_accent_teal	Turkuaz
+theme_codes	Renk kodları
+theme_code_accent	Vurgu
+theme_code_neutral	Arka plan
+theme_codes_use	Bu renkleri kullan
+theme_codes_help	#E1306C gibi altı haneli kodlar yaz. Vurgu, Messenger'ın mavilerini, arka plan da grilerini renklendirir. Messenger'ın kendi rengini korumak için birini boş bırak.
+theme_codes_invalid	Bu bir renk kodu değil. #E1306C gibi bir kod dene.
+theme_codes_empty	Önce bir renk kodu yaz.
 theme_paste	Kopyalanan temayı kullan
 theme_copy	Temayı kopyala
 theme_clear	Duvar kağıdı renklerine dön

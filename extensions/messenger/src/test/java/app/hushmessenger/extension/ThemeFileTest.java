@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.InsetDrawable;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import java.util.List;
@@ -264,6 +265,65 @@ public class ThemeFileTest {
             root.findViewWithTag("theme_clear").performClick();
             assertFalse(green.isSelected());
         }
+    }
+
+    /** #211: typed color codes save the theme, an empty field leaves that color to Messenger, and a wrong code saves nothing. */
+    @Test public void settingsColorCodesSaveTheThemeAndRefuseAWrongCode() {
+        MaterialYouTheme.bind();
+        try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+            View root = screen.get().getWindow().getDecorView();
+            EditText accent = root.findViewWithTag("theme_code_accent"), neutral = root.findViewWithTag("theme_code_neutral");
+            View use = root.findViewWithTag("theme_codes_use");
+            assertEquals("", accent.getText().toString());
+            assertEquals("", neutral.getText().toString());
+
+            use.performClick();
+            assertEquals("Type a color code first.", ShadowToast.getTextOfLatestToast());
+            assertNull(Settings.preferences.getString(ThemeFile.KEY, null));
+
+            accent.setText("e1306c");
+            neutral.setText("#12");
+            use.performClick();
+            assertEquals("That isn't a color code. Try one like #E1306C.", ShadowToast.getTextOfLatestToast());
+            assertNull(Settings.preferences.getString(ThemeFile.KEY, null));
+
+            neutral.setText("#1a1418");
+            use.performClick();
+            assertEquals("Theme saved", ShadowToast.getTextOfLatestToast());
+            ThemeFile saved = ThemeFile.saved();
+            assertEquals(Integer.valueOf(0xFFE1306C), saved.accent);
+            assertEquals(Integer.valueOf(0xFF1A1418), saved.neutral);
+            assertTrue(root.findViewWithTag("theme_accent_E1306C").isSelected());
+            // Drawn back as the saved theme's codes.
+            assertEquals("#E1306C", accent.getText().toString());
+            assertEquals("#1A1418", neutral.getText().toString());
+            idle();
+            assertEquals(TonePalette.fromSeeds(0xFFE1306C, 0xFF1A1418).sameLightness(TonePalette.NEUTRAL, 0xFF333334), MaterialYouTheme.DARK_333334);
+
+            // The background alone keeps Messenger's blue, and Undo brings the theme before it back.
+            accent.setText("");
+            use.performClick();
+            assertNull(ThemeFile.saved().accent);
+            assertEquals(Integer.valueOf(0xFF1A1418), ThemeFile.saved().neutral);
+            screen.get().undo();
+            assertEquals(Integer.valueOf(0xFFE1306C), ThemeFile.saved().accent);
+            assertEquals("#E1306C", accent.getText().toString());
+
+            // A swatch tap shows in the fields too.
+            root.findViewWithTag("theme_accent_2E7D32").performClick();
+            assertEquals("#2E7D32", accent.getText().toString());
+            assertEquals("#1A1418", neutral.getText().toString());
+            root.findViewWithTag("theme_clear").performClick();
+            assertEquals("", accent.getText().toString());
+        }
+    }
+
+        assertNull(ThemeFile.code(null));
+        assertNull(ThemeFile.code("  "));
+        assertEquals(Integer.valueOf(0xFFE1306C), ThemeFile.code(" #e1306c "));
+        assertEquals(Integer.valueOf(0xFFEE3366), ThemeFile.code("E36"));
+        for (String wrong : new String[] {"#12", "#E1306C1", "red", "#GGGGGG", "##E1306C"})
+            assertThrows(wrong, IllegalArgumentException.class, () -> ThemeFile.code(wrong));
     }
 
     /** #155: a palette style is one saved choice, Default saves none, and the palette in use follows, a saved accent's too. */

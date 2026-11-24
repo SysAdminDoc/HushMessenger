@@ -362,6 +362,13 @@ theme_accent_red	สีแดง
 theme_accent_orange	สีส้ม
 theme_accent_green	สีเขียว
 theme_accent_teal	สีเขียวน้ำทะเล
+theme_codes	รหัสสี
+theme_code_accent	สีเน้น
+theme_code_neutral	พื้นหลัง
+theme_codes_use	ใช้สีเหล่านี้
+theme_codes_help	พิมพ์รหัสหกหลัก เช่น #E1306C สีเน้นจะแต่งโทนสีฟ้าของ Messenger และพื้นหลังจะแต่งโทนสีเทา เว้นช่องใดว่างไว้เพื่อใช้สีเดิมของ Messenger
+theme_codes_invalid	นี่ไม่ใช่รหัสสี ลองใช้แบบ #E1306C
+theme_codes_empty	พิมพ์รหัสสีก่อน
 theme_paste	ใช้ธีมที่คัดลอกมา
 theme_copy	คัดลอกธีม
 theme_clear	กลับไปใช้สีตามวอลเปเปอร์

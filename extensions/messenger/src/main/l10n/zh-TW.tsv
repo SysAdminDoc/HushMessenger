@@ -362,6 +362,13 @@ theme_accent_red	紅色
 theme_accent_orange	橘色
 theme_accent_green	綠色
 theme_accent_teal	藍綠色
+theme_codes	色碼
+theme_code_accent	強調色
+theme_code_neutral	背景
+theme_codes_use	使用這些顏色
+theme_codes_help	輸入六位數色碼，例如 #E1306C。強調色會調整 Messenger 的藍色，背景會調整它的灰色。留空其中一個即可保留 Messenger 原本的顏色。
+theme_codes_invalid	這不是色碼。請試試像 #E1306C 這樣的色碼。
+theme_codes_empty	請先輸入色碼。
 theme_paste	使用已複製的主題
 theme_copy	複製主題
 theme_clear	改回桌布顏色

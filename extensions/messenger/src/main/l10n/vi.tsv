@@ -362,6 +362,13 @@ theme_accent_red	Đỏ
 theme_accent_orange	Cam
 theme_accent_green	Xanh lá
 theme_accent_teal	Xanh mòng két
+theme_codes	Mã màu
+theme_code_accent	Màu nhấn
+theme_code_neutral	Nền
+theme_codes_use	Dùng các màu này
+theme_codes_help	Nhập mã sáu ký tự như #E1306C. Màu nhấn tô các màu xanh của Messenger và màu nền tô các màu xám. Để trống một ô để giữ màu gốc của Messenger.
+theme_codes_invalid	Đây không phải mã màu. Hãy thử mã như #E1306C.
+theme_codes_empty	Hãy nhập mã màu trước.
 theme_paste	Dùng chủ đề đã sao chép
 theme_copy	Sao chép chủ đề
 theme_clear	Quay lại màu hình nền

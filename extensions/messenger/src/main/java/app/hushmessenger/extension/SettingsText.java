@@ -467,6 +467,13 @@ final class SettingsText {
         ENGLISH.put("theme_accent_orange", "Orange");
         ENGLISH.put("theme_accent_green", "Green");
         ENGLISH.put("theme_accent_teal", "Teal");
+        ENGLISH.put("theme_codes", "Color codes");
+        ENGLISH.put("theme_code_accent", "Accent");
+        ENGLISH.put("theme_code_neutral", "Background");
+        ENGLISH.put("theme_codes_use", "Use these colors");
+        ENGLISH.put("theme_codes_help", "Type six-digit codes like #E1306C. The accent tints Messenger's blues and the background tints its grays. Leave one empty to keep Messenger's own.");
+        ENGLISH.put("theme_codes_invalid", "That isn't a color code. Try one like #E1306C.");
+        ENGLISH.put("theme_codes_empty", "Type a color code first.");
         ENGLISH.put("theme_paste", "Use copied theme");
         ENGLISH.put("theme_copy", "Copy theme");
         ENGLISH.put("theme_clear", "Back to wallpaper colors");
