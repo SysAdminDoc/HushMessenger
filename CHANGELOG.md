@@ -4,6 +4,8 @@
 
 ### New
 
+- `Sound in the open chat` is a new switch under Notifications, and it starts off. Messenger stays quiet when a message comes into the chat you have open, unless it's a like or a sticker. With this on you hear its in-app message sound there too, or the one you picked in `Custom chat sounds`. A silent phone and Messenger's own in-app sounds setting still keep it quiet. Refs #224.
+- `Custom chat sounds` is a new patch next to `Custom new-message sound`, and it starts unselected. Messenger's double pop when you send a message is really two sounds, one as it goes out and one once it has gone through, and there's a third for a new message while Messenger is open. Pick an .ogg, .mp3, .m4a or .wav file for any of them in Morphe Manager's Expert mode and it plays instead. Refs #224.
 - `Show pinned messages` is a new switch under Conversations, and it starts off. Messenger already has a bar under a chat's name that shows its pinned messages, but it only turns that bar on in some chats. With this on every chat gets it. Refs #213.
 - `Hide Create story` is a new switch under Inbox, and it starts off. The row of stories and notes above your chats always opens with your own Create story tile, even if you never post one. With this on that tile is gone and the row starts with your friends' stories. Your own story and note sit on that tile, so they go with it. Refs #225.
 - `Hide Suggested in search` and `Hide recent reels in search` are new switches under Inbox, and both start off. Tap the search bar and, before you type a thing, Messenger fills the screen with people it suggests and the reels you watched lately. Turn these on and those sections are gone, so search opens empty and waits for you. Anyone you search for by name still comes up. Refs #207.

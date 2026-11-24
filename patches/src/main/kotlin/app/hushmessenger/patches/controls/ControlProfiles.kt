@@ -256,6 +256,7 @@ internal val PROFILE_347415354 = ControlProfile(
             "LX/1af;->A03(Z)Ljava/util/ArrayList;",
             "Lcom/facebook/location/foreground/ForegroundLocationFrameworkController;->A04(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/location/foreground/ForegroundLocationFrameworkController;J)V",
         ),
+        "open_chat_sound" to setOf("LX/9zz;->A01(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;ZZ)Z"),
         "original_photo" to setOf(
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->decodeBitmap(Ljava/lang/String;DD)Landroid/graphics/Bitmap;",
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->getTranscodeConfig()Ljava/util/Map;",
@@ -626,6 +627,7 @@ internal val PROFILE_347415280 = ControlProfile(
             "LX/1af;->A03(Z)Ljava/util/ArrayList;",
             "Lcom/facebook/location/foreground/ForegroundLocationFrameworkController;->A04(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/location/foreground/ForegroundLocationFrameworkController;J)V",
         ),
+        "open_chat_sound" to setOf("LX/A04;->A01(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;ZZ)Z"),
         "original_photo" to setOf(
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->decodeBitmap(Ljava/lang/String;DD)Landroid/graphics/Bitmap;",
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->getTranscodeConfig()Ljava/util/Map;",
@@ -996,6 +998,7 @@ internal val PROFILE_347415302 = ControlProfile(
             "LX/1af;->A03(Z)Ljava/util/ArrayList;",
             "Lcom/facebook/location/foreground/ForegroundLocationFrameworkController;->A04(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/location/foreground/ForegroundLocationFrameworkController;J)V",
         ),
+        "open_chat_sound" to setOf("LX/9zz;->A01(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;ZZ)Z"),
         "original_photo" to setOf(
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->decodeBitmap(Ljava/lang/String;DD)Landroid/graphics/Bitmap;",
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->getTranscodeConfig()Ljava/util/Map;",
@@ -1366,6 +1369,7 @@ internal val PROFILE_347415262 = ControlProfile(
             "LX/1b5;->A03(Z)Ljava/util/ArrayList;",
             "Lcom/facebook/location/foreground/ForegroundLocationFrameworkController;->A04(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/location/foreground/ForegroundLocationFrameworkController;J)V",
         ),
+        "open_chat_sound" to setOf("LX/A1y;->A01(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;ZZ)Z"),
         "original_photo" to setOf(
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->decodeBitmap(Ljava/lang/String;DD)Landroid/graphics/Bitmap;",
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->getTranscodeConfig()Ljava/util/Map;",

@@ -957,6 +957,8 @@ blocked_list_pictures.title	隱藏封鎖名單上的大頭貼照
 blocked_list_pictures.description	隱藏「隱私和安全」中封鎖名單上你封鎖的人的大頭貼照。他們的名字和「解除封鎖」仍會顯示。
 restricted_notify.title	接收受限制聊天的通知
 restricted_notify.description	與你限制的人的聊天會像其他聊天一樣通知你，但端對端加密的聊天除外。你設為靜音的聊天仍保持安靜。受限制的人仍無法看到你何時在線上，或何時已讀他們的訊息。
+open_chat_sound.title	開啟中的聊天室也有音效
+open_chat_sound.description	在你開啟的聊天室收到訊息時，播放 Messenger 的應用程式內訊息音效。Messenger 原本只會對讚和貼圖這麼做。手機設為靜音，或關閉 Messenger 自己的應用程式內音效時，仍然不會有聲音。
 passkey_login.title	跳過密碼金鑰登入
 passkey_login.description	登入時不再提供這支手機上的密碼金鑰，Facebook 會改成請你用另一台已登入的裝置核准這次登入，就像帳號沒有密碼金鑰時那樣。修補過的 Messenger 無法通過 Facebook 的密碼金鑰檢查，這就是有些登入一直卡在瀏覽器檢查的原因。開啟時，Messenger 也無法用密碼金鑰做加密備份，所以除非登入卡住，請保持關閉。長按主畫面上的 Messenger 圖示，不必登入也能開啟這些設定。
 recovery_code_row.title	顯示 40 字元代碼選項

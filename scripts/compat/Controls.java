@@ -114,6 +114,7 @@ final class Controls {
         found.get("ai_chat_open").addAll(aiChatOpen(classes));
         found.get("story_create_tile").addAll(storyCreateTile(classes));
         found.get("pinned_bar").addAll(pinnedBar(classes));
+        found.get("open_chat_sound").addAll(openChatSound(classes));
         found.get("story_hold").addAll(storyHold(classes));
         found.get("inbox_typing").addAll(inboxTyping(classes));
         found.get("media_caption").addAll(mediaCaption(classes));

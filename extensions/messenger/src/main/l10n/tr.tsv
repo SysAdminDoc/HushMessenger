@@ -957,6 +957,8 @@ blocked_list_pictures.title	Engellenenler listesinde resimleri gizle
 blocked_list_pictures.description	Gizlilik ve güvenlik altındaki engellediğin kişiler listesinde profil resimlerini gizler. Adlar ve Engeli kaldır düğmesi kalır.
 restricted_notify.title	Kısıtlanan sohbetler için bildir
 restricted_notify.description	Kısıtladığın kişilerle olan sohbetler, uçtan uca şifreli olmadıkça diğer sohbetlerin gibi sana bildirim gönderir. Sessize aldığın bir sohbet sessiz kalır. Kısıtlanan kişiler yine de ne zaman aktif olduğunu veya mesajlarını ne zaman okuduğunu göremez.
+open_chat_sound.title	Açık sohbette ses
+open_chat_sound.description	Açık olan sohbetine bir mesaj geldiğinde Messenger'ın uygulama içi mesaj sesini çalar. Messenger bunu beğeniler ve çıkartmalar için zaten yapıyor. Telefon sessizdeyse ya da Messenger'ın kendi uygulama içi sesler ayarı kapalıysa yine ses çıkmaz.
 passkey_login.title	Geçiş anahtarıyla girişi atla
 passkey_login.description	Giriş yaparken bu telefondaki geçiş anahtarı artık sunulmaz, böylece Facebook girişi oturum açtığın başka bir cihazdan onaylamanı ister, geçiş anahtarı olmayan bir hesapta yaptığı gibi. Yamalı bir Messenger, Facebook'un geçiş anahtarı kontrolünü geçemez ve bazı girişlerin tarayıcı kontrolünde dönüp durmasının nedeni bu. Açıkken Messenger şifreli yedeklemeleri için de geçiş anahtarı kullanamaz, bu yüzden bir giriş takılmadıkça kapalı bırak. Oturum açmadan bu ayarlara ulaşmak için Messenger'ın ana ekran simgesine uzun bas.
 recovery_code_row.title	40 karakterlik kod seçeneğini göster

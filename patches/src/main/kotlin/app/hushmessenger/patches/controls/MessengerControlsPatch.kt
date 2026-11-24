@@ -230,6 +230,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         AI_CHAT_OPEN -> validateAiChatOpen()
         STORY_CREATE_TILE -> validateStoryCreateTile()
         PINNED_BAR -> validatePinnedBar()
+        OPEN_CHAT_SOUND -> validateOpenChatSound()
         STORY_HOLD -> validateStoryHold()
         CHAT_PREVIEW -> validateChatPreview()
         CHAT_PREVIEW_SIZE -> validateChatPreviewSize()
@@ -388,6 +389,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             AI_CHAT_OPEN -> method.injectAiChatOpen()
             STORY_CREATE_TILE -> method.injectStoryCreateTile()
             PINNED_BAR -> method.injectPinnedBar()
+            OPEN_CHAT_SOUND -> method.injectOpenChatSound()
             STORY_HOLD -> method.injectStoryHold()
             CHAT_PREVIEW -> method.injectChatPreview()
             CHAT_PREVIEW_SIZE -> method.injectChatPreviewSize()
@@ -930,6 +932,9 @@ val blockedListPicturesPatch = controlPatch("blocked_list_pictures", "Hide pictu
 @Suppress("unused")
 val restrictedNotifyPatch = controlPatch("restricted_notify", "Notify for restricted chats",
     "Chats with people you've restricted notify you like your other chats. A chat you've muted stays quiet. Restricted people still can't see when you're active or when you've read their messages.", "Notifications")
+@Suppress("unused")
+val openChatSoundPatch = controlPatch("open_chat_sound", "Sound in the open chat",
+    "Plays Messenger's in-app message sound when a message comes into the chat you have open. Messenger already does that for likes and stickers. A silent phone or Messenger's own In-app sounds switch still keeps it quiet.", "Notifications", OPEN_CHAT_SOUND)
 @Suppress("unused")
 val unlockAppIconsPatch = controlPatch("app_icons", "Unlock app icons", "Lets you pick any icon in Messenger's App icon setting without a subscription. Messenger still decides whether that setting shows for your account.", "Theme")
 @Suppress("unused")

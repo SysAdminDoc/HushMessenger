@@ -221,6 +221,7 @@ hook mqtt_telemetry LX/11B;->A0M(Ljava/lang/String;)V
 hook mqtt_telemetry LX/11B;->A0Q(LX/13p;LX/136;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;[BIJ)LX/0uv;
 hook nearby_scans LX/1af;->A03(Z)Ljava/util/ArrayList;
 hook nearby_scans Lcom/facebook/location/foreground/ForegroundLocationFrameworkController;->A04(Landroid/content/Context;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/location/foreground/ForegroundLocationFrameworkController;J)V
+hook open_chat_sound LX/A04;->A01(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;ZZ)Z
 hook original_photo Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->decodeBitmap(Ljava/lang/String;DD)Landroid/graphics/Bitmap;
 hook original_photo Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->getTranscodeConfig()Ljava/util/Map;
 hook original_photo Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->transcodeImage(Ljava/lang/String;DDLjava/lang/String;Ljava/util/Map;)[B

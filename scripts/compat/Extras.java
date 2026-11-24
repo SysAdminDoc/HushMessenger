@@ -896,4 +896,62 @@ final class Extras {
         return List.of();
     }
 
+    private static List<String> typeNames(List<? extends CharSequence> types) {
+        var names = new ArrayList<String>();
+        for (var type : types) names.add(type.toString());
+        return names;
+    }
+
+    private static final List<String> SOUND_PICKER_TYPES = List.of("Lcom/facebook/auth/usersession/FbUserSession;",
+        "Lcom/facebook/messaging/model/messages/Message;", "Z", "Z");
+
+    /** Mirrors isSoundCheck in OpenChatSound.kt: an in-app sounds check of the session, `(FbUserSession)Z`. */
+    private static boolean isSoundCheck(Instruction i, int session) {
+        if (i.getOpcode() != Opcode.INVOKE_VIRTUAL || !(((ReferenceInstruction) i).getReference() instanceof MethodReference call)) return false;
+        return "Z".equals(call.getReturnType()) && typeNames(call.getParameterTypes()).equals(List.of("Lcom/facebook/auth/usersession/FbUserSession;"))
+            && ((FiveRegisterInstruction) i).getRegisterCount() == 2 && ((FiveRegisterInstruction) i).getRegisterD() == session;
+    }
+
+    /** Mirrors openChatSite in OpenChatSound.kt, on the stock shape: the dropped in-app sounds check and the in-app sound call. */
+    private static boolean hasOpenChatSite(Method m) {
+        if (AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"Z".equals(m.getReturnType()) || m.getImplementation() == null) return false;
+        if (!typeNames(m.getParameterTypes()).equals(SOUND_PICKER_TYPES)) return false;
+        var soundStrings = stringsOf(m);
+        if (!soundStrings.contains("notif_processing") || !soundStrings.contains("Play sound")) return false;
+        var code = instructions(m);
+        int session = m.getImplementation().getRegisterCount() - 4;
+        int play = -1;
+        for (int i = 0; i < code.size(); i++) {
+            if (code.get(i).getOpcode() != Opcode.INVOKE_VIRTUAL || !(((ReferenceInstruction) code.get(i)).getReference() instanceof MethodReference call)) continue;
+            if (!"V".equals(call.getReturnType()) || !typeNames(call.getParameterTypes()).equals(List.of("Lcom/facebook/auth/usersession/FbUserSession;", "Ljava/lang/String;"))) continue;
+            if (play >= 0) return false;
+            play = i;
+        }
+        if (play < 3) return false;
+        var playCall = (FiveRegisterInstruction) code.get(play);
+        if (playCall.getRegisterCount() != 3 || playCall.getRegisterD() != session) return false;
+        int soundName = playCall.getRegisterE();
+        var soundStart = code.get(play - 3);
+        if (!Set.of(Opcode.CONST_4, Opcode.CONST_16, Opcode.CONST).contains(soundStart.getOpcode()) || ((OneRegisterInstruction) soundStart).getRegisterA() != soundName) return false;
+        var soundLookup = code.get(play - 2);
+        if (soundLookup.getOpcode() != Opcode.INVOKE_STATIC || !(((ReferenceInstruction) soundLookup).getReference() instanceof MethodReference lookupCall)) return false;
+        if (!"Ljava/lang/String;".equals(lookupCall.getReturnType()) || !typeNames(lookupCall.getParameterTypes()).equals(List.of("I"))
+            || ((FiveRegisterInstruction) soundLookup).getRegisterC() != soundName) return false;
+        var soundResult = code.get(play - 1);
+        if (soundResult.getOpcode() != Opcode.MOVE_RESULT_OBJECT || ((OneRegisterInstruction) soundResult).getRegisterA() != soundName) return false;
+        int dropped = -1;
+        for (int i = 0; i + 1 < code.size(); i++) {
+            if (!isSoundCheck(code.get(i), session) || code.get(i + 1).getOpcode() != Opcode.RETURN) continue;
+            if (dropped >= 0) return false;
+            dropped = i;
+        }
+        return dropped >= 0 && ((FiveRegisterInstruction) code.get(dropped)).getRegisterC() != playCall.getRegisterC();
+    }
+
+    /** open_chat_sound: the one message sound picker with a dropped in-app sounds check. Mirrors findOpenChatSound. */
+    static List<Method> openChatSound(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) if (hasOpenChatSite(method)) found.add(method);
+        return found.size() == 1 ? found : List.of();
+    }
 }

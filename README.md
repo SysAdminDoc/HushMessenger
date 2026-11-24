@@ -73,6 +73,7 @@ These start unselected:
 - **Clone install under another package name** installs a second Messenger beside the first (`com.facebook.orca.hush` by default). Push notifications may not reach the copy, and Root Mount can't use it.
 - **Spoof package version** gives Messenger a very high version code so the Play Store stops offering updates. Keep it selected with the same number every time you patch, since Android won't install a lower code over a higher one.
 - **Custom new-message sound** plays a sound file you pick at patch time (.ogg, .mp3, .m4a or .wav, 1 MB or less).
+- **Custom chat sounds** does the same for the sounds as you send a message, once it has gone through, and for a new message while Messenger is open. Pick a file for any of the three.
 - **Custom launcher icon** makes the home screen icon white on black or black on white.
 - **GmsCore support** is only for phones that run [microG-RE](https://github.com/MorpheApp/MicroG-RE) instead of Google Play services. Leave it out on a phone with Play services, or Messenger gets no notifications.
 
