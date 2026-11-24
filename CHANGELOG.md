@@ -7,6 +7,9 @@
 - `Mark as read stays on this phone` is a new switch under Privacy, and it starts off. Press and hold a chat in your list and Messenger offers Mark as read, but picking it tells the other person you read their message. With this on, Mark as read only clears the bold and the count on this phone, and nothing goes to Messenger. A new message brings them back. Mark as unread does too, also on a chat that `Mark chats read on this phone` cleared. Refs #222.
 - The settings screen is in Bulgarian now. Refs #228.
 
+### Changed and fixed
+
+- Typing Meta AI's name into search still brought the bot up at the top of the results with `Hide Meta AI` on. A typed search hides it now too, along with the other AI bots. Refs #204.
 
 ## 0.31.0 (2026-11-25)
 
