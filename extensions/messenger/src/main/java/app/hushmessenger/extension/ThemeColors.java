@@ -19,8 +19,8 @@ import android.widget.Toast;
 
 /**
  * The Appearance section's theme colors: the saved theme's name, accent colors one tap away, the palette styles, and
- * the buttons that paste a theme from the clipboard, copy the one in use and go back to wallpaper colors. Shown only
- * where Material You applied. One per settings page.
+ * the buttons that paste a theme from the clipboard, copy the one in use, save it to a file or open one, and go back to
+ * wallpaper colors. Shown only where Material You applied. One per settings page.
  */
 final class ThemeColors {
     /** The accents a tap saves (#132), each with its name for screen readers. Messenger's own blue first. */
@@ -39,9 +39,20 @@ final class ThemeColors {
     private RadioButton[] styles;
     /** The color code fields (#211), or null until addTo. */
     private android.widget.EditText accentCode, neutralCode;
+    /** Saving the theme to a file and opening one (#115). */
+    private final ThemeDocument document;
 
     ThemeColors(SettingsActivity page) {
         this.page = page;
+        document = new ThemeDocument(page, this::useTheme);
+    }
+
+    void documentResult(int request, int result, android.content.Intent data) {
+        document.result(request, result, data);
+    }
+
+    void destroy() {
+        document.destroy();
     }
 
     /** The status line, the accent swatches, the three buttons and the file help, at the end of [appearance]. */
@@ -91,6 +102,14 @@ final class ThemeColors {
         copy.setTag("theme_copy");
         copy.setOnClickListener(view -> copyTheme());
         ui.add(appearance, copy, 8);
+        Button saveFile = ui.button(text.get("theme_file_save"));
+        saveFile.setTag("theme_file_save");
+        saveFile.setOnClickListener(view -> document.save(themeInUse()));
+        ui.add(appearance, saveFile, 8);
+        Button openFile = ui.button(text.get("theme_file_open"));
+        openFile.setTag("theme_file_open");
+        openFile.setOnClickListener(view -> document.open());
+        ui.add(appearance, openFile, 8);
         themeClear = ui.button(text.get("theme_clear"));
         themeClear.setTag("theme_clear");
         themeClear.setOnClickListener(view -> clearTheme());
@@ -260,6 +279,12 @@ final class ThemeColors {
             page.feedback(text.get("theme_paste_invalid"), Toast.LENGTH_LONG);
             return;
         }
+        useTheme(theme);
+    }
+
+    /** Saves [theme] with Undo, from the clipboard or a file. */
+    private void useTheme(ThemeFile theme) {
+        SettingsText text = page.text;
         Runnable undo = keep();
         SharedPreferences.Editor edit = Settings.preferences.edit().putString(ThemeFile.KEY, theme.withPureBlack(null).encode());
         if (theme.pureBlack != null) edit.putBoolean(MaterialYouTheme.BLACK_KEY, theme.pureBlack);
@@ -270,16 +295,21 @@ final class ThemeColors {
         page.offerUndo(text.format("theme_change"), undo);
     }
 
-    /** Copies the saved theme, or the colors in use as one, with the pure black switch as it is now. */
+    /** The saved theme, or the colors in use as one, with the pure black switch as it is now. */
+    private static ThemeFile themeInUse() {
+        ThemeFile theme = ThemeFile.saved();
+        if (theme == null) {
+            TonePalette palette = MaterialYouTheme.palette();
+            theme = new ThemeFile("", palette.tone(TonePalette.ACCENT, 40), palette.tone(TonePalette.NEUTRAL, 50), null);
+        }
+        return theme.withPureBlack(Settings.preferences.getBoolean(MaterialYouTheme.BLACK_KEY, false));
+    }
+
+    /** Copies the theme in use. */
     private void copyTheme() {
         SettingsText text = page.text;
         try {
-            ThemeFile theme = ThemeFile.saved();
-            if (theme == null) {
-                TonePalette palette = MaterialYouTheme.palette();
-                theme = new ThemeFile("", palette.tone(TonePalette.ACCENT, 40), palette.tone(TonePalette.NEUTRAL, 50), null);
-            }
-            String json = theme.withPureBlack(Settings.preferences.getBoolean(MaterialYouTheme.BLACK_KEY, false)).encode();
+            String json = themeInUse().encode();
             ClipboardManager clipboard = page.getSystemService(ClipboardManager.class);
             if (clipboard == null) throw new IllegalStateException("Clipboard unavailable");
             clipboard.setPrimaryClip(ClipData.newPlainText(text.get("theme_copy"), json));

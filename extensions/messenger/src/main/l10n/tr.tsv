@@ -377,9 +377,16 @@ theme_paste_empty	Yapıştırılacak bir şey yok. Önce bir tema kopyala.
 theme_paste_invalid	Bu bir tema değil. Renklerin değişmedi.
 theme_copied	Tema kopyalandı
 theme_copy_failed	Tema kopyalanamadı. Tekrar dene.
+theme_file_save	Temayı dosyaya kaydet
+theme_file_open	Tema dosyası aç
+theme_file_saved	Tema dosyası kaydedildi
+theme_file_save_failed	Tema dosyası kaydedilemedi. Başka bir klasör dene.
+theme_file_no_picker	Bu telefonda bunun için bir dosya seçici yok.
+theme_file_unreadable	Bu dosya açılamadı. Tekrar dene.
+theme_file_invalid	Bu dosya bir tema değil. Renklerin değişmedi.
 theme_cleared	Duvar kağıdı renklerine dönüldü
 theme_change	tema değişikliği
-theme_file_help	Tema, {"name": "Gün batımı", "accent": "#E1306C", "neutral": "#1A1418", "pure_black": true} gibi kısa bir metindir. accent Messenger'ın mavilerini, neutral ise grilerini renklendirir. İkisi de Messenger'ın kendi parlaklığını korur, böylece metin kolay okunur. 'Temayı kopyala', kullanılan renkleri düzenlemen veya paylaşman için sana verir.
+theme_file_help	Tema, {"name": "Gün batımı", "accent": "#E1306C", "neutral": "#1A1418", "pure_black": true} gibi kısa bir metindir. accent Messenger'ın mavilerini, neutral ise grilerini renklendirir. İkisi de Messenger'ın kendi parlaklığını korur, böylece metin kolay okunur. 'Temayı kopyala', kullanılan renkleri düzenlemen veya paylaşman için sana verir. Temayı dosyaya kaydet onu bir .json dosyası olarak saklar, Tema dosyası aç ise birini kullanır.
 about	HushMessenger hakkında
 version	Sürüm
 installed	Yüklü kontroller

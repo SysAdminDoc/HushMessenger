@@ -130,7 +130,7 @@ public final class SettingsActivity extends Activity {
     boolean started;
     static final int UNDO_MILLIS = 10_000;
     static final int SAVE_CHOICES = 7101, READ_CHOICES = 7102, PICK_FONT = 7103, PICK_AUTO_REPLY_PICTURE = 7104, SAVE_MESSAGE_LOG = 7105,
-        PICK_HOME_HEADER = 7106, PICK_TAB_ICON = 7107, PICK_RECORDING_FOLDER = 7108;
+        PICK_HOME_HEADER = 7106, PICK_TAB_ICON = 7107, PICK_RECORDING_FOLDER = 7108, SAVE_THEME = 7109, READ_THEME = 7110;
     /**
      * The switch for each way back in (#22, HushFacebook#146), and the help and reason each was built with. Turning one
      * way off can change what the others say or whether they can turn off, so they're rebuilt when that changes.
@@ -490,6 +490,7 @@ public final class SettingsActivity extends Activity {
         autoReplies.destroy();
         messageLog.destroy();
         backup.destroy();
+        themeColors.destroy();
         updates.cancelUpdateCheck();
         if (licenses != null) licenses.dialog.dismiss();
         super.onDestroy();
@@ -2016,6 +2017,10 @@ public final class SettingsActivity extends Activity {
             if (result != RESULT_OK || data == null || data.getData() == null) return;
             if ("content".equals(data.getData().getScheme())) fontFile.copyFontFile(data.getData());
             else feedback(text.get("font_file_unreadable"), Toast.LENGTH_LONG);
+            return;
+        }
+        if (request == SAVE_THEME || request == READ_THEME) {
+            themeColors.documentResult(request, result, data);
             return;
         }
         if (request == PICK_RECORDING_FOLDER) {

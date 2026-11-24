@@ -377,9 +377,16 @@ theme_paste_empty	Không có gì để dán. Hãy sao chép một chủ đề tr
 theme_paste_invalid	Đây không phải là chủ đề. Màu của bạn không thay đổi.
 theme_copied	Đã sao chép chủ đề
 theme_copy_failed	Không thể sao chép chủ đề. Hãy thử lại.
+theme_file_save	Lưu chủ đề vào tệp
+theme_file_open	Mở tệp chủ đề
+theme_file_saved	Đã lưu tệp chủ đề
+theme_file_save_failed	Không thể lưu tệp chủ đề. Hãy thử thư mục khác.
+theme_file_no_picker	Điện thoại này không có trình chọn tệp cho việc đó.
+theme_file_unreadable	Không thể mở tệp đó. Hãy thử lại.
+theme_file_invalid	Tệp đó không phải là chủ đề. Màu của bạn không thay đổi.
 theme_cleared	Đã quay lại màu hình nền
 theme_change	đổi màu giao diện
-theme_file_help	Chủ đề là một đoạn văn bản như {"name": "Sunset", "accent": "#E1306C", "neutral": "#1A1418", "pure_black": true}. Accent tô lại màu xanh của Messenger và neutral tô lại các màu xám. Cả hai giữ nguyên độ sáng của Messenger nên chữ vẫn dễ đọc. Sao chép chủ đề cho bạn các màu đang dùng để chỉnh sửa hoặc chia sẻ.
+theme_file_help	Chủ đề là một đoạn văn bản như {"name": "Sunset", "accent": "#E1306C", "neutral": "#1A1418", "pure_black": true}. Accent tô lại màu xanh của Messenger và neutral tô lại các màu xám. Cả hai giữ nguyên độ sáng của Messenger nên chữ vẫn dễ đọc. Sao chép chủ đề cho bạn các màu đang dùng để chỉnh sửa hoặc chia sẻ. Lưu chủ đề vào tệp giữ chủ đề dưới dạng tệp .json, còn Mở tệp chủ đề sẽ dùng một tệp như vậy.
 about	Giới thiệu về HushMessenger
 version	Phiên bản
 installed	Các điều khiển đã cài đặt
