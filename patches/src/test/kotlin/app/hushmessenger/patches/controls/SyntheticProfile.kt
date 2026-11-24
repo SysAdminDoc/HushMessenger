@@ -232,6 +232,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     TAB_NOTIFICATIONS to setOf("LX/1iN;->A08(LX/1iN;)Z"),
     "mark_read_action" to setOf("LX/KHu;->A0W()Z", "LX/MKS;->A0F()Z"),
     CHAT_BAR_PLUS to setOf(SYNTHETIC_CHAT_JUMP),
+    MARK_READ_LOCALLY to setOf(SYNTHETIC_MARK_READ_LOCALLY),
 )
 
 /**

@@ -949,6 +949,8 @@ mark_read_button.title	標示為已讀按鈕
 mark_read_button.description	啟用「隱藏已讀標記」時，在聊天室頂端列加入 Messenger 的「標示為已讀」圖示。開啟聊天室仍不會傳送已讀標記；當你想讓對方看到已讀時，再點選圖示，本機也會將聊天室標示為已讀。頂端列已滿時，此圖示會取代聊天室詳細資料按鈕（點選聊天室名稱仍可開啟同一頁面）；聊天室沒有該按鈕時，則取代另一個非通話按鈕，通話按鈕都會保留原位。
 read_chats_locally.title	在這支手機上將聊天室標示為已讀
 read_chats_locally.description	開啟「隱藏已讀標記」時，清除你已看過的聊天室的未讀外觀，聊天室清單不再以粗體和未讀數量顯示它。不會傳送任何資料給 Messenger，所以對方仍然不會知道你已讀。聊天室收到新訊息時，未讀外觀會再次出現。
+mark_read_locally.title	「標示為已讀」只留在這支手機
+mark_read_locally.description	在聊天室清單中使用 Messenger 的「標示為已讀」，會讓對方知道你已讀他們的訊息。開啟此選項後，它只會清除這支手機上的未讀外觀，不會傳送任何資料給 Messenger。聊天室收到新訊息時，未讀外觀會再次出現。
 keep_unsent.title	保留已收回的訊息
 keep_unsent.description	在支援的聊天室中，當對方收回訊息後仍將訊息保留在畫面上。在加密聊天室中，訊息會改為保留在通知裡。尚未測試群組聊天室。你自己收回訊息的功能可能受到限制。
 hidden_words.title	隱藏含有你的字詞的訊息

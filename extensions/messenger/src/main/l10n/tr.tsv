@@ -949,6 +949,8 @@ mark_read_button.title	Okundu olarak işaretle düğmesi
 mark_read_button.description	'Okundu bilgisini gizle' açıkken Messenger'ın Okundu olarak işaretle simgesini sohbetin üst çubuğuna koyar. Sohbeti açmak yine hiçbir şey göndermez. Gönderenin Görüldü'yü görmesini istediğinde simgeye dokun, sohbet burada da okundu olur. Çubuk doluysa sohbet ayrıntıları düğmesinin yerini alır (sohbetin adına dokunmak aynı sayfayı açar) ya da sohbette o düğme yoksa arama için olmayan başka bir düğmenin yerini alır, böylece arama düğmeleri yerinde kalır.
 read_chats_locally.title	Sohbetleri bu telefonda okundu olarak işaretle
 read_chats_locally.description	Okundu bilgisini gizle açıkken açtığın bir sohbetin okunmamış görünümünü temizler, böylece sohbet listesi onu kalın yazıyla ve bir sayıyla göstermeyi bırakır. Messenger'a hiçbir şey gitmez, yani karşı tarafa okuduğun hâlâ bildirilmez. Sohbete yeni bir mesaj geldiğinde okunmamış görünüm geri döner.
+mark_read_locally.title	Okundu olarak işaretle bu telefonda kalır
+mark_read_locally.description	Messenger'ın sohbet listendeki Okundu olarak işaretle seçeneği, karşı tarafa mesajını okuduğunu bildirir. Bu açıkken okunmamış görünümü yalnızca bu telefonda temizler ve Messenger'a hiçbir şey gitmez. Sohbete yeni bir mesaj geldiğinde okunmamış görünüm geri döner.
 keep_unsent.title	Gönderimi geri alınan mesajları tut
 keep_unsent.description	Biri mesajının gönderimini geri aldıktan sonra, bunun çalıştığı sohbetlerde mesajı ekranda tutar. Şifreli sohbetlerde mesaj bunun yerine bildiriminde kalır. Grup sohbetleri test edilmedi. Kendi geri aldığın mesajlarda sınırlı çalışabilir.
 hidden_words.title	Kendi kelimelerinle mesaj gizle

@@ -782,6 +782,7 @@ final class Controls {
         found.get("profile_menu_items").addAll(profileMenus);
         found.get("profile_menu_call").addAll(profileMenuCalls(classes, profileMenus, stringTables));
         found.get("refresh_rate").addAll(refreshRate(classes));
+        found.get("mark_read_locally").addAll(markReadLocally(classes));
         return found;
     }
 }

@@ -163,4 +163,14 @@ class LocalReadTest {
         assertEquals(Opcode.CMP_LONG, kept.opcode)
         assertEquals(newest, kept.registerC)
     }
+
+    /** #222: Mark as read stays on this phone asks for the same hook, and it has to go in once however many patches do. */
+    @Test fun aSecondPatchFindsTheHookAlreadyIn() {
+        val method = unread()
+        injectControl(LOCAL_READ, mapOf(LOCAL_READ to listOf(method)))
+        val once = method.implementation!!.instructions.toList()
+        assertTrue(method.localReadHooked())
+        injectControl(MARK_READ_LOCALLY, mapOf(LOCAL_READ to listOf(method)))
+        assertEquals(once, method.implementation!!.instructions.toList())
+    }
 }

@@ -4167,6 +4167,63 @@
             "options": []
         },
         {
+            "name": "Mark as read stays on this phone",
+            "description": "Messenger's Mark as read on a chat in your list tells the other person you read their message. With this on it clears the unread look on this phone only and nothing goes to Messenger. A new message in the chat brings the unread look back. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "default": true,
+            "category": "Privacy",
+            "dependencies": [
+                {
+                    "type": "Patch",
+                    "name": null,
+                    "description": "Load HushMessenger runtime controls",
+                    "dependencies": [
+                        {
+                            "type": "Patch",
+                            "name": null,
+                            "description": "Install HushMessenger settings",
+                            "dependencies": []
+                        }
+                    ]
+                },
+                {
+                    "type": "Patch",
+                    "name": null,
+                    "description": "Record HushMessenger capability: mark_read_locally",
+                    "dependencies": [
+                        {
+                            "type": "Patch",
+                            "name": null,
+                            "description": "Install HushMessenger settings",
+                            "dependencies": []
+                        }
+                    ]
+                }
+            ],
+            "compatiblePackages": [
+                {
+                    "packageName": "com.facebook.orca",
+                    "name": "Messenger",
+                    "description": null,
+                    "apkFileType": "APK",
+                    "appIconColor": "#0084FF",
+                    "signatures": [
+                        "911d604446084ca7f4760b775bfc160fa8702441240a7258645d7a72c4312d27",
+                        "e3f9e1e0cf99d0e56a055ba65e241b3399f7cea524326b0cdd6ec1327ed0fdc1"
+                    ],
+                    "targets": [
+                        {
+                            "version": "588.1.0.66.98",
+                            "versionCodes": null,
+                            "isExperimental": false,
+                            "minSdk": 28,
+                            "description": "Stock builds 347617497, 347617499, 347617503, 347617513, 347617515, 347617516, 347617517, 347617519, 347617532, 347617533, 347617535, 347617537, 347617566, 347617569, 347617572, 347617583, 347617586, 347617587, 347617588 and 347617590; checked again during patching"
+                        }
+                    ]
+                }
+            ],
+            "options": []
+        },
+        {
             "name": "Mark chats read on this phone",
             "description": "Clears the unread look of a chat you've opened while Hide read receipts is on, so the chat list stops showing it bold with a count. Nothing goes to Messenger, so the other person still isn't told you read it. A new message in the chat brings the unread look back. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,

@@ -958,4 +958,41 @@ final class Extras {
         for (var cls : classes) for (var method : cls.getMethods()) if (hasOpenChatSite(method)) found.add(method);
         return found.size() == 1 ? found : List.of();
     }
+
+    private static final String MARK_THREADS_PARAMS = "Lcom/facebook/messaging/service/model/MarkThreadsParams;";
+    private static final String MARK_THREADS_RESULT = "Lcom/facebook/fbservice/service/OperationResult;";
+    private static final String MARK_THREAD_KEY = "Lcom/facebook/messaging/model/threadkey/ThreadKey;";
+    private static final Set<String> MARK_THREAD_SHAPES = Set.of(
+        "(" + MARK_THREAD_KEY + "Ljava/lang/Long;Lkotlin/jvm/functions/Function1;)V",
+        "(" + MARK_THREAD_KEY + "Lkotlin/jvm/functions/Function1;)V");
+
+    /**
+     * Mirrors isMarkThreadsHandler in MarkReadLocally.kt: a static method answering an OperationResult that casts the
+     * mark_threads parcel and makes exactly two interface calls with a chat's key first, on one interface, one to mark
+     * the chat read and one to mark it unread.
+     */
+    private static boolean isMarkThreadsHandler(Method m) {
+        if (!AccessFlags.STATIC.isSet(m.getAccessFlags()) || !MARK_THREADS_RESULT.equals(m.getReturnType()) || m.getImplementation() == null) return false;
+        boolean parcel = false;
+        var owners = new HashSet<String>();
+        var shapes = new ArrayList<String>();
+        for (var i : instructions(m)) {
+            if (!(i instanceof ReferenceInstruction referring)) continue;
+            if (i.getOpcode() == Opcode.CHECK_CAST && referring.getReference() instanceof TypeReference type && MARK_THREADS_PARAMS.equals(type.getType())) parcel = true;
+            if (i.getOpcode() != Opcode.INVOKE_INTERFACE && i.getOpcode() != Opcode.INVOKE_INTERFACE_RANGE) continue;
+            if (!(referring.getReference() instanceof MethodReference call)) continue;
+            var types = typeNames(call.getParameterTypes());
+            if (types.isEmpty() || !MARK_THREAD_KEY.equals(types.get(0))) continue;
+            owners.add(call.getDefiningClass());
+            shapes.add("(" + String.join("", types) + ")" + call.getReturnType());
+        }
+        return parcel && shapes.size() == 2 && owners.size() == 1 && new HashSet<>(shapes).equals(MARK_THREAD_SHAPES);
+    }
+
+    /** mark_read_locally: the one mark_threads service handler. Mirrors findMarkReadLocally in MarkReadLocally.kt. */
+    static List<Method> markReadLocally(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) if (isMarkThreadsHandler(method)) found.add(method);
+        return found.size() == 1 ? found : List.of();
+    }
 }

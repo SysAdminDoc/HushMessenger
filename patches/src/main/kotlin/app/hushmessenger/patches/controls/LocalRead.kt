@@ -65,6 +65,12 @@ internal fun findLocalRead(classes: Iterable<ClassDef>): List<Method> {
 
 private fun MethodReference.signature() = "(${parameterTypes.joinToString("")})$returnType"
 
+/**
+ * Mark chats read on this phone and Mark as read stays on this phone both need a chat read here to come out as read:
+ * whichever patches first puts the hook in, and the other finds it there.
+ */
+internal fun Method.localReadHooked() = localCode().any { it.localRef()?.toString() == READ_LOCALLY_HELPER }
+
 private fun localRequire(condition: Boolean, detail: String) {
     if (!condition) throw PatchException("Messenger controls: the chat list's unread check changed ($detail)")
 }
@@ -115,6 +121,7 @@ internal fun MutableMethod.validateLocalRead(): LocalReadSite {
  * stock comparison writes, so the borrowed register is dead either way.
  */
 internal fun MutableMethod.injectLocalRead() {
+    if (localReadHooked()) return
     val site = validateLocalRead()
     val answer = site.answer
     addInstructionsWithLabels(site.index, """

@@ -1854,35 +1854,76 @@ public final class Settings {
         if (chat == null) return;
         try {
             if (!enabled(LOCAL_READ_KEY)) return;
-            String key = String.valueOf(chat);
-            if (key.isEmpty()) return;
-            long now = System.currentTimeMillis();
-            ConcurrentHashMap<String, Long> marks = localReadMarks();
-            Long already = marks.get(key);
-            if (already != null && already >= now) return;
-            marks.put(key, now);
-            synchronized (LOCAL_READ_LOCK) {
-                List<Map.Entry<String, Long>> entries = new ArrayList<>(marks.entrySet());
-                // Newest first, and the chat just read ahead of the ones marked in the same millisecond.
-                Collections.sort(entries, (first, second) -> {
-                    if (first.getKey().equals(second.getKey())) return 0;
-                    if (key.equals(first.getKey())) return -1;
-                    if (key.equals(second.getKey())) return 1;
-                    return Long.compare(second.getValue(), first.getValue());
-                });
-                Set<String> kept = new HashSet<>();
-                for (Map.Entry<String, Long> entry : entries) {
-                    if (kept.size() >= LOCAL_READ_CHATS_MAX || now - entry.getValue() > LOCAL_READ_TTL) {
-                        marks.remove(entry.getKey(), entry.getValue());
-                        continue;
-                    }
-                    kept.add(entry.getKey() + ":" + entry.getValue());
-                }
-                SharedPreferences prefs = preferences;
-                if (prefs != null) prefs.edit().putStringSet(LOCAL_READ_CHATS, kept).apply();
-            }
+            rememberChatRead(chat);
         } catch (RuntimeException error) {
             hookFailed(LOCAL_READ_KEY, "Can't keep a chat read on this phone", error);
+        }
+    }
+
+    /** Keeps the chat as read here from this moment on. False for a chat with no key to keep it under. */
+    private static boolean rememberChatRead(Object chat) {
+        String key = String.valueOf(chat);
+        if (key.isEmpty()) return false;
+        long now = System.currentTimeMillis();
+        ConcurrentHashMap<String, Long> marks = localReadMarks();
+        Long already = marks.get(key);
+        if (already != null && already >= now) return true;
+        marks.put(key, now);
+        storeLocalReads(marks, key, now);
+        return true;
+    }
+
+    /** Saves the marks, newest first with the chat just read ahead of its ties, and drops the ones past the cap or too old. */
+    private static void storeLocalReads(ConcurrentHashMap<String, Long> marks, String latest, long now) {
+        synchronized (LOCAL_READ_LOCK) {
+            List<Map.Entry<String, Long>> entries = new ArrayList<>(marks.entrySet());
+            Collections.sort(entries, (first, second) -> {
+                if (first.getKey().equals(second.getKey())) return 0;
+                if (first.getKey().equals(latest)) return -1;
+                if (second.getKey().equals(latest)) return 1;
+                return Long.compare(second.getValue(), first.getValue());
+            });
+            Set<String> kept = new HashSet<>();
+            for (Map.Entry<String, Long> entry : entries) {
+                if (kept.size() >= LOCAL_READ_CHATS_MAX || now - entry.getValue() > LOCAL_READ_TTL) {
+                    marks.remove(entry.getKey(), entry.getValue());
+                    continue;
+                }
+                kept.add(entry.getKey() + ":" + entry.getValue());
+            }
+            SharedPreferences prefs = preferences;
+            if (prefs != null) prefs.edit().putStringSet(LOCAL_READ_CHATS, kept).apply();
+        }
+    }
+
+    /**
+     * Mark as read stays on this phone. Messenger's own Mark as read asks right before it tells Messenger, which is
+     * also what shows the other person Seen. With the switch on the chat is read here from this moment, and a yes
+     * holds Messenger's call back, so nobody is told.
+     */
+    static final String LOCAL_MARK_KEY = "mark_read_locally";
+
+    public static boolean markedReadHere(Object chat) {
+        try {
+            return chat != null && enabled(LOCAL_MARK_KEY) && rememberChatRead(chat);
+        } catch (RuntimeException error) {
+            hookFailed(LOCAL_MARK_KEY, "Can't mark a chat read on this phone only", error);
+            return false;
+        }
+    }
+
+    /**
+     * Messenger's own Mark as unread, on its way out. A chat read on this phone stops counting as read here, or the
+     * chat list would go on showing it read whatever Messenger did.
+     */
+    public static void markedUnreadHere(Object chat) {
+        try {
+            if (chat == null) return;
+            ConcurrentHashMap<String, Long> marks = localReadMarks();
+            if (marks.remove(String.valueOf(chat)) == null) return;
+            storeLocalReads(marks, "", System.currentTimeMillis());
+        } catch (RuntimeException error) {
+            hookFailed(LOCAL_READ_KEY, "Can't turn a chat read on this phone back to unread", error);
         }
     }
 
@@ -1892,7 +1933,7 @@ public final class Settings {
      */
     public static boolean chatReadLocally(Object chat, long newestMessage) {
         try {
-            if (chat == null || !enabled(LOCAL_READ_KEY)) return false;
+            if (chat == null || !(enabled(LOCAL_READ_KEY) || enabled(LOCAL_MARK_KEY))) return false;
             Long marked = localReadMarks().get(String.valueOf(chat));
             return marked != null && marked >= newestMessage;
         } catch (RuntimeException error) {

@@ -233,6 +233,7 @@ internal val PROFILE_347617503 = ControlProfile(
             "LX/7oG;->Fou(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/7Vl;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
         ),
         "mark_read_click" to setOf("LX/DBg;->onClick(Landroid/view/View;)V"),
+        "mark_read_locally" to setOf("LX/80u;->A06(LX/4QM;LX/80u;Ljava/lang/String;)Lcom/facebook/fbservice/service/OperationResult;"),
         "media_caption" to setOf("LX/7pp;->A0K(LX/7pp;)V"),
         "menu_blur" to setOf(
             "LX/09m;->onStart()V",
@@ -600,6 +601,7 @@ internal val PROFILE_347617497 = ControlProfile(
             "LX/7rG;->FpE(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/7Yl;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V",
         ),
         "mark_read_click" to setOf("LX/DAr;->onClick(Landroid/view/View;)V"),
+        "mark_read_locally" to setOf("LX/83u;->A06(LX/4Ta;LX/83u;Ljava/lang/String;)Lcom/facebook/fbservice/service/OperationResult;"),
         "media_caption" to setOf("LX/7sp;->A0K(LX/7sp;)V"),
         "menu_blur" to setOf(
             "LX/09m;->onStart()V",
