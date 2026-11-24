@@ -1905,7 +1905,10 @@ public final class Settings {
 
     public static boolean markedReadHere(Object chat) {
         try {
-            return chat != null && enabled(LOCAL_MARK_KEY) && rememberChatRead(chat);
+            if (chat == null || !enabled(LOCAL_MARK_KEY) || !rememberChatRead(chat)) return false;
+            // Messenger's own data didn't change, so its chat list wouldn't draw the row again by itself.
+            ChatHiding.refreshLists();
+            return true;
         } catch (RuntimeException error) {
             hookFailed(LOCAL_MARK_KEY, "Can't mark a chat read on this phone only", error);
             return false;
@@ -1922,6 +1925,8 @@ public final class Settings {
             ConcurrentHashMap<String, Long> marks = localReadMarks();
             if (marks.remove(String.valueOf(chat)) == null) return;
             storeLocalReads(marks, "", System.currentTimeMillis());
+            // Messenger already had this chat unread, so its own call changes nothing and the row wouldn't redraw.
+            ChatHiding.refreshLists();
         } catch (RuntimeException error) {
             hookFailed(LOCAL_READ_KEY, "Can't turn a chat read on this phone back to unread", error);
         }
