@@ -4,6 +4,7 @@
 
 ### New
 
+- `Hide Create story` is a new switch under Inbox, and it starts off. The row of stories and notes above your chats always opens with your own Create story tile, even if you never post one. With this on that tile is gone and the row starts with your friends' stories. Your own story and note sit on that tile, so they go with it. Refs #225.
 - `Hide Suggested in search` and `Hide recent reels in search` are new switches under Inbox, and both start off. Tap the search bar and, before you type a thing, Messenger fills the screen with people it suggests and the reels you watched lately. Turn these on and those sections are gone, so search opens empty and waits for you. Anyone you search for by name still comes up. Refs #207.
 - `Jump to the first message or a date` has a `Page up and page down buttons` switch under it now, and it starts off. Reading back through a long chat meant swiping over and over. With this on, two buttons sit over the jump arrow at the bottom left of a chat, and each tap moves the chat most of a screen up or down, so the last lines you read stay in view. Each one only shows while there's more to see that way. Refs #207.
 - `Hide Meta AI` reaches into search now. Meta AI's own sections are gone from search, and so are Meta AI and the other AI bots when you type their name, which used to be the way back into a chat with one. Refs #204.

@@ -240,6 +240,7 @@ public class CompatReport {
         PATCHES.put("Hide Suggested in search", List.of("search_sections"));
         PATCHES.put("Hide recent reels in search", List.of("search_sections"));
         PATCHES.put("Block Meta AI chats", List.of("ai_chat_open"));
+        PATCHES.put("Hide Create story", List.of("story_create_tile"));
         PATCHES.put("Keep a message log", List.of("message_log", "unsent_recall", "unsent_clear", "message_log_button", "message_log_click",
             "quiet_log_check", "quiet_log_drop", "hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
         PATCHES.put("Auto reply", List.of("auto_reply"));

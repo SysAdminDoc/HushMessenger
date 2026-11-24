@@ -821,4 +821,35 @@ final class Extras {
         return found.size() == 1 ? found : List.of();
     }
 
+    private static final List<String> OWN_TILE_CONSTRUCTOR = List.of("Lcom/facebook/auth/usersession/FbUserSession;",
+        "Lcom/facebook/messaging/inbox/units/StaticUnitConfig;", "Lcom/facebook/messaging/montage/model/MontageBucketPreview;",
+        "Lcom/facebook/presence/api/model/NoteWithUserInfo;");
+
+    /** Mirrors storyCreateTileRegister in StoryCreateTile.kt. */
+    private static boolean isStoryTrayBuilder(Method m) {
+        if (AccessFlags.STATIC.isSet(m.getAccessFlags()) || !SEARCH_LIST.equals(m.getReturnType()) || m.getImplementation() == null) return false;
+        var params = searchTypes(m);
+        if (params.size() != 8 || !params.get(1).startsWith("L")) return false;
+        for (int n = 3; n < 8; n++) if (!SEARCH_LIST.equals(params.get(n))) return false;
+        return !mediaTargets(m).contains(0) && searchParameter(m, 1) >= 0;
+    }
+
+    /** story_create_tile: the stories row builder that logs its presence check. Mirrors findStoryCreateTile. */
+    static List<Method> storyCreateTile(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (!SEARCH_LIST.equals(method.getReturnType()) || method.getParameterTypes().size() != 8 || method.getImplementation() == null) continue;
+            if (stringsOf(method).contains("invalid_facebook_user_presence") && isStoryTrayBuilder(method)) found.add(method);
+        }
+        if (found.size() != 1) return List.of();
+        String tile = found.get(0).getParameterTypes().get(1).toString();
+        for (var cls : classes) {
+            if (!cls.getType().equals(tile)) continue;
+            for (var method : cls.getMethods())
+                if ("<init>".equals(method.getName()) && searchTypes(method).equals(OWN_TILE_CONSTRUCTOR)) return found;
+            return List.of();
+        }
+        return List.of();
+    }
+
 }

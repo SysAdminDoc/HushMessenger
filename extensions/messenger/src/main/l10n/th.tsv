@@ -761,6 +761,8 @@ inbox_promotions.title	ซ่อนโปรโมชันในกล่อง
 inbox_promotions.description	ซ่อนแบนเนอร์โปรโมชันในรายการแชท
 stories.title	ซ่อนสตอรี่และโน้ต
 stories.description	ซ่อนแถวสตอรี่และโน้ตเหนือรายการแชท รวมถึงวงแหวนสตอรี่รอบรูปโปรไฟล์
+story_create_tile.title	ซ่อนสร้างสตอรี่
+story_create_tile.description	นำช่องสร้างสตอรี่ออกจากต้นแถวสตอรี่และโน้ตเหนือรายการแชท สตอรี่และโน้ตของคุณเองอยู่บนช่องนั้น จึงหายไปด้วย
 instants_button.title	ซ่อนปุ่ม Instants
 instants_button.description	ซ่อนปุ่ม + ที่เลื่อนเข้ามาทางขอบขวาของรายการแชท และปุ่มใต้ฟองสบู่แชท ซึ่งทั้งสองปุ่มใช้เปิด Instants
 subtabs.title	ซ่อนแท็บในกล่องข้อความ

@@ -761,6 +761,8 @@ inbox_promotions.title	Ocultar promociones de la bandeja de entrada
 inbox_promotions.description	Oculta los banners de promociones en tu lista de chats.
 stories.title	Ocultar historias y notas
 stories.description	Oculta la fila de historias y notas encima de tus chats, y los anillos de historias alrededor de las fotos de perfil.
+story_create_tile.title	Ocultar Crear historia
+story_create_tile.description	Quita el recuadro Crear historia del inicio de la fila de historias y notas encima de tus chats. Tu propia historia y tu nota están en ese recuadro, así que también desaparecen.
 instants_button.title	Ocultar el botón Instants
 instants_button.description	Oculta el botón + que aparece deslizándose en el borde derecho de tu lista de chats y el que está debajo de tus burbujas de chat. Los dos abren Instants.
 subtabs.title	Ocultar pestañas de la bandeja de entrada

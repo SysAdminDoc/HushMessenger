@@ -338,6 +338,7 @@ internal val PROFILE_347415354 = ControlProfile(
             "Lcom/facebook/presence/model/PresenceItem;-><init>(Lcom/facebook/user/model/UserKey;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;IJZ)V",
         ),
         "stories" to setOf("LX/1ut;->A00()Z"),
+        "story_create_tile" to setOf("LX/2K5;->A01(LX/4eC;LX/1vA;LX/4eD;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;)Lcom/google/common/collect/ImmutableList;"),
         "story_hold" to setOf("LX/TAY;->DwC()V"),
         "story_ring" to setOf(
             "LX/33G;->onCreateMountContent(Landroid/content/Context;)Ljava/lang/Object;",
@@ -706,6 +707,7 @@ internal val PROFILE_347415280 = ControlProfile(
             "Lcom/facebook/presence/model/PresenceItem;-><init>(Lcom/facebook/user/model/UserKey;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;IJZ)V",
         ),
         "stories" to setOf("LX/1ut;->A00()Z"),
+        "story_create_tile" to setOf("LX/2K4;->A01(LX/4dX;LX/1vA;LX/4dY;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;)Lcom/google/common/collect/ImmutableList;"),
         "story_hold" to setOf("LX/Mdd;->DwJ()V"),
         "story_ring" to setOf(
             "LX/33I;->onCreateMountContent(Landroid/content/Context;)Ljava/lang/Object;",
@@ -1074,6 +1076,7 @@ internal val PROFILE_347415302 = ControlProfile(
             "Lcom/facebook/presence/model/PresenceItem;-><init>(Lcom/facebook/user/model/UserKey;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;IJZ)V",
         ),
         "stories" to setOf("LX/1ut;->A00()Z"),
+        "story_create_tile" to setOf("LX/2K5;->A01(LX/4eC;LX/1vA;LX/4eD;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;)Lcom/google/common/collect/ImmutableList;"),
         "story_hold" to setOf("LX/TAW;->DwC()V"),
         "story_ring" to setOf(
             "LX/33G;->onCreateMountContent(Landroid/content/Context;)Ljava/lang/Object;",
@@ -1442,6 +1445,7 @@ internal val PROFILE_347415262 = ControlProfile(
             "Lcom/facebook/presence/model/PresenceItem;-><init>(Lcom/facebook/user/model/UserKey;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;IJZ)V",
         ),
         "stories" to setOf("LX/1vJ;->A00()Z"),
+        "story_create_tile" to setOf("LX/2KV;->A01(LX/4ei;LX/1va;LX/4ej;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;)Lcom/google/common/collect/ImmutableList;"),
         "story_hold" to setOf("LX/Sxp;->Dwc()V"),
         "story_ring" to setOf(
             "LX/33g;->onCreateMountContent(Landroid/content/Context;)Ljava/lang/Object;",

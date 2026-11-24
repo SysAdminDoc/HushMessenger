@@ -227,6 +227,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         SEARCH_SECTIONS -> validateSearchSections()
         SEARCH_ITEMS -> validateSearchItems()
         AI_CHAT_OPEN -> validateAiChatOpen()
+        STORY_CREATE_TILE -> validateStoryCreateTile()
         STORY_HOLD -> validateStoryHold()
         CHAT_PREVIEW -> validateChatPreview()
         CHAT_PREVIEW_SIZE -> validateChatPreviewSize()
@@ -383,6 +384,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             SEARCH_SECTIONS -> method.injectSearchSections()
             SEARCH_ITEMS -> method.injectSearchItems()
             AI_CHAT_OPEN -> method.injectAiChatOpen()
+            STORY_CREATE_TILE -> method.injectStoryCreateTile()
             STORY_HOLD -> method.injectStoryHold()
             CHAT_PREVIEW -> method.injectChatPreview()
             CHAT_PREVIEW_SIZE -> method.injectChatPreviewSize()
@@ -946,6 +948,9 @@ val hideSearchReelsPatch = controlPatch("search_reels", "Hide recent reels in se
 @Suppress("unused")
 val blockAiChatsPatch = controlPatch("ai_chat_block", "Block Meta AI chats",
     "Stops chats with Meta AI and other AI bots from opening, from search, a link or your chat list. A group with an AI in it still opens.", "Navigation", AI_CHAT_OPEN)
+@Suppress("unused")
+val hideStoryCreateTilePatch = controlPatch("story_create_tile", "Hide Create story",
+    "Takes the Create story tile off the start of the row of stories and notes above your chats. Your own story and note sit on that tile, so they go with it.", "Inbox", STORY_CREATE_TILE)
 @Suppress("unused")
 val homeHeaderPatch = controlPatch("home_header", "Your own home header",
     "Puts words or a picture of your own at the top of the chat list in place of Messenger's wordmark. Type the words or pick the picture in HushMessenger settings. With neither, the wordmark stays.",

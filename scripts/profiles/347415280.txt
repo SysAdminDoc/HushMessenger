@@ -285,6 +285,7 @@ hook special_contacts Lcom/facebook/presence/DefaultPresenceManager;->A0F(Landro
 hook special_contacts Lcom/facebook/presence/PresenceManagerV2;->A0B(Landroid/content/Intent;Lcom/facebook/presence/PresenceManagerV2;)V
 hook special_contacts Lcom/facebook/presence/model/PresenceItem;-><init>(Lcom/facebook/user/model/UserKey;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;IJZ)V
 hook stories LX/1ut;->A00()Z
+hook story_create_tile LX/2K4;->A01(LX/4dX;LX/1vA;LX/4dY;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableList;)Lcom/google/common/collect/ImmutableList;
 hook story_hold LX/Mdd;->DwJ()V
 hook story_ring LX/33I;->onCreateMountContent(Landroid/content/Context;)Ljava/lang/Object;
 hook story_ring LX/33z;->draw(Landroid/graphics/Canvas;)V

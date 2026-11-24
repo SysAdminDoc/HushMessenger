@@ -761,6 +761,8 @@ inbox_promotions.title	Gelen kutusu tanıtımlarını gizle
 inbox_promotions.description	Sohbet listendeki tanıtım afişlerini gizler.
 stories.title	Hikayeleri ve notları gizle
 stories.description	Sohbetlerinin üstündeki hikaye ve not satırını ve profil resimlerinin etrafındaki hikaye halkalarını gizler.
+story_create_tile.title	Hikaye oluştur'u gizle
+story_create_tile.description	Sohbetlerinin üstündeki hikaye ve not satırının başındaki Hikaye oluştur kutucuğunu kaldırır. Kendi hikayen ve notun o kutucukta durduğu için onlar da gider.
 instants_button.title	Instants düğmesini gizle
 instants_button.description	Sohbet listenin sağ kenarından kayarak gelen + düğmesini ve sohbet balonlarının altındakini gizler. İkisi de Instants'ı açar.
 subtabs.title	Gelen kutusu sekmelerini gizle
