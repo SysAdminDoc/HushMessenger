@@ -30,6 +30,8 @@ final class SettingsTranslations {
         add("tr", SettingsTextTr.TEXT);
         // Spanish is close enough everywhere that one table covers es-ES, es-MX, es-AR and any other region.
         add("es", SettingsTextEs.TEXT);
+        // Bulgarian is written the same everywhere, so one table covers bg-BG and any other region.
+        add("bg", SettingsTextBg.TEXT);
     }
 
     /** Refuses a table that gives one id twice, since the later line would quietly replace the earlier one. */
