@@ -260,6 +260,7 @@ hook quiet_mode LX/77J;->A01(Landroid/app/Notification;Lcom/facebook/auth/userse
 hook recent_media LX/ARk;->A01(LX/5SA;Lkotlin/jvm/functions/Function0;)V
 hook recovery_code_row LX/Nev;->render(LX/28H;)LX/1FW;
 hook reels_badge LX/4Ru;->A09(LX/4Ru;)Z
+hook refresh_rate Lcom/facebook/base/activity/FbFragmentActivity;->onResume()V
 hook reply_read LX/9sr;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/55Z;LX/4p0;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/D8M;LX/595;LX/55Y;LX/D62;LX/HU4;LX/5SA;LX/5Kd;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4p7;Ljava/lang/String;)V
 hook restricted_notify LX/K77;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 hook save_stories LX/Utn;->onClick(Landroid/view/View;)V

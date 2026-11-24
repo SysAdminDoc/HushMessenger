@@ -282,6 +282,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         APP_ICONS -> validateAppIconGate()
         APP_THEMES -> validateAppThemeGate()
         APP_THEME_PICK -> validateAppThemePick()
+        REFRESH_RATE -> validateRefreshRate()
         else -> validateSwitch()
     }
 }
@@ -401,6 +402,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             SECURE_CHAT -> method.injectSecureChat()
             INVISIBLE_BUTTONS -> method.injectInvisibleButtons()
             IOS_BARS -> method.injectIosBars()
+            REFRESH_RATE -> method.injectRefreshRate()
             CHAT_BAR_PLUS -> method.injectChatBarPlus()
             CALL_RECORDING -> method.injectCallRecording()
             HOME_HEADER -> method.injectHomeHeader()
@@ -944,6 +946,9 @@ val invisibleButtonsPatch = controlPatch("invisible_buttons", "Invisible buttons
 val iosBarsPatch = controlPatch("ios_bars", "Translucent chat bars",
     "The chat's top bar and message box go see-through, with the messages scrolling under them and showing through blurred, the way the bars on an iPhone do it. Needs Android 12 or newer.",
     "Theme", IOS_BARS)
+@Suppress("unused")
+val refreshRatePatch = controlPatch("refresh_rate", "Screen refresh rate",
+    "Pick the refresh rate Messenger asks your screen for.", "Theme", REFRESH_RATE)
 private var anonymousStoriesApplied = false
 
 private val anonymousStoriesResources = patch(description = "Record HushMessenger capability: anonymous_stories") {

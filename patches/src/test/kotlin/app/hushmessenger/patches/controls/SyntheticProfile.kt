@@ -204,6 +204,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     SECURE_CHAT to setOf(SYNTHETIC_CHAT_JUMP),
     INVISIBLE_BUTTONS to setOf(SYNTHETIC_CHAT_JUMP),
     IOS_BARS to setOf(SYNTHETIC_CHAT_JUMP),
+    REFRESH_RATE to setOf(SYNTHETIC_REFRESH_RATE),
     "chat_inbox" to setOf("LX/1fs;-><init>()V"),
     "chat_legacy" to setOf("LX/1hd;->onCreateAnimation(IZI)$ANIMATION"),
     "people" to setOf("LX/1pm;->A0C()Z", "LX/2Wl;->A04()Z"),

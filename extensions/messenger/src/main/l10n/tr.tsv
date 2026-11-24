@@ -253,6 +253,10 @@ facebook_keep_profile	Profil düğmesini koru
 facebook_keep_profile_help	Bir sohbetin ayrıntılar sayfasındaki Profil düğmesini ve yeni bir sohbetin üstündeki Profili gör düğmesini bırakır, böylece kişinin Facebook profilini yine açabilirsin. Diğer Facebook kısayolları gizli kalır.
 avatar_shape_rounded	Köşeleri yuvarlat
 avatar_shape_rounded_help	Karelere keskin köşeler yerine yuvarlak köşeler verir.
+refresh_rate_hz	%1$s Hz
+refresh_rate_single	Ekranın tek bir hızda çalışıyor, bu yüzden burada seçilecek bir şey yok.
+refresh_rate_picked	Messenger %1$s Hz isteyecek
+refresh_rate_help	Daha hızlısı daha akıcı kayar ve daha çok pil harcar. Yeni hız Messenger'a döndüğünde görünür.
 hidden_words_words	Gizlenecek kelimeler
 hidden_words_hint	En fazla %1$d karakter, virgülle ayrılmış
 hidden_words_help	Kelimenin tamamı eşleşmeli, bu yüzden "ok" kelimesi "okay" kelimesini gizlemez. Büyük küçük harf önemli değil.
@@ -945,3 +949,5 @@ invisible_buttons.title	Görünmez düğmeler
 invisible_buttons.description	Aşağıda seçtiğin düğmeleri görünmez ya da yarı saydam yapar ama yeri, boyutu ve yaptığı iş aynı kalır, yani dokunuş hâlâ işler. Sohbet listesinde, sohbetin içinde ve menülerde çalışır, HushMessenger'ın kendi düğmeleri de dahil. Messenger'ın sana gösterdiği her düğme, ekran okuyucunun söylediği adla listelenir, bu yüzden listeyi doldurmak için Messenger'ı biraz kullan.
 ios_bars.title	Yarı saydam sohbet çubukları
 ios_bars.description	Sohbetin üst çubuğu ve mesaj kutusu yarı saydam olur, mesajlar altlarından kayar ve bulanık görünür, iPhone'daki çubuklar gibi. Android 12 veya sonrası gerekir.
+refresh_rate.title	Ekran yenileme hızı
+refresh_rate.description	Bir Messenger ekranı her açıldığında ekrandan aşağıda seçtiğin yenileme hızını ister, örneğin pil tasarrufu için 60 Hz ya da daha akıcı kaydırma için ekranının en yüksek hızı. Telefonun yine de bunu yok sayabilir, örneğin güç tasarrufu modunda ya da kendi hareket akıcılığı ayarı hızı sınırladığında.

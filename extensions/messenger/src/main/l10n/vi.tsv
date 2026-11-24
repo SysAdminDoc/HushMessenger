@@ -253,6 +253,10 @@ facebook_keep_profile	Giữ lại nút trang cá nhân
 facebook_keep_profile_help	Giữ lại nút trang cá nhân trong trang chi tiết phòng chat và nút Xem trang cá nhân ở đầu một cuộc trò chuyện mới, cho phép bạn mở trang cá nhân Facebook của người khác. Các phím tắt Facebook khác vẫn sẽ bị ẩn.
 avatar_shape_rounded	Góc bo tròn
 avatar_shape_rounded_help	Làm cho các góc của ảnh đại diện hình vuông được bo tròn thay vì góc vuông.
+refresh_rate_hz	%1$s Hz
+refresh_rate_single	Màn hình của bạn chỉ chạy ở một tần số, nên ở đây không có gì để chọn.
+refresh_rate_picked	Messenger sẽ dùng %1$s Hz
+refresh_rate_help	Nhanh hơn thì cuộn mượt hơn và tốn pin hơn. Tần số mới có tác dụng khi bạn quay lại Messenger.
 hidden_words_words	Từ cần ẩn
 hidden_words_hint	Tối đa %1$d ký tự, cách nhau bằng dấu phẩy
 hidden_words_help	Phải khớp cả từ, nên "ok" không ẩn "okay". Chữ hoa chữ thường không quan trọng.
@@ -945,3 +949,5 @@ invisible_buttons.title	Nút vô hình
 invisible_buttons.description	Làm các nút bạn chọn bên dưới vô hình hoặc trong suốt một phần nhưng vẫn giữ nguyên vị trí, kích thước và chức năng, nên một lần nhấn vẫn trúng. Dùng được ở danh sách chat, trong đoạn chat và trong các menu, kể cả nút của HushMessenger. Mọi nút Messenger đã hiện cho bạn đều được liệt kê theo tên mà trình đọc màn hình gọi, vì vậy hãy dùng Messenger một lúc để lấp danh sách.
 ios_bars.title	Thanh chat trong mờ
 ios_bars.description	Thanh trên cùng của đoạn chat và hộp tin nhắn trở nên trong mờ, tin nhắn chạy bên dưới và hiện lên mờ qua thanh, giống các thanh trên iPhone. Cần Android 12 hoặc mới hơn.
+refresh_rate.title	Tần số quét màn hình
+refresh_rate.description	Yêu cầu màn hình dùng tần số quét bạn chọn bên dưới mỗi khi một màn hình của Messenger mở ra, chẳng hạn 60 Hz để tiết kiệm pin hoặc mức nhanh nhất màn hình làm được để cuộn mượt hơn. Điện thoại vẫn có thể bỏ qua yêu cầu này, ví dụ khi ở chế độ tiết kiệm pin hoặc khi cài đặt độ mượt chuyển động của máy giới hạn tần số.

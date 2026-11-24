@@ -4,6 +4,7 @@
 
 ### New
 
+- `Screen refresh rate` is a new switch under Theme, and it starts off. Android decides how fast Messenger's screen refreshes, and plenty of phones keep apps at 60 Hz or run them at full speed no matter what you'd rather have. Turn it on and pick a rate from the ones your screen does, slower to save battery or faster for smoother scrolling. Your phone can still say no, in power saving mode for one. Refs #208.
 - `Write longer notes` is a new switch under Inbox, and it starts off. The note box takes up to 500 characters instead of 60, and Facebook still decides whether a long note goes through. Refs #199.
 - `Show the 40-character code option` is a new switch under Privacy, and it starts off. Some accounts see `More options` in Message storage where `Generate 40-character code` used to be. With this on you get both rows, and the code row opens Messenger's own setup. Refs #197.
 - `Chat bar buttons in the + menu` is a new switch under Conversations, and it starts off. The camera, gallery and mic sit in a row beside the message box and leave it very little room. With this on, only + stays there. Those buttons move into the menu + opens, and tapping one does what it always did. Needs Android 10 or newer. Refs #198.

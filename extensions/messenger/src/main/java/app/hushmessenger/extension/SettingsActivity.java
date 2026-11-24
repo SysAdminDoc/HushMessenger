@@ -75,6 +75,7 @@ public final class SettingsActivity extends Activity {
     private final InvisibleButtonsRow invisibleButtons = new InvisibleButtonsRow(this);
     private final MenuRowsRow menuRows = new MenuRowsRow(this);
     private final CallCaptionsRow callCaptions = new CallCaptionsRow(this);
+    private final RefreshRateRow refreshRates = new RefreshRateRow(this);
     private final CallRecordingRow callRecording = new CallRecordingRow(this);
     private final SpecialContactsRow specialContacts = new SpecialContactsRow(this);
     private final QuietModeRow quietMode = new QuietModeRow(this);
@@ -150,7 +151,7 @@ public final class SettingsActivity extends Activity {
     /** The switches that take a way into these settings away, each with a reason when it can't turn on. */
     static final Set<String> WAYS_IN = Set.of("hide_menu_row", Settings.HIDE_ICON_SHORTCUTS, Settings.HIDE_LOGO_PRESS);
     /** Switches whose effect hasn't been confirmed on a phone. Each shows the Experimental badge. */
-    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", "chat_menu_items", "quiet_calls", QuietMode.KEY, "save_voice", "gallery_to_chat", PastePhoto.KEY, InstantGallery.KEY, "call_recording", "inbox_search_bar", "inbox_typing", "media_caption", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", TabSwipe.KEY, StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY, CallCaptions.KEY, TabIcons.KEY, LinkPlayer.KEY, "profile_menu_items", "chat_bar_plus", "recovery_code_row", "longer_notes");
+    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", "chat_menu_items", "quiet_calls", QuietMode.KEY, "save_voice", "gallery_to_chat", PastePhoto.KEY, InstantGallery.KEY, "call_recording", "inbox_search_bar", "inbox_typing", "media_caption", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", TabSwipe.KEY, StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY, CallCaptions.KEY, TabIcons.KEY, LinkPlayer.KEY, "profile_menu_items", "chat_bar_plus", "recovery_code_row", "longer_notes", "refresh_rate");
     static final String[][] CONTROLS = {
         {"people", "Hide People You May Know", "Hides suggested people in chats, search and stories, and on the People and Notifications tabs. Good if you only want people you know.", "inbox"},
         {"friend_requests", "Hide friend request cards", "Hides friend request cards in your chat list. It doesn't accept or decline anyone.", "inbox"},
@@ -262,6 +263,7 @@ public final class SettingsActivity extends Activity {
         {"menu_blur", "Blur behind menus", "Blurs the screen behind the menu you get when you press and hold a chat or a message, and behind Messenger's other pop-up menus and sheets, like on an iPhone. It needs Android 12 or newer.", "theme"},
         {"invisible_buttons", "Invisible buttons", "Makes buttons you pick below invisible or partly see-through while they keep their place, their size and what they do, so a tap still lands on them. Works on the chat list, inside chats and in menus, HushMessenger's own buttons included. Every button Messenger has shown you is listed by the name a screen reader says for it, so use Messenger for a bit to fill the list.", "theme"},
         {"ios_bars", "Translucent chat bars", "The chat's top bar and message box go see-through, with the messages scrolling under them and showing through blurred, the way the bars on an iPhone do it. Needs Android 12 or newer.", "theme"},
+        {"refresh_rate", "Screen refresh rate", "Asks your screen for the refresh rate you pick below every time a Messenger screen opens, like 60 Hz to save battery or the fastest your screen does for smoother scrolling. Your phone can still overrule it, for example in power saving mode or when its own motion smoothness setting caps the rate.", "theme"},
     };
 
     static final String DRAWER_ALIAS = "app.hushmessenger.extension.SettingsLauncher";
@@ -1092,6 +1094,7 @@ public final class SettingsActivity extends Activity {
                     || InvisibleButtons.KEY.equals(spec[0]) || QuietMode.KEY.equals(spec[0])
                     || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])
                     || MenuBlur.KEY.equals(spec[0]) || "hide_read_receipts".equals(spec[0]) || CallRecording.KEY.equals(spec[0])
+                    || RefreshRate.KEY.equals(spec[0])
                     || ("allow_screenshot".equals(spec[0]) && Build.VERSION.SDK_INT >= 29)) {
                 // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
@@ -1127,6 +1130,7 @@ public final class SettingsActivity extends Activity {
                 else if (ChatMenuItems.KEY.equals(spec[0])) chatMenuItems.addTo(wrapper);
                 else if (ProfileMenu.KEY.equals(spec[0])) profileMenuItems.addTo(wrapper);
                 else if (InvisibleButtons.KEY.equals(spec[0])) invisibleButtons.addTo(wrapper);
+                else if (RefreshRate.KEY.equals(spec[0])) refreshRates.addTo(wrapper);
                 else if (CallRecording.KEY.equals(spec[0])) {
                     callRecording.addScopeTo(wrapper);
                     addRecordCallChats(wrapper);

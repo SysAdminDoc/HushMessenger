@@ -358,6 +358,10 @@ final class SettingsText {
         ENGLISH.put("facebook_keep_profile_help", "Leaves the Profile button on a chat's details page and the View profile button at the top of a new chat, so you can still open the person's Facebook profile. The other Facebook shortcuts stay hidden.");
         ENGLISH.put("avatar_shape_rounded", "Round the corners");
         ENGLISH.put("avatar_shape_rounded_help", "Gives the squares rounded corners instead of sharp ones.");
+        ENGLISH.put("refresh_rate_hz", "%1$s Hz");
+        ENGLISH.put("refresh_rate_single", "Your screen runs at one rate only, so there's nothing to pick here.");
+        ENGLISH.put("refresh_rate_picked", "Messenger asks for %1$s Hz");
+        ENGLISH.put("refresh_rate_help", "Faster scrolls smoother and uses more battery. The new rate shows once you're back in Messenger.");
         ENGLISH.put("hidden_words_words", "Words to hide");
         ENGLISH.put("hidden_words_hint", "Up to %1$d characters, separated by commas");
         ENGLISH.put("hidden_words_help", "A whole word has to match, so \"ok\" doesn't hide \"okay\". Capital letters don't matter.");

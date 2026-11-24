@@ -303,6 +303,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(GALLERY_TO_CHAT).addAll(findGalleryToChat(classes))
     found.getValue(PASTE_PHOTO).addAll(findPastePhoto(classes))
     for ((hook, methods) in findCustomFont(classes)) found.getValue(hook).addAll(methods)
+    found.getValue(REFRESH_RATE).addAll(findRefreshRate(classes))
     return found
 }
 

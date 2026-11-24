@@ -253,6 +253,10 @@ facebook_keep_profile	Mantener el botón Perfil
 facebook_keep_profile_help	Deja el botón Perfil en la página de detalles de un chat y el botón Ver perfil en la parte superior de un chat nuevo, para que puedas seguir abriendo el perfil de Facebook de la persona. Los demás accesos directos de Facebook siguen ocultos.
 avatar_shape_rounded	Redondear las esquinas
 avatar_shape_rounded_help	Da a los cuadrados esquinas redondeadas en lugar de rectas.
+refresh_rate_hz	%1$s Hz
+refresh_rate_single	Tu pantalla funciona a una sola frecuencia, así que aquí no hay nada que elegir.
+refresh_rate_picked	Messenger pedirá %1$s Hz
+refresh_rate_help	Más rápida se desplaza con más fluidez y gasta más batería. La nueva frecuencia se nota al volver a Messenger.
 hidden_words_words	Palabras que ocultar
 hidden_words_hint	Hasta %1$d caracteres, separadas por comas
 hidden_words_help	Tiene que coincidir la palabra completa, así que "ok" no oculta "okay". Las mayúsculas no importan.
@@ -945,3 +949,5 @@ invisible_buttons.title	Botones invisibles
 invisible_buttons.description	Vuelve invisibles, o medio transparentes, los botones que elijas abajo, pero conservan su lugar, su tamaño y lo que hacen, así que un toque sigue llegando. Funciona en la lista de chats, dentro de un chat y en los menús, también con los botones de HushMessenger. Cada botón que Messenger te ha mostrado aparece con el nombre que dice un lector de pantalla, así que usa Messenger un rato para llenar la lista.
 ios_bars.title	Barras del chat translúcidas
 ios_bars.description	La barra de arriba del chat y la caja de mensajes se vuelven translúcidas, con los mensajes pasando por debajo y asomando borrosos, como lo hacen las barras de un iPhone. Necesita Android 12 o posterior.
+refresh_rate.title	Frecuencia de actualización de la pantalla
+refresh_rate.description	Pide a la pantalla la frecuencia de actualización que elijas abajo cada vez que se abre una pantalla de Messenger, como 60 Hz para ahorrar batería o la más rápida de tu pantalla para un desplazamiento más fluido. El teléfono aún puede ignorarla, por ejemplo en modo de ahorro de energía o cuando su propio ajuste de fluidez de movimiento limita la frecuencia.
