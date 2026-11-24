@@ -36,6 +36,7 @@
 
 ### Changed and fixed
 
+- `Use system emoji` sits under Theme now and `Android Auto messages` under Notifications, in the settings and in Morphe's patch list. Conversations had grown long enough to need scrolling, and those two were always more about how Messenger looks and where your messages get read out than about the chat itself.
 - The message log looks like Messenger's own chats now. It used to open on the settings page's pure black with boxed cards. Now it has Messenger's softer greys, or white in light mode, grey message bubbles, a rounded search field and a chat list with each chat's newest message under its name. Every chat gets a round picture, taken from the ones chat notifications already carry, locked with the log's key and cleared along with the chat. It follows Material You and the pure black switch when you have those on. Refs #200.
 - `Auto reply` answers Marketplace chats now. Messenger files a Marketplace conversation under a chat type of its own instead of the one-to-one type, so auto reply took every buyer and seller for a group and stayed quiet unless `Answer in group chats too` was on. The message log's Direct filter shows those chats now too, since there's only ever one other person in them. Refs #227.
 - TalkBack stops treating the help lines and dividers in `Quick setups` as buttons. Each one was set up to catch a press and hold, so a screen reader stopped on every line and on unnamed, one pixel tall dividers. A press and hold anywhere on the section still hides it.
