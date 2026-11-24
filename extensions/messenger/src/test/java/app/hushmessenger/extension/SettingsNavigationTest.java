@@ -351,6 +351,25 @@ public class SettingsNavigationTest {
         }
     }
 
+    // #228: Bulgarian's word for Open is twice as long, and the button's fixed width broke it over two lines.
+    @Test @Config(sdk = 36) @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void openStaysOnOneLineInEveryLanguage() {
+        for (String language : new String[] {"en", "bg", "es", "th", "tr", "vi", "zh-rTW"}) {
+            RuntimeEnvironment.setQualifiers(language + "-w411dp-h891dp-xxhdpi");
+            try (var screen = Robolectric.buildActivity(SettingsActivity.class).setup()) {
+                View root = screen.get().getWindow().getDecorView();
+                root.measure(View.MeasureSpec.makeMeasureSpec(411 * 3, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(891 * 3, View.MeasureSpec.EXACTLY));
+                root.layout(0, 0, 411 * 3, 891 * 3);
+                TextView open = root.findViewWithTag("open_messenger");
+                java.util.Locale locale = java.util.Locale.forLanguageTag(language.replace("-r", "-"));
+                assertEquals(language, new SettingsText(locale).get("open"), open.getText().toString());
+                assertEquals(language + " wraps " + open.getText(), 1, open.getLineCount());
+                assertTrue(language + " leaves the title no room", open.getWidth() < 411 * 3 / 3);
+            }
+        }
+    }
+
     // #157: on a 411 dp phone at a 1.15 font scale, Put gallery picks in the chat left its badge a sliver and
     // Experimental wrapped two letters per line into a tall empty bar beside the title.
     @Test @Config(sdk = 36) @GraphicsMode(GraphicsMode.Mode.NATIVE)

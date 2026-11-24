@@ -791,7 +791,14 @@ public final class SettingsActivity extends Activity {
         open.setBackground(new android.graphics.drawable.InsetDrawable(ui.interactive(ui.background, ui.accent, 12), 0, ui.dp(6), 0, ui.dp(6)));
         open.setPadding(ui.dp(12), ui.dp(6), ui.dp(12), ui.dp(6));
         open.setOnClickListener(view -> openMessenger());
-        LinearLayout.LayoutParams openParams = new LinearLayout.LayoutParams(ui.largeText ? -2 : ui.dp(68), -2);
+        // As wide as its word, and never under the width English gets: a longer word (Bulgarian's) widens the button
+        // rather than breaking in two.
+        open.setMaxLines(1);
+        if (!ui.largeText) {
+            open.setMinWidth(ui.dp(68));
+            open.setMinimumWidth(ui.dp(68));
+        }
+        LinearLayout.LayoutParams openParams = new LinearLayout.LayoutParams(-2, -2);
         // Large text stacks Open under the bar, on the page's line rather than the bar's.
         openParams.setMarginStart(ui.dp(12));
         openParams.topMargin = ui.dp(ui.largeText ? 8 : 0);
