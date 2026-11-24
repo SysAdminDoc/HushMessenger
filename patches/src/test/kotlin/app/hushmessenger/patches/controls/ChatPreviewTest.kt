@@ -133,8 +133,8 @@ class ChatPreviewTest {
 
     @Test fun eachMappingHooksItsOwnHandler() {
         assertEquals(setOf(SYNTHETIC_CHAT_PREVIEW), SYNTHETIC_PROFILE.hooks.getValue(CHAT_PREVIEW))
-        assertEquals(setOf("LX/37H;->A05(LX/37H;I)Ljava/lang/Object;", "LX/37M;->A00(ILjava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
-            "LX/37S;->A07(ILjava/lang/Object;)Ljava/lang/Object;"), BASE_PROFILE.hooks.getValue(CHAT_PREVIEW))
+        assertEquals(setOf("LX/3Aq;->A02(LX/1Dr;LX/3Aq;)Ljava/lang/Object;", "LX/3Au;->A00(ILjava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+            "LX/3B1;->A07(ILjava/lang/Object;)Ljava/lang/Object;"), BASE_PROFILE.hooks.getValue(CHAT_PREVIEW))
     }
 
     // The switch says a long press opens the preview. Readers that ask other questions, or ask these some other way,

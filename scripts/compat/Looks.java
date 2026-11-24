@@ -55,11 +55,11 @@ import static compat.Drawer.*;
 /** Looks: the tab bar, avatar shape and story rings. */
 final class Looks {
 
-    // 587's numbering (586 read 0x0101055400014313 and 0x0101039400033264).
-    static final long FLOATING_TAB_BAR_FLAG = 0x0101055600014560L;
-    static final long CHATS_SCROLL_AWAY_FLAG = 0x0101039000033352L;
+    // 588's numbering (587 read 0x0101055600014560, 0x0101039000033352 and 0x0101039000003351).
+    static final long FLOATING_TAB_BAR_FLAG = 0x010105590001470eL;
+    static final long CHATS_SCROLL_AWAY_FLAG = 0x01010390000333f8L;
     // The Chats page's slide answer, which the bar's frame asks before a scroll may move the bar at all.
-    static final long CHATS_SLIDE_FLAG = 0x0101039000003351L;
+    static final long CHATS_SLIDE_FLAG = 0x01010390000033f7L;
     static final String FUNCTION0 = "Lkotlin/jvm/functions/Function0;";
     static final List<String> TAB_BAR_BUILDER_PARAMETERS =
         List.of("Landroid/content/Context;", "Lcom/facebook/auth/usersession/FbUserSession;", "Z");

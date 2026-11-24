@@ -184,8 +184,14 @@ final class Controls {
             boolean candidate = (EPHEMERAL_VIEWER.equals(cls.getType()) && (EPHEMERAL_DIALOGS.contains(method.getName()) || "onResume".equals(method.getName()))) ||
                 (QUICKSNAP_VIEWER.equals(cls.getType()) && "onCreateView".equals(method.getName()));
             if (!candidate) continue;
-            if (screenshotViewerSites(method).isEmpty()) changedViewer = true;
-            else found.get("screenshot_viewers").add(method);
+            // 588's Quicksnap viewer hands its window to a helper, whose addFlags is the site.
+            String helperId = QUICKSNAP_VIEWER.equals(cls.getType()) ? quicksnapSecureHelper(method) : null;
+            Method helper = null;
+            if (helperId != null) for (var owner : classes) if (owner.getType().equals(helperId.substring(0, helperId.indexOf("->"))))
+                for (var m : owner.getMethods()) if (hookId(m).equals(helperId)) helper = m;
+            var viewer = helperId != null ? helper : method;
+            if (viewer == null || screenshotViewerSites(viewer).isEmpty()) changedViewer = true;
+            else found.get("screenshot_viewers").add(viewer);
         }
         if (changedViewer) found.get("screenshot_viewers").clear();
         var jewelCandidates = new ArrayList<Map.Entry<Method, Set<String>>>();

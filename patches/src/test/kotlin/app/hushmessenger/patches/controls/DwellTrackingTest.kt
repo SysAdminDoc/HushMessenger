@@ -74,7 +74,7 @@ class DwellTrackingTest {
     }
 
     @Test fun everyProfileHooksTheReport() {
-        assertEquals(setOf("LX/S5K;->A02(LX/S5K;Ljava/lang/String;J)V"), BASE_PROFILE.hooks.getValue(DWELL_TRACKING))
+        assertEquals(setOf("LX/ekt;->A02(LX/ekt;Ljava/lang/String;J)V"), BASE_PROFILE.hooks.getValue(DWELL_TRACKING))
         assertEquals(setOf(SYNTHETIC_DWELL_REPORT), SYNTHETIC_PROFILE.hooks.getValue(DWELL_TRACKING))
         for ((code, profile) in controlProfiles) {
             assertEquals(1, profile.hooks.getValue(DWELL_TRACKING).size, code.toString())

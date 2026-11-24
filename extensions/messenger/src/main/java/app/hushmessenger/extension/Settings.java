@@ -270,6 +270,21 @@ public final class Settings {
     }
 
     /**
+     * 588's @ list renders ask a server flag before they build the imagine yourself row, and skip the row on no. They
+     * ask this with that answer (non-zero for yes) first, so with the switch on the row isn't built, as for an account
+     * without the feature.
+     */
+    public static boolean metaAiRowShown(int shown) {
+        if (shown == 0) return false;
+        try {
+            return !hideMetaAi();
+        } catch (RuntimeException error) {
+            hookFailed("meta_ai", "Can't hide Meta AI in @ suggestions", error);
+            return true;
+        }
+    }
+
+    /**
      * The inbox search bar, and the search screen it opens, read "Ask Meta AI or search" when Messenger's Meta AI search
      * check is true. With the switch on the check reads false, the answer accounts without Meta AI in search get, so both
      * boxes show the plain hint.

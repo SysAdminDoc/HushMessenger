@@ -76,14 +76,14 @@ public class CompatReport {
         + "PeopleTabPYMKHandler$fetchPymkSuggestions$$inlined$CoroutineExceptionHandler$1;";
     static final String PEOPLE_JEWEL_KEY = "pymk_jewel_section_hidden";
     static final String STORY_CARD_DATE_KEY = "last_date_creation_card_shown";
-    // The Notifications tab's server flag ID as 587 numbers it (586 read 72344145666062935). Meta renumbers it with each release.
-    static final long PEOPLE_SERVER_FLAG = 72344137076128710L;
-    // The redesigned emoji drawer's server flag as 587 numbers it (586 read 36320416708509435). Meta renumbers it with each release.
-    static final long EMOJI_DRAWER_FLAG = 36320360873934571L;
+    // The Notifications tab's server flag ID as 588 numbers it (587 read 72344137076128710). Meta renumbers it with each release.
+    static final long PEOPLE_SERVER_FLAG = 72344141371096311L;
+    // The redesigned emoji drawer's server flag as 588 numbers it (587 read 36320360873934571). Meta renumbers it with each release.
+    static final long EMOJI_DRAWER_FLAG = 36320322219228945L;
     // The drawer renderer throws this when the redesign can't draw, which ties the flag to the emoji drawer
     static final String EMOJI_DRAWER_ANCHOR = "Cannot render redesigned drawer with search icon ";
-    // The server test that swaps the chat list's search bar for a top bar icon, as 587 numbers it (586 read 0x810b0200004674). Meta renumbers it with each release.
-    static final long SEARCH_ICON_FLAG = 0x810af1000046adL;
+    // The server test that swaps the chat list's search bar for a top bar icon, as 588 numbers it (587 read 0x810af1000046ad). Meta renumbers it with each release.
+    static final long SEARCH_ICON_FLAG = 0x810ae70000471bL;
     // Only the method that builds the top bar's search icon names this class, which ties the flag to the search bar
     static final String SEARCH_ICON_ANCHOR = "com.facebook.messaging.search.plugins.toolbarbutton.searchbutton.InboxSearchToolbarButtonImplementation";
     // Controls whose hook count follows how Redex inlined one flag read, so it differs between releases and between
@@ -444,16 +444,18 @@ public class CompatReport {
 
     /**
      * True when a method copies a list into a fresh ImmutableList.Builder exactly once, through one static
-     * (Builder, Iterable) -> ImmutableList call straight after ImmutableList.builder() on that builder, and no branch,
-     * switch case or catch lands on the copy, since the patch's hook goes just before it. Mirrors
-     * validateKeyboardTabsInline in ControlHooks.kt.
+     * (Builder, Iterable) -> ImmutableList call or (588) the builder's own addAll(Iterable), straight after
+     * ImmutableList.builder() on that builder, and no branch, switch case or catch lands on the copy, since the patch's
+     * hook goes just before it. Mirrors validateKeyboardTabsInline in ControlHooks.kt.
      */
     static boolean keyboardTabCopy(Method method) {
         String builder = "Lcom/google/common/collect/ImmutableList$Builder;";
+        String addAll = builder + "->addAll(Ljava/lang/Iterable;)" + builder;
         var c = instructions(method); var copies = new ArrayList<Integer>();
-        for (int i = 0; i < c.size(); i++) if (c.get(i).getOpcode() == Opcode.INVOKE_STATIC && c.get(i) instanceof ReferenceInstruction r &&
-            r.getReference() instanceof MethodReference m && IMMUTABLE_LIST.equals(m.getReturnType()) &&
-            m.getParameterTypes().stream().map(Object::toString).toList().equals(List.of(builder, "Ljava/lang/Iterable;"))) copies.add(i);
+        for (int i = 0; i < c.size(); i++) if (c.get(i) instanceof ReferenceInstruction r && r.getReference() instanceof MethodReference m &&
+            ((c.get(i).getOpcode() == Opcode.INVOKE_STATIC && IMMUTABLE_LIST.equals(m.getReturnType()) &&
+                m.getParameterTypes().stream().map(Object::toString).toList().equals(List.of(builder, "Ljava/lang/Iterable;"))) ||
+             (c.get(i).getOpcode() == Opcode.INVOKE_VIRTUAL && addAll.equals(m.toString())))) copies.add(i);
         if (copies.size() != 1) return false;
         int at = copies.get(0);
         if (at < 2 || mediaTargets(method).contains(at)) return false;
@@ -1414,11 +1416,14 @@ public class CompatReport {
         return parameters.size() == 1 && "Landroid/content/Context;".equals(parameters.get(0).toString());
     }
 
-    /** MaterialYouPatch.kt's isFdsColorsShape: the only field is a static instance of the class, with (Context, ?, ?)I methods asking a (Context)Z. */
+    /**
+     * MaterialYouPatch.kt's isFdsColorsShape: no fields (588's LX/APm;) or only a static instance of the class, with
+     * (Context, ?, ?)I methods asking a (Context)Z.
+     */
     static boolean isFdsColorsShape(ClassDef cls) {
         var fields = new ArrayList<Field>();
         for (Field f : cls.getFields()) fields.add(f);
-        if (fields.size() != 1 || !fields.get(0).getType().equals(cls.getType()) || !AccessFlags.STATIC.isSet(fields.get(0).getAccessFlags())) return false;
+        if (!fields.isEmpty() && (fields.size() != 1 || !fields.get(0).getType().equals(cls.getType()) || !AccessFlags.STATIC.isSet(fields.get(0).getAccessFlags()))) return false;
         for (Method m : cls.getMethods()) {
             if (!"I".equals(m.getReturnType()) || m.getParameterTypes().size() != 3 || !"Landroid/content/Context;".equals(m.getParameterTypes().get(0).toString())) continue;
             if (instructions(m).stream().anyMatch(i -> i instanceof ReferenceInstruction ri && ri.getReference() instanceof MethodReference mr &&

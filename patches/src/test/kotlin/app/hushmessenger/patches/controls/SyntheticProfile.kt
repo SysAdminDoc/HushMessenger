@@ -27,7 +27,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     FACEBOOK_PROFILE_HEADER to setOf(SYNTHETIC_PROFILE_HEADER),
     "ai_menu" to setOf("LX/HFe;->A00()Z", "LX/HFe;->A01()Z", "LX/Jiu;->A00()Z", "LX/Jiu;->A01()Z"),
     "ai_fab" to setOf("LX/6k8;->render(LX/2MZ;)LX/1GG;"),
-    "ai_sticker_cell" to setOf("LX/GEu;->render(LX/27r;)LX/1F6;"),
+    "ai_sticker_cell" to setOf("LX/LtJ;->render(LX/2Gk;)LX/1Jx;"),
     "ai_sticker_grid" to setOf("LX/CZ2;->render(LX/2ED;)LX/1IG;"),
     "subtabs" to setOf("LX/2UL;->run()V"),
     "typing" to setOf("LX/Ahp;->run()V"),

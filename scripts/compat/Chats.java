@@ -480,8 +480,8 @@ final class Chats {
     }
 
     static final String CHAT_PREVIEW_FRAGMENT = "Lcom/facebook/messaging/threadlist/threaditemmenu/preview/InboxThreadPreviewDialogFragment;";
-    static final long CHAT_PREVIEW_FLAG = 0x1010536000042fdL;
-    static final long CHAT_PREVIEW_ENCRYPTED_FLAG = 0x101055e00004588L;
+    static final long CHAT_PREVIEW_FLAG = 0x10105370000448dL;
+    static final long CHAT_PREVIEW_ENCRYPTED_FLAG = 0x10105610000473bL;
 
     static boolean buildsChatPreview(Method method) {
         for (var i : instructions(method))
@@ -565,7 +565,7 @@ final class Chats {
         return encrypted > 0 ? found : List.of();
     }
 
-    static final long INBOX_TYPING_FLAG = 0x010100eb0000136fL;
+    static final long INBOX_TYPING_FLAG = 0x010100eb000013b5L;
     static final String INBOX_TYPING_CONFIG = "Lcom/facebook/mobileconfig/factory/MobileConfigUnsafeContext;";
 
     /** Where one method loads the inbox-typing flag. */
@@ -716,7 +716,7 @@ final class Chats {
     }
 
     static final String FB_FRAGMENT_ACTIVITY = "Lcom/facebook/base/activity/FbFragmentActivity;";
-    static final long LANDSCAPE_FLAG = 0x8105e800002b9eL;
+    static final long LANDSCAPE_FLAG = 0x8105df00002bb0L;
     static final String MEDIA_ORIENTATION_OPTION = "allowOrientationChanges";
 
     /**

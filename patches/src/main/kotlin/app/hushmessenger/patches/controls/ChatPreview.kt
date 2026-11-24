@@ -22,11 +22,11 @@ internal const val CHAT_PREVIEW = "chat_preview"
 
 internal const val CHAT_PREVIEW_FRAGMENT = "Lcom/facebook/messaging/threadlist/threaditemmenu/preview/InboxThreadPreviewDialogFragment;"
 
-/** Meta's server flag for the preview, as 587 numbers it (586 read 0x1010535000040de). */
-internal const val CHAT_PREVIEW_FLAG = 0x1010536000042fdL
+/** Meta's server flag for the preview, as 588 numbers it (587 read 0x1010536000042fd). */
+internal const val CHAT_PREVIEW_FLAG = 0x10105370000448dL
 
-/** The second flag the long-press handler asks for end-to-end encrypted chats, as 587 numbers it (586 read 0x101055b0000432f). */
-internal const val CHAT_PREVIEW_ENCRYPTED_FLAG = 0x101055e00004588L
+/** The second flag the long-press handler asks for end-to-end encrypted chats, as 588 numbers it (587 read 0x101055e00004588). */
+internal const val CHAT_PREVIEW_ENCRYPTED_FLAG = 0x10105610000473bL
 
 internal const val CHAT_PREVIEW_HELPER = "$SETTINGS->chatPreview(Z)Z"
 

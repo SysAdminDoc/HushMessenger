@@ -251,7 +251,7 @@ final class Extras {
         return List.of(method);
     }
 
-    static final long CAR_EXTENSION_FLAG = 0x0081027600011849L;
+    static final long CAR_EXTENSION_FLAG = 0x0081026b0001184aL;
     static final String CAR_EXTENSION_STEP = "add_android_auto_extension";
 
     /**
