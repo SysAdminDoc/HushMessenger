@@ -232,14 +232,14 @@ public class ChatJumpTest {
 
     /** Messenger's list as the window sees it: [older] pages above, a page more each time it's pulled. */
     public static final class Messages extends RecyclerView {
-        int older = 3, rows = 20, pulls, moved;
+        int older = 3, newer, rows = 20, pulls, moved;
 
         public Messages(Context context) {
             super(context);
         }
 
         @Override public boolean canScrollVertically(int direction) {
-            return direction < 0 && older > 0;
+            return direction < 0 ? older > 0 : newer > 0;
         }
 
         @Override public void scrollBy(int x, int y) {
@@ -589,11 +589,30 @@ public class ChatJumpTest {
         return on.button;
     }
 
+    /** The list moved up off the newest messages, as the window's own observer reports it. */
+    private void scrolledUp() {
+        list.newer = 1;
+        ChatJump.arrowOn(chat).onScrollChanged();
+    }
+
+    /** #177: at the newest messages the arrow only covers the chat, so it waits for a scroll up. */
+    @Test public void theArrowWaitsUntilYouveScrolledUp() {
+        on(true);
+        openChat();
+        assertEquals(View.GONE, arrow().getVisibility());
+        scrolledUp();
+        assertEquals(View.VISIBLE, arrow().getVisibility());
+        list.newer = 0;
+        ChatJump.arrowOn(chat).onScrollChanged();
+        assertEquals(View.GONE, arrow().getVisibility());
+    }
+
     /** #177: the long press on the chat's name is easy to miss, so the arrow makes the same jump with one tap. */
     @Test public void theArrowGoesToTheFirstMessage() {
         on(true);
         openChat();
         list.older = 1000;
+        scrolledUp();
         ImageView arrow = arrow();
         assertSame(content(), arrow.getParent());
         assertEquals(View.VISIBLE, arrow.getVisibility());
@@ -617,6 +636,7 @@ public class ChatJumpTest {
     @Test public void theArrowStaysOffWithNothingOlderToGoTo() {
         on(true);
         openChat();
+        scrolledUp();
         assertEquals(View.VISIBLE, arrow().getVisibility());
         list.older = 0;
         // What the window's own observer calls as the list scrolls.
@@ -628,6 +648,7 @@ public class ChatJumpTest {
         on(true);
         openChat();
         list.older = 1000;
+        scrolledUp();
         arrow().performClick();
         assertNotNull(ChatJump.running);
         assertEquals(View.GONE, arrow().getVisibility());
@@ -641,6 +662,7 @@ public class ChatJumpTest {
         on(true);
         openChat();
         list.older = 1000;
+        scrolledUp();
         ImageView arrow = arrow();
         assertEquals(View.VISIBLE, arrow.getVisibility());
 
@@ -666,6 +688,7 @@ public class ChatJumpTest {
         openChat();
         long when = ChatJump.midnight(2025, 2, 14) + 9 * 3_600_000L;
         View date = dateRow(when, 80, 120);
+        scrolledUp();
         ImageView arrow = arrow();
         int[] row = new int[2], host = new int[2];
         date.getLocationOnScreen(row);
