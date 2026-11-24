@@ -201,6 +201,7 @@ hook mark_read_bar LX/AJ7;->A03(Landroid/content/Context;LX/0XS;Lcom/facebook/au
 hook mark_read_click LX/CeK;->onClick(Landroid/view/View;)V
 hook media_caption LX/4D7;->A0L(LX/4D7;)V
 hook menu_blur LX/0AL;->onStart()V
+hook menu_blur Lcom/facebook/xapp/messaging/reactions/sendbar/fragment/ReactionsBarFragment;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook menu_settings LX/8x0;->A1j()V
 hook menu_settings LX/HUo;->BYt(LX/0Ly;)Ljava/util/ArrayList;
 hook menu_settings LX/HWE;->onClick(Landroid/view/View;)V
