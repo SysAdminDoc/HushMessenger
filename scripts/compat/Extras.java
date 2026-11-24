@@ -727,4 +727,98 @@ final class Extras {
         return found.size() == 1 ? found : List.of();
     }
 
+    private static final String SEARCH_LIST = "Lcom/google/common/collect/ImmutableList;";
+    private static final String THREAD_LAUNCHER_SPEC = "messaging.navigation.threadviewlauncher.ThreadViewLauncherSpec";
+
+    private static List<String> searchTypes(Method m) {
+        return m.getParameterTypes().stream().map(Object::toString).toList();
+    }
+
+    /** The register holding parameter index (0 is the first after this), or -1. Mirrors argumentRegister in SearchSections.kt. */
+    private static int searchParameter(Method m, int index) {
+        if (m.getImplementation() == null) return -1;
+        var types = searchTypes(m);
+        int words = 0, before = 0;
+        for (int n = 0; n < types.size(); n++) {
+            int size = "J".equals(types.get(n)) || "D".equals(types.get(n)) ? 2 : 1;
+            words += size;
+            if (n < index) before += size;
+        }
+        int self = AccessFlags.STATIC.isSet(m.getAccessFlags()) ? 0 : 1;
+        int first = m.getImplementation().getRegisterCount() - words - self;
+        return first < 0 ? -1 : first + self + before;
+    }
+
+    /** Mirrors searchSectionsList in SearchSections.kt. */
+    private static boolean isSearchResultConstructor(Method m) {
+        return "<init>".equals(m.getName()) && !AccessFlags.STATIC.isSet(m.getAccessFlags()) && "V".equals(m.getReturnType())
+            && searchTypes(m).equals(List.of(SEARCH_LIST, "Ljava/lang/Integer;", "I")) && m.getImplementation() != null
+            && !mediaTargets(m).contains(0) && searchParameter(m, 0) >= 0;
+    }
+
+    /** Mirrors searchItemsSite in SearchSections.kt. */
+    private static boolean isSearchSectionConstructor(Method m, String type) {
+        if (!"<init>".equals(m.getName()) || AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"V".equals(m.getReturnType())) return false;
+        if (!searchTypes(m).equals(List.of(type, SEARCH_LIST, "Lcom/google/common/collect/ImmutableMap;", "Ljava/lang/Integer;",
+            "Ljava/lang/String;", "Z"))) return false;
+        if (m.getImplementation() == null || mediaTargets(m).contains(0)) return false;
+        int first = searchParameter(m, 0);
+        return first >= 0 && searchParameter(m, 1) == first + 1;
+    }
+
+    /** Mirrors aiChatOpenParams in SearchSections.kt. */
+    private static boolean isAiChatLauncher(Method m) {
+        if (AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"Z".equals(m.getReturnType()) || m.getImplementation() == null) return false;
+        var types = searchTypes(m);
+        if (types.size() != 4 || !"Landroid/content/Context;".equals(types.get(0)) || !"Lcom/facebook/auth/usersession/FbUserSession;".equals(types.get(2))
+            || !"Lcom/facebook/messaging/threadview/params/ThreadViewParams;".equals(types.get(3))) return false;
+        return searchParameter(m, 0) - 1 >= 1 && !mediaTargets(m).contains(0);
+    }
+
+    /** search_sections: the result constructor of the class the people search source returns. Mirrors findSearchSections. */
+    static List<Method> searchSections(List<ClassDef> classes) {
+        var results = new LinkedHashSet<String>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || !method.getReturnType().startsWith("L") || method.getImplementation() == null) continue;
+            var strings = stringsOf(method);
+            if (strings.contains("PeopleYouMayKnowSectionDataSource") && strings.contains("Failed to load people you may know")) results.add(method.getReturnType());
+        }
+        if (results.size() != 1) return List.of();
+        String result = results.iterator().next();
+        for (var cls : classes) {
+            if (!cls.getType().equals(result)) continue;
+            var found = new ArrayList<Method>();
+            for (var method : cls.getMethods()) if (isSearchResultConstructor(method)) found.add(method);
+            return found.size() == 1 ? found : List.of();
+        }
+        return List.of();
+    }
+
+    /** search_items: the section constructor that takes the enum of section types first. Mirrors findSearchItems. */
+    static List<Method> searchItems(List<ClassDef> classes) {
+        var enums = new ArrayList<String>();
+        for (var cls : classes) {
+            if (!"Ljava/lang/Enum;".equals(cls.getSuperclass())) continue;
+            for (var method : cls.getMethods())
+                if ("<clinit>".equals(method.getName()) && method.getImplementation() != null && stringsOf(method).contains("NULL_STATE_AI_BOTS")) {
+                    enums.add(cls.getType());
+                    break;
+                }
+        }
+        if (enums.size() != 1) return List.of();
+        var found = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) if (isSearchSectionConstructor(method, enums.get(0))) found.add(method);
+        return found.size() == 1 ? found : List.of();
+    }
+
+    /** ai_chat_open: the chat launcher that names its own spec. Mirrors findAiChatOpen. */
+    static List<Method> aiChatOpen(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (!isAiChatLauncher(method)) continue;
+            if (stringsOf(method).contains(THREAD_LAUNCHER_SPEC)) found.add(method);
+        }
+        return found.size() == 1 ? found : List.of();
+    }
+
 }

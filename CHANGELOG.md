@@ -4,6 +4,9 @@
 
 ### New
 
+- `Hide Suggested in search` and `Hide recent reels in search` are new switches under Inbox, and both start off. Tap the search bar and, before you type a thing, Messenger fills the screen with people it suggests and the reels you watched lately. Turn these on and those sections are gone, so search opens empty and waits for you. Anyone you search for by name still comes up. Refs #207.
+- `Hide Meta AI` reaches into search now. Meta AI's own sections are gone from search, and so are Meta AI and the other AI bots when you type their name, which used to be the way back into a chat with one. Refs #204.
+- `Block Meta AI chats` is a new switch under Navigation, and it starts off. Hiding Meta AI took its buttons away, but a chat with it could still open from a link someone sent you or an old chat in your list. With this on, a chat with Meta AI or another AI bot doesn't open at all, and a short message says why. A group chat with an AI in it still opens, since there are people in there too. Refs #204.
 - `Thin story rings` is a new switch under Theme, and it starts off. The colored ring around someone's picture when they have a story is thick enough to crowd a small picture. With this on it's drawn at half the width in the same spot, and square profile pictures get the thinner ring too. Refs #215.
 - The Material You theme takes color codes now. Under the accent swatches there's a field for the accent and one for the background. Type codes like #E1306C, tap `Use these colors`, and Material You uses them in dark and light mode. Leave one empty and Messenger keeps its own color there. Refs #211.
 - Material You themes save to a file now. `Save theme to a file` writes the theme in use as a small .json file wherever you pick, named after the theme, and `Open a theme file` brings one back with Undo, the same as `Use copied theme`. So a theme you made can live in your Downloads or go to a friend without the clipboard. Refs #115.

@@ -384,6 +384,7 @@ theme_file_save_failed	Tema dosyası kaydedilemedi. Başka bir klasör dene.
 theme_file_no_picker	Bu telefonda bunun için bir dosya seçici yok.
 theme_file_unreadable	Bu dosya açılamadı. Tekrar dene.
 theme_file_invalid	Bu dosya bir tema değil. Renklerin değişmedi.
+ai_chat_blocked	Meta AI sohbetleri HushMessenger ayarlarında engellendi.
 theme_cleared	Duvar kağıdı renklerine dönüldü
 theme_change	tema değişikliği
 theme_file_help	Tema, {"name": "Gün batımı", "accent": "#E1306C", "neutral": "#1A1418", "pure_black": true} gibi kısa bir metindir. accent Messenger'ın mavilerini, neutral ise grilerini renklendirir. İkisi de Messenger'ın kendi parlaklığını korur, böylece metin kolay okunur. 'Temayı kopyala', kullanılan renkleri düzenlemen veya paylaşman için sana verir. Temayı dosyaya kaydet onu bir .json dosyası olarak saklar, Tema dosyası aç ise birini kullanır.
@@ -764,6 +765,10 @@ inbox_typing.title	Sohbet listende yazıyor bilgisi
 inbox_typing.description	Karşıdaki kişi yazarken, listendeki sohbetin son mesajının üzerine yazıyor bilgisini koyar, bunu yalnızca sohbete girdiğinde göstermek yerine. Messenger bunu zaten taşıyor ve Meta'nın sunucusu kapalı tutuyor. Başlaması için Messenger'ı yeniden başlat.
 inbox_search_bar.title	Arama çubuğunu koru
 inbox_search_bar.description	Messenger arama çubuğunu bir arama simgesiyle değiştirdiyse sohbet listenin üstündeki arama çubuğunu geri getirir. Değişikliği görmek için Messenger'ı yeniden başlat. Simge sende hiç çıkmadıysa hiçbir şey değişmez.
+search_suggested.title	Aramada Önerilenleri gizle
+search_suggested.description	Bir şey yazmadan önce aramanın üstünde çıkan önerilen kişileri gizler. Kişiler, onları aradığında yine çıkar.
+search_reels.title	Aramada son reels'leri gizle
+search_reels.description	Bir şey yazmadan önce son izlediğin reels'leri aramadan gizler.
 longer_notes.title	Daha uzun notlar yaz
 longer_notes.description	Notlara 60 yerine en fazla 500 karakter yazmanı sağlar. Uzun bir notun yayınlanıp yayınlanmayacağına Facebook karar verir.
 chat_preview.title	Uzun basınca sohbet önizlemesi
@@ -786,6 +791,8 @@ facebook.title	Facebook kısayollarını gizle
 facebook.description	Facebook düğmelerini, profil ve paylaşım kısayollarını ve Menü sekmesindeki Meta'dan diğerleri ile Abonelikler bölümlerini gizler. Yalnızca Messenger kullanıyorsan işine yarar.
 meta_ai.title	Meta AI'ı gizle
 meta_ai.description	Meta AI'ın yüzen düğmesini, araç çubuğu düğmesini, sekmesini ve menü girişlerini, aramadaki ve @ önerilerindeki yapay zekayı ve bir sohbetin okunmamış mesajlarını özetleme teklifini gizler. Sekmenin kaybolduğunu görmek için Messenger'ı yeniden başlat.
+ai_chat_block.title	Meta AI sohbetlerini engelle
+ai_chat_block.description	Meta AI ve diğer yapay zekâ botlarıyla sohbetlerin aramadan, bir bağlantıdan veya sohbet listenden açılmasını engeller. İçinde yapay zekâ olan bir grup yine açılır.
 moments.title	Sohbet Anlarını gizle
 moments.description	Menüdeki Sohbet Anlarını gizler.
 reels_badge.title	Reels rozetini gizle

@@ -384,6 +384,7 @@ theme_file_save_failed	No se pudo guardar el archivo de tema. Prueba otra carpet
 theme_file_no_picker	Este teléfono no tiene un selector de archivos para eso.
 theme_file_unreadable	No se pudo abrir ese archivo. Inténtalo de nuevo.
 theme_file_invalid	Ese archivo no es un tema. Tus colores no cambiaron.
+ai_chat_blocked	Los chats de Meta AI están bloqueados en los ajustes de HushMessenger.
 theme_cleared	De vuelta a los colores de tu fondo de pantalla
 theme_change	el cambio de tema
 theme_file_help	Un tema es un texto breve como {"name": "Sunset", "accent": "#E1306C", "neutral": "#1A1418", "pure_black": true}. El valor accent tiñe los azules de Messenger y neutral tiñe sus grises. Los dos mantienen el brillo propio de Messenger, así que el texto sigue siendo fácil de leer. Copiar tema te da los colores en uso para editarlos o compartirlos. Guardar tema en un archivo lo guarda como archivo .json, y Abrir un archivo de tema usa uno.
@@ -764,6 +765,10 @@ inbox_typing.title	Escribiendo en tu lista de chats
 inbox_typing.description	Pone «escribiendo» sobre el último mensaje de un chat de tu lista mientras la otra persona escribe, en vez de mostrarlo solo cuando ya estás dentro del chat. Messenger ya lo trae y el servidor de Meta lo mantiene apagado. Reinicia Messenger para que empiece.
 inbox_search_bar.title	Mantener la barra de búsqueda
 inbox_search_bar.description	Recupera la barra de búsqueda en la parte superior de tu lista de chats cuando Messenger la cambió por un icono de búsqueda. Reinicia Messenger para ver el cambio. No cambia nada si nunca te apareció el icono.
+search_suggested.title	Ocultar Sugerencias en la búsqueda
+search_suggested.description	Oculta las personas sugeridas que aparecen arriba en la búsqueda antes de escribir. Las personas siguen apareciendo cuando las buscas.
+search_reels.title	Ocultar reels recientes en la búsqueda
+search_reels.description	Oculta de la búsqueda los reels que viste hace poco, antes de escribir.
 longer_notes.title	Escribir notas más largas
 longer_notes.description	Permite escribir hasta 500 caracteres en una nota en lugar de 60. Facebook decide si una nota larga se publica.
 chat_preview.title	Vista previa de chats al mantener presionado
@@ -786,6 +791,8 @@ facebook.title	Ocultar accesos directos de Facebook
 facebook.description	Oculta los botones de Facebook, los accesos directos de perfil y de compartir, y las secciones Más de Meta y Suscripciones de la pestaña Menú. Útil si solo usas Messenger.
 meta_ai.title	Ocultar Meta AI
 meta_ai.description	Oculta el botón flotante de Meta AI, su botón en la barra de herramientas, su pestaña y sus entradas de menú, la IA en la búsqueda y en las sugerencias con @, y la oferta de resumir los mensajes no leídos de un chat. Reinicia Messenger para que desaparezca la pestaña.
+ai_chat_block.title	Bloquear chats de Meta AI
+ai_chat_block.description	Impide que se abran chats con Meta AI y otros bots de IA, desde la búsqueda, un enlace o tu lista de chats. Un grupo con una IA dentro se sigue abriendo.
 moments.title	Ocultar Chat Moments
 moments.description	Oculta Chat Moments en el menú.
 reels_badge.title	Ocultar el indicador de Reels

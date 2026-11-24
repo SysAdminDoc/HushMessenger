@@ -224,6 +224,9 @@ internal fun MutableMethod.validateHook(hook: String) {
         PHONE_ID_SYNC -> validatePhoneIdSync()
         PASSKEY_LOGIN -> validatePasskeyLogin()
         RECOVERY_CODE_ROW -> validateRecoveryCodeRow()
+        SEARCH_SECTIONS -> validateSearchSections()
+        SEARCH_ITEMS -> validateSearchItems()
+        AI_CHAT_OPEN -> validateAiChatOpen()
         STORY_HOLD -> validateStoryHold()
         CHAT_PREVIEW -> validateChatPreview()
         CHAT_PREVIEW_SIZE -> validateChatPreviewSize()
@@ -377,6 +380,9 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             PHONE_ID_SYNC -> method.injectPhoneIdSync()
             PASSKEY_LOGIN -> method.injectPasskeyLogin()
             RECOVERY_CODE_ROW -> method.injectRecoveryCodeRow()
+            SEARCH_SECTIONS -> method.injectSearchSections()
+            SEARCH_ITEMS -> method.injectSearchItems()
+            AI_CHAT_OPEN -> method.injectAiChatOpen()
             STORY_HOLD -> method.injectStoryHold()
             CHAT_PREVIEW -> method.injectChatPreview()
             CHAT_PREVIEW_SIZE -> method.injectChatPreviewSize()
@@ -690,7 +696,7 @@ val profileMenuItemsPatch = controlPatch("profile_menu_items", "Hide profile men
 @Suppress("unused")
 val hideFacebookPatch = controlPatch("facebook", "Hide Facebook shortcuts", "Hides Facebook buttons, profile and sharing shortcuts, and the Also from Meta and Subscriptions sections in the Menu tab. Handy if you only use Messenger.", "Navigation", "facebook", FACEBOOK_PROFILE, FACEBOOK_PROFILE_HEADER)
 @Suppress("unused")
-val hideMetaAiPatch = controlPatch("meta_ai", "Hide Meta AI", "Hides the Meta AI floating button, toolbar button, tab and menu entries, AI in search and in @ suggestions, and the offer to summarize a chat's unread messages. Restart Messenger to see the tab go.", "Navigation", "ai_menu", "ai_fab", "ai_toolbar", "ai_tab", AI_MUSE_TAB, "ai_search", "ai_search_chip", AI_MENTIONS, AI_COMMANDS, AI_SEARCH_HINT, AI_SEARCH_SCREEN_HINT, AI_MENTION_ROWS, AI_SUMMARY, TAB_CONFIG)
+val hideMetaAiPatch = controlPatch("meta_ai", "Hide Meta AI", "Hides the Meta AI floating button, toolbar button, tab and menu entries, AI in search and in @ suggestions, and the offer to summarize a chat's unread messages. Restart Messenger to see the tab go.", "Navigation", "ai_menu", "ai_fab", "ai_toolbar", "ai_tab", AI_MUSE_TAB, "ai_search", "ai_search_chip", AI_MENTIONS, AI_COMMANDS, AI_SEARCH_HINT, AI_SEARCH_SCREEN_HINT, AI_MENTION_ROWS, AI_SUMMARY, TAB_CONFIG, SEARCH_SECTIONS, SEARCH_ITEMS)
 @Suppress("unused")
 val hideMomentsPatch = controlPatch("moments", "Hide Chat Moments", "Hides Chat Moments in the menu.", "Navigation")
 @Suppress("unused")
@@ -931,6 +937,15 @@ val avatarShapePatch = controlPatch("avatar_shape", "Square profile pictures",
 @Suppress("unused")
 val thinStoryRingsPatch = controlPatch("thin_story_rings", "Thin story rings",
     "Draws the colored ring around a profile picture with a story at half its usual width, so it takes less room.", "Theme", STORY_RING)
+@Suppress("unused")
+val hideSearchSuggestedPatch = controlPatch("search_suggested", "Hide Suggested in search",
+    "Hides the suggested people at the top of search before you type anything. People still come up when you search for them.", "Inbox", SEARCH_SECTIONS)
+@Suppress("unused")
+val hideSearchReelsPatch = controlPatch("search_reels", "Hide recent reels in search",
+    "Hides the reels you watched lately from search before you type anything.", "Inbox", SEARCH_SECTIONS)
+@Suppress("unused")
+val blockAiChatsPatch = controlPatch("ai_chat_block", "Block Meta AI chats",
+    "Stops chats with Meta AI and other AI bots from opening, from search, a link or your chat list. A group with an AI in it still opens.", "Navigation", AI_CHAT_OPEN)
 @Suppress("unused")
 val homeHeaderPatch = controlPatch("home_header", "Your own home header",
     "Puts words or a picture of your own at the top of the chat list in place of Messenger's wordmark. Type the words or pick the picture in HushMessenger settings. With neither, the wordmark stays.",

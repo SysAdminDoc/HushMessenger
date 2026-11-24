@@ -489,6 +489,7 @@ final class SettingsText {
         ENGLISH.put("theme_file_no_picker", "This phone has no file picker for that.");
         ENGLISH.put("theme_file_unreadable", "Couldn't open that file. Try again.");
         ENGLISH.put("theme_file_invalid", "That file isn't a theme. Your colors didn't change.");
+        ENGLISH.put("ai_chat_blocked", "Meta AI chats are blocked in HushMessenger settings.");
         ENGLISH.put("theme_cleared", "Back to your wallpaper colors");
         ENGLISH.put("theme_change", "theme change");
         ENGLISH.put("theme_file_help", "A theme is a bit of text like {\"name\": \"Sunset\", \"accent\": \"#E1306C\", \"neutral\": \"#1A1418\", \"pure_black\": true}. Accent tints Messenger's blues and neutral tints its grays. Both keep Messenger's own brightness, so text stays easy to read. Copy theme gives you the colors in use to edit or share. Save theme to a file keeps it as a .json file, and Open a theme file uses one.");

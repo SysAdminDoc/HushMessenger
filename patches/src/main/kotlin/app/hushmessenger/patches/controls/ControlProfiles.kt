@@ -36,6 +36,7 @@ internal val PROFILE_347415354 = ControlProfile(
             "LX/22m;->FS5(LX/0DT;Z)V",
             "LX/6Gm;->A00(LX/68I;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
         ),
+        "ai_chat_open" to setOf("LX/1em;->A00(Landroid/content/Context;LX/0Lz;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/threadview/params/ThreadViewParams;)Z"),
         "ai_commands" to setOf("LX/7UB;->A06(LX/7UB;Lcom/facebook/messaging/model/threadkey/ThreadKey;)Ljava/util/List;"),
         "ai_fab" to setOf("LX/6m2;->render(LX/27r;)LX/1F6;"),
         "ai_mention_rows" to setOf(
@@ -323,6 +324,8 @@ internal val PROFILE_347415354 = ControlProfile(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",
             "Lcom/facebook/messaging/quicksnap/consumption/viewer/MsgrQuicksnapViewerFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
         ),
+        "search_items" to setOf("LX/Ona;-><init>(LX/N0a;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableMap;Ljava/lang/Integer;Ljava/lang/String;Z)V"),
+        "search_sections" to setOf("LX/OnS;-><init>(Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;I)V"),
         "secure_chat" to setOf("LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "share_story" to setOf(
             "LX/P4A;->A8j()V",
@@ -401,6 +404,7 @@ internal val PROFILE_347415280 = ControlProfile(
             "LX/22m;->FS8(LX/0DT;Z)V",
             "LX/6Gm;->A00(LX/68J;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
         ),
+        "ai_chat_open" to setOf("LX/1em;->A00(Landroid/content/Context;LX/0Ly;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/threadview/params/ThreadViewParams;)Z"),
         "ai_commands" to setOf("LX/7Ux;->A06(LX/7Ux;Lcom/facebook/messaging/model/threadkey/ThreadKey;)Ljava/util/List;"),
         "ai_fab" to setOf("LX/6mo;->render(LX/27r;)LX/1F6;"),
         "ai_mention_rows" to setOf(
@@ -688,6 +692,8 @@ internal val PROFILE_347415280 = ControlProfile(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",
             "Lcom/facebook/messaging/quicksnap/consumption/viewer/MsgrQuicksnapViewerFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
         ),
+        "search_items" to setOf("LX/Om3;-><init>(LX/McC;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableMap;Ljava/lang/Integer;Ljava/lang/String;Z)V"),
+        "search_sections" to setOf("LX/Om0;-><init>(Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;I)V"),
         "secure_chat" to setOf("LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "share_story" to setOf(
             "LX/Out;->A8l()V",
@@ -766,6 +772,7 @@ internal val PROFILE_347415302 = ControlProfile(
             "LX/22m;->FS5(LX/0DT;Z)V",
             "LX/6Gm;->A00(LX/68I;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
         ),
+        "ai_chat_open" to setOf("LX/1em;->A00(Landroid/content/Context;LX/0Lz;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/threadview/params/ThreadViewParams;)Z"),
         "ai_commands" to setOf("LX/7UB;->A06(LX/7UB;Lcom/facebook/messaging/model/threadkey/ThreadKey;)Ljava/util/List;"),
         "ai_fab" to setOf("LX/6m2;->render(LX/27r;)LX/1F6;"),
         "ai_mention_rows" to setOf(
@@ -1053,6 +1060,8 @@ internal val PROFILE_347415302 = ControlProfile(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",
             "Lcom/facebook/messaging/quicksnap/consumption/viewer/MsgrQuicksnapViewerFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
         ),
+        "search_items" to setOf("LX/OnZ;-><init>(LX/N0Z;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableMap;Ljava/lang/Integer;Ljava/lang/String;Z)V"),
+        "search_sections" to setOf("LX/OnR;-><init>(Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;I)V"),
         "secure_chat" to setOf("LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "share_story" to setOf(
             "LX/P49;->A8j()V",
@@ -1131,6 +1140,7 @@ internal val PROFILE_347415262 = ControlProfile(
             "LX/23C;->FSi(LX/0DT;Z)V",
             "LX/6HX;->A00(LX/692;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
         ),
+        "ai_chat_open" to setOf("LX/1fC;->A00(Landroid/content/Context;LX/0M4;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/threadview/params/ThreadViewParams;)Z"),
         "ai_commands" to setOf("LX/7VX;->A06(LX/7VX;Lcom/facebook/messaging/model/threadkey/ThreadKey;)Ljava/util/List;"),
         "ai_fab" to setOf("LX/6nO;->render(LX/28H;)LX/1FW;"),
         "ai_mention_rows" to setOf(
@@ -1418,6 +1428,8 @@ internal val PROFILE_347415262 = ControlProfile(
             "Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V",
             "Lcom/facebook/messaging/quicksnap/consumption/viewer/MsgrQuicksnapViewerFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;",
         ),
+        "search_items" to setOf("LX/Oks;-><init>(LX/N96;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableMap;Ljava/lang/Integer;Ljava/lang/String;Z)V"),
+        "search_sections" to setOf("LX/Okm;-><init>(Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;I)V"),
         "secure_chat" to setOf("LX/1i9;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
         "share_story" to setOf(
             "LX/OyU;->A8j()V",

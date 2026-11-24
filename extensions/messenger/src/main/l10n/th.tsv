@@ -384,6 +384,7 @@ theme_file_save_failed	ไม่สามารถบันทึกไฟล์
 theme_file_no_picker	โทรศัพท์นี้ไม่มีตัวเลือกไฟล์สำหรับสิ่งนี้
 theme_file_unreadable	ไม่สามารถเปิดไฟล์นั้นได้ โปรดลองอีกครั้ง
 theme_file_invalid	ไฟล์นั้นไม่ใช่ธีม สีของคุณจึงไม่เปลี่ยนแปลง
+ai_chat_blocked	แชท Meta AI ถูกบล็อกในการตั้งค่า HushMessenger
 theme_cleared	เปลี่ยนกลับไปใช้สีตามวอลเปเปอร์ของคุณแล้ว
 theme_change	การเปลี่ยนธีม
 theme_file_help	ธีมคือข้อความในรูปแบบเช่น {"name": "Sunset", "accent": "#E1306C", "neutral": "#1A1418", "pure_black": true} โดย accent จะเปลี่ยนสีฟ้าของ Messenger และ neutral จะเปลี่ยนสีเทา ทั้งสองค่ายังคงความสว่างเดิมของ Messenger เพื่อให้อ่านข้อความได้ง่าย "คัดลอกธีม" จะดึงสีที่ใช้อยู่เพื่อนำไปแก้ไขหรือแชร์ บันทึกธีมเป็นไฟล์จะเก็บธีมเป็นไฟล์ .json และเปิดไฟล์ธีมจะใช้ไฟล์นั้น
@@ -764,6 +765,10 @@ inbox_typing.title	กำลังพิมพ์ในรายการแช�
 inbox_typing.description	แสดงคำว่ากำลังพิมพ์ทับข้อความล่าสุดของแชทในรายการของคุณขณะที่อีกฝ่ายกำลังพิมพ์ แทนที่จะเห็นเฉพาะตอนที่เข้าไปในแชทแล้ว Messenger มีส่วนนี้อยู่แล้วและเซิร์ฟเวอร์ของ Meta ปิดไว้ รีสตาร์ท Messenger เพื่อให้เริ่มทำงาน
 inbox_search_bar.title	คงแถบค้นหาไว้
 inbox_search_bar.description	นำแถบค้นหาเหนือรายการแชทกลับมา หาก Messenger เปลี่ยนเป็นไอคอนค้นหา มีผลหลังจากเริ่มต้น Messenger ใหม่ และจะไม่มีการเปลี่ยนแปลงหากบัญชีของคุณไม่เคยได้ไอคอนค้นหา (ทดลอง)
+search_suggested.title	ซ่อนรายการแนะนำในการค้นหา
+search_suggested.description	ซ่อนคนที่แนะนำด้านบนของการค้นหาก่อนที่คุณจะพิมพ์ คนเหล่านั้นยังขึ้นมาเมื่อคุณค้นหาพวกเขา
+search_reels.title	ซ่อนรีลล่าสุดในการค้นหา
+search_reels.description	ซ่อนรีลที่คุณเพิ่งดูออกจากการค้นหาก่อนที่คุณจะพิมพ์
 longer_notes.title	เขียนโน้ตให้ยาวขึ้น
 longer_notes.description	ให้พิมพ์โน้ตได้สูงสุด 500 ตัวอักษรแทน 60 ตัวอักษร Facebook เป็นผู้ตัดสินว่าโน้ตยาวจะโพสต์ได้หรือไม่
 chat_preview.title	กดค้างเพื่อดูตัวอย่างแชท
@@ -786,6 +791,8 @@ facebook.title	ซ่อนปุ่มลัด Facebook
 facebook.description	ลบแถบเครื่องมือ โปรไฟล์ และปุ่มลัดการแชร์ไปยัง Facebook รวมถึงส่วน "อื่นๆ จาก Meta" และ "การสมัครรับข้อมูล" ในแท็บเมนู
 meta_ai.title	ซ่อน Meta AI
 meta_ai.description	ซ่อนปุ่ม แท็บ และเมนูของ Meta AI รวมถึงปุ่ม "ถาม Meta AI" ในการค้นหา คำแนะนำ AI เมื่อพิมพ์ @ ในแชท และข้อเสนอสรุปข้อความที่ยังไม่ได้อ่าน แชท AI เดิมจะยังคงอยู่ แท็บจะเปลี่ยนไปหลังจากเริ่มต้น Messenger ใหม่
+ai_chat_block.title	บล็อกแชท Meta AI
+ai_chat_block.description	ไม่ให้แชทกับ Meta AI และบอท AI อื่นๆ เปิดขึ้นจากการค้นหา ลิงก์ หรือรายการแชทของคุณ กลุ่มที่มี AI อยู่ด้วยยังเปิดได้
 moments.title	ซ่อน Chat Moments
 moments.description	ลบ Chat Moments ออกจากเมนู
 reels_badge.title	ซ่อนป้ายแจ้งเตือน Reels

@@ -384,6 +384,7 @@ theme_file_save_failed	Không thể lưu tệp chủ đề. Hãy thử thư mụ
 theme_file_no_picker	Điện thoại này không có trình chọn tệp cho việc đó.
 theme_file_unreadable	Không thể mở tệp đó. Hãy thử lại.
 theme_file_invalid	Tệp đó không phải là chủ đề. Màu của bạn không thay đổi.
+ai_chat_blocked	Đoạn chat Meta AI đã bị chặn trong cài đặt HushMessenger.
 theme_cleared	Đã quay lại màu hình nền
 theme_change	đổi màu giao diện
 theme_file_help	Chủ đề là một đoạn văn bản như {"name": "Sunset", "accent": "#E1306C", "neutral": "#1A1418", "pure_black": true}. Accent tô lại màu xanh của Messenger và neutral tô lại các màu xám. Cả hai giữ nguyên độ sáng của Messenger nên chữ vẫn dễ đọc. Sao chép chủ đề cho bạn các màu đang dùng để chỉnh sửa hoặc chia sẻ. Lưu chủ đề vào tệp giữ chủ đề dưới dạng tệp .json, còn Mở tệp chủ đề sẽ dùng một tệp như vậy.
@@ -764,6 +765,10 @@ inbox_typing.title	Đang nhập trong danh sách đoạn chat
 inbox_typing.description	Viết 'đang nhập' lên tin nhắn cuối của một đoạn chat trong danh sách khi người kia đang nhập, thay vì chỉ hiện khi bạn đã vào đoạn chat. Messenger đã có sẵn phần này và máy chủ của Meta vẫn tắt nó. Khởi động lại Messenger để nó bắt đầu.
 inbox_search_bar.title	Giữ thanh tìm kiếm
 inbox_search_bar.description	Đưa thanh tìm kiếm trở lại đầu danh sách trò chuyện khi Messenger đã thay nó bằng biểu tượng tìm kiếm. Có hiệu lực sau khi khởi động lại Messenger. Nếu bạn chưa nhận được biểu tượng đó, sẽ không có thay đổi nào xảy ra.
+search_suggested.title	Ẩn mục Gợi ý trong tìm kiếm
+search_suggested.description	Ẩn những người được gợi ý ở đầu phần tìm kiếm trước khi bạn gõ. Mọi người vẫn hiện ra khi bạn tìm họ.
+search_reels.title	Ẩn reels gần đây trong tìm kiếm
+search_reels.description	Ẩn các reels bạn vừa xem khỏi phần tìm kiếm trước khi bạn gõ.
 longer_notes.title	Viết ghi chú dài hơn
 longer_notes.description	Cho phép nhập tối đa 500 ký tự trong ghi chú thay vì 60. Facebook quyết định ghi chú dài có đăng được hay không.
 chat_preview.title	Xem trước phòng chat khi nhấn giữ
@@ -786,6 +791,8 @@ facebook.title	Ẩn phím tắt Facebook
 facebook.description	Ẩn nút Facebook, phím tắt trang cá nhân và chia sẻ, cũng như phần 'Các sản phẩm khác của Meta' và 'Đăng ký' trong tab 'Menu'. Phù hợp với người dùng chỉ sử dụng Messenger.
 meta_ai.title	Ẩn Meta AI
 meta_ai.description	Ẩn nút nổi Meta AI, nút thanh công cụ, tab và mục menu, nội dung AI trong tìm kiếm và gợi ý @, cùng lời mời tóm tắt các tin nhắn chưa đọc trong đoạn chat. Tab sẽ chỉ bị ẩn sau khi khởi động lại Messenger.
+ai_chat_block.title	Chặn đoạn chat Meta AI
+ai_chat_block.description	Không cho đoạn chat với Meta AI và các bot AI khác mở ra từ tìm kiếm, liên kết hay danh sách chat của bạn. Nhóm có AI bên trong vẫn mở được.
 moments.title	Ẩn Chat Moments
 moments.description	Ẩn Chat Moments trong menu.
 reels_badge.title	Ẩn huy hiệu Reels

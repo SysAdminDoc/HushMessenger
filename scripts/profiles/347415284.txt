@@ -5,6 +5,7 @@ sha256 f83349a8151359b02487494dc5f4f49b30407c990bc4a2f820dc93fce47a00cc
 hook ad_context_banner LX/HVA;->A00()Z
 hook ad_events LX/22m;->FS8(LX/0DT;Z)V
 hook ad_events LX/6Gm;->A00(LX/68J;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+hook ai_chat_open LX/1em;->A00(Landroid/content/Context;LX/0Ly;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/threadview/params/ThreadViewParams;)Z
 hook ai_commands LX/7Ux;->A06(LX/7Ux;Lcom/facebook/messaging/model/threadkey/ThreadKey;)Ljava/util/List;
 hook ai_fab LX/6mo;->render(LX/27r;)LX/1F6;
 hook ai_mention_rows LX/1rd;->A0T()Z
@@ -274,6 +275,8 @@ hook save_voice_menu Lcom/facebook/messaging/dialog/MenuDialogParams;-><init>(LX
 hook screenshot_viewers Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->A1M(Landroid/os/Bundle;)Landroid/app/Dialog;
 hook screenshot_viewers Lcom/facebook/messaging/media/ephemeralmedia/viewer/EphemeralMediaViewerFragment;->onResume()V
 hook screenshot_viewers Lcom/facebook/messaging/quicksnap/consumption/viewer/MsgrQuicksnapViewerFragment;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;
+hook search_items LX/Om3;-><init>(LX/McC;Lcom/google/common/collect/ImmutableList;Lcom/google/common/collect/ImmutableMap;Ljava/lang/Integer;Ljava/lang/String;Z)V
+hook search_sections LX/Om0;-><init>(Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;I)V
 hook secure_chat LX/1hj;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook share_story LX/Out;->A8l()V
 hook share_story Lcom/facebook/messaging/sharing/broadcastflow/mutation/loader/plugins/sections/morewaystoshare/hoisted/BroadcastFlowHoistedMoreWaysToShareSectionsLoader;->A01()V
