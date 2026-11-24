@@ -607,7 +607,7 @@ final class Extras {
     private record RecoveryArm(int title, String label, int owner, int text) { }
 
     private static final Set<List<Integer>> RECOVERY_ROW_TITLES =
-        Set.of(List.of(0x7f14178d, 0x7f14178f), List.of(0x7f14178f, 0x7f141791));
+        Set.of(List.of(0x7f14179e, 0x7f1417a0), List.of(0x7f1417a0, 0x7f1417a2));
 
     private static List<Integer> recoveryArguments(Instruction i) {
         if (i.getOpcode() != Opcode.INVOKE_STATIC || !(i instanceof FiveRegisterInstruction call)) return null;
@@ -759,8 +759,9 @@ final class Extras {
     /** Mirrors searchItemsSite in SearchSections.kt. */
     private static boolean isSearchSectionConstructor(Method m, String type) {
         if (!"<init>".equals(m.getName()) || AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"V".equals(m.getReturnType())) return false;
+        // 588's constructor takes a second Integer after 587's one.
         if (!searchTypes(m).equals(List.of(type, SEARCH_LIST, "Lcom/google/common/collect/ImmutableMap;", "Ljava/lang/Integer;",
-            "Ljava/lang/String;", "Z"))) return false;
+            "Ljava/lang/Integer;", "Ljava/lang/String;", "Z"))) return false;
         if (m.getImplementation() == null || mediaTargets(m).contains(0)) return false;
         int first = searchParameter(m, 0);
         return first >= 0 && searchParameter(m, 1) == first + 1;
@@ -868,6 +869,9 @@ final class Extras {
             if (branch >= 0) return false;
             branch = i;
         }
+        // 588 falls into the loader from an if-eqz right above that skips it, and nothing else may land on the loader.
+        if (branch < 0 && made >= 1 && code.get(made - 1).getOpcode() == Opcode.IF_EQZ && mediaTarget(code, made - 1) > made
+            && !mediaTargets(m).contains(made)) branch = made - 1;
         if (branch < 2 || mediaTargets(m).contains(branch)) return false;
         int pinnedRegister = ((OneRegisterInstruction) code.get(branch)).getRegisterA();
         var pinnedResult = code.get(branch - 1);
