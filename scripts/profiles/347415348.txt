@@ -83,6 +83,7 @@ hook call_recording Lorg/webrtc/voiceengine/WebRtcAudioTrack;->stopPlayout()Z
 hook car_extension_gate LX/A0P;->A06(Landroid/graphics/Bitmap;LX/0MJ;Lcom/facebook/auth/usersession/FbUserSession;LX/D9K;Ljava/lang/String;I)V
 hook car_messages LX/0R3;->Ak0(LX/0MJ;)V
 hook chat_animation Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;
+hook chat_bar_plus LX/1i9;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook chat_channel_keep LX/1ln;->A09(Landroid/app/NotificationChannel;Lcom/facebook/auth/usersession/FbUserSession;LX/1ln;Ljava/lang/String;IZ)Ljava/lang/String;
 hook chat_channel_raise LX/80g;->run()V
 hook chat_fragment LX/1i9;-><init>()V

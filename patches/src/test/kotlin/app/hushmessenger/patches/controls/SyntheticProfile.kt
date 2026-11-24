@@ -224,6 +224,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     TAB_PEOPLE to setOf("LX/1iN;->A0D(LX/1iN;)Z"),
     TAB_NOTIFICATIONS to setOf("LX/1iN;->A08(LX/1iN;)Z"),
     "mark_read_action" to setOf("LX/KHu;->A0W()Z", "LX/MKS;->A0F()Z"),
+    CHAT_BAR_PLUS to setOf(SYNTHETIC_CHAT_JUMP),
 )
 
 /**

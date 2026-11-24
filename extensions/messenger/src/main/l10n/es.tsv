@@ -837,6 +837,8 @@ chat_jump.title	Saltar al primer mensaje o a una fecha
 chat_jump.description	Mantén presionado el nombre de un chat en la parte superior para saltar a su primer mensaje o a un día que elijas. La flecha en la parte inferior izquierda del chat lleva a su primer mensaje, y si la mantienes presionada te pide un día. Messenger carga un chat página por página, así que va hacia atrás con un contador en pantalla hasta llegar, y Cancelar lo detiene. Solo puede llegar hasta donde Messenger pueda cargar.
 landscape.title	Permitir modo horizontal
 landscape.description	Permite que Messenger gire con tu teléfono, para tener un teclado más ancho y fotos y videos más grandes. Sigue el ajuste de rotación automática de tu teléfono. Las llamadas, la cámara, los pagos y algunas otras pantallas se quedan en vertical. Reinicia Messenger después de cambiarlo.
+chat_bar_plus.title	Botones de la barra del chat en el menú +
+chat_bar_plus.description	Solo + se queda junto a la caja de mensajes. Los botones de cámara, galería y micrófono pasan a ser filas del menú que abre +, y desde ahí funcionan igual. Necesita Android 10 o posterior.
 call_recording.title	Grabar llamadas
 call_recording.description	Añade un botón Grabar sobre Messenger durante una llamada. La llamada se guarda en un archivo de sonido en Recordings/Messenger Calls en tu teléfono (Music/Messenger Calls en Android 10 y 11). Mientras está activado, las llamadas usan la ruta de audio normal de Android en lugar de la de Messenger, y Messenger necesita reiniciarse después de cambiarlo. Messenger no avisa a los demás, y las leyes sobre grabaciones cambian de un lugar a otro, así que pide permiso a todos primero.
 call_captions.title	Subtítulos en vivo en llamadas

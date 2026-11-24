@@ -837,6 +837,8 @@ chat_jump.title	Chuyển đến tin nhắn đầu tiên hoặc một ngày
 chat_jump.description	Nhấn giữ tên đoạn chat ở trên cùng để chuyển đến tin nhắn đầu tiên hoặc một ngày bạn chọn. Mũi tên ở góc dưới bên trái đoạn chat đưa bạn đến tin nhắn đầu tiên, nhấn giữ mũi tên để chọn một ngày. Messenger chỉ tải đoạn chat từng trang, nên nó cuộn ngược lại và hiện số lượng trên màn hình cho đến khi tới nơi, bấm Hủy để dừng. Nó chỉ lùi được tới mức Messenger tải được.
 landscape.title	Cho phép xoay ngang
 landscape.description	Cho phép Messenger xoay ngang theo điện thoại, để bàn phím rộng hơn và ảnh, video lớn hơn. Nó làm theo cài đặt tự động xoay của điện thoại. Cuộc gọi, máy ảnh, thanh toán và một vài màn hình khác vẫn giữ dọc. Hãy khởi động lại Messenger sau khi thay đổi.
+chat_bar_plus.title	Đưa nút trên thanh chat vào menu +
+chat_bar_plus.description	Chỉ còn + bên cạnh hộp tin nhắn. Các nút máy ảnh, thư viện và micrô trở thành các dòng trong menu mà + mở ra, và vẫn hoạt động như cũ. Cần Android 10 hoặc mới hơn.
 call_recording.title	Ghi âm cuộc gọi
 call_recording.description	Thêm nút Ghi âm trên Messenger trong khi gọi. Cuộc gọi được lưu thành một tệp âm thanh trong Recordings/Messenger Calls trên điện thoại (Music/Messenger Calls trên Android 10 và 11). Khi bật, cuộc gọi dùng đường âm thanh thông thường của Android thay vì của Messenger, và cần khởi động lại Messenger sau khi thay đổi. Messenger không báo cho những người khác, và luật về ghi âm khác nhau tùy nơi, vì vậy hãy hỏi ý kiến mọi người trước.
 call_captions.title	Phụ đề trực tiếp khi gọi

@@ -270,6 +270,7 @@ public class CompatReport {
         PATCHES.put("Open settings from menu", List.of("menu_settings"));
         PATCHES.put("Keep chat pop-ups", List.of("chat_channel_keep", "chat_channel_raise"));
         PATCHES.put("Fix videos in chat heads", List.of("chat_head_video"));
+        PATCHES.put("Chat bar buttons in the + menu", List.of("chat_bar_plus"));
     }
 
     static final Set<String> ORIGINAL_PHOTO_HOOKS = Set.of(

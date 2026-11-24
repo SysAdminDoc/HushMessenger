@@ -837,6 +837,8 @@ chat_jump.title	İlk mesaja veya bir tarihe git
 chat_jump.description	Sohbetin ilk mesajına veya seçtiğin bir güne gitmek için üstteki sohbet adına uzun bas. Sohbetin sol alt köşesindeki ok ilk mesaja götürür, oka uzun basarsan bir gün sorar. Messenger bir sohbeti sayfa sayfa yüklediği için oraya varana kadar ekranda bir sayaçla geriye kaydırır ve İptal bunu durdurur. Ancak Messenger'ın yükleyebildiği kadar geriye gidebilir.
 landscape.title	Yatay moda izin ver
 landscape.description	Daha geniş bir klavye ve daha büyük fotoğraf ve videolar için Messenger'ın telefonunla birlikte yan dönmesini sağlar. Telefonunun otomatik döndürme ayarına uyar. Aramalar, kamera, ödemeler ve birkaç ekran daha dik kalır. Değiştirdikten sonra Messenger'ı yeniden başlat.
+chat_bar_plus.title	Sohbet çubuğu düğmeleri + menüsünde
+chat_bar_plus.description	Mesaj kutusunun yanında yalnızca + kalır. Kamera, galeri ve mikrofon düğmeleri + ile açılan menüde satır olur ve oradan aynı şekilde çalışır. Android 10 veya sonrası gerekir.
 call_recording.title	Aramaları kaydet
 call_recording.description	Arama sırasında Messenger'ın üstüne bir Kaydı başlat düğmesi ekler. Arama, telefonundaki Recordings/Messenger Calls klasörüne tek bir ses dosyası olarak kaydedilir (Android 10 ve 11'de Music/Messenger Calls). Bu açıkken aramalar Messenger'ın kendi ses yolu yerine Android'in normal ses yolunu kullanır ve değiştirdikten sonra Messenger'ın yeniden başlatılması gerekir. Messenger diğer kişilere haber vermez ve kayıtla ilgili yasalar yerden yere değişir, bu yüzden önce herkesin onayını al.
 call_captions.title	Aramalarda canlı altyazı

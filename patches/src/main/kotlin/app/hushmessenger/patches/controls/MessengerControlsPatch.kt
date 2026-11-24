@@ -247,7 +247,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         CAR_MESSAGES -> validateCarMessages()
         CAR_EXTENSION_GATE -> validateCarExtensionGate()
         LOCAL_CHAT_SEARCH -> validateLocalChatSearch()
-        CHAT_JUMP, SECURE_CHAT, INVISIBLE_BUTTONS, IOS_BARS -> validateChatJump()
+        CHAT_JUMP, SECURE_CHAT, INVISIBLE_BUTTONS, IOS_BARS, CHAT_BAR_PLUS -> validateChatJump()
         CALL_RECORDING -> validateCallRecording()
         HOME_HEADER -> validateHomeHeader()
         TEXT_STYLE -> validateTextStyleField()
@@ -397,6 +397,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             SECURE_CHAT -> method.injectSecureChat()
             INVISIBLE_BUTTONS -> method.injectInvisibleButtons()
             IOS_BARS -> method.injectIosBars()
+            CHAT_BAR_PLUS -> method.injectChatBarPlus()
             CALL_RECORDING -> method.injectCallRecording()
             HOME_HEADER -> method.injectHomeHeader()
             TEXT_STYLE -> method.injectTextStyleField()
@@ -810,6 +811,9 @@ val chatJumpPatch = controlPatch("chat_jump", "Jump to the first message or a da
 val allowLandscapePatch = controlPatch("landscape", "Allow landscape",
     "Lets Messenger turn sideways with your phone, for a wider keyboard and bigger photos and videos. It follows your phone's auto-rotate setting. Calls, the camera, payments and a few other screens stay upright. Restart Messenger after you change it.", "Conversations",
     LANDSCAPE_LOCK, LANDSCAPE_MEDIA)
+@Suppress("unused")
+val chatBarPlusPatch = controlPatch("chat_bar_plus", "Chat bar buttons in the + menu",
+    "Move the camera, gallery and mic buttons into the + menu.", "Conversations", CHAT_BAR_PLUS)
 @Suppress("unused")
 val callRecordingPatch = controlPatch("call_recording", "Record calls",
     "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it. Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first.", "Calls")
