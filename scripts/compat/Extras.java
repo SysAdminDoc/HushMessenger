@@ -852,4 +852,48 @@ final class Extras {
         return List.of();
     }
 
+    /** Mirrors pinnedBarGate in PinnedBar.kt: a ThreadKey ()Z check whose answer jumps straight to the loader's new-instance. */
+    private static boolean hasPinnedBarGate(Method m, String loader) {
+        if (m.getImplementation() == null) return false;
+        var code = instructions(m);
+        int made = -1, branch = -1;
+        for (int i = 0; i < code.size(); i++) {
+            if (code.get(i).getOpcode() != Opcode.NEW_INSTANCE || !loader.equals(((ReferenceInstruction) code.get(i)).getReference().toString())) continue;
+            if (made >= 0) return false;
+            made = i;
+        }
+        if (made < 0) return false;
+        for (int i = 0; i < code.size(); i++) {
+            if (code.get(i).getOpcode() != Opcode.IF_NEZ || !jumpsTo(code, i, made)) continue;
+            if (branch >= 0) return false;
+            branch = i;
+        }
+        if (branch < 2 || mediaTargets(m).contains(branch)) return false;
+        int pinnedRegister = ((OneRegisterInstruction) code.get(branch)).getRegisterA();
+        var pinnedResult = code.get(branch - 1);
+        if (pinnedResult.getOpcode() != Opcode.MOVE_RESULT || ((OneRegisterInstruction) pinnedResult).getRegisterA() != pinnedRegister || pinnedRegister > 0xff) return false;
+        var pinnedRead = code.get(branch - 2);
+        if (pinnedRead.getOpcode() != Opcode.INVOKE_VIRTUAL || !(((ReferenceInstruction) pinnedRead).getReference() instanceof MethodReference pinnedCheck)) return false;
+        return "Lcom/facebook/messaging/model/threadkey/ThreadKey;".equals(pinnedCheck.getDefiningClass()) && "Z".equals(pinnedCheck.getReturnType())
+            && pinnedCheck.getParameterTypes().isEmpty();
+    }
+
+    /** pinned_bar: the banner fetch that gates the loader naming the pinned data source. Mirrors findPinnedBar. */
+    static List<Method> pinnedBar(List<ClassDef> classes) {
+        var pinnedLoaders = new ArrayList<String>();
+        for (var cls : classes) for (var method : cls.getMethods())
+            if (method.getImplementation() != null && stringsOf(method).contains("PinnedMessagesMsysBannerDataSource")) {
+                pinnedLoaders.add(cls.getType());
+                break;
+            }
+        if (pinnedLoaders.size() != 1) return List.of();
+        for (var cls : classes) {
+            if (!"Lcom/facebook/messaging/msys/thread/banner/datafetch/ThreadViewBannerDataFetch;".equals(cls.getType())) continue;
+            var found = new ArrayList<Method>();
+            for (var method : cls.getMethods()) if (hasPinnedBarGate(method, pinnedLoaders.get(0))) found.add(method);
+            return found.size() == 1 ? found : List.of();
+        }
+        return List.of();
+    }
+
 }

@@ -121,6 +121,7 @@ internal val settingsExtension = patch(description = "Load HushMessenger runtime
         markReadRecipe = null
         messageLogButtonRecipe = null
         appThemePick = null
+        pinnedBarLoader = null
         saveVoiceMenuRecipe = null
         autoReplyPictureRecipe = null
         galleryRoute = null
@@ -228,6 +229,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         SEARCH_ITEMS -> validateSearchItems()
         AI_CHAT_OPEN -> validateAiChatOpen()
         STORY_CREATE_TILE -> validateStoryCreateTile()
+        PINNED_BAR -> validatePinnedBar()
         STORY_HOLD -> validateStoryHold()
         CHAT_PREVIEW -> validateChatPreview()
         CHAT_PREVIEW_SIZE -> validateChatPreviewSize()
@@ -385,6 +387,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             SEARCH_ITEMS -> method.injectSearchItems()
             AI_CHAT_OPEN -> method.injectAiChatOpen()
             STORY_CREATE_TILE -> method.injectStoryCreateTile()
+            PINNED_BAR -> method.injectPinnedBar()
             STORY_HOLD -> method.injectStoryHold()
             CHAT_PREVIEW -> method.injectChatPreview()
             CHAT_PREVIEW_SIZE -> method.injectChatPreviewSize()
@@ -951,6 +954,9 @@ val blockAiChatsPatch = controlPatch("ai_chat_block", "Block Meta AI chats",
 @Suppress("unused")
 val hideStoryCreateTilePatch = controlPatch("story_create_tile", "Hide Create story",
     "Takes the Create story tile off the start of the row of stories and notes above your chats. Your own story and note sit on that tile, so they go with it.", "Inbox", STORY_CREATE_TILE)
+@Suppress("unused")
+val showPinnedBarPatch = controlPatch("pinned_bar", "Show pinned messages",
+    "Shows a chat's pinned messages in a bar under its name. Messenger has that bar already, but only turns it on in some chats.", "Conversations", PINNED_BAR)
 @Suppress("unused")
 val homeHeaderPatch = controlPatch("home_header", "Your own home header",
     "Puts words or a picture of your own at the top of the chat list in place of Messenger's wordmark. Type the words or pick the picture in HushMessenger settings. With neither, the wordmark stays.",
