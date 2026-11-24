@@ -1905,7 +1905,9 @@ public final class Settings {
 
     public static boolean markedReadHere(Object chat) {
         try {
-            if (chat == null || !enabled(LOCAL_MARK_KEY) || !rememberChatRead(chat)) return false;
+            if (chat == null || !enabled(LOCAL_MARK_KEY)) return false;
+            markChanging(String.valueOf(chat));
+            if (!rememberChatRead(chat)) return false;
             // Messenger's own data didn't change, so its chat list wouldn't draw the row again by itself.
             ChatHiding.refreshLists();
             return true;
@@ -1923,7 +1925,10 @@ public final class Settings {
         try {
             if (chat == null) return;
             ConcurrentHashMap<String, Long> marks = localReadMarks();
-            if (marks.remove(String.valueOf(chat)) == null) return;
+            String key = String.valueOf(chat);
+            if (!marks.containsKey(key)) return;
+            markChanging(key);
+            marks.remove(key);
             storeLocalReads(marks, "", System.currentTimeMillis());
             // Messenger already had this chat unread, so its own call changes nothing and the row wouldn't redraw.
             ChatHiding.refreshLists();
@@ -1936,15 +1941,96 @@ public final class Settings {
      * The chat list's unread check, asked for the bold row, the "n new messages" line and the Chats badge alike. A
      * chat read on this phone answers read until a message newer than that moment lands in it.
      */
-    public static boolean chatReadLocally(Object chat, long newestMessage) {
+    public static boolean chatReadLocally(Object chat, Object summary, long newestMessage) {
         try {
             if (chat == null || !(enabled(LOCAL_READ_KEY) || enabled(LOCAL_MARK_KEY))) return false;
-            Long marked = localReadMarks().get(String.valueOf(chat));
-            return marked != null && marked >= newestMessage;
+            String key = String.valueOf(chat);
+            Boolean before = summary == null ? null : answeredBeforeTheMark(key, summary);
+            if (before != null) return before;
+            Long marked = localReadMarks().get(key);
+            boolean read = marked != null && marked >= newestMessage;
+            if (summary != null) noteAsked(key, summary, read);
+            return read;
         } catch (RuntimeException error) {
             hookFailed(LOCAL_READ_KEY, "Can't tell whether a chat was read on this phone", error);
             return false;
         }
+    }
+
+    static boolean chatReadLocally(Object chat, long newestMessage) {
+        return chatReadLocally(chat, null, newestMessage);
+    }
+
+    /**
+     * Messenger keeps a row as drawn when the row it reads back compares equal to the one on screen, and that
+     * comparison asks the unread check about both rows' summaries. Right after Mark as read or Mark as unread here
+     * both would answer the same, so the row would never redraw. For a moment a summary asked about before the change
+     * keeps the answer it got then, which makes the row read back differ from the one on screen.
+     */
+    static final long LOCAL_MARK_SETTLE_MILLIS = 5000L;
+    private static final int ASKED_PER_CHAT = 4;
+    /** The last few summaries asked about per chat, newest first, each with the answer it got. */
+    private static final ConcurrentHashMap<String, Asked[]> askedLately = new ConcurrentHashMap<>();
+    /** Per chat whose mark just changed: what its summaries got before the change, until the moment is up. */
+    private static final ConcurrentHashMap<String, Settling> settling = new ConcurrentHashMap<>();
+
+    private static final class Asked {
+        final WeakReference<Object> summary;
+        final boolean read;
+
+        Asked(Object summary, boolean read) {
+            this.summary = new WeakReference<>(summary);
+            this.read = read;
+        }
+    }
+
+    private static final class Settling {
+        final Asked[] asked;
+        final long until;
+
+        Settling(Asked[] asked, long until) {
+            this.asked = asked;
+            this.until = until;
+        }
+    }
+
+    private static void noteAsked(String key, Object summary, boolean read) {
+        Asked[] seen = askedLately.get(key);
+        if (seen != null && seen.length > 0 && seen[0].summary.get() == summary && seen[0].read == read) return;
+        List<Asked> next = new ArrayList<>(ASKED_PER_CHAT);
+        next.add(new Asked(summary, read));
+        if (seen != null) {
+            for (Asked old : seen) {
+                Object kept = old.summary.get();
+                if (next.size() < ASKED_PER_CHAT && kept != null && kept != summary) next.add(old);
+            }
+        }
+        askedLately.put(key, next.toArray(new Asked[0]));
+    }
+
+    private static Boolean answeredBeforeTheMark(String key, Object summary) {
+        Settling held = settling.get(key);
+        if (held == null) return null;
+        if (SystemClock.uptimeMillis() > held.until) {
+            settling.remove(key, held);
+            return null;
+        }
+        for (Asked asked : held.asked) {
+            if (asked.summary.get() == summary) return asked.read;
+        }
+        return null;
+    }
+
+    /** Call right before the chat's mark changes, while what the list was told is still what it was told. */
+    private static void markChanging(String key) {
+        Asked[] seen = askedLately.remove(key);
+        if (seen == null) settling.remove(key);
+        else settling.put(key, new Settling(seen, SystemClock.uptimeMillis() + LOCAL_MARK_SETTLE_MILLIS));
+    }
+
+    static void resetLocalMarksForTests() {
+        askedLately.clear();
+        settling.clear();
     }
 
     /** Record the account and thread only after the native composer dispatch returns. */

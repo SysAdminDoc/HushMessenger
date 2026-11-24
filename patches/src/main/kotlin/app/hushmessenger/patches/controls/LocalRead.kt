@@ -24,7 +24,7 @@ internal const val UNREAD_SNIPPET = "Lcom/facebook/messaging/threadlist/plugins/
     "unreadcount/UnreadCountSnippetImpl;"
 internal const val UNREAD_PREDICATE_SIGNATURE = "($THREAD_SUMMARY)Z"
 internal const val LONG_MAX = "Ljava/lang/Math;->max(JJ)J"
-internal const val READ_LOCALLY_HELPER = "$SETTINGS->chatReadLocally(Ljava/lang/Object;J)Z"
+internal const val READ_LOCALLY_HELPER = "$SETTINGS->chatReadLocally(Ljava/lang/Object;Ljava/lang/Object;J)Z"
 
 private fun Instruction.localRef() = (this as? ReferenceInstruction)?.reference
 private fun Method.localCode() = implementation?.instructions?.toList().orEmpty()
@@ -93,6 +93,8 @@ internal fun MutableMethod.validateLocalRead(): LocalReadSite {
     val answer = compare.registerA
     val newest = compare.registerC
     localRequire(answer < 16 && newest + 1 < 16, "comparison registers")
+    // The summary goes along too, so the extension can tell a row drawn before a mark from one read back after it.
+    localRequire(implementation!!.registerCount - 1 < 16, "summary register")
     // The maximum of the last message and the last snippet update, staged into the comparison's second pair.
     val max = index - 3
     localRequire(max > 0 && (code[max].localRef() as? MethodReference)?.toString() == LONG_MAX, "newest message time")
@@ -126,7 +128,7 @@ internal fun MutableMethod.injectLocalRead() {
     val answer = site.answer
     addInstructionsWithLabels(site.index, """
         iget-object v$answer, p0, ${site.threadKey.definingClass}->${site.threadKey.name}:${site.threadKey.type}
-        invoke-static {v$answer, v${site.newest}, v${site.newest + 1}}, $READ_LOCALLY_HELPER
+        invoke-static {v$answer, p0, v${site.newest}, v${site.newest + 1}}, $READ_LOCALLY_HELPER
         move-result v$answer
         if-eqz v$answer, :stock_unread
         const/4 v$answer, 0x0

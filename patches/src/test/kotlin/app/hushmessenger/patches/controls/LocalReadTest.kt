@@ -154,6 +154,10 @@ class LocalReadTest {
         val call = code[comparison + 1] as ReferenceInstruction
         assertEquals(Opcode.INVOKE_STATIC, (call as com.android.tools.smali.dexlib2.iface.instruction.Instruction).opcode)
         assertEquals(READ_LOCALLY_HELPER, call.reference.toString())
+        // #222: the summary itself goes along, so a row drawn before a mark can keep its answer while the list redraws.
+        val passed = call as com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
+        val summary = method.implementation!!.registerCount - 1
+        assertEquals(listOf(answer, summary, newest, newest + 1), listOf(passed.registerC, passed.registerD, passed.registerE, passed.registerF))
         assertEquals(Opcode.MOVE_RESULT, code[comparison + 2].opcode)
         assertEquals(answer, (code[comparison + 2] as OneRegisterInstruction).registerA)
         assertEquals(Opcode.IF_EQZ, code[comparison + 3].opcode)
