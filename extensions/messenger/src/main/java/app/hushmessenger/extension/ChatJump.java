@@ -843,6 +843,35 @@ public final class ChatJump {
         return arrows.get(chat);
     }
 
+            paint.setStrokeWidth(width);
+            paint.setStrokeCap(Paint.Cap.ROUND);
+            paint.setStrokeJoin(Paint.Join.ROUND);
+        }
+
+        @Override public void draw(Canvas canvas) {
+            Rect bounds = getBounds();
+            float x = bounds.exactCenterX(), y = bounds.exactCenterY();
+            float half = bounds.width() * 0.3f, rise = bounds.height() * 0.15f * (up ? 1 : -1);
+            path.reset();
+            path.moveTo(x - half, y + rise);
+            path.lineTo(x, y - rise);
+            path.lineTo(x + half, y + rise);
+            canvas.drawPath(path, paint);
+        }
+
+        @Override public void setAlpha(int alpha) {
+            paint.setAlpha(alpha);
+        }
+
+        @Override public void setColorFilter(ColorFilter filter) {
+            paint.setColorFilter(filter);
+        }
+
+        @Override public int getOpacity() {
+            return PixelFormat.TRANSLUCENT;
+        }
+    }
+
     /**
      * Takes [view] off [parent] once whatever is going on now is done. A window handing its children their detach
      * walks the very list our view sits in, so taking it out right there leaves a hole the walk then trips over.

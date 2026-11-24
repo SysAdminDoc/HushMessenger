@@ -106,6 +106,7 @@
         <meta-data android:name="hush.feature.app_icons" android:value="true" />
         <meta-data android:name="hush.feature.app_themes" android:value="true" />
         <meta-data android:name="hush.feature.avatar_shape" android:value="true" />
+        <meta-data android:name="hush.feature.thin_story_rings" android:value="true" />
         <meta-data android:name="hush.feature.home_header" android:value="true" />
         <meta-data android:name="hush.feature.custom_font" android:value="true" />
         <meta-data android:name="hush.feature.menu_blur" android:value="true" />

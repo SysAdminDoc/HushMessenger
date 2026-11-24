@@ -954,6 +954,8 @@ app_themes.title	Uygulama temalarının kilidini aç
 app_themes.description	Messenger'ın Tema ayarında abonelik olmadan istediğin temayı seçmene izin verir, böylece açık mod da bir renk alabilir. Hesabına hangi temaları sunacağına yine Messenger karar verir.
 avatar_shape.title	Kare profil resimleri
 avatar_shape.description	Kişilerin profil resimlerini daire yerine kare olarak gösterir. Yuvarlatılmış kareler için aşağıdaki 'Köşeleri yuvarlat' seçeneğini aç. Değişikliği görmek için Messenger'ı yeniden başlat.
+thin_story_rings.title	İnce hikaye halkaları
+thin_story_rings.description	Hikayesi olan bir profil resminin etrafındaki renkli halkayı normal kalınlığının yarısında çizer, böylece daha az yer kaplar.
 home_header.title	Kendi ana sayfa başlığın
 home_header.description	Sohbet listesinin üstüne, Messenger'ın yazı logosu yerine kendi yazını veya resmini koyar. Yazıyı yaz veya resmi aşağıdan seç. İkisi de yoksa yazı logosu kalır. Değişikliği görmek için Messenger'ı yeniden başlat.
 custom_font.title	Kendi yazı tipini kullan

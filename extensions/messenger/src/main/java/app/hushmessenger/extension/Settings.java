@@ -1261,13 +1261,26 @@ public final class Settings {
             hookFailed(AVATAR_SHAPE, "Can't change the profile picture shape", error);
             shape = AVATAR_CIRCLE;
         }
-        if (shape == AVATAR_CIRCLE) {
-            canvas.drawArc(oval, start, sweep, center, paint);
-            return;
+        // Thinner on both sides of the same line, so the ring keeps its place around the picture (#215). The paint is the
+        // ring's own, so its width goes back once the ring is drawn.
+        float width = paint.getStrokeWidth();
+        boolean thin = ring && width > 0 && paint.getStyle() == Paint.Style.STROKE && enabled(THIN_STORY_RINGS);
+        if (thin) paint.setStrokeWidth(width * THIN_RING);
+        try {
+            if (shape == AVATAR_CIRCLE) {
+                canvas.drawArc(oval, start, sweep, center, paint);
+                return;
+            }
+            float corner = shape == AVATAR_SQUARE ? 0f : Math.min(avatarCornerPx(), Math.min(oval.width(), oval.height()) / 2f);
+            canvas.drawPath(ringPath(oval, start, sweep, corner), paint);
+        } finally {
+            if (thin) paint.setStrokeWidth(width);
         }
-        float corner = shape == AVATAR_SQUARE ? 0f : Math.min(avatarCornerPx(), Math.min(oval.width(), oval.height()) / 2f);
-        canvas.drawPath(ringPath(oval, start, sweep, corner), paint);
     }
+
+    /** Thin story rings (#215): the colored ring around a picture with a story, drawn at this share of Messenger's width. */
+    static final String THIN_STORY_RINGS = "thin_story_rings";
+    static final float THIN_RING = 0.5f;
 
     /**
      * The square (or rounded square) outline of an arc's box, clockwise from its top middle the way angles run from 270,

@@ -954,6 +954,8 @@ app_themes.title	解鎖應用程式主題
 app_themes.description	不需訂閱，即可在 Messenger 的「主題」設定中選擇任何主題，讓淺色模式也能有顏色。提供哪些主題仍由 Messenger 決定。
 avatar_shape.title	方形大頭貼照
 avatar_shape.description	以方形取代圓形顯示用戶的大頭貼照。開啟下方的「圓角」可改為圓角方形。重新啟動 Messenger 後生效。
+thin_story_rings.title	細限時動態外框
+thin_story_rings.description	將有限時動態的大頭貼周圍的彩色外框以平常一半的粗細繪製，讓它占用更少空間。
 home_header.title	自訂首頁標題
 home_header.description	以你自己的文字或圖片取代聊天清單頂端的 Messenger 字標。在下方輸入文字或選擇圖片。兩者都沒有時，會保留原本的字標。重新啟動 Messenger 後即可看到變更。
 custom_font.title	使用自訂字型

@@ -929,6 +929,9 @@ val avatarShapePatch = controlPatch("avatar_shape", "Square profile pictures",
     "Shows profile pictures as squares instead of circles, or as rounded squares with Round the corners on. Restart Messenger after changing it.", "Theme",
     AVATAR_SHAPE, STORY_RING)
 @Suppress("unused")
+val thinStoryRingsPatch = controlPatch("thin_story_rings", "Thin story rings",
+    "Draws the colored ring around a profile picture with a story at half its usual width, so it takes less room.", "Theme", STORY_RING)
+@Suppress("unused")
 val homeHeaderPatch = controlPatch("home_header", "Your own home header",
     "Puts words or a picture of your own at the top of the chat list in place of Messenger's wordmark. Type the words or pick the picture in HushMessenger settings. With neither, the wordmark stays.",
     "Theme", HOME_HEADER)

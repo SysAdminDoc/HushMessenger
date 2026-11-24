@@ -4,6 +4,7 @@
 
 ### New
 
+- `Thin story rings` is a new switch under Theme, and it starts off. The colored ring around someone's picture when they have a story is thick enough to crowd a small picture. With this on it's drawn at half the width in the same spot, and square profile pictures get the thinner ring too. Refs #215.
 - The Material You theme takes color codes now. Under the accent swatches there's a field for the accent and one for the background. Type codes like #E1306C, tap `Use these colors`, and Material You uses them in dark and light mode. Leave one empty and Messenger keeps its own color there. Refs #211.
 - Material You themes save to a file now. `Save theme to a file` writes the theme in use as a small .json file wherever you pick, named after the theme, and `Open a theme file` brings one back with Undo, the same as `Use copied theme`. So a theme you made can live in your Downloads or go to a friend without the clipboard. Refs #115.
 - `Screen refresh rate` is a new switch under Theme, and it starts off. Android decides how fast Messenger's screen refreshes, and plenty of phones keep apps at 60 Hz or run them at full speed no matter what you'd rather have. Turn it on and pick a rate from the ones your screen does, slower to save battery or faster for smoother scrolling. Your phone can still say no, in power saving mode for one. Refs #208.

@@ -263,6 +263,7 @@ public class CompatReport {
         PATCHES.put("Unlock app icons", List.of("app_icons"));
         PATCHES.put("Unlock app themes", List.of("app_themes", "app_theme_pick"));
         PATCHES.put("Square profile pictures", List.of("avatar_shape", "story_ring"));
+        PATCHES.put("Thin story rings", List.of("story_ring"));
         PATCHES.put("Your own home header", List.of("home_header"));
         PATCHES.put("Use your own font", List.of("font_layout", "font_repository", "font_roboto", "font_by_name", "font_input"));
         PATCHES.put("Blur behind menus", List.of("menu_blur"));

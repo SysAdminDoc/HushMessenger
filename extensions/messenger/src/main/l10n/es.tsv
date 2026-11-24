@@ -954,6 +954,8 @@ app_themes.title	Desbloquear temas de la app
 app_themes.description	Te deja elegir cualquier tema en el ajuste Tema de Messenger sin suscripción, así que el modo claro también puede tener color. Messenger sigue decidiendo qué temas ofrece a tu cuenta.
 avatar_shape.title	Fotos de perfil cuadradas
 avatar_shape.description	Muestra las fotos de perfil de la gente como cuadrados en lugar de círculos. Activa Redondear las esquinas abajo para tener cuadrados redondeados. Reinicia Messenger para ver el cambio.
+thin_story_rings.title	Anillos de historias finos
+thin_story_rings.description	Dibuja el anillo de color alrededor de una foto de perfil con historia a la mitad de su ancho habitual, para que ocupe menos espacio.
 home_header.title	Tu propio encabezado de inicio
 home_header.description	Pone un texto o una imagen tuya en la parte superior de la lista de chats en lugar del logotipo de Messenger. Escribe el texto o elige la imagen abajo. Sin ninguno de los dos, se queda el logotipo. Reinicia Messenger para ver un cambio.
 custom_font.title	Usar tu propia fuente
