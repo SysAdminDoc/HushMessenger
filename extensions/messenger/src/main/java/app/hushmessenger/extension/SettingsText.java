@@ -320,6 +320,7 @@ final class SettingsText {
         ENGLISH.put("message_actions_empty_sent", "Press and hold a message you sent, and its actions show up here.");
         ENGLISH.put("message_actions_empty_got", "Press and hold a message you got, and its actions show up here.");
         ENGLISH.put("chat_menu_items_empty", "Press and hold a chat in your chat list, and its menu's items show up here.");
+        ENGLISH.put("profile_menu_items_empty", "Tap someone's picture beside their message in a chat, and its menu's items show up here.");
         ENGLISH.put("invisible_buttons_empty", "Use Messenger for a bit, and every button it shows you turns up here.");
         ENGLISH.put("invisible_buttons_level_choice", "%1$s for %2$s");
         ENGLISH.put("invisible_buttons_invisible", "Invisible now");

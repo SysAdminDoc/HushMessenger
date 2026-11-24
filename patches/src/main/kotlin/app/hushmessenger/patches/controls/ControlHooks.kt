@@ -137,6 +137,7 @@ private fun sharedChecks(): List<WalkCheck> = listOf(
     inboundCopies, tempFolderChecks, configHolders, playoutSwitches, playoutWriters, recordHandovers, recentMediaDetectors,
     attributionUploads, instantCaptures, pinLimitLoaders, sharedFlagReaders, aiMentionShapes, headerRenders, logBars,
     ringMountClasses, roundingPrinterClasses, legacyRoundings, tileShapeFlags, messageDebugStrings,
+    profileMenuBuilders, profileCallRows,
 )
 
 /** Match semantics first, then require the exact set the build's profile records. */
@@ -232,6 +233,9 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     val hiddenChats = findHiddenChats(classes)
     hiddenChats.forEach { (hook, methods) -> found.getValue(hook).addAll(methods) }
     found.getValue(CHAT_MENU_ITEMS).addAll(chatMenuRows(hiddenChats))
+    val profileMenus = findProfileMenuItems(classes)
+    found.getValue(PROFILE_MENU_ITEMS).addAll(profileMenus)
+    found.getValue(PROFILE_MENU_CALL).addAll(findProfileMenuCalls(classes, profileMenus, stringTables))
     found.getValue(NEARBY_SCANS).addAll(patchStage("Find nearby scans") { findNearbyScans(classes) })
     found.getValue(WIFI_IDENTITY).addAll(patchStage("Find Wi-Fi identity reads") { findWifiIdentityReads(classes) })
     found.getValue(PHONE_ID_SYNC).addAll(findPhoneIdSync(classes))

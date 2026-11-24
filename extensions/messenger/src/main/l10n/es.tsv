@@ -215,6 +215,7 @@ message_actions_got	Mensajes que recibiste
 message_actions_empty_sent	Mantén presionado un mensaje que enviaste y sus acciones aparecerán aquí.
 message_actions_empty_got	Mantén presionado un mensaje que recibiste y sus acciones aparecerán aquí.
 chat_menu_items_empty	Mantén presionado un chat de tu lista de chats y los elementos de su menú aparecerán aquí.
+profile_menu_items_empty	Toca la foto de alguien junto a su mensaje en un chat y los elementos de su menú aparecerán aquí.
 invisible_buttons_empty	Usa Messenger un rato y cada botón que te muestre aparecerá aquí.
 invisible_buttons_level_choice	%1$s para %2$s
 invisible_buttons_invisible	Ahora es invisible
@@ -758,6 +759,8 @@ special_contacts.title	Contactos especiales
 special_contacts.description	Añade Rastrear a esta persona al menú que aparece al mantener presionado un chat con una persona. Luego HushMessenger guarda un historial de cuándo se conecta, se desconecta, te escribe y cambia su nombre, a partir de lo que Messenger ya te muestra. El historial se queda en este teléfono, y puedes leerlo en los ajustes de HushMessenger.
 chat_menu_items.title	Ocultar elementos del menú del chat
 chat_menu_items.description	Oculta los elementos que elijas del menú que aparece al mantener presionado un chat en tu lista de chats. Mantén presionado cualquier chat una vez y los elementos de ese menú aparecerán debajo de este interruptor para que los elijas.
+profile_menu_items.title	Ocultar elementos del menú de perfil
+profile_menu_items.description	Oculta los elementos que elijas del menú que aparece al tocar la foto de alguien junto a su mensaje en un chat. Toca una foto una vez y los elementos de ese menú aparecerán debajo de este interruptor para que los elijas.
 facebook.title	Ocultar accesos directos de Facebook
 facebook.description	Oculta los botones de Facebook, los accesos directos de perfil y de compartir, y las secciones Más de Meta y Suscripciones de la pestaña Menú. Útil si solo usas Messenger.
 meta_ai.title	Ocultar Meta AI
@@ -841,7 +844,7 @@ call_captions.description	Muestra lo que dicen los demás durante una llamada co
 hide_call_buttons.title	Ocultar botones de llamada
 hide_call_buttons.description	Quita los botones de llamada de voz y videollamada de la barra superior de un chat, de los chats de empresas y de la pantalla Mensaje nuevo, para que no toques uno sin querer. Las llamadas siguen sonando, y puedes unirte a una que esté en curso.
 call_confirm.title	Preguntar antes de llamar
-call_confirm.description	Tocar un botón de llamada de voz o videollamada pregunta primero, así un toque accidental no llama a nadie. Esto incluye la barra superior de un chat, los chats de empresas y la pantalla Mensaje nuevo. Llamar la inicia y Cancelar no. Las llamadas entrantes no cambian.
+call_confirm.description	Tocar un botón de llamada de voz o videollamada pregunta primero, así un toque accidental no llama a nadie. Esto incluye la barra superior de un chat, el menú de la foto de alguien, los chats de empresas y la pantalla Mensaje nuevo. Llamar la inicia y Cancelar no. Las llamadas entrantes no cambian.
 original_photo.title	Enviar fotos en calidad original
 original_photo.description	Con HD activado, envía las fotos JPEG a su tamaño completo, no una copia más pequeña. La ubicación se sigue quitando. Las fotos de más de 20 MB se siguen reduciendo.
 original_video.title	Enviar videos sin recodificar

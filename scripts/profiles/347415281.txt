@@ -247,6 +247,9 @@ hook pin_rows Lcom/facebook/messaging/threadlist/threaditemmenu/plugins/core/unp
 hook pinned_chats LX/Jiq;->onCompletion(Ljava/lang/Object;)V
 hook pinned_chats LX/T5o;->onCompletion(Ljava/lang/Object;)V
 hook pinned_chats Lcom/facebook/messaging/modularsync/networkfetcher/MessengerMsysDbNetworkFetcher;->A0N(LX/azw;LX/19t;LX/5OT;)Ljava/lang/Object;
+hook profile_menu_call LX/ASa;->Dtj(Landroid/content/Context;Landroid/view/View;LX/5pG;)Z
+hook profile_menu_call LX/ASb;->Dtj(Landroid/content/Context;Landroid/view/View;LX/5pG;)Z
+hook profile_menu_items LX/ASi;->A04(Landroid/view/View;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;LX/5pG;Lcom/google/common/collect/ImmutableList;)V
 hook quiet_call_notification Lcom/facebook/rtc/notification/RtcNotificationForegroundService;->A00(Landroid/app/Notification;Landroid/content/Context;LX/BRR;LX/CUG;LX/B9L;Lcom/facebook/rtc/notification/RtcNotificationForegroundService;LX/MVO;Ljava/lang/Integer;Ljava/lang/String;IZZZ)V
 hook quiet_call_ring LX/B7s;->run()V
 hook quiet_log_check LX/HHR;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;

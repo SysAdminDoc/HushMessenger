@@ -215,6 +215,7 @@ message_actions_got	Tin nhắn bạn nhận
 message_actions_empty_sent	Nhấn giữ một tin nhắn bạn gửi, các thao tác của nó sẽ hiện ở đây.
 message_actions_empty_got	Nhấn giữ một tin nhắn bạn nhận, các thao tác của nó sẽ hiện ở đây.
 chat_menu_items_empty	Nhấn giữ một phòng chat trong danh sách trò chuyện, các mục trong menu của nó sẽ hiện ở đây.
+profile_menu_items_empty	Bấm vào ảnh của ai đó cạnh tin nhắn của họ trong đoạn chat, các mục trong menu sẽ hiện ở đây.
 invisible_buttons_empty	Dùng Messenger một lúc, mọi nút nó hiện cho bạn sẽ xuất hiện ở đây.
 invisible_buttons_level_choice	%1$s cho %2$s
 invisible_buttons_invisible	Đã vô hình
@@ -758,6 +759,8 @@ special_contacts.title	Liên hệ đặc biệt
 special_contacts.description	Thêm mục Theo dõi người này vào menu hiển thị khi nhấn giữ phòng chat với một người. Sau đó HushMessenger lưu lịch sử khi người đó trực tuyến, ngoại tuyến, nhập tin cho bạn và đổi tên, dựa trên những gì Messenger vốn đã hiển thị cho bạn. Lịch sử chỉ lưu trên điện thoại này, và bạn có thể xem trong cài đặt HushMessenger.
 chat_menu_items.title	Ẩn mục trong menu phòng chat
 chat_menu_items.description	Ẩn các mục bạn chọn khỏi menu hiện ra khi nhấn giữ một phòng chat trong danh sách trò chuyện. Nhấn giữ một phòng chat bất kỳ một lần, các mục của menu đó sẽ hiện bên dưới công tắc này để bạn chọn.
+profile_menu_items.title	Ẩn mục trong menu hồ sơ
+profile_menu_items.description	Ẩn các mục bạn chọn khỏi menu hiện ra khi bấm vào ảnh của ai đó cạnh tin nhắn của họ trong đoạn chat. Bấm vào một ảnh một lần, các mục của menu đó sẽ hiện dưới công tắc này để bạn chọn.
 facebook.title	Ẩn phím tắt Facebook
 facebook.description	Ẩn nút Facebook, phím tắt trang cá nhân và chia sẻ, cũng như phần 'Các sản phẩm khác của Meta' và 'Đăng ký' trong tab 'Menu'. Phù hợp với người dùng chỉ sử dụng Messenger.
 meta_ai.title	Ẩn Meta AI
@@ -841,7 +844,7 @@ call_captions.description	Hiện lời người kia nói trong cuộc gọi thà
 hide_call_buttons.title	Ẩn nút gọi
 hide_call_buttons.description	Bỏ nút gọi thoại và gọi video khỏi thanh trên cùng của đoạn chat, đoạn chat với doanh nghiệp và màn hình Tin nhắn mới để bạn không bấm nhầm. Cuộc gọi đến vẫn đổ chuông, và bạn vẫn có thể tham gia cuộc gọi đang diễn ra.
 call_confirm.title	Hỏi trước khi gọi
-call_confirm.description	Khi bấm nút gọi thoại hoặc gọi video, bạn sẽ được hỏi trước để không lỡ gọi cho ai. Áp dụng cho thanh trên cùng của đoạn chat, đoạn chat với doanh nghiệp và màn hình Tin nhắn mới. Gọi sẽ bắt đầu cuộc gọi, Hủy thì không. Cuộc gọi đến không bị ảnh hưởng.
+call_confirm.description	Khi bấm nút gọi thoại hoặc gọi video, bạn sẽ được hỏi trước để không lỡ gọi cho ai. Áp dụng cho thanh trên cùng của đoạn chat, menu ở ảnh của một người, đoạn chat với doanh nghiệp và màn hình Tin nhắn mới. Gọi sẽ bắt đầu cuộc gọi, Hủy thì không. Cuộc gọi đến không bị ảnh hưởng.
 original_photo.title	Gửi ảnh với chất lượng gốc
 original_photo.description	Khi bật HD, hãy gửi ảnh JPEG với kích thước đầy đủ, không còn thu nhỏ nữa. Thông tin vị trí sẽ vẫn bị xóa. Ảnh lớn hơn 20 MB vẫn sẽ bị thu nhỏ.
 original_video.title	Gửi video mà không mã hóa lại

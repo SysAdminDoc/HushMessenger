@@ -227,6 +227,8 @@ internal fun MutableMethod.validateHook(hook: String) {
         INBOX_TYPING -> validateInboxTyping()
         MEDIA_CAPTION -> validateMediaCaption()
         CHAT_MENU_ITEMS -> validateChatMenuItems()
+        PROFILE_MENU_ITEMS -> validateProfileMenuItems()
+        PROFILE_MENU_CALL -> validateProfileMenuCall()
         LANDSCAPE_LOCK -> validatePortraitLock()
         LANDSCAPE_MEDIA -> validateMediaOrientation()
         BLOCKED_LIST_PICTURES -> validateBlockedListPictures()
@@ -362,6 +364,8 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             HIDDEN_CHAT_ROW -> method.injectHiddenChatRow()
             HIDDEN_CHAT_TAP -> method.injectHiddenChatTap()
             CHAT_MENU_ITEMS -> method.injectChatMenuItems()
+            PROFILE_MENU_ITEMS -> method.injectProfileMenuItems()
+            PROFILE_MENU_CALL -> method.injectProfileMenuCall()
             NEARBY_SCANS -> method.injectNearbyScans()
             WIFI_IDENTITY -> method.injectWifiIdentity()
             PHONE_ID_SYNC -> method.injectPhoneIdSync()
@@ -669,6 +673,9 @@ val specialContactsPatch = controlPatch("special_contacts", "Special contacts", 
 val hideChatMenuItemsPatch = controlPatch("chat_menu_items", "Hide chat menu items",
     "Hides the items you pick from the menu you get when you press and hold a chat in your chat list. Press and hold any chat once, and that menu's items show up under this switch for you to pick.", "Chat menu")
 @Suppress("unused")
+val profileMenuItemsPatch = controlPatch("profile_menu_items", "Hide profile menu items",
+    "Hides the items you pick from the menu you get when you tap someone's picture beside their message in a chat. Tap one picture once, and that menu's items show up under this switch for you to pick.", "Chat menu", PROFILE_MENU_ITEMS)
+@Suppress("unused")
 val hideFacebookPatch = controlPatch("facebook", "Hide Facebook shortcuts", "Hides Facebook buttons, profile and sharing shortcuts, and the Also from Meta and Subscriptions sections in the Menu tab. Handy if you only use Messenger.", "Navigation", "facebook", FACEBOOK_PROFILE, FACEBOOK_PROFILE_HEADER)
 @Suppress("unused")
 val hideMetaAiPatch = controlPatch("meta_ai", "Hide Meta AI", "Hides the Meta AI floating button, toolbar button, tab and menu entries, AI in search and in @ suggestions, and the offer to summarize a chat's unread messages. Restart Messenger to see the tab go.", "Navigation", "ai_menu", "ai_fab", "ai_toolbar", "ai_tab", AI_MUSE_TAB, "ai_search", "ai_search_chip", AI_MENTIONS, AI_COMMANDS, AI_SEARCH_HINT, AI_SEARCH_SCREEN_HINT, AI_MENTION_ROWS, AI_SUMMARY, TAB_CONFIG)
@@ -815,7 +822,7 @@ val hideCallButtonsPatch = controlPatch("hide_call_buttons", "Hide call buttons"
     "Takes the audio and video call buttons out of a chat's top bar, business chats and the New message screen, so you can't tap one by accident. Calls still ring, and you can still join one that's going.", "Calls", HIDE_CALL_BAR, HIDE_CALL_LISTS)
 @Suppress("unused")
 val callConfirmPatch = controlPatch("call_confirm", "Ask before a call",
-    "Tapping an audio or video call button asks first, so a stray tap doesn't ring anyone. That covers a chat's top bar, business chats and the New message screen. Call starts it, Cancel doesn't. Calls coming in aren't affected.", "Calls", HIDE_CALL_BAR, CALL_BUTTON_BUILT)
+    "Tapping an audio or video call button asks first, so a stray tap doesn't ring anyone. That covers a chat's top bar, the menu on someone's picture, business chats and the New message screen. Call starts it, Cancel doesn't. Calls coming in aren't affected.", "Calls", HIDE_CALL_BAR, CALL_BUTTON_BUILT, PROFILE_MENU_CALL)
 @Suppress("unused")
 val systemCameraPatch = controlPatch("system_camera", "Use the phone's camera app",
     "The camera button in a chat opens your phone's own camera app. The photo then opens in Messenger's editor, ready to send. Its Ask photo or video option records videos too.", "Photos and videos",

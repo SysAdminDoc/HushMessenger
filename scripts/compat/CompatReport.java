@@ -177,6 +177,7 @@ public class CompatReport {
         PATCHES.put("Pin more chats", List.of("pinned_chats", "pin_rows", "pin_ask", "pin_drop", "pin_full", "pin_list"));
         PATCHES.put("Hide chosen chats", List.of("hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
         PATCHES.put("Hide chat menu items", List.of("chat_menu_items"));
+        PATCHES.put("Hide profile menu items", List.of("profile_menu_items"));
         PATCHES.put("Hide Facebook shortcuts", List.of("facebook", "facebook_profile", "facebook_profile_header"));
         PATCHES.put("Hide Meta AI", List.of("ai_menu", "ai_fab", "ai_toolbar", "ai_tab", "ai_muse_tab", "ai_search", "ai_search_chip", "ai_mentions", "ai_commands", "ai_search_hint", "ai_search_screen_hint", "ai_mention_rows", "ai_summary", "tab_config"));
         PATCHES.put("Hide Chat Moments", List.of("moments"));
@@ -246,7 +247,7 @@ public class CompatReport {
         PATCHES.put("Record calls", List.of("call_recording"));
         PATCHES.put("Live captions on calls", List.of("call_recording"));
         PATCHES.put("Hide call buttons", List.of("hide_call_bar", "hide_call_lists"));
-        PATCHES.put("Ask before a call", List.of("hide_call_bar", "call_button_built"));
+        PATCHES.put("Ask before a call", List.of("hide_call_bar", "call_button_built", "profile_menu_call"));
         PATCHES.put("Allow screenshots", List.of("allow_screenshot", "screenshot_viewers"));
         PATCHES.put("Block screenshots in chats", List.of("secure_chat"));
         PATCHES.put("Invisible buttons", List.of("invisible_buttons"));

@@ -215,6 +215,7 @@ message_actions_got	你收到的訊息
 message_actions_empty_sent	按住一則你傳送的訊息，它的動作就會顯示在這裡。
 message_actions_empty_got	按住一則你收到的訊息，它的動作就會顯示在這裡。
 chat_menu_items_empty	按住聊天清單中的一個聊天室，它的選單項目就會顯示在這裡。
+profile_menu_items_empty	點按聊天室中訊息旁的大頭貼，它的選單項目就會顯示在這裡。
 invisible_buttons_empty	使用 Messenger 一陣子，它顯示給你的每個按鈕就會出現在這裡。
 invisible_buttons_level_choice	%2$s 設為 %1$s
 invisible_buttons_invisible	現在看不見了
@@ -758,6 +759,8 @@ special_contacts.title	特別聯絡人
 special_contacts.description	在長按與單一對象的聊天室所顯示的選單中加入「追蹤這個人」。HushMessenger 會根據 Messenger 原本就顯示給你的資訊，記錄對方何時上線、離線、正在對你輸入及更改名稱。紀錄只保存在這支手機上，你可以在 HushMessenger 設定中查看。
 chat_menu_items.title	隱藏聊天室選單項目
 chat_menu_items.description	從長按聊天清單中的聊天室所顯示的選單裡，隱藏你選擇的項目。先按住任一聊天室一次，該選單的項目就會顯示在這個開關下方供你選擇。
+profile_menu_items.title	隱藏個人檔案選單項目
+profile_menu_items.description	從點按聊天室中訊息旁的大頭貼所顯示的選單裡，隱藏你選擇的項目。先點按任一大頭貼一次，該選單的項目就會顯示在這個開關下方供你選擇。
 facebook.title	隱藏 Facebook 捷徑
 facebook.description	隱藏 Facebook 按鈕、個人檔案與分享捷徑，以及「選單」分頁中的「Meta 旗下其他產品」與「訂閱」區塊。適合只使用 Messenger 的使用者。
 meta_ai.title	隱藏 Meta AI
@@ -841,7 +844,7 @@ call_captions.description	在通話期間，將對方說的話以字幕顯示在
 hide_call_buttons.title	隱藏通話按鈕
 hide_call_buttons.description	移除聊天室頂端列、商家聊天室和「新訊息」畫面的語音與視訊通話按鈕，避免誤觸。來電仍會響鈴，也仍可加入進行中的通話。
 call_confirm.title	通話前先詢問
-call_confirm.description	點按語音或視訊通話按鈕時會先詢問，避免誤觸打給別人。適用於聊天室頂端列、商家聊天室和「新訊息」畫面。點「通話」才會開始，點「取消」則不會。來電不受影響。
+call_confirm.description	點按語音或視訊通話按鈕時會先詢問，避免誤觸打給別人。適用於聊天室頂端列、對方大頭貼的選單、商家聊天室和「新訊息」畫面。點「通話」才會開始，點「取消」則不會。來電不受影響。
 original_photo.title	以原始畫質傳送相片
 original_photo.description	啟用 HD 時，以完整尺寸傳送 JPEG 相片，不再縮小。仍會移除位置資訊。超過 20 MB 的相片仍會縮小。
 original_video.title	傳送影片時不重新編碼

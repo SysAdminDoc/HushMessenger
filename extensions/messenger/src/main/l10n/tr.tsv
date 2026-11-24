@@ -215,6 +215,7 @@ message_actions_got	Aldığın mesajlar
 message_actions_empty_sent	Gönderdiğin bir mesaja basılı tuttuğunda işlemleri burada görünür.
 message_actions_empty_got	Aldığın bir mesaja basılı tuttuğunda işlemleri burada görünür.
 chat_menu_items_empty	Sohbet listende bir sohbete basılı tuttuğunda menüsündeki öğeler burada görünür.
+profile_menu_items_empty	Sohbette birinin mesajının yanındaki fotoğrafına dokun, menüsündeki öğeler burada görünür.
 invisible_buttons_empty	Messenger'ı biraz kullan, sana gösterdiği her düğme burada görünür.
 invisible_buttons_level_choice	%2$s için %1$s
 invisible_buttons_invisible	Artık görünmez
@@ -758,6 +759,8 @@ special_contacts.title	Özel kişiler
 special_contacts.description	Tek kişiyle olan bir sohbete basılı tuttuğunda açılan menüye Bu kişiyi takip et seçeneğini ekler. HushMessenger, Messenger'ın sana zaten gösterdiklerinden bu kişinin ne zaman çevrimiçi olduğunu, çevrimdışı olduğunu, sana yazdığını ve adını değiştirdiğini kaydeder. Geçmiş bu telefonda kalır ve onu HushMessenger ayarlarından okuyabilirsin.
 chat_menu_items.title	Sohbet menüsü öğelerini gizle
 chat_menu_items.description	Sohbet listende bir sohbete basılı tuttuğunda açılan menüden seçtiğin öğeleri gizler. Herhangi bir sohbete bir kez basılı tut, o menünün öğeleri seçmen için bu anahtarın altında görünür.
+profile_menu_items.title	Profil menüsü öğelerini gizle
+profile_menu_items.description	Sohbette birinin mesajının yanındaki fotoğrafına dokununca açılan menüden seçtiğin öğeleri gizler. Bir fotoğrafa bir kez dokun, o menünün öğeleri seçmen için bu anahtarın altında görünür.
 facebook.title	Facebook kısayollarını gizle
 facebook.description	Facebook düğmelerini, profil ve paylaşım kısayollarını ve Menü sekmesindeki Meta'dan diğerleri ile Abonelikler bölümlerini gizler. Yalnızca Messenger kullanıyorsan işine yarar.
 meta_ai.title	Meta AI'ı gizle
@@ -841,7 +844,7 @@ call_captions.description	Arama sırasında karşı tarafın söylediklerini Mes
 hide_call_buttons.title	Arama düğmelerini gizle
 hide_call_buttons.description	Sesli ve görüntülü arama düğmelerini sohbetin üst çubuğundan, işletme sohbetlerinden ve Yeni mesaj ekranından kaldırır, böylece yanlışlıkla birine dokunamazsın. Aramalar yine çalar ve devam eden bir aramaya yine katılabilirsin.
 call_confirm.title	Aramadan önce sor
-call_confirm.description	Sesli veya görüntülü arama düğmesine dokunduğunda önce sorulur, böylece yanlış bir dokunuş kimseyi aramaz. Bu, sohbetin üst çubuğunu, işletme sohbetlerini ve Yeni mesaj ekranını kapsar. Ara aramayı başlatır, İptal başlatmaz. Gelen aramalar etkilenmez.
+call_confirm.description	Sesli veya görüntülü arama düğmesine dokunduğunda önce sorulur, böylece yanlış bir dokunuş kimseyi aramaz. Bu, sohbetin üst çubuğunu, birinin fotoğrafındaki menüyü, işletme sohbetlerini ve Yeni mesaj ekranını kapsar. Ara aramayı başlatır, İptal başlatmaz. Gelen aramalar etkilenmez.
 original_photo.title	Fotoğrafları orijinal kalitede gönder
 original_photo.description	HD açıkken JPEG fotoğrafları küçültülmüş bir kopya yerine tam boyutlarında gönderir. Konum bilgisi yine kaldırılır. 20 MB'tan büyük fotoğraflar yine küçültülür.
 original_video.title	Videoları yeniden kodlamadan gönder

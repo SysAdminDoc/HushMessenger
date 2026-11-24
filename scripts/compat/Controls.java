@@ -788,6 +788,9 @@ final class Controls {
             if (methods != null && methods.stream().anyMatch(m -> !hasLocal(m) &&
                 (!"ad_events".equals(key) || AccessFlags.STATIC.isSet(m.getAccessFlags())))) methods.clear();
         }
+        var profileMenus = profileMenuItems(classes);
+        found.get("profile_menu_items").addAll(profileMenus);
+        found.get("profile_menu_call").addAll(profileMenuCalls(classes, profileMenus, stringTables));
         return found;
     }
 }
