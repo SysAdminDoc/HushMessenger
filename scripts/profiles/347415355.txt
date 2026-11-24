@@ -257,6 +257,8 @@ hook quiet_call_ring LX/B7o;->run()V
 hook quiet_log_check LX/CxP;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 hook quiet_log_drop Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0C(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V
 hook quiet_mode LX/75x;->A01(Landroid/app/Notification;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/MessagingNotification;Ljava/lang/String;I)Z
+hook reaction_read LX/AaE;->Eoq(Lcom/facebook/messaging/model/threadkey/ThreadKey;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZ)V
+hook reaction_read LX/AaE;->Eor(Lcom/facebook/messaging/model/threadkey/ThreadKey;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZ)V
 hook recent_media LX/APl;->A01(LX/5Re;Lkotlin/jvm/functions/Function0;)V
 hook recovery_code_row LX/Tup;->render(LX/27r;)LX/1F6;
 hook reels_badge LX/4RO;->A09(LX/4RO;)Z

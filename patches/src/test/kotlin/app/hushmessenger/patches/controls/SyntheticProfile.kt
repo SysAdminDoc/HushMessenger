@@ -51,6 +51,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     HIDE_READ_RECEIPTS to setOf(SYNTHETIC_CHAT_SEEN),
     REPLY_READ to setOf(SYNTHETIC_SEND_EVENT),
     DELIVERY_RECEIPT to setOf(SYNTHETIC_DELIVERY),
+    REACTION_READ to setOf(SYNTHETIC_REACTION, SYNTHETIC_REACTION_V2),
     "keep_unsent" to setOf("LX/SH3;->A01(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
     "anonymous_stories" to setOf("LX/HNV;->C1V(${MONTAGE_CARD}Z)V", STORY_PREVIEW_INIT),
     APP_ICONS to setOf("LX/7Ya;->A02($FB_USER_SESSION)Z", "LX/7Ya;->A03(Landroid/content/Context;$FB_USER_SESSION)Z"),

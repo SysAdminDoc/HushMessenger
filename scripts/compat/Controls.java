@@ -93,6 +93,7 @@ final class Controls {
         found.get("hide_read_receipts").addAll(chatSeenBroadcasts(classes));
         found.get("reply_read").addAll(replyReadDispatches(classes));
         found.get("delivery_receipt").addAll(deliveryReceiptSends(classes));
+        found.get("reaction_read").addAll(reactionSends(classes, stringTables));
         found.get("analytics_uploads").addAll(analyticsUploads(classes));
         found.get("analytics_uploads").addAll(boundUploadTasks(classes));
         found.get("analytics_uploads").addAll(xanalyticsUploadTimers(classes));

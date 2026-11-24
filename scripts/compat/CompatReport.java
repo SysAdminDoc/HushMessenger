@@ -256,7 +256,7 @@ public class CompatReport {
         PATCHES.put("Translucent chat bars", List.of("ios_bars"));
         PATCHES.put("Screen refresh rate", List.of("refresh_rate"));
         PATCHES.put("Appear offline", List.of("appear_offline", "availability_setting"));
-        PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read", "delivery_receipt"));
+        PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read", "delivery_receipt", "reaction_read"));
         PATCHES.put("Mark chats read on this phone", List.of("local_read"));
         PATCHES.put("Mark as read button", List.of("mark_read_bar", "mark_read_click"));
         PATCHES.put("Keep unsent messages", List.of("keep_unsent", "unsent_indicator", "delta_unsent", "unsent_recall", "unsent_clear"));

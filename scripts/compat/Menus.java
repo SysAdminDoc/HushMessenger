@@ -769,6 +769,34 @@ final class Menus {
         return sends;
     }
 
+    static final Set<String> REACTION_MUTATIONS = Set.of("react_to_message", "react_to_message_v2");
+
+    /**
+     * reaction_read: the two reaction sends, instance (ThreadKey, ...)V methods of one class that each name one of the
+     * reaction mutations, as a literal or by number in a string table. Mirrors ReactionRead.kt.
+     */
+    static List<Method> reactionSends(List<ClassDef> classes, Map<String, Map<Integer, String>> tables) {
+        var sends = new ArrayList<Method>();
+        var mutations = new ArrayList<String>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (method.getImplementation() == null || AccessFlags.STATIC.isSet(method.getAccessFlags()) ||
+                AccessFlags.ABSTRACT.isSet(method.getAccessFlags()) || !"V".equals(method.getReturnType()) ||
+                method.getParameterTypes().isEmpty() || !THREAD_KEY.contentEquals(method.getParameterTypes().get(0))) continue;
+            var code = instructions(method);
+            var named = new HashSet<String>(tableStrings(code, tables));
+            for (var i : code)
+                if (i instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference s) named.add(s.getString());
+            named.retainAll(REACTION_MUTATIONS);
+            if (named.size() != 1) continue;
+            sends.add(method);
+            mutations.add(named.iterator().next());
+        }
+        var owners = new HashSet<String>();
+        for (var send : sends) owners.add(send.getDefiningClass());
+        Collections.sort(mutations);
+        return owners.size() == 1 && mutations.equals(List.of("react_to_message", "react_to_message_v2")) ? sends : List.of();
+    }
+
     static List<Method> replyReadDispatches(List<ClassDef> classes) {
         var events = new ArrayList<Method>();
         for (var cls : classes) {

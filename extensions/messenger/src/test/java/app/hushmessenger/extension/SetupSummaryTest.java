@@ -179,7 +179,7 @@ public class SetupSummaryTest {
             for (String[] control : SettingsActivity.CONTROLS)
                 assertTrue(control[0], report.contains(", scope=" + control[2] + "\n"));
             assertTrue(report.matches("(?s).*hide_read_receipts: installed=true, selected=true, active=true, last_active=\\d+s ago, scope=.*"));
-            assertTrue(report.contains("Marking it read yourself or replying marks it read and shows Seen"));
+            assertTrue(report.contains("Marking it read yourself, replying or reacting to a message marks it read and shows Seen"));
             assertTrue(report.contains("Group chats aren't tested. Messenger's own Read receipts setting under Privacy & safety"));
             assertTrue(report.contains("In encrypted chats it keeps the words you already saw in the chat or a notification, and still has them after Messenger restarts. Group chats aren't tested."));
             assertTrue(report.contains("A switch under it puts a Save button on the view-once viewer. It doesn't add replay."));

@@ -1711,6 +1711,19 @@ public final class Settings {
         return true;
     }
 
+    /**
+     * Hide read receipts: Messenger's reaction sender calls this first with the chat's key. A reaction shows you read
+     * the chat, as a reply does, so the Seen held back for that chat goes out (#223).
+     */
+    public static void reactionSent(Object thread) {
+        if (thread == null || MarkReadButton.replaying() || !enabled("hide_read_receipts")) return;
+        try {
+            MarkReadButton.reacted(thread);
+        } catch (Throwable error) {
+            hookFailed("hide_read_receipts", "Can't send Seen for the chat you reacted in", error);
+        }
+    }
+
     /** Hide Delivered, the sub-option under Hide read receipts. */
     static final String HIDE_DELIVERED = "hide_delivered";
 

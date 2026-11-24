@@ -300,6 +300,10 @@ internal val PROFILE_347415354 = ControlProfile(
         "quiet_log_check" to setOf("LX/CxP;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;"),
         "quiet_log_drop" to setOf("Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0C(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V"),
         "quiet_mode" to setOf("LX/75x;->A01(Landroid/app/Notification;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/MessagingNotification;Ljava/lang/String;I)Z"),
+        "reaction_read" to setOf(
+            "LX/AaE;->Eoq(Lcom/facebook/messaging/model/threadkey/ThreadKey;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZ)V",
+            "LX/AaE;->Eor(Lcom/facebook/messaging/model/threadkey/ThreadKey;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZ)V",
+        ),
         "recent_media" to setOf("LX/APl;->A01(LX/5Re;Lkotlin/jvm/functions/Function0;)V"),
         "recovery_code_row" to setOf("LX/Tur;->render(LX/27r;)LX/1F6;"),
         "reels_badge" to setOf("LX/4RO;->A09(LX/4RO;)Z"),
@@ -661,6 +665,10 @@ internal val PROFILE_347415280 = ControlProfile(
         "quiet_log_check" to setOf("LX/HHR;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;"),
         "quiet_log_drop" to setOf("Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0C(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V"),
         "quiet_mode" to setOf("LX/76j;->A01(Landroid/app/Notification;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/MessagingNotification;Ljava/lang/String;I)Z"),
+        "reaction_read" to setOf(
+            "LX/AaJ;->Eou(Lcom/facebook/messaging/model/threadkey/ThreadKey;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZ)V",
+            "LX/AaJ;->Eov(Lcom/facebook/messaging/model/threadkey/ThreadKey;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZ)V",
+        ),
         "recent_media" to setOf("LX/APq;->A01(LX/5Qz;Lkotlin/jvm/functions/Function0;)V"),
         "recovery_code_row" to setOf("LX/NqT;->render(LX/27r;)LX/1F6;"),
         "reels_badge" to setOf("LX/4Qk;->A09(LX/4Qk;)Z"),
@@ -1022,6 +1030,10 @@ internal val PROFILE_347415302 = ControlProfile(
         "quiet_log_check" to setOf("LX/CxP;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;"),
         "quiet_log_drop" to setOf("Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0C(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V"),
         "quiet_mode" to setOf("LX/75x;->A01(Landroid/app/Notification;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/MessagingNotification;Ljava/lang/String;I)Z"),
+        "reaction_read" to setOf(
+            "LX/AaE;->Eoq(Lcom/facebook/messaging/model/threadkey/ThreadKey;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZ)V",
+            "LX/AaE;->Eor(Lcom/facebook/messaging/model/threadkey/ThreadKey;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZ)V",
+        ),
         "recent_media" to setOf("LX/APl;->A01(LX/5Re;Lkotlin/jvm/functions/Function0;)V"),
         "recovery_code_row" to setOf("LX/Tup;->render(LX/27r;)LX/1F6;"),
         "reels_badge" to setOf("LX/4RO;->A09(LX/4RO;)Z"),
@@ -1383,6 +1395,10 @@ internal val PROFILE_347415262 = ControlProfile(
         "quiet_log_check" to setOf("LX/K77;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;"),
         "quiet_log_drop" to setOf("Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0C(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V"),
         "quiet_mode" to setOf("LX/77J;->A01(Landroid/app/Notification;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/MessagingNotification;Ljava/lang/String;I)Z"),
+        "reaction_read" to setOf(
+            "LX/AcD;->EpG(Lcom/facebook/messaging/model/threadkey/ThreadKey;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZ)V",
+            "LX/AcD;->EpH(Lcom/facebook/messaging/model/threadkey/ThreadKey;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZ)V",
+        ),
         "recent_media" to setOf("LX/ARk;->A01(LX/5SA;Lkotlin/jvm/functions/Function0;)V"),
         "recovery_code_row" to setOf("LX/Nev;->render(LX/28H;)LX/1FW;"),
         "reels_badge" to setOf("LX/4Ru;->A09(LX/4Ru;)Z"),
