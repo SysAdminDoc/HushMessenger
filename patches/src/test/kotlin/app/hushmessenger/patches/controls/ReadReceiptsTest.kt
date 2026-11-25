@@ -344,7 +344,12 @@ class ReadReceiptsTest {
             val sendBefore = send.code()
             val d = send.validateReplyRead()
             send.injectReplyRead()
-            assertStockCode(sendBefore, send.code(), setOf(d - REPLY_READ_SHAPE.stage, d + 2, d + 3, d + 4), code)
+            // 588 keeps the account and the thread in their own registers past the dispatch, so the one call goes in after it.
+            val sent = send.code()
+            assertEquals("$SETTINGS->noteMessageSent(Ljava/lang/Object;Ljava/lang/Object;)V", (sent[d + 1] as ReferenceInstruction).reference.toString(), code)
+            assertEquals(listOf(REPLY_READ_SHAPE.sessionReg, REPLY_READ_SHAPE.threadReg),
+                listOf((sent[d + 1] as FiveRegisterInstruction).registerC, (sent[d + 1] as FiveRegisterInstruction).registerD), code)
+            assertStockCode(sendBefore, sent, setOf(d + 1), code)
             val delivered = MutableMethod(deliveries.single())
             val deliveredBefore = delivered.code()
             val at = delivered.validateDeliveryReceipt()
