@@ -296,6 +296,8 @@ public final class SettingsActivity extends Activity {
         try {
             boolean disabled = packages.getComponentEnabledSetting(alias) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
             if (hidden != disabled) {
+                // Android closes a screen opened through the icon when the icon goes, so the hide can wait for it.
+                if (hidden && DrawerIconWait.holdHide(context)) return;
                 packages.setComponentEnabledSetting(alias, hidden ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED
                     : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
             }
@@ -308,6 +310,7 @@ public final class SettingsActivity extends Activity {
         // On a Root Mount install this screen can be the first thing in the process, before any hook.
         HostScreens.start(this);
         Settings.initialize(this);
+        DrawerIconWait.opened(this);
         syncDrawerIcon(this);
         boolean light = SettingsTheme.light(this);
         lightTheme = light;
