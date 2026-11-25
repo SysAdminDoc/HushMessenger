@@ -169,7 +169,7 @@ public final class SettingsActivity extends Activity {
         {"inbox_search_bar", "Keep the search bar", "Brings back the search bar at the top of your chat list when Messenger has swapped it for a search icon. Restart Messenger to see the change. Nothing changes if you never got the icon.", "inbox"},
         {"search_suggested", "Hide Suggested in search", "Hides the suggested people at the top of search before you type anything. People still come up when you search for them.", "inbox"},
         {"search_reels", "Hide recent reels in search", "Hides the reels you watched lately from search before you type anything.", "inbox"},
-        {"longer_notes", "Write longer notes", "Lets the note box take up to 500 characters instead of 60. Facebook decides whether a long note goes through.", "inbox"},
+        {"longer_notes", "Write longer notes", "Lets the note box take up to 2,000 characters instead of 60. Facebook decides whether a long note goes through.", "inbox"},
         {"chat_preview", "Preview chats on long press", "Press and hold a chat to peek at it in Messenger's own preview, with the chat's menu under it, without opening the chat.", "chat_menu"},
         {"chat_preview_size", "Bigger chat preview", "Gives the chat more room in the preview you get when you press and hold a chat, and lets you scroll back through it there. The menu under it keeps a set height and scrolls when it has more items.", "chat_menu"},
         {"mark_read_action", "Hide Mark as read", "Hides Mark as read in the menu you get when you press and hold a chat in your chat list, so you can't mark a chat read by accident. Mark as unread stays.", "chat_menu"},

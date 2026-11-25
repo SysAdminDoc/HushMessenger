@@ -791,7 +791,7 @@ search_suggested.description	Ẩn những người được gợi ý ở đầu 
 search_reels.title	Ẩn reels gần đây trong tìm kiếm
 search_reels.description	Ẩn các reels bạn vừa xem khỏi phần tìm kiếm trước khi bạn gõ.
 longer_notes.title	Viết ghi chú dài hơn
-longer_notes.description	Cho phép nhập tối đa 500 ký tự trong ghi chú thay vì 60. Facebook quyết định ghi chú dài có đăng được hay không.
+longer_notes.description	Cho phép nhập tối đa 2000 ký tự trong ghi chú thay vì 60. Facebook quyết định ghi chú dài có đăng được hay không.
 chat_preview.title	Xem trước phòng chat khi nhấn giữ
 chat_preview.description	Nhấn giữ một phòng chat để xem nhanh trong bản xem trước của chính Messenger, kèm menu của phòng chat ở bên dưới, mà không cần mở phòng chat.
 chat_preview_size.title	Bản xem trước phòng chat lớn hơn

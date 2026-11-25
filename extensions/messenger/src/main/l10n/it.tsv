@@ -791,7 +791,7 @@ search_suggested.description	Nasconde le persone suggerite in cima alla ricerca 
 search_reels.title	Nascondi i reel recenti nella ricerca
 search_reels.description	Nasconde dalla ricerca i reel che hai guardato di recente, prima che tu scriva qualcosa.
 longer_notes.title	Scrivi note più lunghe
-longer_notes.description	Permette alla casella delle note di contenere fino a 500 caratteri invece di 60. È Facebook a decidere se una nota lunga passa.
+longer_notes.description	Permette alla casella delle note di contenere fino a 2000 caratteri invece di 60. È Facebook a decidere se una nota lunga passa.
 chat_preview.title	Anteprima delle chat con pressione prolungata
 chat_preview.description	Tieni premuta una chat per darle un'occhiata nell'anteprima di Messenger, con il menu della chat sotto, senza aprirla.
 chat_preview_size.title	Anteprima della chat più grande
