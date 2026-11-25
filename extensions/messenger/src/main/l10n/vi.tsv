@@ -258,6 +258,12 @@ refresh_rate_hz	%1$s Hz
 refresh_rate_single	Màn hình của bạn chỉ chạy ở một tần số, nên ở đây không có gì để chọn.
 refresh_rate_picked	Messenger sẽ dùng %1$s Hz
 refresh_rate_help	Nhanh hơn thì cuộn mượt hơn và tốn pin hơn. Tần số mới có tác dụng khi bạn quay lại Messenger.
+see_through_tab_bar_frosted	Mờ
+see_through_tab_bar_standard	Tiêu chuẩn
+see_through_tab_bar_light	Trong hơn
+see_through_tab_bar_clear	Trong nhất
+see_through_tab_bar_picked	%1$s sẽ hiện sau khi Messenger khởi động lại
+see_through_tab_bar_help	Mờ cho thấy ít đoạn chat nhất, Trong nhất cho thấy nhiều nhất.
 hidden_words_words	Từ cần ẩn
 hidden_words_hint	Tối đa %1$d ký tự, cách nhau bằng dấu phẩy
 hidden_words_help	Phải khớp cả từ, nên "ok" không ẩn "okay". Chữ hoa chữ thường không quan trọng.
@@ -842,6 +848,8 @@ floating_tab_bar.title	Thanh tab nổi
 floating_tab_bar.description	Chuyển thanh tab dưới cùng sang kiểu nổi mà Messenger đang thử nghiệm, nằm đè lên danh sách đoạn chat thay vì bên dưới. Messenger có thể vẫn giữ thanh tab thông thường trên một số màn hình. Có hiệu lực sau khi khởi động lại Messenger.
 tab_swipe.title	Vuốt để chuyển tab
 tab_swipe.description	Vuốt ngang trên danh sách trò chuyện để sang tab kế tiếp trên thanh dưới cùng, thay vì phải với tay xuống nút của nó. Các tab đang ẩn sẽ được bỏ qua, và danh sách tự cuộn ngang vẫn giữ cú vuốt của nó. Khởi động lại Messenger sau khi bật.
+see_through_tab_bar.title	Thanh tab trong suốt
+see_through_tab_bar.description	Cho các đoạn chat hiện qua thanh tab nổi ở dưới, nhiều hay ít tùy bạn chọn bên dưới. Thẻ bạn đang mở và các biểu tượng vẫn giữ nguyên. Cần Thanh tab nổi hoặc thanh nổi riêng của Messenger. Khởi động lại Messenger để thấy thay đổi.
 chat_animation.title	Mở và đóng phòng chat bằng hiệu ứng trượt
 chat_animation.description	Trượt vào từ cạnh bên khi mở phòng chat và trượt ra khi quay lại. Bong bóng chat và bong bóng thông báo không bị ảnh hưởng.
 story_hold.title	Dừng lại khi kết thúc tin

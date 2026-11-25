@@ -195,6 +195,7 @@ public class CompatReport {
         PATCHES.put("Hide the tab bar while scrolling", List.of("tab_bar_scroll_away", "tab_bar_overlay"));
         PATCHES.put("Floating tab bar", List.of("floating_tab_bar"));
         PATCHES.put("Swipe between tabs", List.of("tab_swipe"));
+        PATCHES.put("See-through tab bar", List.of("floating_pill"));
         PATCHES.put("Hold stories at the end", List.of("story_hold"));
         PATCHES.put("Hide AI sticker tools", List.of("ai_stickers", "ai_sticker_cell", "ai_sticker_grid"));
         PATCHES.put("Hide avatar stickers", List.of("avatar_stickers", "avatar_tabs"));

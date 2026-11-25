@@ -276,6 +276,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(TAB_BAR_OVERLAY).addAll(findTabBarOverlay(classes))
     found.getValue(TAB_BAR_SCROLL_AWAY).addAll(findTabBarScrollAway(classes))
     found.getValue(TAB_SWIPE).addAll(findTabSwipe(classes))
+    found.getValue(FLOATING_PILL).addAll(findFloatingPill(classes))
     found.getValue(AVATAR_SHAPE).addAll(findAvatarShape(classes))
     found.getValue(STORY_RING).addAll(findStoryRing(classes))
     found.getValue(QUIET_CALL_RING).addAll(findQuietCallRing(classes))

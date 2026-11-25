@@ -78,6 +78,7 @@ public final class SettingsActivity extends Activity {
     private final MenuRowsRow menuRows = new MenuRowsRow(this);
     private final CallCaptionsRow callCaptions = new CallCaptionsRow(this);
     private final RefreshRateRow refreshRates = new RefreshRateRow(this);
+    private final SeeThroughTabBarRow seeThroughLevels = new SeeThroughTabBarRow(this);
     private final CallRecordingRow callRecording = new CallRecordingRow(this);
     private final SpecialContactsRow specialContacts = new SpecialContactsRow(this);
     private final QuietModeRow quietMode = new QuietModeRow(this);
@@ -196,6 +197,7 @@ public final class SettingsActivity extends Activity {
         {"tab_stories", "Hide Stories tab", "Hides the Stories tab in the bar at the bottom. Restart Messenger to see the tab go.", "tab_bar"},
         {"tab_bar_scroll_away", "Hide the tab bar while scrolling", "Slides the tab bar at the bottom out of the way as you scroll down your chats and brings it back when you scroll up. Restart Messenger to see the change.", "tab_bar"},
         {"floating_tab_bar", "Floating tab bar", "Switches the tab bar at the bottom to the floating style Messenger is trying out, which sits over your chats instead of below them. Messenger may keep its usual bar on some screens. Restart Messenger to see the change.", "tab_bar"},
+        {"see_through_tab_bar", "See-through tab bar", "Lets your chats show through the floating tab bar at the bottom, as much as you pick below. The tab you're on and the icons stay as they are. Needs Floating tab bar, or Messenger's own floating bar. Restart Messenger to see the change.", "tab_bar"},
         {"tab_swipe", "Swipe between tabs", "Swipe sideways on your chats to move to the next tab in the bar at the bottom, instead of reaching down for its button. Hidden tabs are skipped, and a list that scrolls sideways keeps the swipe. Restart Messenger after you turn it on.", "tab_bar"},
         {"ai_stickers", "Hide AI sticker tools", "Hides the Generate and Generate AI sticker buttons, the AI sticker tab and AI sticker suggestions. Custom and music stickers in the Generate menu go with it.", "stickers"},
         {"avatar_stickers", "Hide avatar stickers", "Hides the avatar tab in the sticker keyboard.", "stickers"},
@@ -1146,7 +1148,7 @@ public final class SettingsActivity extends Activity {
                     || InvisibleButtons.KEY.equals(spec[0]) || QuietMode.KEY.equals(spec[0])
                     || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])
                     || MenuBlur.KEY.equals(spec[0]) || "hide_read_receipts".equals(spec[0]) || CallRecording.KEY.equals(spec[0])
-                    || RefreshRate.KEY.equals(spec[0]) || ChatJump.KEY.equals(spec[0])
+                    || RefreshRate.KEY.equals(spec[0]) || ChatJump.KEY.equals(spec[0]) || SeeThroughTabBar.KEY.equals(spec[0])
                     || ("allow_screenshot".equals(spec[0]) && Build.VERSION.SDK_INT >= 29)) {
                 // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
@@ -1185,6 +1187,7 @@ public final class SettingsActivity extends Activity {
                 else if (ProfileMenu.KEY.equals(spec[0])) profileMenuItems.addTo(wrapper);
                 else if (InvisibleButtons.KEY.equals(spec[0])) invisibleButtons.addTo(wrapper);
                 else if (RefreshRate.KEY.equals(spec[0])) refreshRates.addTo(wrapper);
+                else if (SeeThroughTabBar.KEY.equals(spec[0])) seeThroughLevels.addTo(wrapper);
                 else if (CallRecording.KEY.equals(spec[0])) {
                     callRecording.addScopeTo(wrapper);
                     addRecordCallChats(wrapper);

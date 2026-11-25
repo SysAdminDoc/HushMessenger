@@ -251,6 +251,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         TAB_BAR_OVERLAY -> validateTabBarOverlay()
         TAB_BAR_SCROLL_AWAY -> validateTabBarScrollAway()
         TAB_SWIPE -> validateTabSwipe()
+        FLOATING_PILL -> validateFloatingPill()
         AVATAR_SHAPE -> validateAvatarShape()
         STORY_RING -> validateStoryRing()
         QUIET_CALL_RING -> validateQuietCallRing()
@@ -402,6 +403,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             TAB_BAR_OVERLAY -> method.injectTabBarOverlay()
             TAB_BAR_SCROLL_AWAY -> method.injectTabBarScrollAway()
             TAB_SWIPE -> method.injectTabSwipe()
+            FLOATING_PILL -> method.injectFloatingPill()
             AVATAR_SHAPE -> method.injectAvatarShape()
             STORY_RING -> method.injectStoryRing()
             QUIET_CALL_RING -> method.injectQuietCallRing()
@@ -740,6 +742,10 @@ val floatingTabBarPatch = controlPatch("floating_tab_bar", "Floating tab bar", "
 val tabSwipePatch = controlPatch("tab_swipe", "Swipe between tabs",
     "Swipe sideways on your chats to move to the next tab in the bar at the bottom, instead of reaching down for its button. Hidden tabs are skipped, and a list that scrolls sideways keeps the swipe. Restart Messenger after you turn it on.",
     "Tab bar", TAB_SWIPE)
+@Suppress("unused")
+val seeThroughTabBarPatch = controlPatch("see_through_tab_bar", "See-through tab bar",
+    "Lets your chats show through the floating tab bar at the bottom, as much as you pick in HushMessenger's settings. The tab you're on and the icons stay as they are. Needs Floating tab bar, or Messenger's own floating bar. Restart Messenger to see the change.",
+    "Tab bar", FLOATING_PILL)
 @Suppress("unused")
 val holdStoriesPatch = controlPatch("story_hold", "Hold stories at the end", "Keeps a story on screen when it ends instead of moving on to the next one, so you go on with a tap or a swipe. Photos and videos both wait, and the last story stays open until you close it.", "Navigation")
 @Suppress("unused")

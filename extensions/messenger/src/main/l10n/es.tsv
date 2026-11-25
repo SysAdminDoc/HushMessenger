@@ -258,6 +258,12 @@ refresh_rate_hz	%1$s Hz
 refresh_rate_single	Tu pantalla funciona a una sola frecuencia, así que aquí no hay nada que elegir.
 refresh_rate_picked	Messenger pedirá %1$s Hz
 refresh_rate_help	Más rápida se desplaza con más fluidez y gasta más batería. La nueva frecuencia se nota al volver a Messenger.
+see_through_tab_bar_frosted	Esmerilada
+see_through_tab_bar_standard	Estándar
+see_through_tab_bar_light	Más transparente
+see_through_tab_bar_clear	La más transparente
+see_through_tab_bar_picked	%1$s se verá cuando Messenger se reinicie
+see_through_tab_bar_help	Esmerilada deja ver lo menos de tus chats y La más transparente, lo más.
 hidden_words_words	Palabras que ocultar
 hidden_words_hint	Hasta %1$d caracteres, separadas por comas
 hidden_words_help	Tiene que coincidir la palabra completa, así que "ok" no oculta "okay". Las mayúsculas no importan.
@@ -842,6 +848,8 @@ floating_tab_bar.title	Barra de pestañas flotante
 floating_tab_bar.description	Cambia la barra de pestañas de abajo al estilo flotante que Messenger está probando, que queda sobre tus chats en lugar de debajo. Messenger puede mantener su barra habitual en algunas pantallas. Reinicia Messenger para ver el cambio.
 tab_swipe.title	Deslizar entre pestañas
 tab_swipe.description	Desliza de lado en tus chats para pasar a la siguiente pestaña de la barra de abajo, en vez de bajar la mano hasta su botón. Las pestañas ocultas se saltan, y una lista que se desliza de lado se queda con el gesto. Reinicia Messenger después de activarlo.
+see_through_tab_bar.title	Barra de pestañas transparente
+see_through_tab_bar.description	Deja ver tus chats a través de la barra de pestañas flotante de abajo, tanto como elijas abajo. La pestaña en la que estás y los iconos quedan igual. Necesita Barra de pestañas flotante o la barra flotante propia de Messenger. Reinicia Messenger para ver el cambio.
 chat_animation.title	Deslizar los chats al abrirlos y cerrarlos
 chat_animation.description	Desliza un chat desde un lado al abrirlo y hacia fuera al volver. No afecta a las burbujas de chat ni a las burbujas de Android.
 story_hold.title	Detener las historias al final

@@ -362,6 +362,12 @@ final class SettingsText {
         ENGLISH.put("refresh_rate_hz", "%1$s Hz");
         ENGLISH.put("refresh_rate_single", "Your screen runs at one rate only, so there's nothing to pick here.");
         ENGLISH.put("refresh_rate_picked", "Messenger asks for %1$s Hz");
+        ENGLISH.put("see_through_tab_bar_frosted", "Frosted");
+        ENGLISH.put("see_through_tab_bar_standard", "Standard");
+        ENGLISH.put("see_through_tab_bar_light", "More see-through");
+        ENGLISH.put("see_through_tab_bar_clear", "Most see-through");
+        ENGLISH.put("see_through_tab_bar_picked", "%1$s shows once Messenger restarts");
+        ENGLISH.put("see_through_tab_bar_help", "Frosted lets the least of your chats through and Most see-through the most.");
         ENGLISH.put("refresh_rate_help", "Faster scrolls smoother and uses more battery. The new rate shows once you're back in Messenger.");
         ENGLISH.put("hidden_words_words", "Words to hide");
         ENGLISH.put("hidden_words_hint", "Up to %1$d characters, separated by commas");

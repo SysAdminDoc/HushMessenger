@@ -130,6 +130,7 @@ final class Controls {
         found.get("tab_bar_overlay").addAll(tabBarBuilders(classes, false));
         found.get("tab_bar_scroll_away").addAll(tabBarScrollAway(classes));
         found.get("tab_swipe").addAll(tabSwipe(classes));
+        found.get("floating_pill").addAll(floatingPill(classes));
         found.get("avatar_shape").addAll(avatarShape(classes));
         found.get("story_ring").addAll(storyRing(classes));
         found.get("quiet_call_ring").addAll(quietCallRing(classes));

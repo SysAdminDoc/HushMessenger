@@ -258,6 +258,12 @@ refresh_rate_hz	%1$s Hz
 refresh_rate_single	Il tuo schermo funziona a una sola frequenza, quindi qui non c'è niente da scegliere.
 refresh_rate_picked	Messenger chiede %1$s Hz
 refresh_rate_help	Più alta scorre in modo più fluido e consuma più batteria. La nuova frequenza si vede quando torni in Messenger.
+see_through_tab_bar_frosted	Smerigliata
+see_through_tab_bar_standard	Standard
+see_through_tab_bar_light	Più trasparente
+see_through_tab_bar_clear	La più trasparente
+see_through_tab_bar_picked	%1$s si vedrà dopo il riavvio di Messenger
+see_through_tab_bar_help	Smerigliata lascia intravedere meno chat e La più trasparente di più.
 hidden_words_words	Parole da nascondere
 hidden_words_hint	Fino a %1$d caratteri, separati da virgole
 hidden_words_help	Deve corrispondere la parola intera, quindi "ok" non nasconde "okay". Maiuscole e minuscole non contano.
@@ -842,6 +848,8 @@ floating_tab_bar.title	Barra delle schede fluttuante
 floating_tab_bar.description	Passa la barra delle schede in basso allo stile fluttuante che Messenger sta provando, che sta sopra le chat invece che sotto. Messenger può tenere la barra solita in alcune schermate. Riavvia Messenger per vedere la modifica.
 tab_swipe.title	Scorri tra le schede
 tab_swipe.description	Scorri di lato sulle chat per passare alla scheda successiva nella barra in basso, invece di allungarti fino al suo pulsante. Le schede nascoste vengono saltate, e un elenco che scorre di lato tiene per sé lo scorrimento. Riavvia Messenger dopo averlo attivato.
+see_through_tab_bar.title	Barra delle schede trasparente
+see_through_tab_bar.description	Lascia intravedere le chat attraverso la barra delle schede fluttuante in basso, quanto scegli qui sotto. La scheda in cui sei e le icone restano come sono. Serve Barra delle schede fluttuante o la barra fluttuante di Messenger. Riavvia Messenger per vedere la modifica.
 chat_animation.title	Fai scorrere le chat dentro e fuori
 chat_animation.description	Fa entrare una chat di lato quando la apri e uscire quando torni indietro. Le bolle di chat e le bolle di Android non cambiano.
 story_hold.title	Ferma le storie alla fine

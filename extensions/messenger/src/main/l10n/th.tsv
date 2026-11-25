@@ -258,6 +258,12 @@ refresh_rate_hz	%1$s Hz
 refresh_rate_single	หน้าจอของคุณใช้อัตรารีเฟรชได้แบบเดียว จึงไม่มีอะไรให้เลือกตรงนี้
 refresh_rate_picked	Messenger จะขอ %1$s Hz
 refresh_rate_help	ยิ่งเร็วยิ่งเลื่อนลื่นและใช้แบตเตอรี่มากขึ้น อัตราใหม่จะมีผลเมื่อคุณกลับไปที่ Messenger
+see_through_tab_bar_frosted	ฝ้า
+see_through_tab_bar_standard	มาตรฐาน
+see_through_tab_bar_light	โปร่งใสขึ้น
+see_through_tab_bar_clear	โปร่งใสที่สุด
+see_through_tab_bar_picked	%1$s จะแสดงหลังจาก Messenger รีสตาร์ท
+see_through_tab_bar_help	ฝ้าให้เห็นแชทน้อยที่สุด และโปร่งใสที่สุดให้เห็นมากที่สุด
 hidden_words_words	คำที่ต้องการซ่อน
 hidden_words_hint	สูงสุด %1$d ตัวอักษร คั่นด้วยเครื่องหมายจุลภาค
 hidden_words_help	ต้องตรงกันทั้งคำ ดังนั้น "ok" จะไม่ซ่อน "okay" ตัวพิมพ์ใหญ่เล็กไม่มีผล
@@ -842,6 +848,8 @@ floating_tab_bar.title	แถบแท็บแบบลอย
 floating_tab_bar.description	เปลี่ยนแถบแท็บด้านล่างเป็นแบบลอยเหนือรายการแชทตามที่ Messenger กำลังทดสอบ ต้องเริ่มต้น Messenger ใหม่อีกครั้ง
 tab_swipe.title	ปัดเพื่อเปลี่ยนแท็บ
 tab_swipe.description	ปัดไปด้านข้างบนรายการแชทเพื่อไปยังแท็บถัดไปในแถบด้านล่าง แทนที่จะเอื้อมลงไปกดปุ่มของแท็บนั้น แท็บที่ซ่อนไว้จะถูกข้าม และรายการที่เลื่อนไปด้านข้างได้จะยังใช้การปัดของตัวเองต่อไป เปิดใช้งานแล้วต้องเริ่มต้น Messenger ใหม่อีกครั้ง
+see_through_tab_bar.title	แถบแท็บแบบโปร่งใส
+see_through_tab_bar.description	ให้เห็นแชทของคุณผ่านแถบแท็บแบบลอยด้านล่าง มากน้อยตามที่คุณเลือกด้านล่าง แท็บที่คุณอยู่และไอคอนยังเหมือนเดิม ต้องเปิดแถบแท็บแบบลอย หรือใช้แถบลอยของ Messenger เอง รีสตาร์ท Messenger เพื่อดูการเปลี่ยนแปลง
 chat_animation.title	เปิดและปิดแชทด้วยการเลื่อนสไลด์
 chat_animation.description	เลื่อนแชทเข้ามาจากด้านข้างเมื่อเปิด และเลื่อนออกเมื่อออกจากแชท
 story_hold.title	หยุดสตอรี่ไว้เมื่อเล่นจบ

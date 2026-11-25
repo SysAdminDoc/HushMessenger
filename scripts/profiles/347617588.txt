@@ -139,6 +139,7 @@ hook facebook_profile LX/KE2;->A06()Z
 hook facebook_profile LX/KE3;->A06()Z
 hook facebook_profile LX/KE4;->A06()Z
 hook facebook_profile_header LX/B8u;->A0w(LX/1PS;)LX/1Jx;
+hook floating_pill LX/1zg;->A04(LX/W2F;LX/1nJ;LX/1qt;LX/1om;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;I)V
 hook floating_tab_bar LX/1jY;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;
 hook font_by_name LX/L9F;->A00(Landroid/content/Context;Ljava/lang/String;I)Landroid/graphics/Typeface;
 hook font_input LX/APq;->A06(Landroid/content/res/ColorStateList;Landroid/content/res/ColorStateList;Landroid/graphics/Typeface;Landroid/graphics/drawable/Drawable;Landroid/text/TextUtils$TruncateAt;Landroid/text/method/MovementMethod;Landroid/widget/EditText;LX/5nA;Ljava/lang/CharSequence;Ljava/lang/CharSequence;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;[Ljava/lang/String;FIIIIIIIIIIIZZZZZ)V

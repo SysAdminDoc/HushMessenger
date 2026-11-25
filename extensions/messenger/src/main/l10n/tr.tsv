@@ -258,6 +258,12 @@ refresh_rate_hz	%1$s Hz
 refresh_rate_single	Ekranın tek bir hızda çalışıyor, bu yüzden burada seçilecek bir şey yok.
 refresh_rate_picked	Messenger %1$s Hz isteyecek
 refresh_rate_help	Daha hızlısı daha akıcı kayar ve daha çok pil harcar. Yeni hız Messenger'a döndüğünde görünür.
+see_through_tab_bar_frosted	Buzlu
+see_through_tab_bar_standard	Standart
+see_through_tab_bar_light	Daha saydam
+see_through_tab_bar_clear	En saydam
+see_through_tab_bar_picked	%1$s, Messenger yeniden başlayınca görünür
+see_through_tab_bar_help	Buzlu sohbetlerinden en azını, En saydam en çoğunu gösterir.
 hidden_words_words	Gizlenecek kelimeler
 hidden_words_hint	En fazla %1$d karakter, virgülle ayrılmış
 hidden_words_help	Kelimenin tamamı eşleşmeli, bu yüzden "ok" kelimesi "okay" kelimesini gizlemez. Büyük küçük harf önemli değil.
@@ -842,6 +848,8 @@ floating_tab_bar.title	Yüzen sekme çubuğu
 floating_tab_bar.description	Alttaki sekme çubuğunu, Messenger'ın denediği yüzen stile geçirir. Bu stilde çubuk sohbetlerinin altında değil, üzerinde durur. Messenger bazı ekranlarda normal çubuğunu koruyabilir. Değişikliği görmek için Messenger'ı yeniden başlat.
 tab_swipe.title	Sekmeler arasında kaydırma
 tab_swipe.description	Alttaki çubuktaki düğmeye uzanmak yerine sohbetlerinde yana kaydırarak sonraki sekmeye geç. Gizli sekmeler atlanır ve yana kayan bir liste kaydırmayı kendinde tutar. Açtıktan sonra Messenger'ı yeniden başlat.
+see_through_tab_bar.title	Saydam sekme çubuğu
+see_through_tab_bar.description	Sohbetlerinin alttaki yüzen sekme çubuğunun içinden, aşağıda seçtiğin kadar görünmesini sağlar. Bulunduğun sekme ve simgeler olduğu gibi kalır. Yüzen sekme çubuğu ya da Messenger'ın kendi yüzen çubuğu gerekir. Değişikliği görmek için Messenger'ı yeniden başlat.
 chat_animation.title	Sohbetleri kaydırarak aç ve kapat
 chat_animation.description	Bir sohbeti açtığında onu yandan kaydırarak getirir, geri döndüğünde kaydırarak çıkarır. Sohbet balonları ve baloncuklar etkilenmez.
 story_hold.title	Hikayeleri sonda beklet

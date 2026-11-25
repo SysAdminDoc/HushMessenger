@@ -258,6 +258,12 @@ refresh_rate_hz	%1$s Hz
 refresh_rate_single	你的螢幕只有一種更新頻率，所以這裡沒有可選的項目。
 refresh_rate_picked	Messenger 會要求 %1$s Hz
 refresh_rate_help	頻率越高，捲動越流暢，也越耗電。回到 Messenger 後就會套用新的頻率。
+see_through_tab_bar_frosted	霧面
+see_through_tab_bar_standard	標準
+see_through_tab_bar_light	較透明
+see_through_tab_bar_clear	最透明
+see_through_tab_bar_picked	Messenger 重新啟動後會顯示%1$s
+see_through_tab_bar_help	霧面透出的聊天內容最少，最透明則最多。
 hidden_words_words	要隱藏的字詞
 hidden_words_hint	最多 %1$d 個字元，以逗號分隔
 hidden_words_help	必須整個字詞相符，所以「ok」不會隱藏「okay」。大小寫不影響。
@@ -842,6 +848,8 @@ floating_tab_bar.title	浮動分頁列
 floating_tab_bar.description	把底部分頁列換成 Messenger 正在試用的浮動樣式，疊在聊天清單上，而不是放在清單下方。在部分螢幕上，Messenger 可能仍保留一般分頁列。重新啟動 Messenger 後生效。
 tab_swipe.title	滑動切換分頁
 tab_swipe.description	在聊天清單上左右滑動就能切到下方分頁列的下一個分頁，不用再伸手去按它的按鈕。隱藏的分頁會跳過，會左右滑動的清單也會留住自己的滑動。開啟後請重新啟動 Messenger。
+see_through_tab_bar.title	透明分頁列
+see_through_tab_bar.description	讓聊天內容透過下方的浮動分頁列顯示出來，透明程度依你在下方的選擇。你所在的分頁和圖示維持原樣。需要開啟浮動分頁列，或使用 Messenger 本身的浮動列。重新啟動 Messenger 即可看到變更。
 chat_animation.title	以滑動動畫開啟與關閉聊天室
 chat_animation.description	開啟聊天室時從側邊滑入，返回時滑出。聊天大頭貼與泡泡通知不受影響。
 story_hold.title	限時動態結束時停留

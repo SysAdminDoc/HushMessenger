@@ -164,6 +164,7 @@ internal val PROFILE_347617503 = ControlProfile(
             "LX/KE2;->A06()Z", "LX/KE3;->A06()Z", "LX/KE4;->A06()Z",
         ),
         "facebook_profile_header" to setOf("LX/B8u;->A0w(LX/1PS;)LX/1Jx;"),
+        "floating_pill" to setOf("LX/1zg;->A04(LX/W2F;LX/1nJ;LX/1qt;LX/1om;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;I)V"),
         "floating_tab_bar" to setOf("LX/1jY;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;"),
         "font_by_name" to setOf("LX/L9F;->A00(Landroid/content/Context;Ljava/lang/String;I)Landroid/graphics/Typeface;"),
         "font_input" to setOf(
@@ -533,6 +534,7 @@ internal val PROFILE_347617497 = ControlProfile(
             "LX/K4l;->A06()Z", "LX/K4m;->A06()Z", "LX/K4n;->A06()Z",
         ),
         "facebook_profile_header" to setOf("LX/BBc;->A0w(LX/1Pr;)LX/1KM;"),
+        "floating_pill" to setOf("LX/Wp4;->A0Q(Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Ljava/util/List;I)V"),
         "floating_tab_bar" to setOf("LX/1jx;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Landroid/os/Bundle;)Landroid/view/View;"),
         "font_by_name" to setOf("LX/6LU;->A00(Landroid/content/Context;Ljava/lang/String;I)Landroid/graphics/Typeface;"),
         "font_input" to setOf(
