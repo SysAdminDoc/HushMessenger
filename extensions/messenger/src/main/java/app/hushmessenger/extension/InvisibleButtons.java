@@ -30,7 +30,9 @@ import java.util.WeakHashMap;
  * Every Messenger screen is looked over (the chat list, a chat, the other pages) along with every menu, sheet and dialog
  * that opens over one, so HushMessenger's own buttons on those screens count too. Each button is known by the name a
  * screen reader says for it, which is the only name a drawn button keeps, and settings list the ones Messenger has shown
- * so far. That name is in the language Messenger is in, so switching language fills the list again. A screen's
+ * so far. HushMessenger's buttons that show their words instead of a spoken name register those words through [own],
+ * since text on Messenger's own views is often a person's name and isn't kept. That name is in the language Messenger
+ * is in, so switching language fills the list again. A screen's
  * scrolling lists are left alone, since those rows are chats, people and messages; a menu's list that fits without
  * scrolling is its buttons, so those are taken. HushMessenger settings are never touched.
  * Public, since the calls come from Messenger's own chat fragment and Application in other packages.
@@ -60,6 +62,8 @@ public final class InvisibleButtons {
     /** Bumped whenever a level changes, so the next layout walks even inside the quiet window. */
     private static volatile int generation;
     private static final Map<View, Integer> lookedAt = new WeakHashMap<>();
+    /** HushMessenger's own buttons that show words rather than a spoken name, with those words (#191). */
+    private static final Map<View, String> ownNames = new WeakHashMap<>();
     /** The clock the walk paces itself by. Tests move it by hand. */
     static java.util.function.LongSupplier clock = android.os.SystemClock::uptimeMillis;
     private static Application watching;
@@ -75,6 +79,7 @@ public final class InvisibleButtons {
         dimmed.clear();
         lastLook.clear();
         lookedAt.clear();
+        ownNames.clear();
         generation = 0;
         clock = android.os.SystemClock::uptimeMillis;
     }
@@ -246,9 +251,20 @@ public final class InvisibleButtons {
             || list.canScrollHorizontally(1) || list.canScrollHorizontally(-1);
     }
 
+    /**
+     * Lists [button], one of HushMessenger's own that shows its words instead of a spoken name, under [name], so it can be
+     * picked like Messenger's buttons. A spoken name, when the button gets one, still comes first.
+     */
+    static void own(View button, CharSequence name) {
+        if (button == null) return;
+        if (TextUtils.isEmpty(name)) ownNames.remove(button);
+        else ownNames.put(button, name.toString());
+    }
+
     /** The name a screen reader says for [view], on one line, or null when it has none worth keeping. */
     static String nameOf(View view) {
         CharSequence said = view.getContentDescription();
+        if (TextUtils.isEmpty(said)) said = ownNames.get(view);
         if (TextUtils.isEmpty(said)) {
             AccessibilityNodeInfo info = view.createAccessibilityNodeInfo();
             if (info == null) return null;

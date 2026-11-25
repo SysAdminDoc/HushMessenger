@@ -180,6 +180,36 @@ public class InvisibleButtonsTest {
         }
     }
 
+    /** #191: HushMessenger's own buttons that show words are listed by them, and text on Messenger's own views isn't. */
+    @Test public void hushMessengersOwnTextButtonsAreListedByTheirWordsAndMessengersTextIsnt() {
+        try (var screen = Robolectric.buildActivity(Activity.class).setup()) {
+            Activity activity = screen.get();
+            TextView save = new TextView(activity);
+            save.setText("Save");
+            save.setClickable(true);
+            save.setLayoutParams(new FrameLayout.LayoutParams(80, 40));
+            InvisibleButtons.own(save, save.getText());
+            TextView person = new TextView(activity);
+            person.setText("Alex Rivera");
+            person.setClickable(true);
+            person.setLayoutParams(new FrameLayout.LayoutParams(120, 40));
+            View call = button(activity, "Call", 48);
+            ViewGroup root = chat(activity, call, save, person);
+
+            InvisibleButtons.setLevel("Save", 25);
+            InvisibleButtons.chatShown(new Object(), root);
+
+            assertEquals(List.of("Call", "Save"), InvisibleButtons.seen());
+            assertEquals(0.25f, save.getAlpha(), 0.001f);
+            assertEquals("a person's name on Messenger's view stays off the list", 1f, person.getAlpha(), 0f);
+            save.setContentDescription("Save photo");
+            assertEquals("a spoken name still comes first", "Save photo", InvisibleButtons.nameOf(save));
+            save.setContentDescription(null);
+            InvisibleButtons.own(save, null);
+            assertNull(InvisibleButtons.nameOf(save));
+        }
+    }
+
     @Test public void theChatListAndTheOtherScreensAreLookedOverButHushMessengersOwnPagesArent() {
         InvisibleButtons.setLevel("New message", 0);
         InvisibleButtons.register(RuntimeEnvironment.getApplication());

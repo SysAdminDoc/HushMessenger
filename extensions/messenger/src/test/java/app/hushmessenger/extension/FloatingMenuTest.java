@@ -122,6 +122,7 @@ public class FloatingMenuTest {
         String[] expected = {"Reply", "Copy", "Delete", "More"};
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], ((TextView) card.getChildAt(i)).getText().toString());
+            assertEquals("#191: listed in Invisible buttons by its words", expected[i], InvisibleButtons.nameOf(card.getChildAt(i)));
         }
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) card.getLayoutParams();
         // Under the message, lined up with its right edge, since that message is on the right.

@@ -225,6 +225,7 @@ final class FloatingMenu {
         TextView row = new TextView(context);
         row.setText(label);
         row.setTag(label);
+        InvisibleButtons.own(row, label);
         row.setTextSize(LABEL_SP);
         row.setTextColor(onSurface(light));
         row.setGravity(Gravity.CENTER_VERTICAL);

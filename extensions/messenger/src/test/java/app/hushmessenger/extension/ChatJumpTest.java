@@ -506,6 +506,8 @@ public class ChatJumpTest {
         assertSame(activity.findViewById(android.R.id.content), jump.bar.bar.getParent());
         idle(3 * ChatJump.TICK_MS);
         assertTrue(jump.bar.status.getText().toString().startsWith("Loading older messages"));
+        assertEquals("#191: listed in Invisible buttons by its words", jump.bar.cancel.getText().toString(),
+            InvisibleButtons.nameOf(jump.bar.cancel));
         idle(30 * ChatJump.TICK_MS);
         assertTrue(jump.done());
         assertNull(ChatJump.running);
