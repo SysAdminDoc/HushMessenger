@@ -1927,7 +1927,10 @@ public final class SettingsActivity extends Activity {
         content.addView(row, params);
     }
 
-    /** What Report a problem fills in: versions, the phone and the English titles of the controls saved on. */
+    /**
+     * What Report a problem fills in: versions, the phone, the English titles of the controls saved on with the ones not
+     * used yet marked, and the controls whose hook failed since its last use.
+     */
     private ProblemReport.Facts reportFacts() {
         String messenger = "";
         long code = 0;
@@ -1938,12 +1941,14 @@ public final class SettingsActivity extends Activity {
         } catch (PackageManager.NameNotFoundException unknown) {
             // The report says "unknown" instead.
         }
-        List<String> on = new ArrayList<>();
-        for (String[] spec : installedControls) if (Settings.preferences.getBoolean(spec[0], false)) on.add(spec[1]);
+        Map<String, String> failures = Settings.lastHookErrors();
+        List<String> on = ProblemReport.titlesOn(installedControls, key -> Settings.preferences.getBoolean(key, false),
+            Settings::lastActive, failures);
         return new ProblemReport.Facts(BuildConfig.VERSION_NAME, messenger, code,
             ProblemReport.patchedFrom(HostScreens.originalBuild(), Settings.preview), Build.MANUFACTURER, Build.MODEL,
             Build.VERSION.RELEASE, Build.VERSION.SDK_INT, Settings.preferences.getBoolean("paused", false), CrashGuard.isSafeMode(), on,
-            GalleryPicker.reportLine(), LastCrash.read(getFilesDir(), System.currentTimeMillis()), reportNotifications());
+            GalleryPicker.reportLine(), LastCrash.read(getFilesDir(), System.currentTimeMillis()), reportNotifications(),
+            ProblemReport.errors(installedControls, Settings::lastActive, failures));
     }
 
     /** Whether Messenger's notifications can pop up, for the report: Android's switches and each channel's importance. */

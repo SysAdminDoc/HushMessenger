@@ -45,7 +45,7 @@ Long-press Messenger's icon on your home screen and tap **Patch controls**. The 
 
 Each switch says what it does right under its name, and the search box at the top finds it by any word in that text. Some switches need **Restart Messenger**, and a bar at the top of settings has the button when one is waiting. **Pause all changes** turns everything off at once without forgetting your choices. If Messenger crashes three times near startup, safe mode pauses the controls until you open settings and tap **Resume**.
 
-The **App** tab has **Quick setups** (Quiet, Privacy, iPhone look or Back to defaults in one tap), **Save choices to a file** and **Restore choices from a file** for moving your setup to a new install, and **Report a problem**, which opens a GitHub issue with your versions, phone model and the switches that are on already filled in. Issues are public, so look it over before you send it. **Check for updates** is off by default.
+The **App** tab has **Quick setups** (Quiet, Privacy, iPhone look or Back to defaults in one tap), **Save choices to a file** and **Restore choices from a file** for moving your setup to a new install, and **Report a problem**, which opens a GitHub issue with your versions, phone model and the switches that are on already filled in, marking any switch that hasn't done anything yet or stopped with an error. Issues are public, so look it over before you send it. **Check for updates** is off by default.
 
 These screenshots come from the code on this page, so they can be a step ahead of the release you have installed.
 
