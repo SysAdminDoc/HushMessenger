@@ -279,6 +279,16 @@ home_header_unreadable	ไม่สามารถเปิดไฟล์รู
 home_header_not_saved	ไม่สามารถบันทึกรูปภาพได้
 home_header_busy	กำลังคัดลอกรูปภาพก่อนหน้านี้อยู่
 home_header_timeout	การประมวลผลรูปภาพใช้เวลานานเกินไป โปรดลองอีกครั้ง
+home_header_font	ฟอนต์ของข้อความ
+home_header_font_none	ข้อความใช้ฟอนต์ sans ตัวหนา เลือกไฟล์ .ttf หรือ .otf ขนาดไม่เกิน %1$d MB เพื่อใช้ฟอนต์ของคุณเอง
+home_header_font_using	ข้อความใช้ฟอนต์ %1$s
+home_header_font_missing	ไฟล์ %1$s ของ HushMessenger หายไป ข้อความจึงกลับไปใช้ฟอนต์ sans ตัวหนา โปรดเลือกไฟล์อีกครั้ง
+home_header_font_choose	เลือกฟอนต์ของข้อความ
+home_header_font_remove	ลบฟอนต์
+home_header_font_help	ฟอนต์นี้ใช้กับข้อความในหัวข้อเท่านั้น ส่วนอื่นของ Messenger ยังใช้ฟอนต์เดิม
+home_header_font_saved	บันทึกฟอนต์แล้ว
+home_header_font_removed	ลบฟอนต์แล้ว
+home_header_font_remove_failed	ไม่สามารถลบฟอนต์ได้
 tab_icons_help	ทุกแท็บจะได้ไอคอนลายเส้นเรียบง่ายในสีที่ Messenger ใช้อยู่แล้ว เลือกรูปภาพให้แท็บใดก็ได้เพื่อใส่รูปของคุณแทน รูปสี่เหลี่ยมจัตุรัสที่มีพื้นหลังโปร่งใสจะดูดีที่สุด รูปภาพมีขนาดได้ถึง %1$d MB
 tab_icons_choose	เลือก
 tab_icons_remove	เอาออก

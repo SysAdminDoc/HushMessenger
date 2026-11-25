@@ -8,6 +8,7 @@
 - The settings screen is in Bulgarian now. Refs #228.
 - The settings screen is in Italian now, when your phone is set to Italian. Refs #234.
 - `Follow your phone's dark mode` is a new switch under `Light theme` in Appearance on the App tab, and it starts off. With it on, HushMessenger's own screens go dark when your phone's in dark mode and light when it isn't, and they change the moment the phone does. `Light theme` waits underneath and keeps your choice for when you turn it off. Refs #232.
+- `Your own home header` under Theme can use a font of your own for its words now. Tap `Choose a font for the words` and pick a .ttf or .otf file, and `Remove the font` puts the bold sans back. Only the header's words change, so the rest of Messenger keeps its font, and a file that won't load falls back to bold sans too. Saved choice files carry it along. Refs #212.
 
 ### Changed and fixed
 

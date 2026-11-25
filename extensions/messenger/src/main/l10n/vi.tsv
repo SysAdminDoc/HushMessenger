@@ -279,6 +279,16 @@ home_header_unreadable	Không thể mở ảnh đó.
 home_header_not_saved	Không thể lưu ảnh.
 home_header_busy	Vẫn đang sao chép ảnh trước.
 home_header_timeout	Ảnh mất quá lâu. Vui lòng thử lại.
+home_header_font	Phông chữ cho chữ
+home_header_font_none	Chữ đang dùng phông sans in đậm. Chọn tệp .ttf hoặc .otf tối đa %1$d MB để dùng phông của riêng bạn.
+home_header_font_using	Chữ đang dùng %1$s.
+home_header_font_missing	Bản sao %1$s của HushMessenger đã mất, nên chữ dùng phông sans in đậm. Hãy chọn lại tệp.
+home_header_font_choose	Chọn phông cho chữ
+home_header_font_remove	Xóa phông chữ
+home_header_font_help	Chỉ chữ trên tiêu đề dùng phông này. Phần còn lại của Messenger vẫn giữ phông của nó.
+home_header_font_saved	Đã lưu phông chữ.
+home_header_font_removed	Đã xóa phông chữ.
+home_header_font_remove_failed	Không thể xóa phông chữ.
 tab_icons_help	Mỗi tab nhận một biểu tượng nét đơn giản theo màu Messenger đang dùng. Chọn một ảnh cho tab bất kỳ để đặt ảnh của bạn vào đó. Ảnh vuông có nền trong suốt trông đẹp nhất. Ảnh có thể nặng tối đa %1$d MB.
 tab_icons_choose	Chọn
 tab_icons_remove	Bỏ

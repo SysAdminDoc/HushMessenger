@@ -279,6 +279,16 @@ home_header_unreadable	Impossibile aprire quell'immagine.
 home_header_not_saved	Impossibile salvare l'immagine.
 home_header_busy	Sto ancora copiando l'ultima.
 home_header_timeout	L'immagine ci ha messo troppo. Riprova.
+home_header_font	Font per le parole
+home_header_font_none	Le parole usano un font sans in grassetto. Scegli un file .ttf o .otf fino a %1$d MB per usarne uno tuo.
+home_header_font_using	Le parole usano %1$s.
+home_header_font_missing	La copia di %1$s di HushMessenger non c'è più, quindi le parole usano il sans in grassetto. Scegli di nuovo il file.
+home_header_font_choose	Scegli un font per le parole
+home_header_font_remove	Rimuovi il font
+home_header_font_help	Solo le parole dell'intestazione usano questo font. Il resto di Messenger tiene il suo.
+home_header_font_saved	Font salvato.
+home_header_font_removed	Font rimosso.
+home_header_font_remove_failed	Impossibile rimuovere il font.
 tab_icons_help	Ogni scheda riceve un'icona semplice a contorno, nel colore che Messenger usa già. Scegli un'immagine per una scheda qualsiasi per metterci la tua. Una quadrata con lo sfondo trasparente rende al meglio. Le immagini possono arrivare a %1$d MB.
 tab_icons_choose	Scegli
 tab_icons_remove	Rimuovi

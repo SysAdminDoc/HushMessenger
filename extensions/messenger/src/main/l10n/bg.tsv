@@ -279,6 +279,16 @@ home_header_unreadable	Изображението не се отвори.
 home_header_not_saved	Изображението не се запази.
 home_header_busy	Предишното още се копира.
 home_header_timeout	Изображението се зареждаше твърде дълго. Опитайте пак.
+home_header_font	Шрифт за текста
+home_header_font_none	Текстът е с удебелен безсерифен шрифт. Изберете файл .ttf или .otf до %1$d MB, за да използвате свой.
+home_header_font_using	Текстът използва %1$s.
+home_header_font_missing	Копието на %1$s в HushMessenger липсва, затова текстът е с удебелен безсерифен шрифт. Изберете файла отново.
+home_header_font_choose	Избор на шрифт за текста
+home_header_font_remove	Премахване на шрифта
+home_header_font_help	Този шрифт се използва само за текста в заглавието. Останалата част от Messenger запазва своя.
+home_header_font_saved	Шрифтът е запазен.
+home_header_font_removed	Шрифтът е премахнат.
+home_header_font_remove_failed	Шрифтът не се премахна.
 tab_icons_help	Всеки раздел получава обикновена контурна икона в цвета, който Messenger вече използва. Изберете изображение за който и да е раздел, за да сложите свое вместо нея. Най-добре изглежда квадратно изображение с прозрачен фон. Изображенията могат да са до %1$d MB.
 tab_icons_choose	Избор
 tab_icons_remove	Премахване

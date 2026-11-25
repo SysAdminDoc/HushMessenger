@@ -279,6 +279,16 @@ home_header_unreadable	No se pudo abrir esa imagen.
 home_header_not_saved	No se pudo guardar la imagen.
 home_header_busy	Todavía se está copiando la anterior.
 home_header_timeout	La imagen tardó demasiado. Inténtalo de nuevo.
+home_header_font	Fuente del texto
+home_header_font_none	El texto usa una fuente sans en negrita. Elige un archivo .ttf u .otf de hasta %1$d MB para usar la tuya.
+home_header_font_using	El texto usa %1$s.
+home_header_font_missing	La copia de %1$s que guardó HushMessenger ya no está, así que el texto usa sans en negrita. Vuelve a elegir el archivo.
+home_header_font_choose	Elegir una fuente para el texto
+home_header_font_remove	Quitar la fuente
+home_header_font_help	Solo el texto del encabezado usa esta fuente. El resto de Messenger conserva la suya.
+home_header_font_saved	Fuente guardada.
+home_header_font_removed	Fuente quitada.
+home_header_font_remove_failed	No se pudo quitar la fuente.
 tab_icons_help	Cada pestaña recibe un icono sencillo de contorno en el color que Messenger ya usa. Elige una imagen para cualquier pestaña y pon la tuya en su lugar. Una imagen cuadrada con fondo transparente queda mejor. Las imágenes pueden pesar hasta %1$d MB.
 tab_icons_choose	Elegir
 tab_icons_remove	Quitar

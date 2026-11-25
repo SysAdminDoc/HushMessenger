@@ -279,6 +279,16 @@ home_header_unreadable	無法開啟該圖片。
 home_header_not_saved	無法儲存圖片。
 home_header_busy	仍在複製上一張圖片。
 home_header_timeout	圖片處理太久，請再試一次。
+home_header_font	文字字型
+home_header_font_none	文字目前使用粗體無襯線字型。選擇不超過 %1$d MB 的 .ttf 或 .otf 檔案，即可使用你自己的字型。
+home_header_font_using	文字使用 %1$s。
+home_header_font_missing	HushMessenger 儲存的 %1$s 副本已遺失，因此文字改用粗體無襯線字型。請重新選取檔案。
+home_header_font_choose	選擇文字的字型
+home_header_font_remove	移除字型
+home_header_font_help	只有標題的文字會使用這個字型，Messenger 的其他部分維持原本的字型。
+home_header_font_saved	字型已儲存。
+home_header_font_removed	字型已移除。
+home_header_font_remove_failed	無法移除字型。
 tab_icons_help	每個分頁都會換成簡單的線條圖示，顏色沿用 Messenger 原本的。想換成自己的圖片，就為該分頁挑一張。背景透明的正方形圖片最好看。圖片最大 %1$d MB。
 tab_icons_choose	選擇
 tab_icons_remove	移除

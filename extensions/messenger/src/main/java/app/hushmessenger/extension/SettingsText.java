@@ -384,6 +384,16 @@ final class SettingsText {
         ENGLISH.put("home_header_not_saved", "Couldn't save the picture.");
         ENGLISH.put("home_header_busy", "Still copying the last one.");
         ENGLISH.put("home_header_timeout", "The picture took too long. Try again.");
+        ENGLISH.put("home_header_font", "Font for the words");
+        ENGLISH.put("home_header_font_none", "The words use a bold sans font. Choose a .ttf or .otf file of up to %1$d MB to use your own.");
+        ENGLISH.put("home_header_font_using", "The words use %1$s.");
+        ENGLISH.put("home_header_font_missing", "HushMessenger's copy of %1$s is gone, so the words use bold sans. Choose the file again.");
+        ENGLISH.put("home_header_font_choose", "Choose a font for the words");
+        ENGLISH.put("home_header_font_remove", "Remove the font");
+        ENGLISH.put("home_header_font_help", "Only the header's words use this font. The rest of Messenger keeps its own.");
+        ENGLISH.put("home_header_font_saved", "Font saved.");
+        ENGLISH.put("home_header_font_removed", "Font removed.");
+        ENGLISH.put("home_header_font_remove_failed", "Couldn't remove the font.");
         ENGLISH.put("tab_icons_help", "Every tab gets a plain outlined icon in the color Messenger already uses. Pick a picture for any tab to put your own there instead. A square one with a see-through background looks best. Pictures can be up to %1$d MB.");
         ENGLISH.put("tab_icons_choose", "Choose");
         ENGLISH.put("tab_icons_remove", "Remove");

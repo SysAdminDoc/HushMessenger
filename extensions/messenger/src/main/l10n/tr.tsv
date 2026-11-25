@@ -279,6 +279,16 @@ home_header_unreadable	Bu resim açılamadı.
 home_header_not_saved	Resim kaydedilemedi.
 home_header_busy	Önceki resim hâlâ kopyalanıyor.
 home_header_timeout	Resim çok uzun sürdü. Tekrar dene.
+home_header_font	Yazının yazı tipi
+home_header_font_none	Yazı kalın bir sans yazı tipiyle görünür. Kendi yazı tipini kullanmak için en fazla %1$d MB boyutunda bir .ttf veya .otf dosyası seç.
+home_header_font_using	Yazı %1$s ile görünür.
+home_header_font_missing	HushMessenger'daki %1$s kopyası artık yok, bu yüzden yazı kalın sans ile görünür. Dosyayı yeniden seç.
+home_header_font_choose	Yazı için yazı tipi seç
+home_header_font_remove	Yazı tipini kaldır
+home_header_font_help	Bu yazı tipini yalnızca başlıktaki yazı kullanır. Messenger'ın geri kalanı kendi yazı tipini korur.
+home_header_font_saved	Yazı tipi kaydedildi.
+home_header_font_removed	Yazı tipi kaldırıldı.
+home_header_font_remove_failed	Yazı tipi kaldırılamadı.
 tab_icons_help	Her sekme, Messenger'ın zaten kullandığı renkte sade bir çizgi simge alır. İstediğin sekme için bir resim seçerek kendi resmini koy. Saydam arka planlı kare bir resim en iyi görüneni. Resimler en fazla %1$d MB olabilir.
 tab_icons_choose	Seç
 tab_icons_remove	Kaldır
