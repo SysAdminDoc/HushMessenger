@@ -233,6 +233,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     "mark_read_action" to setOf("LX/KHu;->A0W()Z", "LX/MKS;->A0F()Z"),
     CHAT_BAR_PLUS to setOf(SYNTHETIC_CHAT_JUMP),
     MARK_READ_LOCALLY to setOf(SYNTHETIC_MARK_READ_LOCALLY),
+    UNREAD_BADGE to setOf(SYNTHETIC_UNREAD_BADGE),
 )
 
 /**

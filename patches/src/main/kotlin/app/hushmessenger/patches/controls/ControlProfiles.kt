@@ -372,6 +372,7 @@ internal val PROFILE_347617503 = ControlProfile(
         "text_style" to setOf("LX/AQH;->onSelectionChanged(II)V"),
         "typing" to setOf("LX/Bhb;->run()V"),
         "typing_mailbox" to setOf("LX/95s;->A0L(Ljava/lang/String;Z)LX/37V;"),
+        "unread_badge" to setOf("LX/7QS;->A0D(Ljava/lang/String;Ljava/lang/String;IIIII)V"),
         "unsent_clear" to setOf("Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0D(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V"),
         "unsent_indicator" to setOf(
             "LX/5n0;->DFQ(I)Ljava/lang/String;", "LX/cvc;->DFQ(I)Ljava/lang/String;",
@@ -740,6 +741,7 @@ internal val PROFILE_347617497 = ControlProfile(
         "text_style" to setOf("LX/AT0;->onSelectionChanged(II)V"),
         "typing" to setOf("LX/BkK;->run()V"),
         "typing_mailbox" to setOf("LX/98r;->A0L(Ljava/lang/String;Z)LX/37u;"),
+        "unread_badge" to setOf("LX/7TS;->A0D(Ljava/lang/String;Ljava/lang/String;IIIII)V"),
         "unsent_clear" to setOf("Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0D(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V"),
         "unsent_indicator" to setOf(
             "LX/5qH;->DFa(I)Ljava/lang/String;", "LX/ZEq;->DFa(I)Ljava/lang/String;",

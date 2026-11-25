@@ -266,7 +266,7 @@ public class CompatReport {
         PATCHES.put("Screen refresh rate", List.of("refresh_rate"));
         PATCHES.put("Appear offline", List.of("appear_offline", "availability_setting"));
         PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read", "delivery_receipt", "reaction_read"));
-        PATCHES.put("Mark chats read on this phone", List.of("local_read"));
+        PATCHES.put("Mark chats read on this phone", List.of("local_read", "unread_badge"));
         PATCHES.put("Mark as read button", List.of("mark_read_bar", "mark_read_click"));
         PATCHES.put("Keep unsent messages", List.of("keep_unsent", "unsent_indicator", "delta_unsent", "unsent_recall", "unsent_clear"));
         PATCHES.put("Square profile pictures", List.of("avatar_shape", "story_ring"));
@@ -282,7 +282,7 @@ public class CompatReport {
         PATCHES.put("Keep chat pop-ups", List.of("chat_channel_keep", "chat_channel_raise"));
         PATCHES.put("Fix videos in chat heads", List.of("chat_head_video"));
         PATCHES.put("Chat bar buttons in the + menu", List.of("chat_bar_plus"));
-        PATCHES.put("Mark as read stays on this phone", List.of("mark_read_locally", "local_read"));
+        PATCHES.put("Mark as read stays on this phone", List.of("mark_read_locally", "local_read", "unread_badge"));
     }
 
     static final Set<String> ORIGINAL_PHOTO_HOOKS = Set.of(

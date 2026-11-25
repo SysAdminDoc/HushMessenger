@@ -401,7 +401,72 @@ final class Extras {
         var answers = new ArrayList<Method>();
         for (var cls : classes) for (var method : cls.getMethods())
             if (wanted.equals(hookId(method)) && isUnreadAnswer(method)) answers.add(method);
-        return answers.size() == 1 ? List.of(answers.get(0)) : List.of();
+        if (answers.size() != 1) return List.of();
+        // The hook hands the summary over straight out of its parameter register, so nothing may write that register.
+        var answer = answers.get(0);
+        int summary = answer.getImplementation().getRegisterCount() - 1;
+        for (var instruction : instructions(answer))
+            if (instruction.getOpcode().setsRegister() && instruction instanceof OneRegisterInstruction one
+                && (one.getRegisterA() == summary || (instruction.getOpcode().setsWideRegister() && one.getRegisterA() + 1 == summary)))
+                return List.of();
+        return List.of(answer);
+    }
+
+    static final String BADGE_COUNT_TRACE = "UnreadInboxItemsCalculator.updateBadgeUnreadCount";
+    static final String BADGE_TOTAL_LOG = " total=";
+    static final List<String> BADGE_COUNT_PARAMETERS =
+        List.of("Ljava/lang/String;", "Ljava/lang/String;", "I", "I", "I", "I", "I");
+    /** The unread total is the fourth parameter. Mirrors BADGE_TOTAL_PARAMETER in UnreadBadge.kt. */
+    static final int BADGE_TOTAL_PARAMETER = 3;
+
+    static boolean hasBadgeCountShape(Method method) {
+        return !AccessFlags.STATIC.isSet(method.getAccessFlags()) && "V".equals(method.getReturnType())
+            && params(method).equals(BADGE_COUNT_PARAMETERS);
+    }
+
+    static boolean loadsBadgeString(Method method, String wanted) {
+        for (var instruction : instructions(method))
+            if (instruction instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference s
+                && wanted.equals(s.getString())) return true;
+        return false;
+    }
+
+    /**
+     * Whether the count logs the register as its total, copied out within three instructions of the label, and the
+     * entry is a spot nothing jumps onto and no try covers. Mirrors validateUnreadBadge in UnreadBadge.kt.
+     */
+    static boolean badgeCountHookable(Method method) {
+        var implementation = method.getImplementation();
+        if (implementation == null) return false;
+        int first = implementation.getRegisterCount() - (BADGE_COUNT_PARAMETERS.size() + 1);
+        if (first < 0) return false;
+        int total = first + 1 + BADGE_TOTAL_PARAMETER;
+        var code = instructions(method);
+        int at = -1;
+        for (int i = 0; i < code.size() && at < 0; i++)
+            if (code.get(i) instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference s
+                && BADGE_TOTAL_LOG.equals(s.getString())) at = i;
+        if (at < 0) return false;
+        boolean logged = false;
+        for (int i = at + 1; i < Math.min(code.size(), at + 4); i++) {
+            var op = code.get(i).getOpcode();
+            if ((op == Opcode.MOVE || op == Opcode.MOVE_FROM16 || op == Opcode.MOVE_16)
+                && ((TwoRegisterInstruction) code.get(i)).getRegisterB() == total) logged = true;
+        }
+        if (!logged || Media.mediaTargets(method).contains(0)) return false;
+        for (var block : implementation.getTryBlocks()) if (block.getStartCodeAddress() == 0) return false;
+        return true;
+    }
+
+    /** unread_badge: the one badge count, alone in its shape on its class. Mirrors findUnreadBadge in UnreadBadge.kt. */
+    static List<Method> unreadBadge(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) {
+            var shaped = new ArrayList<Method>();
+            for (var method : cls.getMethods()) if (hasBadgeCountShape(method)) shaped.add(method);
+            if (shaped.size() == 1 && loadsBadgeString(shaped.get(0), BADGE_COUNT_TRACE)) found.add(shaped.get(0));
+        }
+        return found.size() == 1 && badgeCountHookable(found.get(0)) ? found : List.of();
     }
 
     static final String OVERLAY_CONFIG_HOLDER = "Lcom/facebook/rsys/overlayconfigmanager/OverlayConfigManagerHolder;";

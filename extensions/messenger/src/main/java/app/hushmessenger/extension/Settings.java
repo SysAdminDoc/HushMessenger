@@ -1939,6 +1939,8 @@ public final class Settings {
             storeLocalReads(marks, "", System.currentTimeMillis());
             // Messenger already had this chat unread, so its own call changes nothing and the row wouldn't redraw.
             ChatHiding.refreshLists();
+            // Nor would the badge count it again on its own.
+            UnreadBadge.drop(key);
         } catch (RuntimeException error) {
             hookFailed(LOCAL_READ_KEY, "Can't turn a chat read on this phone back to unread", error);
         }
@@ -1948,9 +1950,9 @@ public final class Settings {
      * The chat list's unread check, asked for the bold row, the "n new messages" line and the Chats badge alike. A
      * chat read on this phone answers read until a message newer than that moment lands in it.
      */
-    public static boolean chatReadLocally(Object chat, Object summary, long newestMessage) {
+    static boolean chatReadLocally(Object chat, Object summary, long newestMessage) {
         try {
-            if (chat == null || !(enabled(LOCAL_READ_KEY) || enabled(LOCAL_MARK_KEY))) return false;
+            if (chat == null || !readHereOn()) return false;
             String key = String.valueOf(chat);
             Boolean before = summary == null ? null : answeredBeforeTheMark(key, summary);
             if (before != null) return before;
@@ -1966,6 +1968,31 @@ public final class Settings {
 
     static boolean chatReadLocally(Object chat, long newestMessage) {
         return chatReadLocally(chat, null, newestMessage);
+    }
+
+    /** Whether either switch that keeps chats read on this phone is on. Off, Pause and safe mode answer no. */
+    static boolean readHereOn() {
+        return enabled(LOCAL_READ_KEY) || enabled(LOCAL_MARK_KEY);
+    }
+
+    /**
+     * The unread check's own comparison, handed over with Messenger's answer: below zero for unread. A chat read on
+     * this phone answers read (zero) until something newer lands in it, and every other chat keeps Messenger's
+     * answer. A chat Messenger still counts unread but this phone read is noted for the badge (#222), which takes it
+     * off Messenger's total.
+     */
+    public static int chatReadHere(Object chat, Object summary, long newestMessage, int stock) {
+        boolean read = chatReadLocally(chat, summary, newestMessage);
+        if (chat != null) {
+            try {
+                String key = String.valueOf(chat);
+                Long marked = readHereOn() ? localReadMarks().get(key) : null;
+                UnreadBadge.note(key, newestMessage, stock < 0 && marked != null && marked >= newestMessage);
+            } catch (RuntimeException error) {
+                hookFailed(LOCAL_READ_KEY, "Can't count a chat read on this phone off the badge", error);
+            }
+        }
+        return read ? 0 : stock;
     }
 
     /**

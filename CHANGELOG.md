@@ -13,6 +13,7 @@
 - The `Page up and page down buttons` switch shows up under `Jump to the first message or a date` now. It never made it into settings in 0.31.0, so there was no way to turn the buttons on. Refs #207.
 - `Preview chats on long press` gave some accounts the plain menu right after Messenger started. Those accounts only get the peek once a chat has been opened since the app came up, and turning the switch on restarts Messenger, so the first long press never peeked. With the switch on the first long press opens the preview now. Refs #231, #205.
 - `Put your words above the photo` did nothing for most photos. It only stepped in when your words mentioned Meta AI, so an ordinary photo still went out ahead of what you typed. Now your words go first for any photo or video waiting above the message box when you tap Send, and a photo you're asking Meta AI about keeps its words with it. Refs #236.
+- A chat cleared by `Mark chats read on this phone` still counted on the unread badge, both on Messenger's icon and on its Chats tab. It comes off the badge now, and so does one cleared by `Mark as read stays on this phone`. A new message in the chat, or Mark as unread, puts it back. Refs #222.
 
 ## 0.31.0 (2026-11-25)
 

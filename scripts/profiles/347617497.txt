@@ -314,6 +314,7 @@ hook tab_swipe LX/1jx;->onCreateView(Landroid/view/LayoutInflater;Landroid/view/
 hook text_style LX/AT0;->onSelectionChanged(II)V
 hook typing LX/BkK;->run()V
 hook typing_mailbox LX/98r;->A0L(Ljava/lang/String;Z)LX/37u;
+hook unread_badge LX/7TS;->A0D(Ljava/lang/String;Ljava/lang/String;IIIII)V
 hook unsent_clear Lcom/facebook/messaging/notify/client/MessagesNotificationManager;->A0D(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/notify/type/NewMessageNotification;)V
 hook unsent_indicator LX/5qH;->DFa(I)Ljava/lang/String;
 hook unsent_indicator LX/ZEq;->DFa(I)Ljava/lang/String;

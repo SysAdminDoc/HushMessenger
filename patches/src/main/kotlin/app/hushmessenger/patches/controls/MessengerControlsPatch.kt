@@ -205,6 +205,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         MARK_READ_CLICK -> validateMarkReadClick()
         // Mark chats read on this phone and Mark as read stays on this phone share it; the second finds the first's hook already in.
         LOCAL_READ -> if (!localReadHooked()) validateLocalRead()
+        UNREAD_BADGE -> if (!unreadBadgeHooked()) validateUnreadBadge()
         ANALYTICS_UPLOADS -> validateAnalyticsUpload()
         ATTRIBUTION_UPLOADS -> validateAttributionUpload()
         AD_EVENTS -> validateAdEvent()
@@ -444,6 +445,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             "anonymous_stories" -> method.injectStorySeen()
             "growth_notes" -> method.injectNotesTips()
             MARK_READ_LOCALLY -> method.injectMarkReadLocally()
+            UNREAD_BADGE -> method.injectUnreadBadge()
             else -> if (hook in pluginGates) method.injectPluginGate(key) else method.injectFeatureSwitch(key)
         }
     }
@@ -912,10 +914,10 @@ val recoveryCodeRowPatch = controlPatch("recovery_code_row", "Show the 40-charac
 @Suppress("unused")
 val hideReadReceiptsPatch = controlPatch("hide_read_receipts", "Hide read receipts", "Opening a chat no longer tells people you read their message, and the chat stays unread on this phone. Marking it read yourself, replying in it or reacting to a message marks it read and shows Seen, like Messenger does. Group chats aren't tested. Hide Delivered, under it, also holds back the Delivered tick in ordinary chats. Messenger's own Read receipts setting under Privacy & safety marks chats read without showing Seen.", "Privacy", HIDE_READ_RECEIPTS, REPLY_READ, DELIVERY_RECEIPT, REACTION_READ)
 @Suppress("unused")
-val readChatsLocallyPatch = controlPatch("read_chats_locally", "Mark chats read on this phone", "Clears the unread look of a chat you've opened while Hide read receipts is on, so the chat list stops showing it bold with a count. Nothing goes to Messenger, so the other person still isn't told you read it. A new message in the chat brings the unread look back.", "Privacy", LOCAL_READ)
+val readChatsLocallyPatch = controlPatch("read_chats_locally", "Mark chats read on this phone", "Clears the unread look of a chat you've opened while Hide read receipts is on, so the chat list stops showing it bold with a count. Nothing goes to Messenger, so the other person still isn't told you read it. A new message in the chat brings the unread look back.", "Privacy", LOCAL_READ, UNREAD_BADGE)
 @Suppress("unused")
 val markReadLocallyPatch = controlPatch("mark_read_locally", "Mark as read stays on this phone",
-    "Messenger's Mark as read on a chat in your list tells the other person you read their message. With this on it clears the unread look on this phone only and nothing goes to Messenger. A new message in the chat brings the unread look back.", "Privacy", MARK_READ_LOCALLY, LOCAL_READ)
+    "Messenger's Mark as read on a chat in your list tells the other person you read their message. With this on it clears the unread look on this phone only and nothing goes to Messenger. A new message in the chat brings the unread look back.", "Privacy", MARK_READ_LOCALLY, LOCAL_READ, UNREAD_BADGE)
 
 val markReadButtonPatch = controlPatch("mark_read_button", "Mark as read button", "Puts Messenger's Mark as read icon in a chat's top bar while Hide read receipts is on. Opening the chat still sends nothing, and a tap on the icon sends Seen and marks the chat read. When the bar is full it takes the place of the chat details button (tapping the chat's name opens the same page), or of another button that isn't for calls when a chat doesn't have one, so the call buttons stay put.", "Privacy", MARK_READ_BAR, MARK_READ_CLICK)
 @Suppress("unused")
