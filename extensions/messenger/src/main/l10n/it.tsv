@@ -349,6 +349,9 @@ material_you_style_monochrome	Monocromatico
 material_you_style_changed	Stile %s salvato
 light	Tema chiaro
 light_help	Rende chiare queste impostazioni. Messenger resta com'è.
+follow_phone_theme	Segui la modalità scura del telefono
+follow_phone_theme_help	Rende scure queste impostazioni quando il telefono è in modalità scura e chiare quando non lo è. Messenger resta com'è.
+light_follows_phone	Segui la modalità scura del telefono è attivo, quindi l'aspetto lo sceglie il telefono. La tua scelta è salvata.
 theme_help	Scuro per impostazione predefinita. La tua scelta resta salvata.
 theme_status_wallpaper	Material You prende i colori dallo sfondo. Scegli un accento o incolla un tema per usare i tuoi.
 theme_status_saved	Il tuo tema %s è salvato. Material You lo usa finché è attivo.

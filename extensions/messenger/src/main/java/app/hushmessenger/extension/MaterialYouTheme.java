@@ -71,10 +71,11 @@ public final class MaterialYouTheme {
 
     /**
      * Whether a bar Hush puts inside a chat should be light: Messenger's own theme once it has answered, and Hush's
-     * Light theme switch before that or without the Material You patch.
+     * Light theme switch (or the phone's dark mode, when the settings follow it) before that or without the Material You
+     * patch.
      */
     static boolean chatIsLight() {
-        return answered ? !DARK.get() : Settings.preferences.getBoolean("light", false);
+        return answered ? !DARK.get() : SettingsTheme.light(Settings.appContext);
     }
 
     /**

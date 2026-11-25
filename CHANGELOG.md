@@ -7,6 +7,7 @@
 - `Mark as read stays on this phone` is a new switch under Privacy, and it starts off. Press and hold a chat in your list and Messenger offers Mark as read, but picking it tells the other person you read their message. With this on, Mark as read only clears the bold and the count on this phone, and nothing goes to Messenger. A new message brings them back. Mark as unread does too, also on a chat that `Mark chats read on this phone` cleared. Refs #222.
 - The settings screen is in Bulgarian now. Refs #228.
 - The settings screen is in Italian now, when your phone is set to Italian. Refs #234.
+- `Follow your phone's dark mode` is a new switch under `Light theme` in Appearance on the App tab, and it starts off. With it on, HushMessenger's own screens go dark when your phone's in dark mode and light when it isn't, and they change the moment the phone does. `Light theme` waits underneath and keeps your choice for when you turn it off. Refs #232.
 
 ### Changed and fixed
 

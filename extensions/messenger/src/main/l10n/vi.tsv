@@ -349,6 +349,9 @@ material_you_style_monochrome	Đơn sắc
 material_you_style_changed	Đã lưu kiểu %s
 light	Chủ đề sáng
 light_help	Chuyển màn hình cài đặt này sang màu sáng. Bản thân Messenger không bị ảnh hưởng.
+follow_phone_theme	Theo chế độ tối của điện thoại
+follow_phone_theme_help	Chuyển màn hình cài đặt này sang màu tối khi điện thoại ở chế độ tối và sang màu sáng khi không. Bản thân Messenger không bị ảnh hưởng.
+light_follows_phone	Theo chế độ tối của điện thoại đang bật, nên điện thoại sẽ chọn giao diện. Cài đặt của bạn đã được lưu.
 theme_help	Mặc định sử dụng chủ đề tối. Cài đặt của bạn sẽ được giữ lại.
 theme_status_wallpaper	Material You lấy màu từ hình nền của bạn. Chọn một màu nhấn hoặc dán một chủ đề để dùng màu của riêng bạn.
 theme_status_saved	Đã lưu chủ đề %s. Material You dùng chủ đề này khi đang bật.

@@ -454,6 +454,9 @@ final class SettingsText {
         ENGLISH.put("material_you_style_changed", "%s style saved");
         ENGLISH.put("light", "Light theme");
         ENGLISH.put("light_help", "Makes these settings light. Messenger itself stays unchanged.");
+        ENGLISH.put("follow_phone_theme", "Follow your phone's dark mode");
+        ENGLISH.put("follow_phone_theme_help", "Makes these settings dark when your phone is in dark mode and light when it isn't. Messenger itself stays unchanged.");
+        ENGLISH.put("light_follows_phone", "Follow your phone's dark mode is on, so your phone picks the look. Your choice is saved.");
         ENGLISH.put("theme_help", "Dark by default. Your choice stays saved.");
         ENGLISH.put("theme_status_wallpaper", "Material You takes its colors from your wallpaper. Pick an accent or paste a theme to use your own.");
         ENGLISH.put("theme_status_saved", "Your %s theme is saved. Material You uses it while it's on.");

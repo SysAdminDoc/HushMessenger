@@ -349,6 +349,9 @@ material_you_style_monochrome	單色
 material_you_style_changed	已儲存「%s」樣式
 light	淺色主題
 light_help	將此設定畫面改為淺色。Messenger 本身不受影響。
+follow_phone_theme	跟隨手機的深色模式
+follow_phone_theme_help	手機使用深色模式時，此設定畫面會變為深色，否則為淺色。Messenger 本身不受影響。
+light_follows_phone	「跟隨手機的深色模式」已開啟，因此由手機決定外觀。你的設定已儲存。
 theme_help	預設使用深色主題。你的設定會保留。
 theme_status_wallpaper	Material You 會使用桌布的顏色。選擇強調色或貼上主題即可使用自己的顏色。
 theme_status_saved	已儲存「%s」主題。開啟 Material You 時會使用它。

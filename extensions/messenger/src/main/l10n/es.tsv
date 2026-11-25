@@ -349,6 +349,9 @@ material_you_style_monochrome	Monocromo
 material_you_style_changed	Estilo %s guardado
 light	Tema claro
 light_help	Usa un fondo claro en estos ajustes. Messenger no cambia.
+follow_phone_theme	Seguir el modo oscuro del teléfono
+follow_phone_theme_help	Usa un fondo oscuro en estos ajustes cuando el teléfono está en modo oscuro y uno claro cuando no lo está. Messenger no cambia.
+light_follows_phone	Seguir el modo oscuro del teléfono está activado, así que el teléfono elige el aspecto. Tu elección queda guardada.
 theme_help	Oscuro de forma predeterminada. Tu elección queda guardada.
 theme_status_wallpaper	Material You toma sus colores de tu fondo de pantalla. Elige un color de acento o pega un tema para usar los tuyos.
 theme_status_saved	Tu tema %s está guardado. Material You lo usa mientras esté activado.

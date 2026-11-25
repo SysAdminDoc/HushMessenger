@@ -349,6 +349,9 @@ material_you_style_monochrome	Tek renkli
 material_you_style_changed	%s stili kaydedildi
 light	Açık tema
 light_help	Bu ayarları açık renkli yapar. Messenger'ın kendisi değişmez.
+follow_phone_theme	Telefonun karanlık modunu izle
+follow_phone_theme_help	Telefon karanlık moddayken bu ayarları koyu, değilken açık renkli yapar. Messenger'ın kendisi değişmez.
+light_follows_phone	Telefonun karanlık modunu izle açık, bu yüzden görünümü telefon seçer. Seçimin kaydedildi.
 theme_help	Varsayılan olarak koyu. Seçimin kayıtlı kalır.
 theme_status_wallpaper	Material You renklerini duvar kağıdından alır. Kendi renklerini kullanmak için bir vurgu rengi seç veya bir tema yapıştır.
 theme_status_saved	%s teman kaydedildi. Material You açıkken onu kullanır.

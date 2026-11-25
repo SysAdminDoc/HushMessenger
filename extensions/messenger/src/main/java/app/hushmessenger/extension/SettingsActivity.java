@@ -54,7 +54,9 @@ public final class SettingsActivity extends Activity {
     private int barTitleShown = -1;
     private EditText search;
     private SettingsDialog licenses;
-    private boolean compact, scrollHeader, binding, lightTheme, recreatingTheme;
+    private boolean compact, scrollHeader, binding, lightTheme, recreatingTheme, lightRowFollows;
+    /** The Light theme row, rebuilt in place when Follow your phone's dark mode turns on or off under it. */
+    private LinearLayout lightRow;
     private int restoreControlsScroll = -1, restoreAppScroll = -1;
     private final List<Switch> switches = new ArrayList<>();
     private final List<RadioButton> bubbleModes = new ArrayList<>();
@@ -302,7 +304,7 @@ public final class SettingsActivity extends Activity {
         HostScreens.start(this);
         Settings.initialize(this);
         syncDrawerIcon(this);
-        boolean light = Settings.preferences.getBoolean("light", false);
+        boolean light = SettingsTheme.light(this);
         lightTheme = light;
         setTheme(light ? android.R.style.Theme_Material_Light_NoActionBar : android.R.style.Theme_Material_NoActionBar);
         super.onCreate(state);
@@ -563,6 +565,34 @@ public final class SettingsActivity extends Activity {
         }
     }
 
+    /** The Light theme row, usable only while Follow your phone's dark mode is off. */
+    private LinearLayout lightControl() {
+        lightRowFollows = SettingsTheme.followsPhone();
+        return lightRow = controlRow(SettingsTheme.LIGHT, text.format("light"), text.format("light_help"), false);
+    }
+
+    /** Follow your phone's dark mode flipped without the look changing, so only the Light theme row above it does. */
+    private void rebuildLightControl() {
+        if (lightRow == null || lightRowFollows == SettingsTheme.followsPhone()) return;
+        LinearLayout old = lightRow, parent = (LinearLayout) old.getParent();
+        if (parent == null) return;
+        switches.remove(old.findViewWithTag(SettingsTheme.LIGHT));
+        int at = parent.indexOfChild(old);
+        ViewGroup.LayoutParams params = old.getLayoutParams();
+        LinearLayout row = lightControl();
+        parent.removeViewAt(at);
+        parent.addView(row, at, params);
+    }
+
+    /**
+     * Without configChanges Android remakes this screen when the phone's dark mode changes. A Root Mount host screen
+     * that takes the change itself keeps it, so this screen follows here instead.
+     */
+    @Override public void onConfigurationChanged(android.content.res.Configuration configuration) {
+        super.onConfigurationChanged(configuration);
+        if (lightTheme != SettingsTheme.light(this)) refreshChoices();
+    }
+
     private String accessHelpText() {
         // The Menu row patch also makes the Messenger logo open settings where it finds the logo's handler, and that keeps
         // working while the row is hidden, unless its own switch turns it off.
@@ -599,13 +629,14 @@ public final class SettingsActivity extends Activity {
     }
 
     void refreshChoices() {
-        if (lightTheme != Settings.preferences.getBoolean("light", false)) {
+        if (lightTheme != SettingsTheme.light(this)) {
             if (!recreatingTheme) {
                 recreatingTheme = true;
                 recreate();
             }
             return;
         }
+        rebuildLightControl();
         // Opening settings from the long-press shortcut can bring this screen back rather than a new one, and turning one
         // way in off changes what the others can do.
         rebuildWayControls();
@@ -1433,8 +1464,10 @@ public final class SettingsActivity extends Activity {
     @SuppressWarnings("deprecation")
     private LinearLayout controlRow(String key, String title, String description, boolean divided) {
         boolean overlay = !"paused".equals(key) && !ui.largeText;
-        boolean available = Settings.available(key);
-        String reason = available ? "" : text.format(CameraActivity.KEY.equals(key) ? "camera_unsupported"
+        // Light theme waits while the phone's dark mode decides, and keeps its choice for when that's off again.
+        boolean available = Settings.available(key) && !(SettingsTheme.LIGHT.equals(key) && SettingsTheme.followsPhone());
+        String reason = available ? "" : text.format(SettingsTheme.LIGHT.equals(key) ? "light_follows_phone"
+            : CameraActivity.KEY.equals(key) ? "camera_unsupported"
             : GalleryPicker.KEY.equals(key) ? "gallery_unsupported"
             : LocalChatSearch.KEY.equals(key) ? "local_search_unsupported"
             : CallRecording.KEY.equals(key) ? "call_recording_unsupported"
@@ -1575,7 +1608,8 @@ public final class SettingsActivity extends Activity {
     private static String rowIcon(String key) {
         if (WAYS_IN.contains(key) || "hide_drawer_icon".equals(key) || MenuRows.LOG_OUT.equals(key))
             return SettingsIcons.forKey(key, sectionIcon("quick_access"));
-        if ("light".equals(key) || "material_you_black".equals(key) || MaterialYouTheme.LIGHT_KEY.equals(key) || MaterialYouTheme.LIGHT_GRAYS_KEY.equals(key))
+        if ("light".equals(key) || SettingsTheme.FOLLOW_PHONE.equals(key) || "material_you_black".equals(key)
+                || MaterialYouTheme.LIGHT_KEY.equals(key) || MaterialYouTheme.LIGHT_GRAYS_KEY.equals(key))
             return SettingsIcons.forKey(key, sectionIcon("appearance"));
         if ("check_updates".equals(key)) return SettingsIcons.forKey(key, sectionIcon("about"));
         // A switch under another one takes that one's section.
@@ -1738,7 +1772,10 @@ public final class SettingsActivity extends Activity {
         }
         LinearLayout appearance = ui.panel();
         appearance.setPadding(ui.dp(12), ui.dp(14), ui.dp(12), ui.dp(14));
-        ui.add(appearance, controlRow("light", text.format("light"), text.format("light_help"), false), 0);
+        ui.add(appearance, lightControl(), 0);
+        // Under Light theme the way a switch sits under its control, since it decides for Light theme while it's on.
+        ui.add(appearance, controlRow(SettingsTheme.FOLLOW_PHONE, text.format(SettingsTheme.FOLLOW_PHONE),
+            text.format("follow_phone_theme_help"), false), 8);
         if (Settings.installed.contains("material_you")) {
             ui.rule(appearance, 10);
             ui.add(appearance, controlRow("material_you_black", text.format("material_you_black"), text.format("material_you_black_help"), false), 12);
