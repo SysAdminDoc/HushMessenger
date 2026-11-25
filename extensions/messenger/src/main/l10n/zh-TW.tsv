@@ -80,7 +80,7 @@ restart_account	你的帳號會保持登入。
 choices	你的設定
 restart_unavailable	無法重新啟動。請關閉後重新開啟 Messenger。
 settings_open_failed	無法開啟 HushMessenger 設定。
-settings_open_instead	Patch controls（修補功能控制）：長按主畫面上的 Messenger 圖示
+settings_open_instead	Patch controls：長按 Messenger 的主畫面圖示
 restart_save_failed	無法儲存，因此未重新啟動 Messenger。請再試一次。
 paused	暫停所有變更
 search	搜尋控制項

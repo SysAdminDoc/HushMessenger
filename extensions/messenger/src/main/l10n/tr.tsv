@@ -78,10 +78,10 @@ restarting	Messenger yeniden başlatılıyor...
 restart_saving	Messenger yeniden açılmadan önce seçimlerin kaydediliyor.
 restart_account	Hesabında oturumun açık kalır.
 choices	Seçimlerin
-restart_unavailable	Yeniden başlatılamadı. Messenger'ı kapatıp yeniden aç.
+restart_unavailable	Yeniden başlatılamadı. Messenger'ı kapatıp aç.
 settings_open_failed	HushMessenger ayarları açılamadı.
 settings_open_instead	Patch controls: Messenger'ın ana ekran simgesine uzun bas
-restart_save_failed	Kaydedilemedi, bu yüzden Messenger yeniden başlatılmadı. Tekrar dene.
+restart_save_failed	Kaydedilemedi, Messenger yeniden başlamadı.
 paused	Tüm değişiklikleri duraklat
 search	Kontrol bul
 empty_title	Eşleşen kontrol yok
@@ -234,13 +234,13 @@ message_actions_reset	Messenger'ın sırasına sıfırla
 message_actions_reset_done	Messenger'ın sırasına dönüldü
 text_style_bold	Kalın
 text_style_italic	İtalik
-text_style_read_only	Kalın ve İtalik yalnızca yazmakta olduğun metinde çalışır.
-text_style_bold_none	Kalın yalnızca A'dan Z'ye harflerde, aksanlı harflerde ve rakamlarda çalışır.
-text_style_italic_none	İtalik yalnızca A'dan Z'ye harflerde ve aksanlı harflerde çalışır.
+text_style_read_only	Kalın ve İtalik yalnızca yazdığın metinde çalışır.
+text_style_bold_none	Kalın yalnızca A'dan Z'ye harf ve rakamlarda çalışır.
+text_style_italic_none	İtalik yalnızca harflerde çalışır.
 bubble_stock	Standart
 bubble_chat_heads	Sohbet balonları
 bubble_native	Android baloncukları
-bubble_changed	%s seçildi. Uygulamak için Messenger'ı yeniden başlat.
+bubble_changed	%s: Messenger'ı yeniden başlat.
 bubble_help	Standart seçeneğinde karar Messenger'a kalır. Sohbet balonları için Messenger'ın kendi Sohbet balonları anahtarı ve diğer uygulamaların üzerinde gösterme izni de gerekir. Pil kullanımı kısıtlamasız değilse sohbet balonu yalnızca mesaj geldiğinde Messenger kapalıysa görünür, bu yüzden aşağıdan bunu da aç. Android baloncukları için aşağıdaki Android ayarlarından Messenger'ın baloncuklarına izin ver. Baloncukları desteklemeyen hesaplarda Messenger normal davranışını sürdürür. 'Tüm değişiklikleri duraklat' her şeyi Messenger'ın kendi seçimine geri döndürür.
 bubble_unsupported	Android baloncukları bu yama paketinde yok, bu yüzden Messenger her zamanki gibi çalışır. Seçimin kaydedildi.
 bubble_battery_off	Kısıtlamasız pil kullanımına izin ver
@@ -249,7 +249,7 @@ bubble_battery_missing	Ekran bulunamadı. Uygulama bilgilerini aç, sonra Pil'e 
 bubble_permissions	Android baloncuk ayarları
 bubble_notifications	Messenger bildirim ayarları
 bubble_conversations	Android konuşma ayarları
-bubble_settings_missing	Ekran bulunamadı. Uygulama bilgilerini aç, sonra Bildirimler'e git.
+bubble_settings_missing	Uygulama bilgilerini aç, sonra Bildirimler.
 facebook_keep_profile	Profil düğmesini koru
 facebook_keep_profile_help	Bir sohbetin ayrıntılar sayfasındaki Profil düğmesini ve yeni bir sohbetin üstündeki Profili gör düğmesini bırakır, böylece kişinin Facebook profilini yine açabilirsin. Diğer Facebook kısayolları gizli kalır.
 avatar_shape_rounded	Köşeleri yuvarlat
@@ -345,8 +345,8 @@ tab_badges_keep_menu	Menü rozetini koru
 tab_badges_keep_facebook	Facebook düğmesinin rozetini koru
 experimental	Deneysel
 new_setting	Yeni
-choice_on	%s açık
-choice_off	%s kapalı
+choice_on	Açık: %s
+choice_off	Kapalı: %s
 appearance	Görünüm
 material_you_black	Saf siyah karanlık mod
 material_you_black_help	Messenger'da Material You ile saf siyah kullanır. Açık mod değişmez.
@@ -440,7 +440,7 @@ restart_waiting_one	%d değişiklik yeniden başlatmayı bekliyor
 restart_waiting_many	%d değişiklik yeniden başlatmayı bekliyor
 quick_setups	Hızlı kurulumlar
 quick_setups_help	Bir grup kontrolü tek dokunuşla değiştirir. Sonra her birini yine ayrı ayrı değiştirebilirsin. Bu bölümü gizlemek için basılı tut.
-quick_setups_hidden	Gizlendi. %2$s altındaki %1$s seçeneğine dokun.
+quick_setups_hidden	Gizlendi. %2$s > %1$s
 quick_setups_home	Hızlı kurulumlar bölümü
 quick_setups_home_shown	Gösteriliyor. Gizlemek için dokun.
 quick_setups_home_hidden	Gizli. Yeniden göstermek için dokun.
@@ -475,9 +475,9 @@ import_choices	Seçimleri yapıştır
 import_help	'Seçimleri kopyala' ile kopyaladığın metinden seçimleri geri yükler. Önce metni kopyala, sonra buraya dokun.
 imported_one	%d seçim geri yüklendi.
 imported_many	%d seçim geri yüklendi.
-imported_partial	%2$d seçimden %1$d tanesi geri yüklendi.
-import_same	Seçimlerin zaten bu yedekle aynı.
-import_none_changed	Seçimlerinin hiçbiri değişmedi.
+imported_partial	%1$d/%2$d seçim geri yüklendi.
+import_same	Seçimler zaten yedekle aynı.
+import_none_changed	Hiçbir seçim değişmedi.
 import_auto_reply_off	Otomatik yanıt kapalı kalır, çünkü o yedekte yanıt yok.
 import_empty	Yapıştırılacak bir şey yok. Önce seçimlerini kopyala.
 import_invalid	Bu bir seçim yedeği değil. Hiçbir şey değişmedi.
@@ -485,7 +485,7 @@ import_too_large	O yedek 128 KB'tan büyük, bu yüzden hiçbir şey değişmedi
 import_zip_too_large	O yedek çok büyük, hiçbir şey değişmedi.
 export_too_large	Seçimlerin tek bir yedeğe sığmıyor.
 export_too_large_detail	En çok yer kaplayan %s. Hiçbir şey kopyalanmadı veya kaydedilmedi.
-restore_failed	Bu dosya okunamadı. Tekrar dene ya da başka bir dosya seç.
+restore_failed	Dosya okunamadı. Başka bir dosya dene.
 choices_file_no_picker	Bu telefonda dosya seçici açılamadı.
 import_unknown_one	Bu sürümün tanımadığı %d seçim atlandı.
 import_unknown_many	Bu sürümün tanımadığı %d seçim atlandı.
@@ -493,7 +493,7 @@ import_unavailable_one	Yaması yüklü olmayan %d seçim atlandı.
 import_unavailable_many	Yamaları yüklü olmayan %d seçim atlandı.
 import_damaged_one	Kullanılamayan %d dosya atlandı.
 import_damaged_many	Kullanılamayan %d dosya atlandı.
-import_no_choices	Geri yüklenecek bir şey yok. Bunların hiçbiri yamalarınla eşleşmiyor.
+import_no_choices	Yamalarınla eşleşen bir şey yok.
 save_choices_file	Seçimleri dosyaya kaydet
 read_choices_file	Seçimleri dosyadan geri yükle
 choices_file_help	Seçimlerini kaydeder. Otomatik yanıtlar ile gizlenen ya da sabitlenen sohbetler de dahildir. Başlık ya da sekme resmi, kendi yazı tipin, otomatik yanıt resimleri veya Özel kişiler'in takip ettiği kişiler varsa dosya bunları da taşıyan bir .zip olur. Mesajlar eklenmez, hesabın da eklenmez. Dosyada olmayan seçimler olduğu gibi kalır. Dosya seçerken ayarlar kapanırsa dosyayı yeniden seç.
@@ -503,10 +503,10 @@ choices_file_reading	Seçim dosyası okunuyor...
 cancel_choices_file	Dosya işlemini iptal et
 choices_file_canceled	İptal edildi. Kaydetme yarım bir dosya bırakmış olabilir.
 choices_file_canceled_read	İptal edildi. Seçimlerin değişmedi.
-choices_file_timeout	Çok uzun sürdü. Kaydedilen dosya eksik olabilir. Tekrar dene.
+choices_file_timeout	Çok uzun sürdü. Dosya eksik olabilir.
 choices_file_timeout_read	Çok uzun sürdü. Seçimlerin değişmedi. Tekrar dene.
 choices_file_busy	Önceki dosya kaydetme veya geri yükleme işlemleri hâlâ bitiyor. Birazdan tekrar dene.
-choices_file_changed	Geri yükleme sırasında seçimlerin değişti. Tekrar dene.
+choices_file_changed	Seçimlerin değişti. Tekrar dene.
 check_updates	Güncellemeleri kontrol et
 check_updates_help	Bunu açtığında ve ayarlar açıldığında GitHub'da daha yeni bir sürüm olup olmadığına bakar. Son cevabını bir saat boyunca yeniden kullanır. Varsayılan olarak kapalı. GitHub IP adresini görebilir. Hesap veya sohbet bilgisi gönderilmez.
 check_now	Şimdi kontrol et
@@ -550,8 +550,8 @@ safe_mode_help	Messenger art arda birkaç kez çöktüğü için tüm kontroller
 safe_mode_help_paused	Messenger art arda birkaç kez çöktü. Seçimlerin hâlâ kayıtlı. Önce güvenli modu kapat. 'Tüm değişiklikleri duraklat' sen kapatana kadar açık kalır.
 resume	Devam et
 clear_safe_mode	Güvenli modu kapat
-safe_mode_cleared	Güvenli mod kapatıldı. Değişiklikler duraklatılmış olarak kalır.
-safe_mode_save_failed	Güvenli moddan çıkılamadı. Değişiklikler duraklatılmış olarak kalır.
+safe_mode_cleared	Güvenli mod kapandı. Değişiklikler duraklatıldı.
+safe_mode_save_failed	Güvenli moddan çıkılamadı. Değişiklikler duraklatıldı.
 enabled_one	%d kontrol açık
 enabled_many	%d kontrol açık
 saved_one	%d seçim kaydedildi. Kullanmak için 'Tüm değişiklikleri duraklat' seçeneğini kapat.
@@ -567,14 +567,14 @@ open_help	Messenger'ı uygulama çekmecenden aç
 message_log_view	Kaydı görüntüle
 search_clear	Temizle
 search_clear_description	Aramayı temizle
-camera_missing	Fotoğraf çekebilen bir kamera uygulaması bulunamadı.
+camera_missing	Kamera uygulaması bulunamadı.
 camera_failed	Kamera uygulaman açılamıyor. Tekrar dene.
-camera_permission	Messenger'ın uygulama bilgilerinden kamera iznini ver.
+camera_permission	Messenger'ın uygulama bilgilerinden kamerayı aç.
 camera_photo	Fotoğraf
 camera_video	Video
 system_camera_ask	Fotoğraf mı video mu sor
 system_camera_ask_help	Kamera düğmesi önce fotoğraf mı video mu istediğini sorar, sonra bunun için kamera uygulamanı açar.
-gallery_missing	Fotoğraf seçebilen bir galeri uygulaması bulunamadı.
+gallery_missing	Galeri uygulaması bulunamadı.
 gallery_failed	Galerin seçimi tamamlayamadı. Tekrar dene.
 instant_gallery_shutter	Fotoğrafını göndermek için deklanşöre dokun.
 message_log_clear	Kaydı temizle
@@ -680,7 +680,7 @@ auto_reply_save	Kaydet
 auto_reply_groups	Grup sohbetlerinde de yanıtla
 auto_reply_full	Saklanabilecek en fazla yanıt bu kadar (%s)
 auto_reply_saved	Kaydedilen yanıtlar: %s
-auto_reply_saved_none	Kaydedilen yanıt yok, bu yüzden hiçbir şey yanıtlanmaz
+auto_reply_saved_none	Kayıtlı yanıt yok, hiçbir şey yanıtlanmaz
 auto_reply_picture	Resim (isteğe bağlı)
 auto_reply_picture_none	Resim yok. Yanıttan hemen sonra göndermek için bir resim ekle.
 auto_reply_picture_set	Yanıttan hemen sonra gönderilir
@@ -703,12 +703,12 @@ font_file_using	%1$s kullanılıyor. Değiştirmek için başka bir dosya seç.
 font_file_picked_off	%1$s seçili. Kullanmak için anahtarı aç.
 font_file_missing	HushMessenger'daki %1$s kopyası artık yok, bu yüzden telefonunun yazı tipi kullanılıyor. Dosyayı yeniden seç.
 font_file_copying	Yazı tipi dosyası kopyalanıyor...
-font_file_set	Yazı tipi seçildi. Kullanmak için Messenger'ı yeniden başlat.
+font_file_set	Yazı tipi seçildi. Messenger'ı yeniden başlat.
 font_file_set_off	Yazı tipi seçildi. Kullanmak için anahtarı aç.
-font_file_not_font	Bu bir .ttf veya .otf yazı tipi değil. Yazı tipin değişmedi.
-font_file_too_large	Bu yazı tipi dosyası %1$d MB'tan büyük. Yazı tipin değişmedi.
-font_file_wont_load	Android bu yazı tipini kullanamıyor. Yazı tipin değişmedi.
-font_file_not_saved	Yazı tipi kaydedilemedi. Boş alanı kontrol edip tekrar dene.
+font_file_not_font	Bu bir .ttf veya .otf yazı tipi değil.
+font_file_too_large	Dosya %1$d MB'tan büyük. Yazı tipin değişmedi.
+font_file_wont_load	Android bu yazı tipini kullanamıyor.
+font_file_not_saved	Yazı tipi kaydedilemedi. Boş alanı kontrol et.
 font_file_unreadable	Bu dosya açılamadı. Yazı tipin değişmedi.
 font_file_no_picker	Bu telefonda dosya seçici yok.
 font_file_picker_failed	Dosya seçici açılamadı. Tekrar dene.
@@ -716,7 +716,7 @@ font_file_busy	Bu başlatılamadı. Birazdan tekrar dene.
 font_file_stop	Kopyalamayı durdur
 font_file_stopped	Kopyalama durduruldu. Yazı tipin değişmedi.
 font_file_timeout	Kopyalama çok uzun sürdü. Yazı tipin değişmedi.
-font_file_finishing	Yazı tipi zaten kaydediliyor. Birazdan biter.
+font_file_finishing	Yazı tipi zaten kaydediliyor.
 font_file_stuck	Önceki kopyalamalar hâlâ dosyalarını bekliyor. Onlar vazgeçince başka bir dosya seçebilirsin.
 font_phone_set	Telefonunun yazı tipine dönüldü. Görmek için Messenger'ı yeniden başlat.
 font_phone_failed	Telefonunun yazı tipine dönülemedi. Tekrar dene.
@@ -868,7 +868,7 @@ emoji_search.title	Emoji aramasını emojide tut
 emoji_search.description	Emoji klavyesi açıkken yazmak artık çıkartma aramasına atlamaz. Klavye emojide kalır.
 chat_promotions.title	Sohbet tanıtımlarını gizle
 chat_promotions.description	Konuşmaların içindeki tanıtım afişlerini gizler.
-ad_context_banner.title	İşletme sohbetlerinde reklam afişlerini gizle
+ad_context_banner.title	İşletme sohbeti reklamlarını gizle
 ad_context_banner.description	Bir işletmenin reklamından başlattığın bir sohbette o reklamı gösteren afişi gizler.
 suggested_replies.title	İşletme yanıt önerilerini gizle
 suggested_replies.description	İşletmelerle konuşmalarda önerilen yanıtları gizler.
@@ -880,7 +880,7 @@ typing.title	Yazıyor göstergesini gizle
 typing.description	Uçtan uca şifreli sohbetlerde bile, yazdığını Messenger'ın başkalarına göstermesini durdurur.
 use_system_emoji.title	Sistem emojilerini kullan
 use_system_emoji.description	Emojileri Messenger'ın yerleşik seti yerine telefonunun kendi stilinde gösterir.
-disappearing_swipe.title	Kaybolan mesajlar için yukarı kaydırmayı yok say
+disappearing_swipe.title	Kaybolan mesajlarda kaydırmayı yok say
 disappearing_swipe.description	Bir sohbetin altında yukarı kaydırmak artık kaybolan mesajları açmaz. Kaydırma her zamanki gibi çalışır ve onları yine sohbetin ayarlarından açabilirsin.
 message_actions.title	Mesaj işlemlerini özelleştir
 message_actions.description	Bir mesaja basılı tuttuğunda çıkan işlemlerin sırasını seç ve kullanmadıklarını gizle, gönderdiğin ve aldığın mesajlar için ayrı ayrı. İlk birkaçı mesajın altındaki satırda, kalanı Diğer altında görünür. Bir mesaja bir kez basılı tut, işlemleri aşağıda görünür.
@@ -948,9 +948,9 @@ bubbles.title	Sohbet baloncuklarına izin ver
 bubbles.description	Aşağıdan Standart, Sohbet balonları veya Android baloncukları seç. Android baloncukları için Android 11 veya daha yenisi, desteklenen bir hesap ve bildirim izni gerekir. Değiştirdikten sonra Messenger'ı yeniden başlat.
 analytics_uploads.title	Analiz yüklemelerini durdur
 analytics_uploads.description	Messenger'ın arka plan hizmetlerinin kullanım istatistiklerini yüklemesini durdurur. Messenger bunları yine telefonunda kaydeder ve bunu kapattıktan sonra yüklenebilirler.
-attribution_uploads.title	Reklam ilişkilendirme yüklemelerini durdur
+attribution_uploads.title	Reklam atıf yüklemelerini durdur
 attribution_uploads.description	Telefonunun reklam kimliğini okuyup reklam izleme ayarınla birlikte Meta'ya gönderen işi durdurur. Kimliğin kendisi değişmez.
-ad_events.title	Gelen kutusu ve reklam bağlantısı kaydını durdur
+ad_events.title	Gelen kutusu ve reklam kaydını durdur
 ad_events.description	Messenger'ın kaydettiği iki raporu durdurur. Biri sohbet listenin hangi kısmının ekranda olduğunu bildirir ve Messenger bunu gelen kutusu reklamları altında kaydeder. Diğeri, bir reklamdaki bağlantı bir sohbet açtığında seni hangi reklamın getirdiğini bildirir.
 dwell_tracking.title	Ekrana bakma süresi kaydını durdur
 dwell_tracking.description	Bir ekrandan çıktığında Messenger'ın gönderdiği raporu durdurur. Bu rapor, ekrandaki her şeye ne kadar baktığını, hangi sırayla baktığını ve kaç kez geri döndüğünü bildirir. Bu sürelerin Messenger'ın kullanım yolculuğu kaydına giden kopyasını da durdurur.
@@ -958,7 +958,7 @@ mqtt_telemetry.title	Canlı bağlantı kaydını durdur
 mqtt_telemetry.description	Messenger'ın canlı bağlantısı (MQTT) üzerinden gönderdiği durum raporlarını ve anlık bildirim kayıtlarını engeller. Messenger trafiğinin çoğunu başka bir yoldan gönderdiği için çoğu zaman engellenecek pek bir şey olmaz. Mesajlar, aramalar ve aktif durumu çalışmaya devam eder.
 nearby_scans.title	Yakındaki taramaları durdur
 nearby_scans.description	Messenger'ın çevrendeki Wi-Fi ağlarının listesini okumasını durdurur ve bağlı olduğun ağın adını ve donanım adresini gizler, tıpkı Messenger konumunu göremediğinde Android'in yaptığı gibi. Ayrıca Messenger açıkken konumunu kontrol etmek, Wi-Fi ağlarını ve Bluetooth cihazlarını taramak için çalıştırabildiği zamanlayıcıyı da durdurur.
-phone_id_sync.title	Uygulama listesi ve cihaz kimliği paylaşımını durdur
+phone_id_sync.title	Uygulama ve cihaz kimliği paylaşma
 phone_id_sync.description	Messenger'ın diğer Meta uygulamalarını bulmak için telefonundaki uygulamaları taramasını ve onlardan, Meta'nın aynı telefondaki uygulamaları birbirine bağlamak için kullandığı cihaz kimliğini istemesini durdurur. Messenger zaten sahip olduğu kimliği korur.
 message_log.title	Mesaj kaydı tut
 message_log.description	Her mesajı bildirimi geldiğinde kaydeder, böylece gönderimi geri alındıktan sonra da okuyabilirsin. Geri alınanları da işaretler. Şifreli sohbetlerde çalışır. Telefonunda kalır. Kaybolan mesajları açık olan bir sohbette Messenger bildirimde metni göstermez, bu yüzden o mesajlar kaydedilmez.
@@ -972,7 +972,7 @@ hide_read_receipts.title	Okundu bilgisini gizle
 hide_read_receipts.description	Bir sohbeti açmak artık kişilere mesajlarını okuduğunu bildirmez ve sohbet burada okunmamış kalır. Kendin okundu olarak işaretlersen, yanıt verirsen veya bir mesaja tepki verirsen sohbet, Messenger'daki gibi okundu olarak işaretlenir ve Görüldü gösterilir. Grup sohbetleri test edilmedi. Messenger'ın Gizlilik ve güvenlik altındaki kendi Okundu bilgisi ayarı, sohbetleri Görüldü göstermeden okundu olarak işaretler. Altındaki İletildi bilgisini gizle, sıradan sohbetlerde İletildi işaretini de tutar.
 mark_read_button.title	Okundu olarak işaretle düğmesi
 mark_read_button.description	'Okundu bilgisini gizle' açıkken Messenger'ın Okundu olarak işaretle simgesini sohbetin üst çubuğuna koyar. Sohbeti açmak yine hiçbir şey göndermez. Gönderenin Görüldü'yü görmesini istediğinde simgeye dokun, sohbet burada da okundu olur. Çubuk doluysa sohbet ayrıntıları düğmesinin yerini alır (sohbetin adına dokunmak aynı sayfayı açar) ya da sohbette o düğme yoksa arama için olmayan başka bir düğmenin yerini alır, böylece arama düğmeleri yerinde kalır.
-read_chats_locally.title	Sohbetleri bu telefonda okundu olarak işaretle
+read_chats_locally.title	Sohbetleri bu telefonda okundu yap
 read_chats_locally.description	Okundu bilgisini gizle açıkken açtığın bir sohbetin okunmamış görünümünü temizler, böylece sohbet listesi onu kalın yazıyla ve bir sayıyla göstermeyi bırakır. Messenger'a hiçbir şey gitmez, yani karşı tarafa okuduğun hâlâ bildirilmez. Sohbete yeni bir mesaj geldiğinde okunmamış görünüm geri döner.
 mark_read_locally.title	Okundu olarak işaretle bu telefonda kalır
 mark_read_locally.description	Messenger'ın sohbet listendeki Okundu olarak işaretle seçeneği, karşı tarafa mesajını okuduğunu bildirir. Bu açıkken okunmamış görünümü yalnızca bu telefonda temizler ve Messenger'a hiçbir şey gitmez. Sohbete yeni bir mesaj geldiğinde okunmamış görünüm geri döner.

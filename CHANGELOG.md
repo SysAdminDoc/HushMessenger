@@ -23,6 +23,7 @@
 - Picking an accent color under Appearance could save it and change nothing. The color only shows with `Material You theme` on, and in light mode only with `Light mode accent` on too, and the colors were there to pick either way. Now picking one, using color codes or a copied theme turns on what it needs, and Undo turns those back off. Refs #237.
 - `Write longer notes` lets a note run to 2,000 characters now, up from 500. Facebook still decides whether a long note goes through. Refs #233.
 - With `Blur behind menus` and `Floating message menu` on, holding a photo or video low on the screen put the card of actions over the photo. Messenger lays the emoji row across the top of a photo, and the card went under the row. The photo moves up now and the card sits under it. Only a message too tall to share the screen with the card keeps the card under the emoji row. Refs #162.
+- Some translated toasts ran past two lines, and Android cuts a toast after its second, so the end of the message never showed. Every toast fits in two lines now in all seven languages, and a switch's toast says on or off before the switch's name. A few long switch names got shorter in Spanish, Italian, Bulgarian and Turkish to fit, plus one in Vietnamese.
 
 ## 0.31.0 (2026-11-25)
 
