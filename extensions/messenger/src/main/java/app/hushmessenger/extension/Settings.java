@@ -879,6 +879,13 @@ public final class Settings {
     public static boolean chatPreview(boolean stock) { return enabled("chat_preview") || stock; }
 
     /**
+     * Asked with Meta's answer, non-zero for yes, wherever the chat list asks one of the two flags that hold the
+     * preview back until a chat has opened since Messenger started. False lets the first long press after a restart
+     * open the preview too. Off, Pause and safe mode keep Meta's answer.
+     */
+    public static boolean chatPreviewCold(int stock) { return !enabled("chat_preview") && stock != 0; }
+
+    /**
      * Asked with Meta's answer wherever one of the chat list's four typing plugins reads its flag: the inbox loader,
      * the store, the teardown and the thread snippet. True runs them all, so a chat in the list says typing while the
      * other person types. Off, Pause and safe mode keep Meta's answer, which is no on the builds we patch.
