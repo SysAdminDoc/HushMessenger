@@ -246,6 +246,8 @@ public class CompatReport {
         PATCHES.put("Show pinned messages", List.of("pinned_bar"));
         PATCHES.put("Keep a message log", List.of("message_log", "unsent_recall", "unsent_clear", "message_log_button", "message_log_click",
             "quiet_log_check", "quiet_log_drop", "hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
+        // No hooks of its own: it runs in the row text getter Keep unsent messages reads and the notification pair the log reads.
+        PATCHES.put("Hide messages with your words", List.of("unsent_indicator", "message_log", "quiet_log_drop"));
         PATCHES.put("Auto reply", List.of("auto_reply"));
         PATCHES.put("Quiet incoming calls", List.of("quiet_call_ring", "quiet_call_notification"));
         PATCHES.put("Quiet mode", List.of("quiet_mode", "quiet_call_ring", "quiet_call_notification"));
@@ -410,8 +412,12 @@ public class CompatReport {
             "--apk", apk.getAbsolutePath(), "--apk-sha256", apkHash, "--desktop", desktop.toAbsolutePath().toString(),
             "--bundle", bundle.toAbsolutePath().toString(), "--java",
             Path.of(System.getProperty("java.home"), "bin", "java").toString(), "--aapt2", aapt2));
+        // Desktop applies every default patch on top of these, so each default patch must be named here or the
+        // applied list comes back longer than the expected one. Keep a renamed copy working patches the clone sites
+        // the CLONE check reads.
         var names = new TreeSet<>(PATCHES.keySet());
-        names.addAll(List.of("Install beside Meta apps", "Restore screens on re-signed builds", "Material You theme", CLONE));
+        names.addAll(List.of("Install beside Meta apps", "Restore screens on re-signed builds", "Material You theme", CLONE,
+            "Keep a renamed copy working"));
         for (var name : names) { command.add("--enable"); command.add(name); }
         return new ProcessBuilder(command).inheritIO().start().waitFor() == 0;
     }
