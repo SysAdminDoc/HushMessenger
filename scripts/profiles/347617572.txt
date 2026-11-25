@@ -199,6 +199,7 @@ hook mark_read_action LX/KDa;->A0P()Z
 hook mark_read_bar LX/5jY;->A02(Landroid/content/Context;LX/0YG;Lcom/facebook/auth/usersession/FbUserSession;LX/0MK;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/5nH;Lcom/facebook/mig/scheme/interfaces/MigColorScheme;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/78N;Lcom/google/common/collect/ImmutableList$Builder;Lcom/google/common/collect/ImmutableList;Ljava/lang/Integer;Ljava/lang/Long;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIZZZZ)Ljava/lang/Object;
 hook mark_read_bar LX/7oG;->Fou(Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/messaging/send/trigger/NavigationTrigger;LX/7Vl;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;Ljava/lang/String;Z)V
 hook mark_read_click LX/DBg;->onClick(Landroid/view/View;)V
+hook mark_read_locally LX/80u;->A06(LX/4QM;LX/80u;Ljava/lang/String;)Lcom/facebook/fbservice/service/OperationResult;
 hook media_caption LX/7pp;->A0K(LX/7pp;)V
 hook menu_blur LX/09m;->onStart()V
 hook menu_blur Lcom/facebook/xapp/messaging/reactions/sendbar/fragment/ReactionsBarFragment;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
