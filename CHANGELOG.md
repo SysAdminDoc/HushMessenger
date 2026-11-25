@@ -19,6 +19,7 @@
 - `Put your words above the photo` did nothing for most photos. It only stepped in when your words mentioned Meta AI, so an ordinary photo still went out ahead of what you typed. Now your words go first for any photo or video waiting above the message box when you tap Send, and a photo you're asking Meta AI about keeps its words with it. Refs #236.
 - A chat cleared by `Mark chats read on this phone` still counted on the unread badge, both on Messenger's icon and on its Chats tab. It comes off the badge now, and so does one cleared by `Mark as read stays on this phone`. A new message in the chat, or Mark as unread, puts it back. Refs #222.
 - With the `Material You theme`, the floating tab bar's selected tab kept Messenger's navy (or pale blue in light mode) around an icon that had taken your color. The highlight takes your color now too. Refs #220.
+- Picking an accent color under Appearance could save it and change nothing. The color only shows with `Material You theme` on, and in light mode only with `Light mode accent` on too, and the colors were there to pick either way. Now picking one, using color codes or a copied theme turns on what it needs, and Undo turns those back off. Refs #237.
 - `Write longer notes` lets a note run to 2,000 characters now, up from 500. Facebook still decides whether a long note goes through. Refs #233.
 
 ## 0.31.0 (2026-11-25)

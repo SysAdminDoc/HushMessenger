@@ -374,6 +374,7 @@ theme_status_saved	Темата ви %s е запазена. Material You я и�
 theme_status_unnamed	Темата ви е запазена. Material You я използва, докато е включен.
 theme_accents	Акцентен цвят
 theme_accent_saved	Акцентният цвят е запазен
+theme_accent_saved_on	Акцентният цвят е запазен и включен
 theme_accent_blue	Синьо
 theme_accent_purple	Лилаво
 theme_accent_pink	Розово
@@ -392,6 +393,7 @@ theme_paste	Използване на копирана тема
 theme_copy	Копиране на темата
 theme_clear	Обратно към цветовете на тапета
 theme_pasted	Темата е запазена
+theme_pasted_on	Темата е запазена и включена
 theme_paste_empty	Няма какво да се постави. Първо копирайте тема.
 theme_paste_invalid	Това не е тема. Цветовете ви не са променени.
 theme_copied	Темата е копирана

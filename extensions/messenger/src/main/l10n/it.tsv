@@ -374,6 +374,7 @@ theme_status_saved	Il tuo tema %s è salvato. Material You lo usa finché è att
 theme_status_unnamed	Il tuo tema è salvato. Material You lo usa finché è attivo.
 theme_accents	Colore di accento
 theme_accent_saved	Colore di accento salvato
+theme_accent_saved_on	Colore di accento salvato e attivato
 theme_accent_blue	Blu
 theme_accent_purple	Viola
 theme_accent_pink	Rosa
@@ -392,6 +393,7 @@ theme_paste	Usa il tema copiato
 theme_copy	Copia il tema
 theme_clear	Torna ai colori dello sfondo
 theme_pasted	Tema salvato
+theme_pasted_on	Tema salvato e attivato
 theme_paste_empty	Niente da incollare. Prima copia un tema.
 theme_paste_invalid	Non è un tema. I tuoi colori non sono cambiati.
 theme_copied	Tema copiato

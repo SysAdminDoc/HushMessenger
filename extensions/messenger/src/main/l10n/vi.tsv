@@ -374,6 +374,7 @@ theme_status_saved	Đã lưu chủ đề %s. Material You dùng chủ đề này
 theme_status_unnamed	Đã lưu chủ đề của bạn. Material You dùng chủ đề này khi đang bật.
 theme_accents	Màu nhấn
 theme_accent_saved	Đã lưu màu nhấn
+theme_accent_saved_on	Đã lưu và bật màu nhấn
 theme_accent_blue	Xanh lam
 theme_accent_purple	Tím
 theme_accent_pink	Hồng
@@ -392,6 +393,7 @@ theme_paste	Dùng chủ đề đã sao chép
 theme_copy	Sao chép chủ đề
 theme_clear	Quay lại màu hình nền
 theme_pasted	Đã lưu chủ đề
+theme_pasted_on	Đã lưu và bật chủ đề
 theme_paste_empty	Không có gì để dán. Hãy sao chép một chủ đề trước.
 theme_paste_invalid	Đây không phải là chủ đề. Màu của bạn không thay đổi.
 theme_copied	Đã sao chép chủ đề

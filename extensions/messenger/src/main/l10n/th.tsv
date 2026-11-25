@@ -374,6 +374,7 @@ theme_status_saved	บันทึกธีม "%s" แล้ว ระบบจ
 theme_status_unnamed	บันทึกธีมของคุณแล้ว ระบบจะนำไปใช้เมื่อเปิดใช้งาน Material You
 theme_accents	สีเน้น
 theme_accent_saved	บันทึกสีเน้นแล้ว
+theme_accent_saved_on	บันทึกและเปิดใช้สีเน้นแล้ว
 theme_accent_blue	สีน้ำเงิน
 theme_accent_purple	สีม่วง
 theme_accent_pink	สีชมพู
@@ -392,6 +393,7 @@ theme_paste	ใช้ธีมที่คัดลอกมา
 theme_copy	คัดลอกธีม
 theme_clear	กลับไปใช้สีตามวอลเปเปอร์
 theme_pasted	บันทึกธีมแล้ว
+theme_pasted_on	บันทึกและเปิดใช้ธีมแล้ว
 theme_paste_empty	ไม่มีข้อความให้วาง โปรดคัดลอกธีมมาก่อน
 theme_paste_invalid	รูปแบบไม่ใช่ธีมที่ถูกต้อง สีของคุณจึงไม่เปลี่ยนแปลง
 theme_copied	คัดลอกธีมแล้ว

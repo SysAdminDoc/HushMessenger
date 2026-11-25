@@ -479,6 +479,7 @@ final class SettingsText {
         ENGLISH.put("theme_status_unnamed", "Your theme is saved. Material You uses it while it's on.");
         ENGLISH.put("theme_accents", "Accent color");
         ENGLISH.put("theme_accent_saved", "Accent color saved");
+        ENGLISH.put("theme_accent_saved_on", "Accent color saved and turned on");
         ENGLISH.put("theme_accent_blue", "Blue");
         ENGLISH.put("theme_accent_purple", "Purple");
         ENGLISH.put("theme_accent_pink", "Pink");
@@ -497,6 +498,7 @@ final class SettingsText {
         ENGLISH.put("theme_copy", "Copy theme");
         ENGLISH.put("theme_clear", "Back to wallpaper colors");
         ENGLISH.put("theme_pasted", "Theme saved");
+        ENGLISH.put("theme_pasted_on", "Theme saved and turned on");
         ENGLISH.put("theme_paste_empty", "Nothing to paste. Copy a theme first.");
         ENGLISH.put("theme_paste_invalid", "That isn't a theme. Your colors didn't change.");
         ENGLISH.put("theme_copied", "Theme copied");

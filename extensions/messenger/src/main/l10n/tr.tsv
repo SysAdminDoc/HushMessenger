@@ -374,6 +374,7 @@ theme_status_saved	%s teman kaydedildi. Material You açıkken onu kullanır.
 theme_status_unnamed	Teman kaydedildi. Material You açıkken onu kullanır.
 theme_accents	Vurgu rengi
 theme_accent_saved	Vurgu rengi kaydedildi
+theme_accent_saved_on	Vurgu rengi kaydedildi ve açıldı
 theme_accent_blue	Mavi
 theme_accent_purple	Mor
 theme_accent_pink	Pembe
@@ -392,6 +393,7 @@ theme_paste	Kopyalanan temayı kullan
 theme_copy	Temayı kopyala
 theme_clear	Duvar kağıdı renklerine dön
 theme_pasted	Tema kaydedildi
+theme_pasted_on	Tema kaydedildi ve açıldı
 theme_paste_empty	Yapıştırılacak bir şey yok. Önce bir tema kopyala.
 theme_paste_invalid	Bu bir tema değil. Renklerin değişmedi.
 theme_copied	Tema kopyalandı

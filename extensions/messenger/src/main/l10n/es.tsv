@@ -374,6 +374,7 @@ theme_status_saved	Tu tema %s está guardado. Material You lo usa mientras esté
 theme_status_unnamed	Tu tema está guardado. Material You lo usa mientras esté activado.
 theme_accents	Color de acento
 theme_accent_saved	Color de acento guardado
+theme_accent_saved_on	Color de acento guardado y activado
 theme_accent_blue	Azul
 theme_accent_purple	Morado
 theme_accent_pink	Rosa
@@ -392,6 +393,7 @@ theme_paste	Usar el tema copiado
 theme_copy	Copiar tema
 theme_clear	Volver a los colores del fondo de pantalla
 theme_pasted	Tema guardado
+theme_pasted_on	Tema guardado y activado
 theme_paste_empty	No hay nada que pegar. Copia un tema primero.
 theme_paste_invalid	Eso no es un tema. Tus colores no cambiaron.
 theme_copied	Tema copiado

@@ -374,6 +374,7 @@ theme_status_saved	已儲存「%s」主題。開啟 Material You 時會使用它
 theme_status_unnamed	已儲存你的主題。開啟 Material You 時會使用它。
 theme_accents	強調色
 theme_accent_saved	已儲存強調色
+theme_accent_saved_on	已儲存並開啟強調色
 theme_accent_blue	藍色
 theme_accent_purple	紫色
 theme_accent_pink	粉紅色
@@ -392,6 +393,7 @@ theme_paste	使用已複製的主題
 theme_copy	複製主題
 theme_clear	改回桌布顏色
 theme_pasted	已儲存主題
+theme_pasted_on	已儲存並開啟主題
 theme_paste_empty	沒有可貼上的內容。請先複製主題。
 theme_paste_invalid	這不是主題。你的顏色沒有變更。
 theme_copied	已複製主題
