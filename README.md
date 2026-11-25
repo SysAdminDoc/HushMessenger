@@ -21,7 +21,7 @@
 
 HushMessenger is a set of [Morphe](https://morphe.software) patches for Facebook Messenger. You bring the Messenger APK, Morphe patches it on your phone, and you get a Messenger with a settings screen full of switches that stock Messenger doesn't have. Hide the ads, the suggested people, the stories row and Meta AI. Stop sending read receipts and typing indicators. Watch stories without showing up in the viewer list. Keep a log of messages so an unsend can't take them back. Send photos at their real quality, use your own font, let Material You color the app, and more.
 
-Every switch starts off, so a freshly patched Messenger behaves like stock until you turn something on. The current release has 98 patches. What changed in each version is in the [changelog](CHANGELOG.md).
+Every switch starts off, so a freshly patched Messenger behaves like stock until you turn something on. The current release has 129 patches. What changed in each version is in the [changelog](CHANGELOG.md).
 
 **[Add HushMessenger to Morphe Manager](https://morphe.software/add-source?github=SysAdminDoc%2FHushMessenger)**
 
@@ -30,12 +30,12 @@ Every switch starts off, so a freshly patched Messenger behaves like stock until
 
 ## Install
 
-1. **Get the APK.** The current release, v0.30.0, patches Messenger 587.0.0.54.96. Download it from [APKMirror's 587.0.0.54.96 page](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-587-0-0-54-96-release/). All 19 builds APKMirror had for that version on November 14 work, and [Supported Messenger builds](#supported-messenger-builds) lists them. Most phones (arm64) should take a `nodpi` one, `347415280`, `347415333` or `347415350`. A 32-bit (armv7) phone takes `347415262`, `347415295` or `347415348`.
-2. **Add the source.** Open the link above on your phone with Morphe Manager (2.5.0 or newer) installed. Or in Manager open **Sources**, tap **+**, choose **Remote** and enter `github.com/SysAdminDoc/HushMessenger`. The card should show **98 patches** and **Signed by `4d8d c2b3 fbcd 3ab6`**, which is this project's key. If it shows an older version, tap its refresh button.
-3. **Patch Messenger.** The default selection includes every switch. Five patches start unselected because they change the app itself with no switch to undo them (see [Patches without a switch](#patches-without-a-switch)). To add one, turn on **Settings > Advanced > Expert mode** in Manager and use **Choose patches**.
+1. **Get the APK.** The current release, v0.31.0, patches Messenger 587.0.0.54.96. Download it from [APKMirror's 587.0.0.54.96 page](https://www.apkmirror.com/apk/facebook-2/messenger/facebook-messenger-587-0-0-54-96-release/). All 19 builds APKMirror had for that version on November 14 work, and [Supported Messenger builds](#supported-messenger-builds) lists them. Most phones (arm64) should take a `nodpi` one, `347415280`, `347415333` or `347415350`. A 32-bit (armv7) phone takes `347415262`, `347415295` or `347415348`.
+2. **Add the source.** Open the link above on your phone with Morphe Manager (2.6.0 or newer) installed. Or in Manager open **Sources**, tap **+**, choose **Remote** and enter `github.com/SysAdminDoc/HushMessenger`. The card should show **129 patches** and **Signed by `4d8d c2b3 fbcd 3ab6`**, which is this project's key. If it shows an older version, tap its refresh button.
+3. **Patch Messenger.** The default selection includes every switch. Six patches start unselected because they change the app itself with no switch to undo them (see [Patches without a switch](#patches-without-a-switch)). To add one, turn on **Settings > Advanced > Expert mode** in Manager and use **Choose patches**.
 4. **Keep one source.** Don't add the remote source and a local copy together, and don't mix in Messenger patches from other sources.
 
-Prefer a local source? Download [`patches-0.31.0.mpp`](https://github.com/SysAdminDoc/HushMessenger/releases/tag/v0.31.0) and add it through **Sources > + > Local**. It won't update itself. The `.mpp` file is a patch bundle, not a Messenger APK. Morphe Desktop 2.1.0 or newer can load the same source too.
+Prefer a local source? Download [`patches-0.31.0.mpp`](https://github.com/SysAdminDoc/HushMessenger/releases/tag/v0.31.0) and add it through **Sources > + > Local**. It won't update itself. The `.mpp` file is a patch bundle, not a Messenger APK. Morphe Desktop 2.2.0 or newer can load the same source too.
 
 There are Hush patch sources for other apps too: [Hushfacebook](https://github.com/SysAdminDoc/HushFacebook) for Facebook, [HushGram](https://github.com/SysAdminDoc/HushGram) for Instagram, [HushPine](https://github.com/SysAdminDoc/HushPine) for PineDrama, [HushPinterest](https://github.com/SysAdminDoc/HushPinterest) for Pinterest, [HushTelegram](https://github.com/SysAdminDoc/HushTelegram) for Telegram, [HushThreads](https://github.com/SysAdminDoc/HushThreads) for Threads, [Hushfeed](https://github.com/SysAdminDoc/HushFeed) for TikTok and [HushTumblr](https://github.com/SysAdminDoc/HushTumblr) for Tumblr. Each one is a separate source in Manager, so add only the ones for apps you patch.
 
