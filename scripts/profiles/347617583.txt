@@ -290,6 +290,7 @@ hook story_create_tile LX/2Ut;->A00(LX/3Qn;LX/23f;LX/3Qk;Lcom/google/common/coll
 hook story_hold LX/NL0;->EWV()V
 hook story_ring LX/37K;->onCreateMountContent(Landroid/content/Context;)Ljava/lang/Object;
 hook story_ring LX/37X;->draw(Landroid/graphics/Canvas;)V
+hook story_row_size Lcom/facebook/base/activity/FbFragmentActivity;->onResume()V
 hook subtabs LX/2P0;->run()V
 hook suggested_replies LX/7te;->A06(LX/7te;)Z
 hook suggested_replies LX/7uY;->A05(LX/7uY;)Z

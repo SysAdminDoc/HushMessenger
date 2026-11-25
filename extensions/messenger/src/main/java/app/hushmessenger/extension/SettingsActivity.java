@@ -79,6 +79,7 @@ public final class SettingsActivity extends Activity {
     private final CallCaptionsRow callCaptions = new CallCaptionsRow(this);
     private final RefreshRateRow refreshRates = new RefreshRateRow(this);
     private final SeeThroughTabBarRow seeThroughLevels = new SeeThroughTabBarRow(this);
+    private final StoryRowSizeRow storyRowSizes = new StoryRowSizeRow(this);
     private final CallRecordingRow callRecording = new CallRecordingRow(this);
     private final SpecialContactsRow specialContacts = new SpecialContactsRow(this);
     private final QuietModeRow quietMode = new QuietModeRow(this);
@@ -155,7 +156,7 @@ public final class SettingsActivity extends Activity {
     /** The switches that take a way into these settings away, each with a reason when it can't turn on. */
     static final Set<String> WAYS_IN = Set.of("hide_menu_row", Settings.HIDE_ICON_SHORTCUTS, Settings.HIDE_LOGO_PRESS);
     /** Switches whose effect hasn't been confirmed on a phone. Each shows the Experimental badge. */
-    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", "chat_menu_items", "quiet_calls", QuietMode.KEY, "save_voice", "gallery_to_chat", PastePhoto.KEY, InstantGallery.KEY, "call_recording", "inbox_search_bar", "inbox_typing", "media_caption", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", TabSwipe.KEY, StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY, CallCaptions.KEY, TabIcons.KEY, LinkPlayer.KEY, "profile_menu_items", "chat_bar_plus", "recovery_code_row", "longer_notes", "refresh_rate", "thin_story_rings", SearchSections.SUGGESTED, SearchSections.REELS, SearchSections.AI_CHATS, StoryTray.KEY, PinnedBar.KEY, OpenChatSound.KEY, Settings.SHOW_INSTANTS_TAB, "mark_read_locally");
+    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", "chat_menu_items", "quiet_calls", QuietMode.KEY, "save_voice", "gallery_to_chat", PastePhoto.KEY, InstantGallery.KEY, "call_recording", "inbox_search_bar", "inbox_typing", "media_caption", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", TabSwipe.KEY, StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY, CallCaptions.KEY, TabIcons.KEY, LinkPlayer.KEY, "profile_menu_items", "chat_bar_plus", "recovery_code_row", "longer_notes", "refresh_rate", "thin_story_rings", SearchSections.SUGGESTED, SearchSections.REELS, SearchSections.AI_CHATS, StoryTray.KEY, StoryRowSize.KEY, PinnedBar.KEY, OpenChatSound.KEY, Settings.SHOW_INSTANTS_TAB, "mark_read_locally");
     static final String[][] CONTROLS = {
         {"people", "Hide People You May Know", "Hides suggested people in chats, search and stories, and on the People and Notifications tabs. Good if you only want people you know.", "inbox"},
         {"friend_requests", "Hide friend request cards", "Hides friend request cards in your chat list. It doesn't accept or decline anyone.", "inbox"},
@@ -269,6 +270,7 @@ public final class SettingsActivity extends Activity {
         {"material_you", "Material You theme", "Colors Messenger's dark mode with your wallpaper colors on Android 12 and newer, and a fixed blue on Android 11. Turn on dark mode in Messenger first. Light mode keeps its colors unless you turn on Light mode accent.", "theme"},
         {"avatar_shape", "Square profile pictures", "Shows people's profile pictures as squares instead of circles. Turn on Round the corners below for rounded squares. Restart Messenger to see the change.", "theme"},
         {"thin_story_rings", "Thin story rings", "Draws the colored ring around a profile picture with a story at half its usual width, so it takes less room.", "theme"},
+        {"story_row_size", "Smaller stories row", "Draws the row of stories and notes above your chats smaller, by the size you pick below, so more of it fits across the screen. A tap still opens the story or note under your finger.", "theme"},
         {"home_header", "Your own home header", "Puts words or a picture of your own at the top of the chat list in place of Messenger's wordmark. Type the words or choose the picture below. With neither, the wordmark stays. Restart Messenger to see a change.", "theme"},
         {"custom_font", "Use your own font", "Shows Messenger's text in your phone's font instead of Meta's, or in a .ttf or .otf font file you choose below, which you can also make larger or smaller and move up or down. Emoji don't change. Restart Messenger to see a change.", "theme"},
         {"use_system_emoji", "Use system emoji", "Shows emoji in your phone's own style instead of Messenger's built-in set.", "theme"},
@@ -1149,6 +1151,7 @@ public final class SettingsActivity extends Activity {
                     || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])
                     || MenuBlur.KEY.equals(spec[0]) || "hide_read_receipts".equals(spec[0]) || CallRecording.KEY.equals(spec[0])
                     || RefreshRate.KEY.equals(spec[0]) || ChatJump.KEY.equals(spec[0]) || SeeThroughTabBar.KEY.equals(spec[0])
+                    || StoryRowSize.KEY.equals(spec[0])
                     || ("allow_screenshot".equals(spec[0]) && Build.VERSION.SDK_INT >= 29)) {
                 // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
@@ -1188,6 +1191,7 @@ public final class SettingsActivity extends Activity {
                 else if (InvisibleButtons.KEY.equals(spec[0])) invisibleButtons.addTo(wrapper);
                 else if (RefreshRate.KEY.equals(spec[0])) refreshRates.addTo(wrapper);
                 else if (SeeThroughTabBar.KEY.equals(spec[0])) seeThroughLevels.addTo(wrapper);
+                else if (StoryRowSize.KEY.equals(spec[0])) storyRowSizes.addTo(wrapper);
                 else if (CallRecording.KEY.equals(spec[0])) {
                     callRecording.addScopeTo(wrapper);
                     addRecordCallChats(wrapper);

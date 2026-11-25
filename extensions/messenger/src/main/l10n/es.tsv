@@ -264,6 +264,8 @@ see_through_tab_bar_light	Más transparente
 see_through_tab_bar_clear	La más transparente
 see_through_tab_bar_picked	%1$s se verá cuando Messenger se reinicie
 see_through_tab_bar_help	Esmerilada deja ver lo menos de tus chats y La más transparente, lo más.
+story_row_size_picked	La fila de historias se ve al %1$s
+story_row_size_help	%1$s es lo más parecido al tamaño de Messenger y %2$s, lo más pequeño.
 hidden_words_words	Palabras que ocultar
 hidden_words_hint	Hasta %1$d caracteres, separadas por comas
 hidden_words_help	Tiene que coincidir la palabra completa, así que "ok" no oculta "okay". Las mayúsculas no importan.
@@ -998,6 +1000,8 @@ avatar_shape.title	Fotos de perfil cuadradas
 avatar_shape.description	Muestra las fotos de perfil de la gente como cuadrados en lugar de círculos. Activa Redondear las esquinas abajo para tener cuadrados redondeados. Reinicia Messenger para ver el cambio.
 thin_story_rings.title	Anillos de historias finos
 thin_story_rings.description	Dibuja el anillo de color alrededor de una foto de perfil con historia a la mitad de su ancho habitual, para que ocupe menos espacio.
+story_row_size.title	Fila de historias más pequeña
+story_row_size.description	Dibuja más pequeña la fila de historias y notas encima de tus chats, al tamaño que elijas abajo, para que quepa más en la pantalla. Un toque sigue abriendo la historia o nota bajo tu dedo.
 home_header.title	Tu propio encabezado de inicio
 home_header.description	Pone un texto o una imagen tuya en la parte superior de la lista de chats en lugar del logotipo de Messenger. Escribe el texto o elige la imagen abajo. Sin ninguno de los dos, se queda el logotipo. Reinicia Messenger para ver un cambio.
 custom_font.title	Usar tu propia fuente

@@ -264,6 +264,8 @@ see_through_tab_bar_light	較透明
 see_through_tab_bar_clear	最透明
 see_through_tab_bar_picked	Messenger 重新啟動後會顯示%1$s
 see_through_tab_bar_help	霧面透出的聊天內容最少，最透明則最多。
+story_row_size_picked	限時動態列現在以 %1$s 顯示
+story_row_size_help	%1$s 最接近 Messenger 原本的大小，%2$s 最小。
 hidden_words_words	要隱藏的字詞
 hidden_words_hint	最多 %1$d 個字元，以逗號分隔
 hidden_words_help	必須整個字詞相符，所以「ok」不會隱藏「okay」。大小寫不影響。
@@ -998,6 +1000,8 @@ avatar_shape.title	方形大頭貼照
 avatar_shape.description	以方形取代圓形顯示用戶的大頭貼照。開啟下方的「圓角」可改為圓角方形。重新啟動 Messenger 後生效。
 thin_story_rings.title	細限時動態外框
 thin_story_rings.description	將有限時動態的大頭貼周圍的彩色外框以平常一半的粗細繪製，讓它占用更少空間。
+story_row_size.title	縮小限時動態列
+story_row_size.description	依你在下方選擇的大小，將聊天清單上方的限時動態與便利貼列縮小繪製，讓畫面上能顯示更多。輕觸仍會開啟手指下方的限時動態或便利貼。
 home_header.title	自訂首頁標題
 home_header.description	以你自己的文字或圖片取代聊天清單頂端的 Messenger 字標。在下方輸入文字或選擇圖片。兩者都沒有時，會保留原本的字標。重新啟動 Messenger 後即可看到變更。
 custom_font.title	使用自訂字型

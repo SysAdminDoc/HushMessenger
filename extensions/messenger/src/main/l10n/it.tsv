@@ -264,6 +264,8 @@ see_through_tab_bar_light	Più trasparente
 see_through_tab_bar_clear	La più trasparente
 see_through_tab_bar_picked	%1$s si vedrà dopo il riavvio di Messenger
 see_through_tab_bar_help	Smerigliata lascia intravedere meno chat e La più trasparente di più.
+story_row_size_picked	La fila delle storie è ora al %1$s
+story_row_size_help	%1$s è il più vicino alla dimensione di Messenger e %2$s il più piccolo.
 hidden_words_words	Parole da nascondere
 hidden_words_hint	Fino a %1$d caratteri, separati da virgole
 hidden_words_help	Deve corrispondere la parola intera, quindi "ok" non nasconde "okay". Maiuscole e minuscole non contano.
@@ -998,6 +1000,8 @@ avatar_shape.title	Immagini del profilo quadrate
 avatar_shape.description	Mostra le immagini del profilo delle persone come quadrati invece che cerchi. Attiva Arrotonda gli angoli qui sotto per quadrati arrotondati. Riavvia Messenger per vedere la modifica.
 thin_story_rings.title	Anelli delle storie sottili
 thin_story_rings.description	Disegna l'anello colorato intorno a un'immagine del profilo con una storia a metà della larghezza solita, così occupa meno spazio.
+story_row_size.title	Fila delle storie più piccola
+story_row_size.description	Disegna più piccola la fila di storie e note sopra le chat, della dimensione che scegli qui sotto, così ne entra di più sullo schermo. Un tocco apre ancora la storia o la nota sotto il dito.
 home_header.title	La tua intestazione della home
 home_header.description	Mette parole o un'immagine tue in cima all'elenco delle chat al posto del logo di Messenger. Scrivi le parole o scegli l'immagine qui sotto. Senza nessuna delle due, resta il logo. Riavvia Messenger per vedere una modifica.
 custom_font.title	Usa il tuo font

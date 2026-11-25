@@ -348,6 +348,7 @@ internal val PROFILE_347617503 = ControlProfile(
             "LX/36v;->onCreateMountContent(Landroid/content/Context;)Ljava/lang/Object;",
             "LX/378;->draw(Landroid/graphics/Canvas;)V",
         ),
+        "story_row_size" to setOf("Lcom/facebook/base/activity/FbFragmentActivity;->onResume()V"),
         "subtabs" to setOf("LX/2Ob;->run()V"),
         "suggested_replies" to setOf("LX/7qe;->A06(LX/7qe;)Z", "LX/7rY;->A05(LX/7rY;)Z", "LX/HuU;->A06()Z"),
         "system_camera" to setOf(
@@ -718,6 +719,7 @@ internal val PROFILE_347617497 = ControlProfile(
             "LX/37K;->onCreateMountContent(Landroid/content/Context;)Ljava/lang/Object;",
             "LX/37X;->draw(Landroid/graphics/Canvas;)V",
         ),
+        "story_row_size" to setOf("Lcom/facebook/base/activity/FbFragmentActivity;->onResume()V"),
         "subtabs" to setOf("LX/2P0;->run()V"),
         "suggested_replies" to setOf("LX/7te;->A06(LX/7te;)Z", "LX/7uY;->A05(LX/7uY;)Z", "LX/Hwl;->A06()Z"),
         "system_camera" to setOf(

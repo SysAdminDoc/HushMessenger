@@ -264,6 +264,8 @@ see_through_tab_bar_light	Trong hơn
 see_through_tab_bar_clear	Trong nhất
 see_through_tab_bar_picked	%1$s sẽ hiện sau khi Messenger khởi động lại
 see_through_tab_bar_help	Mờ cho thấy ít đoạn chat nhất, Trong nhất cho thấy nhiều nhất.
+story_row_size_picked	Thanh tin giờ hiện ở %1$s
+story_row_size_help	%1$s gần nhất với cỡ gốc của Messenger, %2$s là nhỏ nhất.
 hidden_words_words	Từ cần ẩn
 hidden_words_hint	Tối đa %1$d ký tự, cách nhau bằng dấu phẩy
 hidden_words_help	Phải khớp cả từ, nên "ok" không ẩn "okay". Chữ hoa chữ thường không quan trọng.
@@ -998,6 +1000,8 @@ avatar_shape.title	Ảnh đại diện hình vuông
 avatar_shape.description	Hiển thị ảnh đại diện của người dùng bằng hình vuông thay vì hình tròn. Bật 'Góc bo tròn' bên dưới để đổi thành hình vuông bo tròn. Có hiệu lực sau khi khởi động lại Messenger.
 thin_story_rings.title	Vòng tin mỏng
 thin_story_rings.description	Vẽ vòng màu quanh ảnh đại diện có tin với độ dày bằng một nửa bình thường để chiếm ít chỗ hơn.
+story_row_size.title	Thanh tin nhỏ hơn
+story_row_size.description	Vẽ thanh tin và ghi chú phía trên danh sách trò chuyện nhỏ hơn, theo cỡ bạn chọn bên dưới, để vừa nhiều hơn trên màn hình. Chạm vẫn mở tin hoặc ghi chú dưới ngón tay bạn.
 home_header.title	Tiêu đề trang chủ của riêng bạn
 home_header.description	Đặt chữ hoặc ảnh của riêng bạn ở đầu danh sách đoạn chat, thay cho logo chữ của Messenger. Nhập chữ hoặc chọn ảnh bên dưới. Nếu không có cả hai, logo chữ vẫn được giữ. Khởi động lại Messenger để thấy thay đổi.
 custom_font.title	Sử dụng phông chữ tùy chỉnh

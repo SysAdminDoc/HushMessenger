@@ -74,6 +74,7 @@ final class ChoiceCodec {
         text(InvisibleButtons.HIDDEN, InvisibleButtons.KEY),
         text(InvisibleButtons.LEVELS, InvisibleButtons.KEY),
         text(SeeThroughTabBar.LEVEL, SeeThroughTabBar.KEY),
+        text(StoryRowSize.LEVEL, StoryRowSize.KEY),
         text(HiddenWords.WORDS, HiddenWords.KEY),
         text(HomeHeader.TEXT, HomeHeader.KEY),
         number(MessageLog.KEEP_DAYS, MessageLog.KEY),

@@ -265,6 +265,7 @@ public class CompatReport {
         PATCHES.put("Invisible buttons", List.of("invisible_buttons"));
         PATCHES.put("Translucent chat bars", List.of("ios_bars"));
         PATCHES.put("Screen refresh rate", List.of("refresh_rate"));
+        PATCHES.put("Smaller stories row", List.of("story_row_size"));
         PATCHES.put("Appear offline", List.of("appear_offline", "availability_setting"));
         PATCHES.put("Hide read receipts", List.of("hide_read_receipts", "reply_read", "delivery_receipt", "reaction_read"));
         PATCHES.put("Mark chats read on this phone", List.of("local_read", "unread_badge"));

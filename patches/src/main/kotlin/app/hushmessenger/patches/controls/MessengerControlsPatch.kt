@@ -291,6 +291,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         "bubbles" -> validateBubbleEligibility()
         "bubble_mode" -> validateNativeBubbleMode()
         REFRESH_RATE -> validateRefreshRate()
+        STORY_ROW_SIZE -> validateStoryRowSize()
         MARK_READ_LOCALLY -> validateMarkReadLocally()
         else -> validateSwitch()
     }
@@ -417,6 +418,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             INVISIBLE_BUTTONS -> method.injectInvisibleButtons()
             IOS_BARS -> method.injectIosBars()
             REFRESH_RATE -> method.injectRefreshRate()
+            STORY_ROW_SIZE -> method.injectStoryRowSize()
             CHAT_BAR_PLUS -> method.injectChatBarPlus()
             CALL_RECORDING -> method.injectCallRecording()
             HOME_HEADER -> method.injectHomeHeader()
@@ -992,6 +994,10 @@ val iosBarsPatch = controlPatch("ios_bars", "Translucent chat bars",
 @Suppress("unused")
 val refreshRatePatch = controlPatch("refresh_rate", "Screen refresh rate",
     "Pick the refresh rate Messenger asks your screen for.", "Theme", REFRESH_RATE)
+@Suppress("unused")
+val storyRowSizePatch = controlPatch("story_row_size", "Smaller stories row",
+    "Draws the row of stories and notes above your chats smaller, by the size you pick in HushMessenger's settings, so more of it fits across the screen.",
+    "Theme", STORY_ROW_SIZE)
 private var anonymousStoriesApplied = false
 
 private val anonymousStoriesResources = patch(description = "Record HushMessenger capability: anonymous_stories") {

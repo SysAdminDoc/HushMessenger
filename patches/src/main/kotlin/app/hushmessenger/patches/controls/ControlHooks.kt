@@ -323,6 +323,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(PASTE_PHOTO).addAll(findPastePhoto(classes))
     for ((hook, methods) in findCustomFont(classes)) found.getValue(hook).addAll(methods)
     found.getValue(REFRESH_RATE).addAll(findRefreshRate(classes))
+    found.getValue(STORY_ROW_SIZE).addAll(findStoryRowSize(classes))
     found.getValue(MARK_READ_LOCALLY).addAll(findMarkReadLocally(classes))
     found.getValue(UNREAD_BADGE).addAll(findUnreadBadge(classes))
     return found

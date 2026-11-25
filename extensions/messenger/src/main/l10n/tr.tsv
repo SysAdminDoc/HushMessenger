@@ -264,6 +264,8 @@ see_through_tab_bar_light	Daha saydam
 see_through_tab_bar_clear	En saydam
 see_through_tab_bar_picked	%1$s, Messenger yeniden başlayınca görünür
 see_through_tab_bar_help	Buzlu sohbetlerinden en azını, En saydam en çoğunu gösterir.
+story_row_size_picked	Hikaye satırı artık %1$s
+story_row_size_help	%1$s Messenger'ın kendi boyutuna en yakın olanı, %2$s en küçüğü.
 hidden_words_words	Gizlenecek kelimeler
 hidden_words_hint	En fazla %1$d karakter, virgülle ayrılmış
 hidden_words_help	Kelimenin tamamı eşleşmeli, bu yüzden "ok" kelimesi "okay" kelimesini gizlemez. Büyük küçük harf önemli değil.
@@ -998,6 +1000,8 @@ avatar_shape.title	Kare profil resimleri
 avatar_shape.description	Kişilerin profil resimlerini daire yerine kare olarak gösterir. Yuvarlatılmış kareler için aşağıdaki 'Köşeleri yuvarlat' seçeneğini aç. Değişikliği görmek için Messenger'ı yeniden başlat.
 thin_story_rings.title	İnce hikaye halkaları
 thin_story_rings.description	Hikayesi olan bir profil resminin etrafındaki renkli halkayı normal kalınlığının yarısında çizer, böylece daha az yer kaplar.
+story_row_size.title	Daha küçük hikaye satırı
+story_row_size.description	Sohbetlerinin üstündeki hikaye ve not satırını aşağıda seçtiğin boyutta daha küçük çizer, böylece ekrana daha fazlası sığar. Dokunmak yine parmağının altındaki hikayeyi veya notu açar.
 home_header.title	Kendi ana sayfa başlığın
 home_header.description	Sohbet listesinin üstüne, Messenger'ın yazı logosu yerine kendi yazını veya resmini koyar. Yazıyı yaz veya resmi aşağıdan seç. İkisi de yoksa yazı logosu kalır. Değişikliği görmek için Messenger'ı yeniden başlat.
 custom_font.title	Kendi yazı tipini kullan

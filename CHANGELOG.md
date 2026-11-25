@@ -10,6 +10,7 @@
 - The settings screen is in Italian now, when your phone is set to Italian. Refs #234.
 - `Follow your phone's dark mode` is a new switch under `Light theme` in Appearance on the App tab, and it starts off. With it on, HushMessenger's own screens go dark when your phone's in dark mode and light when it isn't, and they change the moment the phone does. `Light theme` waits underneath and keeps your choice for when you turn it off. Refs #232.
 - `Your own home header` under Theme can use a font of your own for its words now. Tap `Choose a font for the words` and pick a .ttf or .otf file, and `Remove the font` puts the bold sans back. Only the header's words change, so the rest of Messenger keeps its font, and a file that won't load falls back to bold sans too. Saved choice files carry it along. Refs #212.
+- `Smaller stories row` is a new switch under Theme, and it starts off. The row of stories and notes above your chats only fits a few faces across. With this on, the whole row is drawn smaller, at 95, 90, 85, 80 or 75 percent of its size (90 until you pick another), so more of it fits on the screen. A tap still opens the story or note under your finger, and saved choice files carry the size along. Refs #240.
 
 ### Changed and fixed
 
