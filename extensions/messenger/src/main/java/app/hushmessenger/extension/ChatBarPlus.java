@@ -170,7 +170,8 @@ public final class ChatBarPlus {
         /** Finds the menu + just opened among the app's windows and adds the rows. */
         void findMenu() {
             try {
-                if (moved.isEmpty() || bar == null || !bar.isAttachedToWindow() || !Settings.wouldUse(KEY)) return;
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || moved.isEmpty() || bar == null
+                    || !bar.isAttachedToWindow() || !Settings.wouldUse(KEY)) return;
                 for (View window : WindowInspector.getGlobalWindowViews()) {
                     if (window == null || !InvisibleButtons.isMenu(window) || InvisibleButtons.ours(window.getContext())) continue;
                     if (window.getHeight() == 0 && listIn(window) != null) {
