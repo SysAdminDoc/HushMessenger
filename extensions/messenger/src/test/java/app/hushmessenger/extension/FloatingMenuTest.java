@@ -207,6 +207,32 @@ public class FloatingMenuTest {
         assertEquals(200 - (75 + 12), FloatingMenu.rise(new Rect(112, 200, 969, 378), new Rect(381, 369, 1070, 2070), frame, 400, 20, 12));
     }
 
+    @Test public void aPhotoTheEmojiRowLiesAcrossStillGetsTheCardUnderIt() {
+        // #162 on the S22: the newest photo sat at [372,1511][1057,2025] with Messenger's emoji row across its top, and
+        // the card went under the row, over the photo, leaving a strip of it between the two.
+        Rect frame = new Rect(0, 75, 1080, 2274);
+        Rect panel = new Rect(112, 1480, 969, 1658);
+        Rect photo = new Rect(372, 1511, 1057, 2025);
+
+        int rise = FloatingMenu.rise(panel, photo, frame, 400, 20, 12);
+        assertEquals(2025 + 20 + 400 - (2274 - 12), rise);
+        panel.offset(0, -rise);
+        photo.offset(0, -rise);
+        Rect placed = FloatingMenu.place(panel, photo, frame, 600, 400, 20, 12);
+
+        assertEquals(photo.bottom + 20, placed.top);
+        assertTrue(placed.bottom <= 2274 - 12);
+    }
+
+    @Test public void aMessageTooTallToShareTheScreenWithTheCardKeepsItUnderTheEmojiRow() {
+        Rect frame = new Rect(0, 75, 1080, 2274);
+        Rect panel = new Rect(112, 1000, 969, 1178);
+        Rect video = new Rect(381, 300, 1070, 2200);
+
+        assertEquals(0, FloatingMenu.rise(panel, video, frame, 400, 20, 12));
+        assertEquals(1178 + 20, FloatingMenu.place(panel, video, frame, 600, 400, 20, 12).top);
+    }
+
     @Test public void aBubbleThatOnlySaysItTakesATapIsStillThePressedMessage() {
         View litho = at(new View(app), 23, 365, 699, 466);
         litho.setClickable(true);

@@ -21,6 +21,7 @@
 - With the `Material You theme`, the floating tab bar's selected tab kept Messenger's navy (or pale blue in light mode) around an icon that had taken your color. The highlight takes your color now too. Refs #220.
 - Picking an accent color under Appearance could save it and change nothing. The color only shows with `Material You theme` on, and in light mode only with `Light mode accent` on too, and the colors were there to pick either way. Now picking one, using color codes or a copied theme turns on what it needs, and Undo turns those back off. Refs #237.
 - `Write longer notes` lets a note run to 2,000 characters now, up from 500. Facebook still decides whether a long note goes through. Refs #233.
+- With `Blur behind menus` and `Floating message menu` on, holding a photo or video low on the screen put the card of actions over the photo. Messenger lays the emoji row across the top of a photo, and the card went under the row. The photo moves up now and the card sits under it. Only a message too tall to share the screen with the card keeps the card under the emoji row. Refs #162.
 
 ## 0.31.0 (2026-11-25)
 
