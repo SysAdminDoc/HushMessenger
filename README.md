@@ -145,7 +145,7 @@ On Windows, compare your file with `Get-FileHash -Algorithm SHA256 .\messenger.a
 The [v0.31.0 release](https://github.com/SysAdminDoc/HushMessenger/releases/tag/v0.31.0) ships `SHA256SUMS.txt` beside the bundle. Compare its `.mpp` hash with your download.
 
 ```text
-d55124464911c3afc0466a6633b55c444d06d5c67b0c8880aeb83f3262759a86  patches-0.31.0.mpp
+5775c565323bd6e4464132f71c05ea34e6eae7fdef2ea4a986957ee5400999bd  patches-0.31.0.mpp
 ```
 
 `SHA256SUMS.txt.sig` is an SSH signature made with the project's release key. Its fingerprint is `SHA256:Z+UfHy7IUbtgNRO/wHkIr68+u4I+SIKPY9avfx/VAPU` and its public half is in [`scripts/release_signers`](scripts/release_signers). Morphe doesn't check this one, so that's up to you. Download the three files from the same tag and run this (OpenSSH 8.1 or newer, which Windows 10 and later include). In PowerShell, wrap it in `cmd /c "..."`.
