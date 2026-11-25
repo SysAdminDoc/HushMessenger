@@ -586,8 +586,10 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 // Built before the first edit, so a compose fragment that can't take the helper stops the patch with
                 // Messenger untouched.
                 val sends = methods.getValue(MEDIA_CAPTION)
-                val helpers = sends.map { it.definingClass to it.validateMediaCaption().textSend }.distinct()
-                    .map { (host, send) -> mutableClassDefBy(host) to mediaCaptionHelper(host, send) }
+                val calls = sends.map { it.definingClass to it.validateMediaCaption().calls }.distinct()
+                if (calls.map { it.first }.distinct().size != calls.size)
+                    throw PatchException("Messenger controls: two different composer sends in one compose fragment")
+                val helpers = calls.map { (host, send) -> mutableClassDefBy(host) to mediaCaptionHelper(host, send) }
                 for ((host, _) in helpers) host.checkMediaCaptionHelper()
                 injectControl(key, methods)
                 for ((host, helper) in helpers) host.addMediaCaptionHelper(helper)

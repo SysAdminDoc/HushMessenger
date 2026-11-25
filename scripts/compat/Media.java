@@ -118,36 +118,111 @@ final class Media {
         return sends;
     }
 
+    static MethodReference captionCall(Instruction i) {
+        return i instanceof ReferenceInstruction r && r.getReference() instanceof MethodReference m ? m : null;
+    }
+
+    static List<Integer> captionRegisters(Instruction i) {
+        var out = new ArrayList<Integer>();
+        if (i instanceof FiveRegisterInstruction f) {
+            int[] all = {f.getRegisterC(), f.getRegisterD(), f.getRegisterE(), f.getRegisterF(), f.getRegisterG()};
+            for (int k = 0; k < f.getRegisterCount(); k++) out.add(all[k]);
+        } else if (i instanceof RegisterRangeInstruction r) {
+            for (int k = 0; k < r.getRegisterCount(); k++) out.add(r.getStartRegister() + k);
+        }
+        return out;
+    }
+
+    static boolean captionWrites(Instruction i, int reg) {
+        return i.getOpcode().setsRegister() && i instanceof OneRegisterInstruction o && o.getRegisterA() == reg;
+    }
+
+    /** The last instruction in front of before, after after, that writes reg. */
+    static Instruction lastCaptionWrite(List<Instruction> code, int reg, int after, int before) {
+        for (int i = before - 1; i > after; i--) if (captionWrites(code.get(i), reg)) return code.get(i);
+        return null;
+    }
+
     /**
-     * Whether the composer's send hands the typed text to the media parameters once, in a plain invoke-direct whose
-     * object register isn't the text's, with nothing branching onto the new-instance in front of it, and the fragment
-     * having exactly one text send to pass the words to. Mirrors MediaCaption.kt.
+     * Whether the composer's send ends the way MediaCaption.kt needs: one stock text send with the fragment, null
+     * mentions and text, the empty map and a fresh list, right after the anything-to-send question; one flag branch
+     * onto that question with a goto after it; the plain media send right before the flag, taking the fragment and
+     * ending with a list; one branch past it; nothing branching onto its first instruction or writing the flag or the
+     * fragment inside it; and one direct reader of the typed text. Mirrors MediaCaption.kt.
      */
     static boolean mediaCaptionSite(Method method) {
         var code = instructions(method);
+        String host = method.getDefiningClass();
         boolean marked = false;
         for (var i : code)
             if ((i.getOpcode() == Opcode.CONST_STRING || i.getOpcode() == Opcode.CONST_STRING_JUMBO) &&
                 i instanceof ReferenceInstruction r && r.getReference() instanceof StringReference s && SEND_CLICKED.equals(s.getString())) marked = true;
-        if (!marked || mediaCaptionSends(method).size() != 1) return false;
-        var sites = new ArrayList<Integer>();
-        for (int at = 0; at + 1 < code.size(); at++) {
-            if (code.get(at).getOpcode() != Opcode.NEW_INSTANCE) continue;
-            if (!(code.get(at) instanceof ReferenceInstruction made) || !(made.getReference() instanceof TypeReference built)) continue;
-            int holder = register(code.get(at));
-            var next = code.get(at + 1);
-            if (next.getOpcode() != Opcode.INVOKE_DIRECT || !(next instanceof FiveRegisterInstruction call)) continue;
-            if (!(next instanceof ReferenceInstruction r) || !(r.getReference() instanceof MethodReference ctor)) continue;
-            var params = ctor.getParameterTypes().stream().map(Object::toString).toList();
-            if (!ctor.getDefiningClass().equals(built.getType()) || !"<init>".equals(ctor.getName()) || call.getRegisterCount() != 5) continue;
-            if (!params.equals(List.of(method.getDefiningClass(), IMMUTABLE_LIST, CAPTION_MAP, CAPTION_STRING))) continue;
-            if (call.getRegisterC() != holder || call.getRegisterG() == holder) continue;
-            sites.add(at);
+        var sends = mediaCaptionSends(method);
+        if (!marked || sends.size() != 1) return false;
+        int sendAt = -1;
+        for (int i = 0; i < code.size(); i++) {
+            var m = captionCall(code.get(i));
+            if (m == null || !m.getDefiningClass().equals(host) || !"V".equals(m.getReturnType())) continue;
+            var id = m.getName() + "(" + String.join("", m.getParameterTypes().stream().map(Object::toString).toList()) + ")";
+            if (!id.equals(sends.get(0))) continue;
+            if (sendAt >= 0) return false;
+            sendAt = i;
         }
-        return sites.size() == 1 && !mediaTargets(method).contains(sites.get(0));
+        if (sendAt < 0 || code.get(sendAt).getOpcode() != Opcode.INVOKE_STATIC) return false;
+        if (!(code.get(sendAt) instanceof FiveRegisterInstruction call) || call.getRegisterCount() != 5) return false;
+        int fragment = call.getRegisterC();
+        int check = -1;
+        for (int at = sendAt - 3; at >= 0 && check < 0; at--) {
+            var asked = captionCall(code.get(at));
+            if (code.get(at).getOpcode() == Opcode.INVOKE_VIRTUAL && asked != null && asked.getDefiningClass().equals(host) &&
+                asked.getParameterTypes().isEmpty() && "Z".equals(asked.getReturnType()) && captionRegisters(code.get(at)).equals(List.of(fragment))) check = at;
+        }
+        if (check < 0) return false;
+        var answer = code.get(check + 1);
+        var skip = code.get(check + 2);
+        if (answer.getOpcode() != Opcode.MOVE_RESULT || skip.getOpcode() != Opcode.IF_NEZ || register(answer) != register(skip)) return false;
+        for (int i = check + 3; i < sendAt; i++) if (code.get(i) instanceof OffsetInstruction) return false;
+        if (call.getRegisterD() != call.getRegisterF()) return false;
+        var nothing = lastCaptionWrite(code, call.getRegisterD(), check + 2, sendAt);
+        if (nothing == null || nothing.getOpcode() != Opcode.CONST_4 || ((NarrowLiteralInstruction) nothing).getNarrowLiteral() != 0) return false;
+        var map = lastCaptionWrite(code, call.getRegisterE(), check + 2, sendAt);
+        if (map == null || map.getOpcode() != Opcode.SGET_OBJECT || !(map instanceof ReferenceInstruction mr) ||
+            !(mr.getReference() instanceof FieldReference field) || !CAPTION_MAP.equals(field.getType())) return false;
+        var list = lastCaptionWrite(code, call.getRegisterG(), check + 2, sendAt);
+        if (list == null || list.getOpcode() != Opcode.MOVE_RESULT_OBJECT) return false;
+        int flagAt = -1;
+        for (int i = 0; i < code.size(); i++)
+            if (code.get(i).getOpcode() == Opcode.IF_EQZ && mediaTarget(code, i) == check) { if (flagAt >= 0) return false; flagAt = i; }
+        if (flagAt < 1 || flagAt + 1 >= code.size()) return false;
+        var jump = code.get(flagAt + 1).getOpcode();
+        if (jump != Opcode.GOTO && jump != Opcode.GOTO_16 && jump != Opcode.GOTO_32) return false;
+        int sent = register(code.get(flagAt));
+        var media = code.get(flagAt - 1);
+        var mediaSend = captionCall(media);
+        if (mediaSend == null || (media.getOpcode() != Opcode.INVOKE_STATIC && media.getOpcode() != Opcode.INVOKE_STATIC_RANGE)) return false;
+        var mediaParams = mediaSend.getParameterTypes();
+        if (!mediaSend.getDefiningClass().equals(host) || !"V".equals(mediaSend.getReturnType()) || mediaParams.isEmpty() ||
+            !"Ljava/util/List;".equals(mediaParams.get(mediaParams.size() - 1).toString())) return false;
+        if (!captionRegisters(media).contains(fragment)) return false;
+        int guard = -1;
+        for (int i = 0; i < code.size(); i++)
+            if (code.get(i).getOpcode() == Opcode.IF_NEZ && mediaTarget(code, i) == flagAt) { if (guard >= 0) return false; guard = i; }
+        if (guard < 0) return false;
+        int at = guard + 1;
+        if (at > flagAt - 1) return false;
+        for (int i = at; i < flagAt; i++)
+            if (code.get(i) instanceof OffsetInstruction || captionWrites(code.get(i), sent) || captionWrites(code.get(i), fragment)) return false;
+        if (mediaTargets(method).contains(at) || fragment > 15 || sent > 15) return false;
+        var readers = new HashSet<String>();
+        for (var i : code) {
+            var m = captionCall(i);
+            if (i.getOpcode() == Opcode.INVOKE_DIRECT && m != null && m.getDefiningClass().equals(host) &&
+                m.getParameterTypes().isEmpty() && CAPTION_STRING.equals(m.getReturnType())) readers.add(m.getName());
+        }
+        return readers.size() == 1;
     }
 
-    /** media_caption: the one send that carries a caption into the media parameters. Mirrors MediaCaption.kt. */
+    /** media_caption: the one send whose words go out after its plain media send. Mirrors MediaCaption.kt. */
     static List<Method> mediaCaption(List<ClassDef> classes) {
         var found = new ArrayList<Method>();
         for (var cls : classes) for (var method : cls.getMethods()) if (mediaCaptionSite(method)) found.add(method);
