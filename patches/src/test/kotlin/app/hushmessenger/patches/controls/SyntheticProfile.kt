@@ -54,9 +54,6 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     REACTION_READ to setOf(SYNTHETIC_REACTION, SYNTHETIC_REACTION_V2),
     "keep_unsent" to setOf("LX/SH3;->A01(Landroid/content/Intent;Lcom/facebook/auth/usersession/FbUserSession;Ljava/lang/String;Ljava/util/Map;)V"),
     "anonymous_stories" to setOf("LX/HNV;->C1V(${MONTAGE_CARD}Z)V", STORY_PREVIEW_INIT),
-    APP_ICONS to setOf("LX/7Ya;->A02($FB_USER_SESSION)Z", "LX/7Ya;->A03(Landroid/content/Context;$FB_USER_SESSION)Z"),
-    APP_THEMES to setOf("LX/HQz;->A00($FB_USER_SESSION)Z"),
-    APP_THEME_PICK to setOf(THEME_TAP),
     "save_stories" to setOf("LX/JgG;->onClick(Landroid/view/View;)V"),
     "growth_active_status" to setOf("LX/5gu;->A00(${FB_USER_SESSION}LX/54I;)Z"),
     "growth_notes" to setOf("Lcom/facebook/presence/note/ui/nux/controller/NotesNuxController;->" +

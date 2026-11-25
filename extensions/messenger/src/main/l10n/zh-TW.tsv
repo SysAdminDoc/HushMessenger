@@ -969,10 +969,6 @@ recovery_code_row.title	顯示 40 字元代碼選項
 recovery_code_row.description	當你的帳號沒有顯示時，在加密聊天設定中顯示 Messenger 的產生 40 字元代碼選項。頁面其他內容不變。
 material_you.title	Material You 主題
 material_you.description	在 Android 12 以上版本中，依桌布配色為 Messenger 深色模式上色；在 Android 11 中則使用固定藍色。請先在 Messenger 中啟用深色模式。除非開啟「淺色模式強調色」，否則淺色模式保持原本的顏色。
-app_icons.title	解鎖應用程式圖示
-app_icons.description	不需訂閱，即可在 Messenger 的「應用程式圖示」設定中選擇任何圖示。該設定是否顯示仍由 Messenger 決定。停用此選項後，可能會恢復預設圖示。
-app_themes.title	解鎖應用程式主題
-app_themes.description	不需訂閱，即可在 Messenger 的「主題」設定中選擇任何主題，讓淺色模式也能有顏色。提供哪些主題仍由 Messenger 決定。
 avatar_shape.title	方形大頭貼照
 avatar_shape.description	以方形取代圓形顯示用戶的大頭貼照。開啟下方的「圓角」可改為圓角方形。重新啟動 Messenger 後生效。
 thin_story_rings.title	細限時動態外框

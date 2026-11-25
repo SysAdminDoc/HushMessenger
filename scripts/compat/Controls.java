@@ -156,7 +156,6 @@ final class Controls {
             found.get("message_log_button").add(logButton.get(0));
             found.get("message_log_click").add(logButton.get(1));
         }
-        found.get("app_theme_pick").addAll(appThemePick(classes));
         found.get("auto_reply").addAll(messageLogHooks(classes));
         found.get("unsent_recall").addAll(unsentRecall(classes));
         found.get("unsent_clear").addAll(unsentClear(classes));
@@ -310,17 +309,6 @@ final class Controls {
         var cqlRowGetters = List.of(Map.entry(msgOtidGetterName, "Ljava/lang/String;"), Map.entry(msgTimestampGetterName, "J"),
             Map.entry(msgSenderGetterName, "J"), Map.entry(msgContentTypeGetterName, "I"), Map.entry(msgContentSubtypeGetterName, "I"));
 
-        // The app icon manager maps "default" to the start screen and every other icon to a LauncherAlias.
-        var appIconManagers = new HashSet<String>();
-        for (var cls : classes) for (var m : cls.getMethods()) {
-            if (!"<clinit>".equals(m.getName()) || m.getImplementation() == null) continue;
-            var literals = new HashSet<String>();
-            for (var i : m.getImplementation().getInstructions())
-                if (i instanceof ReferenceInstruction ri && ri.getReference() instanceof StringReference sr) literals.add(sr.getString());
-            if (literals.contains("com.facebook.orca.auth.StartScreenActivity") &&
-                literals.stream().anyMatch(s -> s.startsWith("com.facebook.orca.LauncherAlias"))) appIconManagers.add(cls.getType());
-        }
-
         for (var cls : classes) {
             String original = null;
             for (var f : cls.getFields()) {
@@ -366,20 +354,6 @@ final class Controls {
                 // stories
                 if (gate && strings.contains("com.facebook.messaging.friendsinboxunit.plugins.inboxunit.FriendsInboxUnitKillSwitch")) {
                     found.get("stories").add(method);
-                }
-
-                // app_icons: the icon manager's subscription benefit checks, a static one on the session and, in 586,
-                // an instance one that also reads a Context
-                if (appIconManagers.contains(cls.getType()) && "Z".equals(method.getReturnType()) &&
-                    paramTypes.equals(isStatic ? List.of(BUBBLE_SESSION) : List.of("Landroid/content/Context;", BUBBLE_SESSION)) &&
-                    strings.contains("CUSTOM_APP_ICON")) {
-                    found.get("app_icons").add(method);
-                }
-
-                // app_themes: the one static benefit check on the session for paid themes; the generic lookup takes a String
-                if (isStatic && "Z".equals(method.getReturnType()) && paramTypes.equals(List.of(BUBBLE_SESSION)) &&
-                    strings.contains("CUSTOM_APP_THEME")) {
-                    found.get("app_themes").add(method);
                 }
 
                 // facebook, and facebook_profile for a gate that builds only the chat details Profile button

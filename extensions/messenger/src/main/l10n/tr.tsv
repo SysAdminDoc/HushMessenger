@@ -969,10 +969,6 @@ recovery_code_row.title	40 karakterlik kod seçeneğini göster
 recovery_code_row.description	Hesabında görünmediğinde, Messenger'ın 40 karakterlik kod oluşturma seçeneğini şifreli sohbet ayarlarında gösterir. Sayfanın geri kalanı değişmez.
 material_you.title	Material You teması
 material_you.description	Messenger'ın karanlık modunu Android 12 ve sonrasında duvar kağıdı renklerinle, Android 11'de sabit bir maviyle renklendirir. Önce Messenger'da karanlık modu aç. Açık mod, 'Açık modda vurgu rengi' seçeneğini açmadıkça kendi renklerini korur.
-app_icons.title	Uygulama simgelerinin kilidini aç
-app_icons.description	Messenger'ın Uygulama simgesi ayarında abonelik olmadan istediğin simgeyi seçmene izin verir. Bu ayarın sana gösterilip gösterilmeyeceğine Messenger karar verir. Bunu kapatmak varsayılan simgeyi geri getirebilir.
-app_themes.title	Uygulama temalarının kilidini aç
-app_themes.description	Messenger'ın Tema ayarında abonelik olmadan istediğin temayı seçmene izin verir, böylece açık mod da bir renk alabilir. Hesabına hangi temaları sunacağına yine Messenger karar verir.
 avatar_shape.title	Kare profil resimleri
 avatar_shape.description	Kişilerin profil resimlerini daire yerine kare olarak gösterir. Yuvarlatılmış kareler için aşağıdaki 'Köşeleri yuvarlat' seçeneğini aç. Değişikliği görmek için Messenger'ı yeniden başlat.
 thin_story_rings.title	İnce hikaye halkaları

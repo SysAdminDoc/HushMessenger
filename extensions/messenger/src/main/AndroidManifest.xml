@@ -110,8 +110,6 @@
         <meta-data android:name="hush.feature.restricted_notify" android:value="true" />
         <meta-data android:name="hush.feature.open_chat_sound" android:value="true" />
         <meta-data android:name="hush.feature.material_you" android:value="true" />
-        <meta-data android:name="hush.feature.app_icons" android:value="true" />
-        <meta-data android:name="hush.feature.app_themes" android:value="true" />
         <meta-data android:name="hush.feature.avatar_shape" android:value="true" />
         <meta-data android:name="hush.feature.thin_story_rings" android:value="true" />
         <meta-data android:name="hush.feature.home_header" android:value="true" />

@@ -969,10 +969,6 @@ recovery_code_row.title	Mostrar la opción del código de 40 caracteres
 recovery_code_row.description	Vuelve a mostrar la opción de Messenger para generar un código de 40 caracteres en los ajustes de chats cifrados cuando tu cuenta no la muestra. El resto de la página no cambia.
 material_you.title	Tema Material You
 material_you.description	Colorea el modo oscuro de Messenger con los colores de tu fondo de pantalla en Android 12 y posterior, y con un azul fijo en Android 11. Activa primero el modo oscuro en Messenger. El modo claro mantiene sus colores salvo que actives Color de acento en modo claro.
-app_icons.title	Desbloquear iconos de la app
-app_icons.description	Te deja elegir cualquier icono en el ajuste Icono de la app de Messenger sin suscripción. Messenger decide si ese ajuste te aparece. Desactivar esto puede devolver el icono predeterminado.
-app_themes.title	Desbloquear temas de la app
-app_themes.description	Te deja elegir cualquier tema en el ajuste Tema de Messenger sin suscripción, así que el modo claro también puede tener color. Messenger sigue decidiendo qué temas ofrece a tu cuenta.
 avatar_shape.title	Fotos de perfil cuadradas
 avatar_shape.description	Muestra las fotos de perfil de la gente como cuadrados en lugar de círculos. Activa Redondear las esquinas abajo para tener cuadrados redondeados. Reinicia Messenger para ver el cambio.
 thin_story_rings.title	Anillos de historias finos

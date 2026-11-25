@@ -51,6 +51,8 @@
 
 ### Changed and fixed
 
+- Remove the `Unlock app icons` patch.
+- Remove the `Unlock app themes` patch.
 - `Use system emoji` sits under Theme now and `Android Auto messages` under Notifications, in the settings and in Morphe's patch list. Conversations had grown long enough to need scrolling, and those two were always more about how Messenger looks and where your messages get read out than about the chat itself.
 - The message log looks like Messenger's own chats now. It used to open on the settings page's pure black with boxed cards. Now it has Messenger's softer greys, or white in light mode, grey message bubbles, a rounded search field and a chat list with each chat's newest message under its name. Every chat gets a round picture, taken from the ones chat notifications already carry, locked with the log's key and cleared along with the chat. It follows Material You and the pure black switch when you have those on. Refs #200.
 - Reacting to a message sends the Seen that `Hide read receipts` held back for that chat, the way replying already did. Messenger only lets you react from inside the chat, so a reaction with no Seen looked odd to the sender, and you had to tap `Mark as read` after every one. Refs #223.

@@ -121,7 +121,6 @@ internal val settingsExtension = patch(description = "Load HushMessenger runtime
         readReceiptThreadFields = emptyMap()
         markReadRecipe = null
         messageLogButtonRecipe = null
-        appThemePick = null
         pinnedBarLoader = null
         saveVoiceMenuRecipe = null
         autoReplyPictureRecipe = null
@@ -288,9 +287,6 @@ internal fun MutableMethod.validateHook(hook: String) {
         "growth_notes" -> validateNotesTips()
         "bubbles" -> validateBubbleEligibility()
         "bubble_mode" -> validateNativeBubbleMode()
-        APP_ICONS -> validateAppIconGate()
-        APP_THEMES -> validateAppThemeGate()
-        APP_THEME_PICK -> validateAppThemePick()
         REFRESH_RATE -> validateRefreshRate()
         else -> validateSwitch()
     }
@@ -321,9 +317,6 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             "typing" -> method.injectSwitch("$SETTINGS->suppressTyping()Z", "0x0")
             "bubbles" -> method.injectSwitch("$SETTINGS->enableBubbles()Z", "0x1")
             "bubble_mode" -> method.injectNativeBubbleMode()
-            APP_ICONS -> method.injectAppIconGate()
-            APP_THEMES -> method.injectAppThemeGate()
-            APP_THEME_PICK -> method.injectAppThemePick()
             "allow_screenshot" -> method.injectSwitch("$SETTINGS->allowScreenshot()Z", "0x0")
             HIDE_READ_RECEIPTS -> method.injectChatSeen()
             REPLY_READ -> method.injectReplyRead()
@@ -938,11 +931,6 @@ val restrictedNotifyPatch = controlPatch("restricted_notify", "Notify for restri
 @Suppress("unused")
 val openChatSoundPatch = controlPatch("open_chat_sound", "Sound in the open chat",
     "Plays Messenger's in-app message sound when a message comes into the chat you have open. Messenger already does that for likes and stickers. A silent phone or Messenger's own In-app sounds switch still keeps it quiet.", "Notifications", OPEN_CHAT_SOUND)
-@Suppress("unused")
-val unlockAppIconsPatch = controlPatch("app_icons", "Unlock app icons", "Lets you pick any icon in Messenger's App icon setting without a subscription. Messenger still decides whether that setting shows for your account.", "Theme")
-@Suppress("unused")
-val unlockAppThemesPatch = controlPatch("app_themes", "Unlock app themes", "Lets you pick any theme in Messenger's Theme setting without a subscription, so light mode can get a color too. Messenger still decides which themes it offers your account.", "Theme",
-    APP_THEMES, APP_THEME_PICK)
 @Suppress("unused")
 val avatarShapePatch = controlPatch("avatar_shape", "Square profile pictures",
     "Shows profile pictures as squares instead of circles, or as rounded squares with Round the corners on. Restart Messenger after changing it.", "Theme",

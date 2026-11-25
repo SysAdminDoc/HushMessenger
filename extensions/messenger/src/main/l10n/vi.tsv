@@ -969,10 +969,6 @@ recovery_code_row.title	Hiện tùy chọn mã 40 ký tự
 recovery_code_row.description	Hiện tùy chọn tạo mã 40 ký tự của Messenger trong phần cài đặt đoạn chat mã hóa khi tài khoản của bạn không có tùy chọn này. Phần còn lại của trang không đổi.
 material_you.title	Chủ đề Material You
 material_you.description	Trong Android 12 trở lên, tô màu chế độ tối của Messenger theo bảng màu hình nền; trong Android 11, sử dụng màu xanh lam cố định. Vui lòng bật chế độ tối trong Messenger trước. Chế độ sáng giữ nguyên màu trừ khi bạn bật Màu nhấn cho chế độ sáng.
-app_icons.title	Mở khóa biểu tượng ứng dụng
-app_icons.description	Chọn bất kỳ biểu tượng nào trong cài đặt 'Biểu tượng ứng dụng' của Messenger mà không cần đăng ký. Việc hiển thị cài đặt đó vẫn do Messenger quyết định. Sau khi tắt tùy chọn này, biểu tượng mặc định có thể được khôi phục.
-app_themes.title	Mở khóa chủ đề ứng dụng
-app_themes.description	Chọn bất kỳ chủ đề nào trong cài đặt 'Chủ đề' của Messenger mà không cần đăng ký, để chế độ sáng cũng có màu. Messenger vẫn quyết định những chủ đề nào được cung cấp cho tài khoản của bạn.
 avatar_shape.title	Ảnh đại diện hình vuông
 avatar_shape.description	Hiển thị ảnh đại diện của người dùng bằng hình vuông thay vì hình tròn. Bật 'Góc bo tròn' bên dưới để đổi thành hình vuông bo tròn. Có hiệu lực sau khi khởi động lại Messenger.
 thin_story_rings.title	Vòng tin mỏng

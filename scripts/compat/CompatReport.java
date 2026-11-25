@@ -267,8 +267,6 @@ public class CompatReport {
         PATCHES.put("Mark chats read on this phone", List.of("local_read"));
         PATCHES.put("Mark as read button", List.of("mark_read_bar", "mark_read_click"));
         PATCHES.put("Keep unsent messages", List.of("keep_unsent", "unsent_indicator", "delta_unsent", "unsent_recall", "unsent_clear"));
-        PATCHES.put("Unlock app icons", List.of("app_icons"));
-        PATCHES.put("Unlock app themes", List.of("app_themes", "app_theme_pick"));
         PATCHES.put("Square profile pictures", List.of("avatar_shape", "story_ring"));
         PATCHES.put("Thin story rings", List.of("story_ring"));
         PATCHES.put("Your own home header", List.of("home_header"));
@@ -1075,7 +1073,7 @@ public class CompatReport {
      * check of its own. The control tests' zero-local check (MirroredFinders.kt) fails when this set and the patches part.
      */
     static final Set<String> NEEDS_A_LOCAL = Set.of("ad_events", "ai_chat_open", "ai_commands", "ai_fab", "ai_mention_rows", "ai_menu", "ai_search",
-        "ai_search_chip", "ai_summary", "allow_screenshot", "analytics_uploads", "app_icons", "app_themes", "attribution_uploads", "bubbles", "call_recording", "delta_unsent",
+        "ai_search_chip", "ai_summary", "allow_screenshot", "analytics_uploads", "attribution_uploads", "bubbles", "call_recording", "delta_unsent",
         "disappearing_swipe", "external_gallery", "facebook", "facebook_profile", "font_by_name", "font_repository", "growth_active_status", "growth_notes", "growth_story_card", "instant_gallery", "instants_button", "keep_unsent", "link_player",
         "mqtt_telemetry", "nearby_scans", "original_photo", "passkey_login", "people_story", "phone_id_sync", "people_tab", "recent_media", "stories", "system_camera",
         "tab_badges", "typing", "unsent_indicator", "unsent_recall");

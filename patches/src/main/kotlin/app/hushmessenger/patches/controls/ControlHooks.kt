@@ -158,10 +158,9 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     val peopleJewelKeys = findPeopleJewelKeys(classes)
     val storyCardKeys = findStoryCardKeys(classes)
     resolveMessageGetterNames(classes)
-    val appIconManagers = findAppIconManagers(classes)
     val stringTables = redexStringTables(classes)
     activeStringTables = stringTables
-    val scan = ControlScan(found, peopleJewelKeys, storyCardKeys, appIconManagers, stringTables)
+    val scan = ControlScan(found, peopleJewelKeys, storyCardKeys, stringTables)
     for (cls in classes) {
         val original = cls.fields.firstOrNull { it.name == "__redex_internal_original_name" }
             ?.initialValue.let { (it as? StringEncodedValue)?.value }
@@ -304,7 +303,6 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     val (logBar, logClick) = findMessageLogButton(classes)
     found.getValue(MESSAGE_LOG_BUTTON).addAll(logBar)
     found.getValue(MESSAGE_LOG_CLICK).addAll(logClick)
-    found.getValue(APP_THEME_PICK).addAll(findAppThemePick(classes))
     found.getValue(SYSTEM_CAMERA).addAll(findSystemCamera(classes))
     found.getValue(EXTERNAL_GALLERY).addAll(findExternalGallery(classes))
     found.getValue(INSTANT_GALLERY).addAll(findInstantGallery(classes))
@@ -448,7 +446,6 @@ private class ControlScan(
     val found: Map<String, MutableList<Method>>,
     val peopleJewelKeys: Set<String>,
     val storyCardKeys: Set<String>,
-    val appIconManagers: Set<String>,
     val stringTables: Map<String, Map<Int, String>>,
 ) {
     var searchFieldRender: Method? = null
@@ -502,8 +499,6 @@ private class ControlScan(
             for ((key, spec) in pluginGates) if (anchors.any { it in spec.anchors }) add(key)
         }
         if (gate && "com.facebook.messaging.friendsinboxunit.plugins.inboxunit.FriendsInboxUnitKillSwitch" in strings) add("stories")
-        if (cls.type in appIconManagers && method.isAppIconGate()) add(APP_ICONS)
-        if (method.isAppThemeGate()) add(APP_THEMES)
         if (gate) {
             val shortcuts = instructions.filter { it.opcode == Opcode.NEW_INSTANCE }
                 .mapNotNull { ((it as? ReferenceInstruction)?.reference as? TypeReference)?.type }

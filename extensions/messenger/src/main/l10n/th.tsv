@@ -969,10 +969,6 @@ recovery_code_row.title	แสดงตัวเลือกรหัส 40 ต�
 recovery_code_row.description	แสดงตัวเลือกของ Messenger สำหรับสร้างรหัส 40 ตัวอักษรในการตั้งค่าแชทที่เข้ารหัส เมื่อบัญชีของคุณไม่แสดงตัวเลือกนี้ ส่วนอื่นของหน้าไม่เปลี่ยนแปลง
 material_you.title	ธีม Material You
 material_you.description	ในโหมดมืดบน Android 12 ขึ้นไป Messenger จะใช้สีคู่โทนจากวอลเปเปอร์ของคุณ และมีสวิตช์ "โหมดมืดดำสนิท (Pure black)" รวมถึงสามารถปรับแต่งสีเองได้
-app_icons.title	ปลดล็อกไอคอนแอป
-app_icons.description	สามารถเลือกไอคอนทั้งหมดในการตั้งค่าไอคอนแอปของ Messenger ได้โดยไม่ต้องสมัครสมาชิก
-app_themes.title	ปลดล็อกธีมของแอป
-app_themes.description	สามารถเลือกธีมทั้งหมดในการตั้งค่าธีมของ Messenger ได้โดยไม่ต้องสมัครสมาชิก
 avatar_shape.title	รูปโปรไฟล์ทรงสี่เหลี่ยม
 avatar_shape.description	แสดงรูปโปรไฟล์เป็นสี่เหลี่ยมแทนวงกลม และวงแหวนสตอรี่จะโค้งตามทรงสี่เหลี่ยม สามารถเปิดตัวเลือกมนมุมได้ เริ่มต้น Messenger ใหม่หลังจากเปลี่ยน
 thin_story_rings.title	วงแหวนสตอรี่แบบบาง
