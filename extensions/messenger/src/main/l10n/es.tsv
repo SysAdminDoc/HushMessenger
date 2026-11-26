@@ -176,6 +176,8 @@ call_captions_no_recognizer	Tu teléfono no tiene reconocimiento de voz en el di
 call_captions_no_translator	Tu teléfono no tiene traducción en el dispositivo, así que los subtítulos se quedan en el idioma en que se hablan.
 call_captions_untranslated	Tu teléfono no puede traducir este par de idiomas, así que los subtítulos se quedan tal como se hablan.
 call_captions_unavailable	Tu teléfono no puede reconocer este idioma. Elige otro en los ajustes de HushMessenger.
+call_captions_checking	Preguntando a tu teléfono por %1$s
+call_captions_cant_hear	Tu teléfono no puede hacer subtítulos en %1$s por sí solo. Elige otro idioma.
 call_captions_downloading	Tu teléfono está descargando este idioma. Los subtítulos empiezan cuando termine.
 call_captions_stopped	Subtítulos detenidos para esta llamada.
 call_captions_no_voice	Tu teléfono no tiene voz para este idioma, así que los subtítulos no se leen en voz alta.

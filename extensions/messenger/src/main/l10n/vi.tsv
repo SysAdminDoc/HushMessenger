@@ -176,6 +176,8 @@ call_captions_no_recognizer	Điện thoại của bạn không có nhận dạng
 call_captions_no_translator	Điện thoại của bạn không có dịch trên máy, nên phụ đề giữ nguyên ngôn ngữ được nói.
 call_captions_untranslated	Điện thoại của bạn không dịch được cặp ngôn ngữ này, nên phụ đề giữ nguyên như lời nói.
 call_captions_unavailable	Điện thoại của bạn không nhận dạng được ngôn ngữ này. Hãy chọn ngôn ngữ khác trong cài đặt HushMessenger.
+call_captions_checking	Đang kiểm tra %1$s trên điện thoại của bạn
+call_captions_cant_hear	Điện thoại của bạn không tự tạo phụ đề bằng %1$s được. Hãy chọn ngôn ngữ khác.
 call_captions_downloading	Điện thoại đang tải ngôn ngữ này. Phụ đề sẽ bắt đầu khi tải xong.
 call_captions_stopped	Phụ đề đã dừng cho cuộc gọi này.
 call_captions_no_voice	Điện thoại của bạn không có giọng đọc cho ngôn ngữ này, nên phụ đề không được đọc to.

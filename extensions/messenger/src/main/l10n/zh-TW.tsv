@@ -176,6 +176,8 @@ call_captions_no_recognizer	你的手機沒有裝置端語音辨識，因此無�
 call_captions_no_translator	你的手機沒有裝置端翻譯，因此字幕會維持原本說的語言。
 call_captions_untranslated	你的手機無法翻譯這組語言，因此字幕維持原文。
 call_captions_unavailable	你的手機無法辨識這個語言。請在 HushMessenger 設定中選擇其他語言。
+call_captions_checking	正在確認你的手機能否辨識%1$s
+call_captions_cant_hear	你的手機無法自行產生%1$s字幕。請選擇其他語言。
 call_captions_downloading	手機正在下載這個語言。下載完成後就會開始顯示字幕。
 call_captions_stopped	這通通話的字幕已停止。
 call_captions_no_voice	你的手機沒有這個語言的語音，因此不會朗讀字幕。

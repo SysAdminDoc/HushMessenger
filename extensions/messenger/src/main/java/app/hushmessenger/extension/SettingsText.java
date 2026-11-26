@@ -281,6 +281,8 @@ final class SettingsText {
         ENGLISH.put("call_captions_no_translator", "Your phone doesn't have on-device translation, so captions stay in the language they're spoken.");
         ENGLISH.put("call_captions_untranslated", "Your phone can't translate this language pair, so captions stay as spoken.");
         ENGLISH.put("call_captions_unavailable", "Your phone can't recognize this language. Pick another one in HushMessenger settings.");
+        ENGLISH.put("call_captions_checking", "Asking your phone about %1$s");
+        ENGLISH.put("call_captions_cant_hear", "Your phone can't make captions in %1$s by itself. Pick another language.");
         ENGLISH.put("call_captions_downloading", "Your phone is downloading this language. Captions start once it's there.");
         ENGLISH.put("call_captions_stopped", "Captions stopped for this call.");
         ENGLISH.put("call_captions_no_voice", "Your phone has no voice for this language, so captions aren't read aloud.");

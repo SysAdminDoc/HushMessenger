@@ -176,6 +176,8 @@ call_captions_no_recognizer	โทรศัพท์ของคุณไม่�
 call_captions_no_translator	โทรศัพท์ของคุณไม่มีการแปลในเครื่อง คำบรรยายจึงแสดงเป็นภาษาที่พูด
 call_captions_untranslated	โทรศัพท์ของคุณแปลคู่ภาษานี้ไม่ได้ คำบรรยายจึงแสดงตามที่พูด
 call_captions_unavailable	โทรศัพท์ของคุณจดจำภาษานี้ไม่ได้ เลือกภาษาอื่นในการตั้งค่า HushMessenger
+call_captions_checking	กำลังตรวจสอบ %1$s ในโทรศัพท์ของคุณ
+call_captions_cant_hear	โทรศัพท์ของคุณสร้างคำบรรยายภาษา %1$s เองไม่ได้ เลือกภาษาอื่น
 call_captions_downloading	โทรศัพท์กำลังดาวน์โหลดภาษานี้ คำบรรยายจะเริ่มเมื่อดาวน์โหลดเสร็จ
 call_captions_stopped	คำบรรยายหยุดทำงานสำหรับการโทรนี้
 call_captions_no_voice	โทรศัพท์ของคุณไม่มีเสียงอ่านสำหรับภาษานี้ จึงไม่อ่านคำบรรยายออกเสียง

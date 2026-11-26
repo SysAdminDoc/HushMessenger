@@ -176,6 +176,8 @@ call_captions_no_recognizer	Telefonunda cihaz üzerinde konuşma tanıma yok, bu
 call_captions_no_translator	Telefonunda cihaz üzerinde çeviri yok, bu yüzden altyazılar konuşulan dilde kalır.
 call_captions_untranslated	Telefonun bu dil çiftini çeviremiyor, altyazılar konuşulduğu gibi kalır.
 call_captions_unavailable	Telefonun bu dili tanıyamıyor. HushMessenger ayarlarından başka bir dil seç.
+call_captions_checking	Telefonunda %1$s kontrol ediliyor
+call_captions_cant_hear	Telefonun %1$s için kendi başına altyazı oluşturamıyor. Başka bir dil seç.
 call_captions_downloading	Telefonun bu dili indiriyor. Altyazılar indirme bitince başlar.
 call_captions_stopped	Bu arama için altyazılar durdu.
 call_captions_no_voice	Telefonunda bu dil için ses yok, bu yüzden altyazılar sesli okunmaz.
