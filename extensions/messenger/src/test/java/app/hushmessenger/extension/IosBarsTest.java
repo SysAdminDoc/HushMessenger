@@ -360,9 +360,14 @@ public class IosBarsTest {
      * window's content, so the strip isn't in the chat. [gap] puts that much room between the strip and the chat.
      */
     private View openChatUnderStrip(int gap) {
+        return openChatUnderStrip(gap, false);
+    }
+
+    /** With [counting], the strip counts how often it's asked to draw again. */
+    private View openChatUnderStrip(int gap, boolean counting) {
         buildChat(true);
         FrameLayout content = new FrameLayout(activity);
-        View strip = new View(activity);
+        View strip = counting ? new CountingStrip(activity) : new View(activity);
         strip.setBackground(new ColorDrawable(0xFF000000));
         content.addView(strip, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, STRIP));
         FrameLayout.LayoutParams below = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -416,6 +421,42 @@ public class IosBarsTest {
         assertSame("The strip gets back the colour it had last", again, strip.getBackground());
         assertEquals(0, list.getPaddingTop());
         assertEquals(0, room().topMargin);
+        assertFalse(Settings.hookErrors.containsKey(IosBars.KEY));
+    }
+
+    static final class CountingStrip extends View {
+        int redraws;
+
+        CountingStrip(android.content.Context context) {
+            super(context);
+        }
+
+        @Override public void invalidate() {
+            redraws++;
+            super.invalidate();
+        }
+    }
+
+    /**
+     * #252: the strip sits outside the chat, so moving the messages never drew it again and it kept the frame from
+     * before the list grew under it, solid black on the phone. Each move draws it again along with both bars.
+     */
+    @Config(sdk = 36)
+    @Test public void theStripIsDrawnAgainAsTheMessagesMove() {
+        on();
+        CountingStrip strip = (CountingStrip) openChatUnderStrip(0, true);
+        assertTrue(strip.getBackground() instanceof IosBars.StripFrost);
+        strip.redraws = 0;
+        IosBars.redraw(chat);
+        assertEquals("The strip draws the messages now behind it", 1, strip.redraws);
+        IosBars.redraw(chat);
+        assertEquals(2, strip.redraws);
+
+        Settings.preferences.edit().putBoolean(IosBars.KEY, false).commit();
+        IosBars.look(chat, true);
+        strip.redraws = 0;
+        IosBars.redraw(chat);
+        assertEquals("Switched off, nothing is drawn again for it", 0, strip.redraws);
         assertFalse(Settings.hookErrors.containsKey(IosBars.KEY));
     }
 

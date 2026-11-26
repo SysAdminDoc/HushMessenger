@@ -153,12 +153,17 @@ public final class IosBars {
         }
     }
 
-    /** Both bars again, as the messages behind them move. */
-    private static void redraw(View chat) {
+    /**
+     * Both bars and the strip over the top one again, as the messages behind them move. The strip sits outside the
+     * chat, so nothing else draws it again, and it kept the frame from before the list grew under it: solid colour
+     * (#252).
+     */
+    static void redraw(View chat) {
         Install had = installs.get(chat);
         if (had == null) return;
         if (had.top != null) had.top.invalidate();
         if (had.bottom != null) had.bottom.invalidate();
+        if (had.strip != null) had.strip.invalidate();
     }
 
     /**
