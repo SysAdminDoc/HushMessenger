@@ -82,6 +82,26 @@ public class ChatHeadVideoTest {
         assertTrue(Settings.hookErrors.isEmpty());
     }
 
+    /**
+     * #249: with Android bubbles picked there are no chat heads, so a player built on the app's own context is in a
+     * bubble or the app, and keeps Messenger's choice. The chat head service still gets its TextureView.
+     */
+    @Test @Config(sdk = 36) public void withAndroidBubblesPickedTheAppContextKeepsMessengersChoice() {
+        Settings.preferences.edit().putBoolean("bubbles", true).commit();
+        assertTrue(Settings.enableBubbles());
+        assertFalse(ChatHeadVideo.textureView(app, false));
+        assertFalse(ChatHeadVideo.textureView(new ContextThemeWrapper(app, 0), false));
+        assertTrue("Messenger's own TextureView stays", ChatHeadVideo.textureView(app, true));
+        Context service = Robolectric.buildService(ChatHeadService.class).create().get();
+        assertTrue(ChatHeadVideo.textureView(service, false));
+        assertTrue(ChatHeadVideo.textureView(new ContextThemeWrapper(service, 0), false));
+
+        Settings.preferences.edit().putBoolean(Settings.BUBBLE_CHAT_HEADS, true).commit();
+        assertTrue(Settings.forceChatHeads());
+        assertTrue("Chat heads picked, so the app's context may be one", ChatHeadVideo.textureView(app, false));
+        assertTrue(Settings.hookErrors.isEmpty());
+    }
+
     /** #104: on a Huawei the box stayed behind in the chat itself too, not only in a chat head. */
     @Test public void everyVideoOnAPhoneThatLeavesABoxBehindDrawsIntoATextureView() {
         for (String maker : new String[] {"HUAWEI", "Huawei", " honor "}) {

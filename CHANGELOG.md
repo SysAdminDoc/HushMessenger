@@ -40,6 +40,7 @@
 - `Report a problem` now says which switches you have on haven't done anything yet, and lists any switch that stopped with an error, so a report about a switch that "does nothing" shows why. Before, it only listed the switches that were on. Refs #198, #241.
 - Rows you hide under `Menu rows` now leave the side menu too, on accounts where Messenger opens one from the button at the top left instead of showing a Menu tab. That covers rows tucked under another row, like Friend requests under More, and the side menu's rows now show up in the list for you to pick. Refs #207.
 - `Round the corners` now rounds your own picture on the Menu tab too. It stayed a plain square there, along with a few other pictures Messenger draws the same way. Refs #207.
+- Videos in a chat opened as an Android bubble could still get the chat head video fix when Messenger set up the player without the bubble's own screen to go by, and that can blank the bubble when you open the gallery. With `Android bubbles` picked under `Allow chat bubbles` there are no chat heads, so those videos are left to Messenger now. Refs #249.
 - For developers, the release walk passes over a listed phone whose Messenger build has no stock APK in the fixtures and walks the next free one, saying which it skipped and why. It used to take the first free phone and stop there. `release.ps1 -WalkSerial <serial>` picks the walk device yourself.
 
 ## 0.31.0 (2026-11-25)
