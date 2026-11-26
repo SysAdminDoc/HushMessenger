@@ -445,10 +445,17 @@ public final class SettingsActivity extends Activity {
         messageLog.adopt(getLastNonConfigurationInstance(), root);
         // The top bar's message log button opens straight into the log, and a chat menu's row into that chat's part of it.
         // Coming back from a rotation or a restart keeps whatever was showing.
-        if (state == null && getIntent().getBooleanExtra(MessageLogSheet.OPEN_EXTRA, false)) {
+        if (state == null && onlyForTheLog()) {
             String thread = getIntent().getStringExtra(MessageLogSheet.THREAD_EXTRA);
             root.post(() -> messageLog.showMessageLog(thread));
         }
+        // #248: opened for the log, settings never shows behind it, and closing the log closes this screen too.
+        if (onlyForTheLog()) root.setVisibility(View.INVISIBLE);
+    }
+
+    /** Whether this screen was opened by the clock, the Menu tab row or a chat menu's row, just to show the log. */
+    boolean onlyForTheLog() {
+        return getIntent().getBooleanExtra(MessageLogSheet.OPEN_EXTRA, false);
     }
 
     @Override public Object onRetainNonConfigurationInstance() { return messageLog.retained(); }
