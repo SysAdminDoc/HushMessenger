@@ -190,7 +190,8 @@ public class LinkPlayerTest {
     @Test public void theFrameKeepsNothingAndTalksToNoOneButTheEmbed() {
         LinkPlayerSheet sheet = open("https://youtu.be/dQw4w9WgXcQ");
         android.webkit.WebSettings settings = sheet.frame.getSettings();
-        assertFalse(settings.getDomStorageEnabled());
+        // #246: TikTok's embed shows only "Server error" with no page storage. The jar empties it with the cookies.
+        assertTrue(settings.getDomStorageEnabled());
         assertFalse(settings.getAllowFileAccess());
         assertFalse(settings.getAllowContentAccess());
         assertEquals(android.webkit.WebSettings.LOAD_NO_CACHE, settings.getCacheMode());
@@ -249,6 +250,103 @@ public class LinkPlayerTest {
         LinkPlayerSheet sheet = open("https://www.instagram.com/reel/Cx1y2z3A4b5/");
         sheet.loadFailed();
         assertNull(LinkPlayerSheet.showing);
+    }
+
+    /** A failed load the way the frame reports it, through the client the window gave it. */
+    private static void fails(LinkPlayerSheet sheet, android.webkit.WebView frame, String url, boolean mainFrame) {
+        android.webkit.WebResourceRequest request = new android.webkit.WebResourceRequest() {
+            @Override public Uri getUrl() {
+                return Uri.parse(url);
+            }
+
+            @Override public boolean isForMainFrame() {
+                return mainFrame;
+            }
+
+            @Override public boolean isRedirect() {
+                return false;
+            }
+
+            @Override public boolean hasGesture() {
+                return false;
+            }
+
+            @Override public String getMethod() {
+                return "GET";
+            }
+
+            @Override public java.util.Map<String, String> getRequestHeaders() {
+                return java.util.Collections.emptyMap();
+            }
+        };
+        frame.getWebViewClient().onReceivedError(frame, request, null);
+    }
+
+    @Test public void somethingThePageFetchesFailingLeavesTheVideoUp() {
+        LinkPlayerSheet sheet = open("https://www.instagram.com/reel/Cx1y2z3A4b5/");
+        android.webkit.WebView frame = sheet.frame;
+        // #246: Instagram's embed went straight to the browser. Its own logging and stream calls fail now and then.
+        fails(sheet, frame, "https://www.instagram.com/api/graphql", false);
+        fails(sheet, frame, "https://www.instagram.com/reel/Cx1y2z3A4b5/embed/", false);
+        fails(sheet, frame, "https://scontent.cdninstagram.com/v/t50/clip.mp4", false);
+        assertSame("Only the page itself failing gives the link back", sheet, LinkPlayerSheet.showing);
+        assertFalse(sheet.closed);
+        fails(sheet, frame, "https://www.instagram.com/reel/Cx1y2z3A4b5/embed/", true);
+        assertNull(LinkPlayerSheet.showing);
+    }
+
+    @Test public void onYouTubeOnlyTheEmbedFrameFailingMovesItToTheOtherHost() {
+        LinkPlayerSheet sheet = open("https://youtu.be/dQw4w9WgXcQ");
+        android.webkit.WebView frame = sheet.frame;
+        fails(sheet, frame, "https://www.youtube-nocookie.com/embed/establish_zw?x=1", false);
+        fails(sheet, frame, "https://www.youtube-nocookie.com/youtubei/v1/log_event?alt=json", false);
+        assertFalse("The player's own calls failing isn't the host being blocked", sheet.onFallback);
+        assertEquals(1, sheet.loads);
+        fails(sheet, frame, "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?enablejsapi=1&playsinline=1", false);
+        assertTrue(sheet.onFallback);
+        assertEquals(2, sheet.loads);
+        fails(sheet, frame, "https://www.youtube.com/embed/establish_zw", false);
+        fails(sheet, frame, "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ", false);
+        assertSame("Neither a call on the ordinary host nor the old frame going is the new frame failing", sheet,
+            LinkPlayerSheet.showing);
+        fails(sheet, frame, "https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1", false);
+        assertNull(LinkPlayerSheet.showing);
+    }
+
+    private static void idle(long millis) {
+        org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idleFor(java.time.Duration.ofMillis(millis));
+    }
+
+    /** A finger down and up on [view], the way the screen sends it. Answers whether the view kept the tap. */
+    private static boolean tap(View view) {
+        long now = android.os.SystemClock.uptimeMillis();
+        android.view.MotionEvent down = android.view.MotionEvent.obtain(now, now, android.view.MotionEvent.ACTION_DOWN, 10, 10, 0);
+        android.view.MotionEvent up = android.view.MotionEvent.obtain(now, now + 60, android.view.MotionEvent.ACTION_UP, 10, 10, 0);
+        boolean kept = view.dispatchTouchEvent(down);
+        kept &= view.dispatchTouchEvent(up);
+        down.recycle();
+        up.recycle();
+        return kept;
+    }
+
+    @Test public void aTapOnTheVideoBringsTheButtonsBackOnceTheyHaveFaded() {
+        LinkPlayerSheet sheet = open("https://youtu.be/dQw4w9WgXcQ");
+        sheet.onStatus("\"" + LinkPlayerSheet.PLAYING + "\\u0001Me at the zoo\"");
+        idle(LinkPlayerSheet.FADE_MS + LinkPlayerSheet.FADE_ANIMATION_MS + 200);
+        assertEquals("Playing, the buttons get out of the way", View.INVISIBLE, sheet.buttons.getVisibility());
+        // #246: with them gone the frame took every tap, so nothing could pause the video.
+        assertTrue("YouTube plays through Hush's buttons, so its frame doesn't get the tap", tap(sheet.frame));
+        assertEquals(View.VISIBLE, sheet.buttons.getVisibility());
+        assertEquals(1f, sheet.buttons.getAlpha(), 0f);
+    }
+
+    @Test public void overTheOtherEmbedsOnlyHushsOwnButtonsTakeATap() {
+        LinkPlayerSheet sheet = open("https://www.tiktok.com/@someone/video/7312345678901234567");
+        assertFalse("The rest of the video goes to the embed's own buttons", sheet.buttons.isClickable());
+        idle(LinkPlayerSheet.FADE_MS + LinkPlayerSheet.FADE_ANIMATION_MS + 200);
+        assertEquals(View.INVISIBLE, sheet.buttons.getVisibility());
+        tap(sheet.frame);
+        assertEquals("A tap on the video brings Open and full screen back", View.VISIBLE, sheet.buttons.getVisibility());
     }
 
     @Test public void asecondTapReplacesTheWindowRatherThanStackingOne() {
