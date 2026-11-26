@@ -88,6 +88,14 @@ public class LinkPlayerTest {
         assertEquals("https://www.instagram.com/p/Cx1y2z3A4b5/embed/", embed("https://instagram.com/p/Cx1y2z3A4b5/?igsh=xyz").page);
         assertEquals(LinkPlayer.INSTAGRAM, embed("https://www.instagram.com/tv/Cx1y2z3A4b5/").platform);
 
+        // #246: the links Messenger's own preview cards carry, read off a phone. TikTok's number is in base 36 behind
+        // an "e", and Instagram puts the account in front of the reel.
+        assertEquals("https://www.tiktok.com/embed/v2/6718335390845095173",
+            embed("https://www.tiktok.com/@scout2015/video/e1f1jf4uutrchx").page);
+        assertEquals("https://www.instagram.com/reel/fA9uwTtkSN/embed/",
+            embed("https://www.instagram.com/diegoquinteiro/reel/fA9uwTtkSN/").page);
+        assertEquals("https://www.instagram.com/p/Cx1y2z3A4b5/embed/", embed("https://www.instagram.com/someone/p/Cx1y2z3A4b5/").page);
+
         LinkPlayer.Embed watch = embed("https://www.facebook.com/watch?v=1234567890");
         assertEquals(LinkPlayer.FACEBOOK, watch.platform);
         assertTrue(watch.page.startsWith("https://www.facebook.com/plugins/video.php?href="));
@@ -106,6 +114,11 @@ public class LinkPlayerTest {
             "https://www.tiktok.com/@someone",
             "https://www.instagram.com/someone/",
             "https://www.instagram.com/stories/someone/1234567890/",
+            "https://www.instagram.com/someone/reels/",
+            "https://www.instagram.com/someone/tagged/Cx1y2z3A4b5/",
+            "https://www.tiktok.com/@someone/video/ezzzzzzzzzzzzz",
+            "https://www.tiktok.com/@someone/video/e0000",
+            "https://www.tiktok.com/@someone/video/eabc",
             "https://www.facebook.com/someone",
             "https://www.facebook.com/stories/1234567890/",
             // The shortened ones, which only the server can resolve.
