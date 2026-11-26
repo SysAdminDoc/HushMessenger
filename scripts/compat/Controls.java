@@ -540,6 +540,19 @@ final class Controls {
                     !isStatic && paramTypes.equals(List.of("Z")) && strings.contains("UnifiedPresenceMailboxImpl.reportUserStatus")) {
                     found.get("appear_offline").add(method);
                 }
+                // and the two other ways 588 reports it (#243): the msys presence plugin's updateAppState dispatcher, and
+                // the full constructor of the gateway stream's write request
+                if ("V".equals(method.getReturnType()) && !isStatic && paramTypes.equals(List.of("Z")) &&
+                    strings.contains("updateAppState") &&
+                    strings.contains("messaging.presence.msyswritepath.msyspresenceupdate.MsysPresenceUpdateImplementation")) {
+                    found.get("appear_offline").add(method);
+                }
+                if ("Lcom/facebook/presence/model/upi/PresenceWriteRequest;".equals(cls.getType()) && "<init>".equals(method.getName()) &&
+                    paramTypes.equals(List.of("Lcom/facebook/presence/model/upi/AppState;",
+                        "Lcom/facebook/presence/model/upi/PresencePollingMode;", "Lcom/facebook/presence/model/upi/PresenceStatus;",
+                        "Lcom/facebook/presence/model/upi/PresenceWriteRequestType;", "Ljava/lang/Long;", "Ljava/lang/String;"))) {
+                    found.get("appear_offline").add(method);
+                }
 
                 // availability_setting: each legacy MQTT publisher that puts the foreground availability flag in the
                 // client settings it sends

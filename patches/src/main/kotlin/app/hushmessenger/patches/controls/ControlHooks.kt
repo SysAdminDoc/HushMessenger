@@ -478,6 +478,7 @@ private class ControlScan(
     val drawerRefresh = StringMatch(DRAWER_REFRESH)
     val notesTip = StringMatch(NOTES_TIP_SHEET)
     val reportUserStatus = StringMatch(REPORT_USER_STATUS)
+    val updateAppState = StringMatch(UPDATE_APP_STATE)
     val foregroundAvailability = StringMatch(FOREGROUND_AVAILABILITY)
 
     fun visit(cls: ClassDef, original: String?, method: Method) {
@@ -572,9 +573,13 @@ private class ControlScan(
             !AccessFlags.STATIC.isSet(method.accessFlags) &&
             instructions.any { (it as? NarrowLiteralInstruction)?.narrowLiteral == FLAG_SECURE } &&
             refs.any { it.toString() == "Landroid/view/Window;->addFlags(I)V" }) add("allow_screenshot")
-        // Our own active status, reported in two places: the msys self-report and each MQTT client-settings publisher.
+        // Our own active status: the msys self-report, the msys app-state report, the gateway stream's write request
+        // (#243) and each MQTT client-settings publisher.
         if (cls.type == PRESENCE_MANAGER && ret == "V" && params == listOf("Z") &&
             !AccessFlags.STATIC.isSet(method.accessFlags) && refs.any { reportUserStatus.matches(it) }) add(APPEAR_OFFLINE)
+        if (ret == "V" && params == listOf("Z") && !AccessFlags.STATIC.isSet(method.accessFlags) &&
+            refs.any { updateAppState.matches(it) } && MSYS_PRESENCE_UPDATE in strings) add(APPEAR_OFFLINE)
+        if (cls.type == PRESENCE_WRITE_REQUEST && method.name == "<init>" && params == PRESENCE_WRITE_PARAMETERS) add(APPEAR_OFFLINE)
         if (ret == "V" && params.size == 2 && params[0] == FB_SHARED_PREFERENCES &&
             !AccessFlags.STATIC.isSet(method.accessFlags) && refs.any { foregroundAvailability.matches(it) } &&
             CLIENT_SETTINGS_TOPIC in strings) add(AVAILABILITY_SETTING)

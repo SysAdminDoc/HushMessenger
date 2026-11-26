@@ -1822,6 +1822,24 @@ public final class Settings {
     }
 
     /**
+     * The status Messenger's presence stream writes for you, one of its own PresenceStatus values (#243). Some accounts
+     * report through that stream instead of the hooks above. With the switch on, ACTIVE goes out as IDLE, which is what
+     * the stream writes itself once Messenger is in the background. Any other status, or the switch off, goes out as it
+     * was.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static Object presenceToOthers(Object status) {
+        if (!(status instanceof Enum) || !"ACTIVE".equals(((Enum<?>) status).name())) return status;
+        if (availableToOthers(true)) return status;
+        try {
+            return Enum.valueOf((Class) ((Enum<?>) status).getDeclaringClass(), "IDLE");
+        } catch (IllegalArgumentException error) {
+            hookFailed(APPEAR_OFFLINE, "Can't hold back your active status", error);
+            return status;
+        }
+    }
+
+    /**
      * Mark chats read on this phone: chats opened while a Seen was held back, as "chat key:time read". Messenger
      * never hears about them, so the time is kept here and the chat list reads it back for a month.
      */
