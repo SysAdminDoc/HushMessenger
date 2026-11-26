@@ -201,17 +201,19 @@ final class FloatingMenu {
 
     /**
      * How far the emoji row moves up to sit over a photo or video Messenger lays it across rather than on it (#162: on
-     * the S22 it went 38 px down the photo and hid the top third), never so far that it leaves the top of the screen. 0
-     * when the row already ends over the message, the way Messenger puts it over a short one, for a message whose top is
-     * off the screen, and for one too tall to share the screen with the row and the card, which keeps the row where the
-     * press was.
+     * the S22 it went 38 px down the photo and hid the top third), never so far that it leaves the top of the screen. A
+     * row over a short message moves up too when it reaches more than half a gap into it: its own clear edge may touch
+     * the bubble, but near the top of the chat Messenger left it 29 px in and the row covered the bubble's top (#250).
+     * 0 when the row already ends over the message, for a message whose top is off the screen, and for one too tall to
+     * share the screen with the row and the card, which keeps the row where the press was.
      */
     static int clear(Rect panel, Rect bubble, Rect frame, int height, int gap, int edge) {
-        if (bubble == null || bubble.isEmpty() || bubble.top >= panel.centerY()) return 0;
-        if (bubble.top < frame.top + edge) return 0;
+        if (bubble == null || bubble.isEmpty() || bubble.top < frame.top + edge) return 0;
         if (panel.height() + bubble.height() + gap + height > frame.height() - 2 * edge) return 0;
+        int over = panel.bottom - bubble.top;
+        if (bubble.top >= panel.centerY() && over <= gap / 2) return 0;
         int room = panel.top - (frame.top + edge);
-        return Math.max(0, Math.min(panel.bottom - bubble.top, room));
+        return Math.max(0, Math.min(over, room));
     }
 
     /** How tall the card is for that many rows, counting the hairlines between them and its own padding. */

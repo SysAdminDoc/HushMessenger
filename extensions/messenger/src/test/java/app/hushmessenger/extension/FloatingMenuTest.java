@@ -289,6 +289,27 @@ public class FloatingMenuTest {
         assertEquals(130 - (75 + 12), FloatingMenu.clear(new Rect(112, 130, 969, 308), new Rect(372, 120, 1057, 700), frame, 400, 20, 12));
     }
 
+    /** #250 on the S22: a short message near the top of the chat had the emoji row's bottom edge over its top. */
+    @Test public void nearTheTopTheRowMovesUpOffAShortMessageItReachesInto() {
+        float s22 = 2.8125f;
+        int gap = (int) (FloatingMenu.GAP_DP * s22), edge = (int) (FloatingMenu.EDGE_DP * s22);
+        int height = FloatingMenu.height(4, s22);
+        Rect frame = new Rect(0, 75, 1080, 2274);
+        // Mid-screen Messenger ends the row's clear edge on the message, and the drawn row stops 17 px above it.
+        assertEquals(0, FloatingMenu.clear(new Rect(112, 1160, 969, 1338), new Rect(789, 1338, 1057, 1437), frame, height, gap, edge));
+        // Near the top it left the row 29 px into the message, and the drawn row covered the bubble's top edge.
+        Rect row = new Rect(112, 421, 969, 599);
+        Rect message = new Rect(789, 570, 1057, 671);
+        int clear = FloatingMenu.clear(row, message, frame, height, gap, edge);
+        assertEquals(599 - 570, clear);
+        row.offset(0, -clear);
+        assertEquals("The row ends where the message starts, as it does mid-screen", message.top, row.bottom);
+        assertEquals("The card still goes under the message", message.bottom + gap,
+                FloatingMenu.place(row, message, frame, (int) (FloatingMenu.WIDTH_DP * s22), height, gap, edge).top);
+        // With no room above it the row goes no higher than an edge under the top.
+        assertEquals(130 - (75 + edge), FloatingMenu.clear(new Rect(112, 130, 969, 308), new Rect(789, 260, 1057, 361), frame, height, gap, edge));
+    }
+
     @Test public void aBubbleThatOnlySaysItTakesATapIsStillThePressedMessage() {
         View litho = at(new View(app), 23, 365, 699, 466);
         litho.setClickable(true);

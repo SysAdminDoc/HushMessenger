@@ -21,6 +21,7 @@
 
 ### Changed and fixed
 
+- With `Floating message menu` on, holding a short message near the top of a chat put the bottom edge of the emoji row over the top of the message. The row moves up off it now and leaves the same space above the message it does in the middle of the screen. Refs #250.
 - `Keep photos at full size` and `Keep videos` kept nothing from end-to-end encrypted chats, so an unsent photo left only "Sent a photo" in the log. Messenger holds an encrypted chat's photo or video inside the app instead of on a server, and the log now reads it from there. It asks for the full-size file first and takes the preview when the full one isn't there yet. A video comes out as a video you can play. Refs #239. Refs #70.
 - Typing Meta AI's name into search still brought the bot up at the top of the results with `Hide Meta AI` on. A typed search hides it now too, along with the other AI bots. Refs #204.
 - The `Page up and page down buttons` switch shows up under `Jump to the first message or a date` now. It never made it into settings in 0.31.0, so there was no way to turn the buttons on. Refs #207.
