@@ -815,7 +815,7 @@ search_suggested.description	在你輸入任何內容前，隱藏搜尋頂端的
 search_reels.title	在搜尋中隱藏最近的 Reels
 search_reels.description	在你輸入任何內容前，從搜尋中隱藏你最近看過的 Reels。
 longer_notes.title	撰寫較長的便利貼
-longer_notes.description	讓便利貼最多可輸入 2000 個字元，而不是 60 個。較長的便利貼能否發布由 Facebook 決定。
+longer_notes.description	讓便利貼最多可輸入 600 個字元，而不是 60 個。較長的便利貼能否發布由 Facebook 決定。
 chat_preview.title	長按預覽聊天室
 chat_preview.description	長按聊天室，就能在 Messenger 內建的預覽中快速看一眼，下方附上聊天室選單，不必開啟聊天室。
 chat_preview_size.title	放大聊天室預覽

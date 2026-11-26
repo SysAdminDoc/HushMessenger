@@ -815,7 +815,7 @@ search_suggested.description	Скрива предложените хора го
 search_reels.title	Скриване на скорошните Reels в търсенето
 search_reels.description	Скрива Reels, които сте гледали наскоро, от търсенето, преди да сте въвели нещо.
 longer_notes.title	По-дълги бележки
-longer_notes.description	Позволява в бележката да има до 2000 знака вместо 60. Facebook решава дали дългата бележка ще мине.
+longer_notes.description	Позволява в бележката да има до 600 знака вместо 60. Facebook решава дали дългата бележка ще мине.
 chat_preview.title	Преглед на чат при задържане
 chat_preview.description	Докоснете и задръжте чат, за да надникнете в него в собствения преглед на Messenger, с менюто на чата под него, без да отваряте чата.
 chat_preview_size.title	По-голям преглед на чата
