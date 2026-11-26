@@ -20,6 +20,7 @@
 
 ### Changed and fixed
 
+- `Keep photos at full size` and `Keep videos` kept nothing from end-to-end encrypted chats, so an unsent photo left only "Sent a photo" in the log. Messenger holds an encrypted chat's photo or video inside the app instead of on a server, and the log now reads it from there. It asks for the full-size file first and takes the preview when the full one isn't there yet. A video comes out as a video you can play. Refs #239. Refs #70.
 - Typing Meta AI's name into search still brought the bot up at the top of the results with `Hide Meta AI` on. A typed search hides it now too, along with the other AI bots. Refs #204.
 - The `Page up and page down buttons` switch shows up under `Jump to the first message or a date` now. It never made it into settings in 0.31.0, so there was no way to turn the buttons on. Refs #207.
 - `Preview chats on long press` gave some accounts the plain menu right after Messenger started. Those accounts only get the peek once a chat has been opened since the app came up, and turning the switch on restarts Messenger, so the first long press never peeked. With the switch on the first long press opens the preview now. Refs #231, #205.
