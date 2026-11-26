@@ -451,6 +451,9 @@ final class SettingsText {
         ENGLISH.put("tab_icons_tab_jewel", "Facebook");
         ENGLISH.put("tab_icons_tab_more", "Menu");
         ENGLISH.put("tab_icons_tab_mesetting", "Your profile");
+        ENGLISH.put("tab_icons_size", "Icon size");
+        ENGLISH.put("tab_icons_size_help", "Your pictures and the outlined icons both draw at this size. %1$s fills all the room Messenger gives an icon, and %2$s is about as big as Messenger's own. Restart Messenger to see the change.");
+        ENGLISH.put("tab_icons_size_picked", "Tab icons at %1$s once Messenger restarts");
         ENGLISH.put("own_chat_sounds_help", "Sending plays as your message goes out, Sent once it has gone through, and In-app message when one comes in while Messenger is open. Pick an .ogg, .mp3, .m4a or .wav file of up to %1$d MB for any of them.");
         ENGLISH.put("own_chat_sounds_sound_send", "Sending");
         ENGLISH.put("own_chat_sounds_sound_sent", "Sent");

@@ -350,6 +350,9 @@ tab_icons_tab_metaai	Meta AI
 tab_icons_tab_jewel	Facebook
 tab_icons_tab_more	Меню
 tab_icons_tab_mesetting	Вашият профил
+tab_icons_size	Размер на иконите
+tab_icons_size_help	Вашите изображения и контурните икони се рисуват в този размер. %1$s запълва цялото място, което Messenger дава на иконата, а %2$s е горе-долу колкото собствените икони на Messenger. Рестартирайте Messenger, за да видите промяната.
+tab_icons_size_picked	Иконите ще са на %1$s след рестарт на Messenger
 own_chat_sounds_help	„Изпращане“ звучи, докато съобщението ви излиза, „Изпратено“, когато то е стигнало, а „Съобщение в приложението“, когато дойде съобщение, докато Messenger е отворен. Изберете файл .ogg, .mp3, .m4a или .wav до %1$d MB за всеки от тях.
 own_chat_sounds_sound_send	Изпращане
 own_chat_sounds_sound_sent	Изпратено

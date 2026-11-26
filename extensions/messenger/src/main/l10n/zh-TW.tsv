@@ -350,6 +350,9 @@ tab_icons_tab_metaai	Meta AI
 tab_icons_tab_jewel	Facebook
 tab_icons_tab_more	選單
 tab_icons_tab_mesetting	你的個人檔案
+tab_icons_size	圖示大小
+tab_icons_size_help	你的圖片和線條圖示都會以這個大小繪製。%1$s 會填滿 Messenger 留給圖示的整個空間，%2$s 大約和 Messenger 原本的圖示一樣大。重新啟動 Messenger 後生效。
+tab_icons_size_picked	Messenger 重新啟動後圖示為 %1$s
 own_chat_sounds_help	「傳送中」在你的訊息送出時播放，「已傳送」在訊息送達時播放，「應用程式內訊息」則在 Messenger 開著時收到訊息時播放。可為任何一個選擇最大 %1$d MB 的 .ogg、.mp3、.m4a 或 .wav 檔案。
 own_chat_sounds_sound_send	傳送中
 own_chat_sounds_sound_sent	已傳送

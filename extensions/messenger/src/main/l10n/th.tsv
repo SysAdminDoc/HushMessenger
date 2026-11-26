@@ -350,6 +350,9 @@ tab_icons_tab_metaai	Meta AI
 tab_icons_tab_jewel	Facebook
 tab_icons_tab_more	เมนู
 tab_icons_tab_mesetting	โปรไฟล์ของคุณ
+tab_icons_size	ขนาดไอคอน
+tab_icons_size_help	รูปของคุณและไอคอนลายเส้นจะวาดตามขนาดนี้ %1$s เต็มพื้นที่ที่ Messenger ให้กับไอคอน และ %2$s ใกล้เคียงกับไอคอนเดิมของ Messenger มีผลหลังจากเริ่มต้น Messenger ใหม่
+tab_icons_size_picked	ไอคอนจะเป็น %1$s หลังจาก Messenger รีสตาร์ท
 own_chat_sounds_help	กำลังส่ง จะดังตอนข้อความของคุณกำลังออกไป ส่งแล้ว จะดังเมื่อข้อความส่งถึง และ ข้อความในแอป จะดังเมื่อมีข้อความเข้ามาขณะเปิด Messenger อยู่ เลือกไฟล์ .ogg, .mp3, .m4a หรือ .wav ขนาดไม่เกิน %1$d MB ให้เสียงไหนก็ได้
 own_chat_sounds_sound_send	กำลังส่ง
 own_chat_sounds_sound_sent	ส่งแล้ว

@@ -350,6 +350,9 @@ tab_icons_tab_metaai	Meta AI
 tab_icons_tab_jewel	Facebook
 tab_icons_tab_more	Menu
 tab_icons_tab_mesetting	Il tuo profilo
+tab_icons_size	Dimensione delle icone
+tab_icons_size_help	Le tue immagini e le icone a contorno vengono disegnate a questa dimensione. %1$s riempie tutto lo spazio che Messenger dà a un'icona, e %2$s è più o meno grande come le icone di Messenger. Riavvia Messenger per vedere la modifica.
+tab_icons_size_picked	Icone al %1$s dopo il riavvio di Messenger
 own_chat_sounds_help	Invio suona mentre il tuo messaggio parte, Inviato quando è arrivato e Messaggio nell'app quando ne arriva uno con Messenger aperto. Scegli un file .ogg, .mp3, .m4a o .wav fino a %1$d MB per ognuno.
 own_chat_sounds_sound_send	Invio
 own_chat_sounds_sound_sent	Inviato

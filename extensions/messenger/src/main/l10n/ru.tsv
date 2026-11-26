@@ -350,6 +350,9 @@ tab_icons_tab_metaai	Meta AI
 tab_icons_tab_jewel	Facebook
 tab_icons_tab_more	Меню
 tab_icons_tab_mesetting	Ваш профиль
+tab_icons_size	Размер значков
+tab_icons_size_help	Ваши картинки и контурные значки рисуются в этом размере. %1$s заполняет всё место, которое Messenger отводит под значок, а %2$s примерно как собственные значки Messenger. Перезапустите Messenger, чтобы увидеть изменение.
+tab_icons_size_picked	Значки будут %1$s после перезапуска Messenger
 own_chat_sounds_help	«Отправка» звучит, когда ваше сообщение уходит, «Отправлено», когда оно дошло, а «Сообщение в приложении», когда приходит сообщение при открытом Messenger. Выберите файл .ogg, .mp3, .m4a или .wav до %1$d МБ для любого из них.
 own_chat_sounds_sound_send	Отправка
 own_chat_sounds_sound_sent	Отправлено

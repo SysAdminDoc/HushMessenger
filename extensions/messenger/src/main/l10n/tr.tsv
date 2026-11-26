@@ -350,6 +350,9 @@ tab_icons_tab_metaai	Meta AI
 tab_icons_tab_jewel	Facebook
 tab_icons_tab_more	Menü
 tab_icons_tab_mesetting	Profilin
+tab_icons_size	Simge boyutu
+tab_icons_size_help	Resimlerin ve çizgi simgeler bu boyutta çizilir. %1$s, Messenger'ın bir simgeye ayırdığı alanın tamamını doldurur, %2$s ise aşağı yukarı Messenger'ın kendi simgeleri kadardır. Değişikliği görmek için Messenger'ı yeniden başlat.
+tab_icons_size_picked	Simgeler, Messenger yeniden başlayınca %1$s olur
 own_chat_sounds_help	Gönderiliyor mesajın giderken, Gönderildi mesaj ulaştığında, Uygulama içi mesaj ise Messenger açıkken bir mesaj geldiğinde çalar. Herhangi biri için en fazla %1$d MB'lık bir .ogg, .mp3, .m4a veya .wav dosyası seç.
 own_chat_sounds_sound_send	Gönderiliyor
 own_chat_sounds_sound_sent	Gönderildi

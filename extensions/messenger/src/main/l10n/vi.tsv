@@ -350,6 +350,9 @@ tab_icons_tab_metaai	Meta AI
 tab_icons_tab_jewel	Facebook
 tab_icons_tab_more	Menu
 tab_icons_tab_mesetting	Trang cá nhân của bạn
+tab_icons_size	Cỡ biểu tượng
+tab_icons_size_help	Ảnh của bạn và biểu tượng nét đều được vẽ theo cỡ này. %1$s lấp đầy chỗ Messenger dành cho một biểu tượng, còn %2$s gần bằng biểu tượng gốc của Messenger. Có hiệu lực sau khi khởi động lại Messenger.
+tab_icons_size_picked	Biểu tượng ở %1$s sau khi Messenger khởi động lại
 own_chat_sounds_help	Đang gửi phát khi tin nhắn của bạn đang đi, Đã gửi khi tin đã tới nơi, và Tin nhắn trong ứng dụng khi có tin đến lúc Messenger đang mở. Chọn một tệp .ogg, .mp3, .m4a hoặc .wav tối đa %1$d MB cho bất kỳ âm thanh nào.
 own_chat_sounds_sound_send	Đang gửi
 own_chat_sounds_sound_sent	Đã gửi

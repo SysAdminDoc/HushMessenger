@@ -90,6 +90,8 @@ public class ToastLengthTest {
             check(cut, "see_through_tab_bar_picked " + level, words.get("see_through_tab_bar_picked", words.get(SeeThroughTabBar.KEY + "_" + level)));
         for (String level : StoryRowSize.LEVELS)
             check(cut, "story_row_size_picked " + level, words.get("story_row_size_picked", words.percent(Integer.parseInt(level))));
+        for (String size : TabIcons.SIZES)
+            check(cut, "tab_icons_size_picked " + size, words.get("tab_icons_size_picked", words.percent(Integer.parseInt(size))));
         // A switch's toast names it the way its row does, so a translated row puts its translated name in the toast.
         for (String[] control : SettingsActivity.CONTROLS) {
             check(cut, "choice_on " + control[0], words.get("choice_on", words.control(control, 1)));

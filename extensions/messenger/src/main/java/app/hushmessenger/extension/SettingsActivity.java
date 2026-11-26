@@ -2455,6 +2455,8 @@ public final class SettingsActivity extends Activity {
             if (TabIcons.KEY.equals(spec[0])) {
                 inside = text.get("tab_icons_choose") + " " + text.get("tab_icons_help", HomeHeaderPicture.MAX_MEGABYTES);
                 for (String tab : TabIcons.SHOWN) inside += " " + text.get("tab_icons_tab_" + tab);
+                inside += " " + text.get(TabIcons.SIZE) + " " + text.get("tab_icons_size_help",
+                    text.percent(Integer.parseInt(TabIcons.SIZES[0])), text.percent(Integer.parseInt(TabIcons.STANDARD)));
             }
             if (OwnChatSounds.KEY.equals(spec[0])) {
                 inside = text.get("own_chat_sounds_choose") + " " + text.get("own_chat_sounds_help", OwnChatSounds.MAX_MEGABYTES);
