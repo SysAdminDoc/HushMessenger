@@ -324,9 +324,10 @@ public class ChatHidingTest {
         }
     }
 
-    // #247: with taps kept in the preview, Open chat tops the preview's menu and opens the chat through the layer
-    // Messenger gave that job, the same way a tap on the chat used to.
-    @Test public void openChatTopsThePreviewsMenuAndOpensTheChatThroughItsLayer() {
+    // #247: with taps kept in the preview, Open chat tops the preview's menu and opens the chat on Messenger's chat
+    // screen for its key. On the S22 a click on the preview's layer from here only closed the preview: the preview
+    // closes with its menu, and closing it clears its own way into the chat.
+    @Test public void openChatTopsThePreviewsMenuAndOpensTheChatOnItsChatScreen() {
         Settings.preferences.edit().putBoolean(ChatHiding.KEY, false).putBoolean(PreviewTaps.KEY, true).commit();
         Summary chat = new Summary("chat");
         assertEquals("No preview yet, and Preview chats on long press off", Arrays.asList(mute, null, null), menuRows(chat));
@@ -349,13 +350,28 @@ public class ChatHidingTest {
         assertTrue(Settings.lastActive(PreviewTaps.KEY) > 0);
 
         assertTrue(ChatHiding.menuTapped(new Menu(chat), PreviewTaps.ROW_ID));
-        assertEquals(1, opened[0]);
-        // The preview closed under the menu, so there's nothing left to open it through.
-        ((android.view.ViewGroup) layer.getParent()).removeView(layer);
-        assertTrue(ChatHiding.menuTapped(new Menu(chat), PreviewTaps.ROW_ID));
+        android.content.Intent started = shadowOf(screen).getNextStartedActivity();
+        assertNotNull("The chat list's screen opens the chat", started);
+        assertEquals(com.facebook.orca.threadview.ThreadViewActivity.class.getName(), started.getComponent().getClassName());
+        assertEquals("chat", started.getStringExtra("chat"));
+        assertEquals("Its own screen, so no new task", 0, started.getFlags() & android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+        assertEquals("The closing preview's layer isn't clicked", 0, opened[0]);
+
+        // The chat list's screen is gone too: the app starts the chat in a task of its own.
+        screen.finish();
+        assertTrue(ChatHiding.menuTapped(new Menu(new Summary("other")), PreviewTaps.ROW_ID));
+        android.content.Intent alone = shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
+        assertNotNull(alone);
+        assertEquals("other", alone.getStringExtra("chat"));
+        assertEquals(android.content.Intent.FLAG_ACTIVITY_NEW_TASK, alone.getFlags() & android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+        assertNull(shadowOf(screen).getNextStartedActivity());
+
+        // A menu that isn't the chat list's has no chat to open.
+        assertTrue(ChatHiding.menuTapped(new Object(), PreviewTaps.ROW_ID));
         idle();
-        assertEquals(1, opened[0]);
         assertEquals(text("chat_preview_taps_gone"), ShadowToast.getTextOfLatestToast());
+        assertNull(shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity());
+        assertEquals(0, opened[0]);
         assertTrue(Settings.hookErrors.isEmpty());
 
         Settings.preferences.edit().putBoolean(PreviewTaps.KEY, false).commit();

@@ -212,6 +212,23 @@ public final class LocalSearchActivity extends Activity {
         return intent.getParcelableExtra(EXTRA_CHAT);
     }
 
+    /**
+     * Messenger's chat screen for a chat's key, the plain one its chat list falls back to, found by shape like chatAt.
+     * Open chat in the preview's menu opens the chat through it (#247).
+     */
+    static Intent chatScreen(Context context, Object chat) throws ReflectiveOperationException {
+        if (chat == null) throw new NoSuchMethodException("no chat");
+        Class<?> thread = Class.forName(THREAD_VIEW, false, context.getClassLoader());
+        for (Method method : thread.getDeclaredMethods()) {
+            Class<?>[] types = method.getParameterTypes();
+            if (!Modifier.isStatic(method.getModifiers()) || method.getReturnType() != Intent.class || types.length != 2
+                || types[0] != Context.class || !types[1].isInstance(chat)) continue;
+            method.setAccessible(true);
+            return (Intent) method.invoke(null, context, chat);
+        }
+        throw new NoSuchMethodException("chat screen");
+    }
+
     /** Found by shape, since its name changes with each of Messenger's builds. */
     static Intent chatAt(Context context, Object chat, String messageId) throws ReflectiveOperationException {
         if (chat == null) throw new NoSuchMethodException("no chat");
