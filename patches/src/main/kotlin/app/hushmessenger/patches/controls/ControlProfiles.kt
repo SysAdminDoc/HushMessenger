@@ -246,6 +246,7 @@ internal val PROFILE_347617503 = ControlProfile(
         "media_caption_chat" to setOf("LX/7dm;->A1p(Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/53l;Lcom/facebook/messaging/montage/composer/model/MontageComposerFragmentParams\$Builder;Lcom/facebook/messaging/send/trigger/NavigationTrigger;)V"),
         "media_caption_direct" to setOf("LX/PaT;->EqH(Landroid/os/Bundle;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/send/trigger/NavigationTrigger;)V"),
         "media_caption_editor" to setOf("LX/7pp;->A0U(Lcom/facebook/messaging/model/messages/Message;)V"),
+        "media_caption_result" to setOf("LX/7pp;->onActivityResult(IILandroid/content/Intent;)V"),
         "menu_blur" to setOf(
             "LX/09m;->onStart()V",
             "Lcom/facebook/xapp/messaging/reactions/sendbar/fragment/ReactionsBarFragment;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
@@ -629,6 +630,7 @@ internal val PROFILE_347617497 = ControlProfile(
         "media_caption_chat" to setOf("LX/7gm;->A1q(Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/572;Lcom/facebook/messaging/montage/composer/model/MontageComposerFragmentParams\$Builder;Lcom/facebook/messaging/send/trigger/NavigationTrigger;)V"),
         "media_caption_direct" to setOf("LX/Pcu;->EqN(Landroid/os/Bundle;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/send/trigger/NavigationTrigger;)V"),
         "media_caption_editor" to setOf("LX/7sp;->A0U(Lcom/facebook/messaging/model/messages/Message;)V"),
+        "media_caption_result" to setOf("LX/7sp;->onActivityResult(IILandroid/content/Intent;)V"),
         "menu_blur" to setOf(
             "LX/09m;->onStart()V",
             "Lcom/facebook/xapp/messaging/reactions/sendbar/fragment/ReactionsBarFragment;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",

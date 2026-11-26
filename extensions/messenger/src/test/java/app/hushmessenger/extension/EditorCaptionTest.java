@@ -1,6 +1,8 @@
 package app.hushmessenger.extension;
 
 import android.content.Context;
+import com.facebook.messaging.model.messages.Message;
+import com.facebook.ui.media.attachments.model.MediaResource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -227,6 +229,63 @@ public class EditorCaptionTest {
         EditorCaption.editorOpening(new BrokenChat());
         EditorCaption.editorSending(media(Kind.PHOTO));
         assertTrue(Settings.hookErrorAt(KEY) > 0);
+    }
+
+    /** The editor's result message, its media in one of its list fields, the way the compose fragment gets it back. */
+    private static Message result(MediaResource.Type... kinds) {
+        Message message = new Message();
+        for (MediaResource.Type kind : kinds) message.A1L.add(new MediaResource(kind));
+        return message;
+    }
+
+    // #236: the editor a chat opens from the attachment chip hands its photo back to the compose fragment, which sent it
+    // without reading the box. The patch asks resultKind what the message holds and hands that to the editor helper.
+    @Test public void theResultsKindNamesPhotosVideosAndStickersTheWayTheEditorsSendDoes() {
+        on();
+        assertEquals("image", EditorCaption.resultKind(result(MediaResource.Type.PHOTO)));
+        assertEquals("image", EditorCaption.resultKind(result(MediaResource.Type.ENT_PHOTO)));
+        assertEquals("image", EditorCaption.resultKind(result(MediaResource.Type.ANIMATED_PHOTO)));
+        assertEquals("video", EditorCaption.resultKind(result(MediaResource.Type.VIDEO)));
+        assertEquals("video", EditorCaption.resultKind(result(MediaResource.Type.ENT_VIDEO)));
+        assertEquals("sticker", EditorCaption.resultKind(result(MediaResource.Type.SELFIE_STICKER)));
+        // The first media decides, in whichever of the message's lists it sits and whatever comes before it there.
+        assertEquals("video", EditorCaption.resultKind(result(MediaResource.Type.VIDEO, MediaResource.Type.SELFIE_STICKER)));
+        assertEquals("sticker", EditorCaption.resultKind(Message.with("an attachment", new MediaResource(MediaResource.Type.SELFIE_STICKER))));
+        assertEquals(0, Settings.hookErrorAt(KEY));
+    }
+
+    @Test public void anythingItCantReadAnswersImageAndNothingThrows() {
+        on();
+        // No message, something that isn't one, a message with no media, and media whose kind isn't set.
+        assertEquals("image", EditorCaption.resultKind(null));
+        assertEquals("image", EditorCaption.resultKind("a message"));
+        assertEquals("image", EditorCaption.resultKind(new Object()));
+        assertEquals("image", EditorCaption.resultKind(new Message()));
+        assertEquals("image", EditorCaption.resultKind(Message.with("an attachment", new Media(Kind.VIDEO))));
+        Message unset = new Message();
+        unset.A1L.add(null);
+        unset.A1L.add(new MediaResource(null));
+        assertEquals("image", EditorCaption.resultKind(unset));
+        // A message whose list read throws is recorded and still answers image.
+        Message broken = new Message();
+        broken.A1L = new ArrayList<Object>() {
+            @Override public java.util.Iterator<Object> iterator() {
+                throw new IllegalStateException("the list went away");
+            }
+        };
+        assertEquals("image", EditorCaption.resultKind(broken));
+        assertTrue(Settings.hookErrorAt(KEY) > 0);
+    }
+
+    @Test public void offPauseAndSafeModeAnswerImageWithoutReadingTheMessage() {
+        for (String state : new String[] {"off", "paused", "safe"}) {
+            Settings.preferences.edit().clear().putBoolean(KEY, !state.equals("off"))
+                .putBoolean("paused", state.equals("paused")).putBoolean("safe_mode", state.equals("safe")).commit();
+            CrashGuard.resetForTests();
+            CrashGuard.onProcessStart(RuntimeEnvironment.getApplication());
+            assertEquals(state, "image", EditorCaption.resultKind(result(MediaResource.Type.SELFIE_STICKER)));
+            assertEquals(state, 0, Settings.hookErrorAt(KEY));
+        }
     }
 
     @Test public void theSwitchShipsWithTheExtension() {

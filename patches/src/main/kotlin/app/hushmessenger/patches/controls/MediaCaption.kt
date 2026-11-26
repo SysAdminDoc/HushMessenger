@@ -307,7 +307,7 @@ internal fun mediaCaptionEditorHelper(host: String, composerView: String): Mutab
 }
 
 /**
- * #236: the switch's last two hooks, for a photo or video Messenger's editor sends to the chat by itself. A chat in a
+ * #236: two more of the switch's hooks, for a photo or video Messenger's editor sends to the chat by itself. A chat in a
  * bubble opens the editor in a task of its own, and Android hands no result back across tasks, so the editor sends the
  * media straight to the chat ("thread_view") and the compose fragment's editor send never runs. The chat's opening of
  * the editor hands the chat fragment to the extension, and the editor's own send hands it the message's media right
@@ -474,6 +474,116 @@ internal fun MutableMethod.injectMediaCaptionDirect() {
     addInstructions(site.at, """
         iget-object v${site.media}, v${site.message}, ${site.mediaList}
         invoke-static {v${site.media}}, $EDITOR_SENDING_CALL
+    """.trimIndent())
+}
+
+/**
+ * #236: the switch's hook for the editor a chat opens from the "Attachment 1 of 1 selected" chip over the gallery tray.
+ * Its Send hands the edited photo back to the compose fragment as an activity result, and the fragment sends the
+ * result's message through its general message send without reading the composer, so the words stayed in the box. The
+ * hook hands that message's kind of media to the editor helper right before the send.
+ */
+internal const val MEDIA_CAPTION_RESULT = "media_caption_result"
+
+/** The extension's kind of media for the result's message: "image", "video" or "sticker", as the editor's send names them. */
+internal const val RESULT_KIND_CALL = "$CAPTION_EXTENSION->resultKind(Ljava/lang/Object;)Ljava/lang/String;"
+
+/** The extra the editor's result carries its message in. */
+private const val RESULT_MESSAGE_EXTRA = "extra_message"
+
+private const val PARCELABLE_EXTRA = "Landroid/content/Intent;->getParcelableExtra(Ljava/lang/String;)Landroid/os/Parcelable;"
+
+private val ACTIVITY_RESULT_SHAPE = listOf("I", "I", "Landroid/content/Intent;")
+
+/**
+ * The editor result's send: where the hook goes (the send's `sget-object`), the registers of the fragment and the
+ * message the send takes, and the `sget-object`'s own register, which it writes right after the hook.
+ */
+internal class MediaCaptionResultSite(val at: Int, val fragment: Int, val message: Int, val scratch: Int)
+
+/**
+ * The compose fragment's activity result for the editor, as Messenger 588 writes it (`LX/7pp;->onActivityResult` on
+ * 347617503, request code 0x1cd0, and `LX/7sp;` with `A23` on the 497 family):
+ *
+ *     const-string/jumbo vKey, "extra_message"                         (a branch lands here)
+ *     invoke-virtual {vIntent, vKey}, Intent->getParcelableExtra(String)
+ *     move-result-object vMessage
+ *     if-eqz vMessage, :throw
+ *     check-cast vMessage, Message
+ *     sget-object vScratch, LX/5GM;->A0x:LX/5GM;                       <- at
+ *     invoke-virtual {vFragment, vScratch, vMessage}, LX/7pp;->A22(LX/5GM;Message)V
+ *     return-void
+ *
+ * A22 is the fragment's general message send, which the text send ends in too, so the hook goes in front of this one
+ * call of it. Nothing lands from the read to the return, and no try covers it. The registers are the send's own; the
+ * site is found whatever they are, and [validateMediaCaptionResult] refuses the ones the hook's calls can't reach.
+ */
+internal fun Method.mediaCaptionResultSite(): MediaCaptionResultSite? {
+    if (AccessFlags.STATIC.isSet(accessFlags) || name != "onActivityResult" || returnType != "V" ||
+        parameterTypes.map { it.toString() } != ACTIVITY_RESULT_SHAPE) return null
+    val code = code()
+    val key = code.indices.singleOrNull { code[it].opcode in CAPTION_STRINGS && code[it].string() == RESULT_MESSAGE_EXTRA } ?: return null
+    if (key + 7 >= code.size) return null
+    val read = code[key + 1]
+    if ((read.opcode != Opcode.INVOKE_VIRTUAL && read.opcode != Opcode.INVOKE_VIRTUAL_RANGE) || read.method()?.id() != PARCELABLE_EXTRA) return null
+    if (read.captionRegisters().getOrNull(1) != (code[key] as OneRegisterInstruction).registerA) return null
+    if (code[key + 2].opcode != Opcode.MOVE_RESULT_OBJECT) return null
+    val message = (code[key + 2] as OneRegisterInstruction).registerA
+    val check = code[key + 3]
+    if (check.opcode != Opcode.IF_EQZ || (check as OneRegisterInstruction).registerA != message) return null
+    val cast = code[key + 4]
+    if (cast.opcode != Opcode.CHECK_CAST || (cast as OneRegisterInstruction).registerA != message ||
+        (cast as ReferenceInstruction).reference.toString() != EDITOR_MESSAGE) return null
+    val at = key + 5
+    val kind = (code[at] as? ReferenceInstruction)?.reference as? FieldReference
+    if (code[at].opcode != Opcode.SGET_OBJECT || kind == null) return null
+    val scratch = (code[at] as OneRegisterInstruction).registerA
+    val call = code[at + 1]
+    val sent = call.method() ?: return null
+    if (call.opcode != Opcode.INVOKE_VIRTUAL && call.opcode != Opcode.INVOKE_VIRTUAL_RANGE) return null
+    if (sent.definingClass != definingClass || sent.returnType != "V" || sent.shape() != listOf(kind.type, EDITOR_MESSAGE)) return null
+    val registers = call.captionRegisters()
+    if (registers.size != 3 || registers[1] != scratch || registers[2] != message || registers.distinct().size != 3) return null
+    if (code[at + 2].opcode != Opcode.RETURN_VOID) return null
+    val targets = jumpTargets()
+    if ((key + 1..at + 2).any { it in targets }) return null
+    // The helper's send can throw, and a handler would see the hook's registers.
+    val addresses = code.runningFold(0) { address, instruction -> address + instruction.codeUnits }
+    if (implementation!!.tryBlocks.any { block -> (key..at + 2).any { addresses[it] - block.startCodeAddress in 0 until block.codeUnitCount } })
+        return null
+    return MediaCaptionResultSite(at, registers[0], message, scratch)
+}
+
+/** The editor result's send in each compose fragment whose editor send [findMediaCaptionEditor] found. */
+internal fun findMediaCaptionResult(classes: Iterable<ClassDef>, editors: List<Method>): List<Method> {
+    val composers = editors.map { it.definingClass }.toSet()
+    return classes.filter { it.type in composers }.flatMap { host -> host.methods.filter { it.mediaCaptionResultSite() != null } }
+}
+
+internal fun Method.resultKindHooked(): Boolean = code().any { it.method()?.id() == RESULT_KIND_CALL }
+
+/** The site, or null once the hook is in. The hook's plain calls reach v15, so a fragment or free register past it is refused. */
+internal fun MutableMethod.validateMediaCaptionResult(): MediaCaptionResultSite? {
+    if (resultKindHooked()) return null
+    val site = mediaCaptionResultSite() ?: mediaCaptionChanged("no send of the editor's result in ${hookId()}")
+    if (site.fragment > 15 || site.scratch > 15)
+        mediaCaptionChanged("the editor's result send in ${hookId()} keeps the fragment in v${site.fragment} and its free register in " +
+            "v${site.scratch}, past the v15 the helper's call can take")
+    return site
+}
+
+/**
+ * Right before the result's send, the extension reads the message's kind of media into the send's free register, and
+ * the editor helper gets the fragment and that kind, so the words go first for anything but a sticker.
+ */
+internal fun MutableMethod.injectMediaCaptionResult() {
+    val site = validateMediaCaptionResult() ?: return
+    val kind = if (site.message > 15) "invoke-static/range {v${site.message} .. v${site.message}}, $RESULT_KIND_CALL"
+        else "invoke-static {v${site.message}}, $RESULT_KIND_CALL"
+    addInstructions(site.at, """
+        $kind
+        move-result-object v${site.scratch}
+        invoke-static {v${site.fragment}, v${site.scratch}}, $definingClass->$MEDIA_CAPTION_EDITOR_HELPER($definingClass$CAPTION_STRING)V
     """.trimIndent())
 }
 

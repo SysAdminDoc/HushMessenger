@@ -4,6 +4,8 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,7 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * opens the editor in a task of its own, so the editor's Send goes straight to the chat and the chat's composer never
  * hears about it: the words stayed in the box. The chat hands itself over as it opens the editor, and right before the
  * editor's own send the words go out first through the compose fragment's editor helper, the one the composer's own
- * editor send calls. That helper checks the composer is still there, leaves stickers alone and reads the switch.
+ * editor send calls. That helper checks the composer is still there, leaves stickers alone and reads the switch. The
+ * editor a chat opens from the attachment chip hands its photo back to the compose fragment as a result instead, and
+ * {@link #resultKind} tells the same helper what kind of media that result's message holds.
  */
 public final class EditorCaption {
     static final String KEY = "media_caption";
@@ -27,6 +31,10 @@ public final class EditorCaption {
     private static final Map<Class<?>, Method> helpers = new ConcurrentHashMap<>();
     /** Each media class's field holding its kind of media. */
     private static final Map<Class<?>, Field> kindFields = new ConcurrentHashMap<>();
+    /** The media Messenger's editor hands back in its result's message. */
+    static final String MEDIA_RESOURCE = "com.facebook.ui.media.attachments.model.MediaResource";
+    /** Each message class's list fields, one of which holds its media. */
+    private static final Map<Class<?>, List<Field>> listFields = new ConcurrentHashMap<>();
 
     private EditorCaption() {}
 
@@ -54,6 +62,64 @@ public final class EditorCaption {
         } catch (Throwable error) {
             Settings.hookFailedPrivately(KEY, "Can't send the words before the editor's photo", error);
         }
+    }
+
+    /**
+     * The kind of media the editor's result hands back to the compose fragment, for the editor helper the patch calls
+     * right before the fragment sends that message (#236, the editor opened from the attachment chip): "sticker" for a
+     * sticker made in the camera, "video" for a video, and "image" for anything else, the way the composer's own editor
+     * send names them. Never throws. A message it can't read answers "image", so the words still go first, which is what
+     * the switch promises for a photo; off, Pause and safe mode answer it without reading anything, and the helper then
+     * leaves the words where they are.
+     */
+    public static String resultKind(Object message) {
+        try {
+            if (message == null || !Settings.wouldUse(KEY)) return "image";
+            Object media = firstMedia(message);
+            if (media == null) return "image";
+            Object kind = kindField(media.getClass()).get(media);
+            if (kind == null) return "image";
+            switch (((Enum<?>) kind).name()) {
+                case "SELFIE_STICKER":
+                    return "sticker";
+                case "VIDEO":
+                case "ENT_VIDEO":
+                    return "video";
+                default:
+                    return "image";
+            }
+        } catch (Throwable error) {
+            Settings.hookFailedPrivately(KEY, "Can't read the editor's photo before the words", error);
+            return "image";
+        }
+    }
+
+    /** The first MediaResource in any of the message's list fields, or null. Message's field names say nothing. */
+    private static Object firstMedia(Object message) throws IllegalAccessException {
+        for (Field field : listFields(message.getClass())) {
+            Object value = field.get(message);
+            if (!(value instanceof List)) continue;
+            for (Object item : (List<?>) value)
+                if (item != null && MEDIA_RESOURCE.equals(item.getClass().getName())) return item;
+        }
+        return null;
+    }
+
+    /** Each instance field of the class and its superclasses whose type is a List. */
+    private static List<Field> listFields(Class<?> type) {
+        List<Field> known = listFields.get(type);
+        if (known != null) return known;
+        List<Field> found = new ArrayList<>();
+        for (Class<?> c = type; c != null && c != Object.class; c = c.getSuperclass()) {
+            for (Field field : c.getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers()) || !List.class.isAssignableFrom(field.getType())) continue;
+                field.setAccessible(true);
+                found.add(field);
+            }
+        }
+        List<Field> fixed = Collections.unmodifiableList(found);
+        listFields.put(type, fixed);
+        return fixed;
     }
 
     /** Whether the chat fragment is still added to its screen. */

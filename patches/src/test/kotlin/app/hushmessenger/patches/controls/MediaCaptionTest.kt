@@ -192,7 +192,8 @@ private fun editorChanged(vararg swaps: String) = editor(swaps.toList().chunked(
     body.replaceFirst(from, to).also { check(it != body) { "no $from" } }
 })
 
-internal fun mediaCaptionFixture(method: MutableMethod = send(), rest: List<MutableMethod> = listOf(reader(), editor())): List<MutableClass> =
+internal fun mediaCaptionFixture(method: MutableMethod = send(), rest: List<MutableMethod> = listOf(reader(), editor(), mediaCaptionResultMethod())):
+    List<MutableClass> =
     listOf(fixtureClass(COMPOSER, listOf(method) + rest))
 
 private fun Method.code() = implementation!!.instructions.toList()

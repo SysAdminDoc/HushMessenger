@@ -471,6 +471,76 @@ final class Media {
         return found;
     }
 
+    static final String RESULT_MESSAGE_EXTRA = "extra_message";
+    static final String PARCELABLE_EXTRA = "Landroid/content/Intent;->getParcelableExtra(Ljava/lang/String;)Landroid/os/Parcelable;";
+
+    /**
+     * The compose fragment's activity result for the editor: an instance onActivityResult(int, int, Intent) with one
+     * "extra_message" string, read by the very next getParcelableExtra into a register that's null-checked, cast to
+     * Message, and then handed with a static enum read to one virtual send of the fragment's own class taking (that
+     * enum's type, Message), right before a return-void; nothing landing from the read to the return, no try over it,
+     * and the fragment and the enum read's register in four-bit registers. Mirrors MediaCaption.kt's
+     * mediaCaptionResultSite together with validateMediaCaptionResult.
+     */
+    static boolean captionResultSend(Method method) {
+        if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || !"onActivityResult".equals(method.getName()) ||
+            !"V".equals(method.getReturnType()) || method.getImplementation() == null) return false;
+        if (!method.getParameterTypes().stream().map(Object::toString).toList().equals(List.of("I", "I", "Landroid/content/Intent;"))) return false;
+        var code = instructions(method);
+        int key = -1;
+        for (int i = 0; i < code.size(); i++) {
+            var op = code.get(i).getOpcode();
+            if ((op == Opcode.CONST_STRING || op == Opcode.CONST_STRING_JUMBO) && code.get(i) instanceof ReferenceInstruction r &&
+                r.getReference() instanceof StringReference s && RESULT_MESSAGE_EXTRA.equals(s.getString())) {
+                if (key >= 0) return false;
+                key = i;
+            }
+        }
+        if (key < 0 || key + 7 >= code.size()) return false;
+        var read = code.get(key + 1);
+        var parcel = captionCall(read);
+        if ((read.getOpcode() != Opcode.INVOKE_VIRTUAL && read.getOpcode() != Opcode.INVOKE_VIRTUAL_RANGE) || parcel == null) return false;
+        String parcelId = parcel.getDefiningClass() + "->" + parcel.getName() + "(" +
+            parcel.getParameterTypes().stream().map(Object::toString).collect(Collectors.joining()) + ")" + parcel.getReturnType();
+        if (!PARCELABLE_EXTRA.equals(parcelId)) return false;
+        var readRegisters = captionRegisters(read);
+        if (readRegisters.size() < 2 || readRegisters.get(1) != register(code.get(key))) return false;
+        if (code.get(key + 2).getOpcode() != Opcode.MOVE_RESULT_OBJECT) return false;
+        int message = register(code.get(key + 2));
+        if (code.get(key + 3).getOpcode() != Opcode.IF_EQZ || register(code.get(key + 3)) != message) return false;
+        var cast = code.get(key + 4);
+        if (cast.getOpcode() != Opcode.CHECK_CAST || register(cast) != message || !EDITOR_MESSAGE.equals(ref(cast))) return false;
+        int at = key + 5;
+        if (code.get(at).getOpcode() != Opcode.SGET_OBJECT || !(code.get(at) instanceof ReferenceInstruction kr) ||
+            !(kr.getReference() instanceof FieldReference kind)) return false;
+        int scratch = register(code.get(at));
+        var call = code.get(at + 1);
+        var sent = captionCall(call);
+        if (sent == null || (call.getOpcode() != Opcode.INVOKE_VIRTUAL && call.getOpcode() != Opcode.INVOKE_VIRTUAL_RANGE)) return false;
+        if (!sent.getDefiningClass().equals(method.getDefiningClass()) || !"V".equals(sent.getReturnType()) ||
+            !sent.getParameterTypes().stream().map(Object::toString).toList().equals(List.of(kind.getType(), EDITOR_MESSAGE))) return false;
+        var registers = captionRegisters(call);
+        if (registers.size() != 3 || registers.get(1) != scratch || registers.get(2) != message || new HashSet<>(registers).size() != 3) return false;
+        if (code.get(at + 2).getOpcode() != Opcode.RETURN_VOID) return false;
+        var targets = mediaTargets(method);
+        for (int i = key + 1; i <= at + 2; i++) if (targets.contains(i)) return false;
+        var addresses = new int[code.size() + 1];
+        for (int i = 0; i < code.size(); i++) addresses[i + 1] = addresses[i] + code.get(i).getCodeUnits();
+        for (var block : method.getImplementation().getTryBlocks())
+            for (int i = key; i <= at + 2; i++)
+                if (addresses[i] >= block.getStartCodeAddress() && addresses[i] < block.getStartCodeAddress() + block.getCodeUnitCount()) return false;
+        return registers.get(0) <= 15 && scratch <= 15;
+    }
+
+    /** media_caption_result: the editor result's send in each compose fragment media_caption_editor found. Mirrors MediaCaption.kt. */
+    static List<Method> mediaCaptionResult(List<ClassDef> classes, List<Method> editors) {
+        var composers = new HashSet<String>();
+        for (var m : editors) composers.add(m.getDefiningClass());
+        var found = new ArrayList<Method>();
+        for (var cls : classes) if (composers.contains(cls.getType())) for (var m : cls.getMethods()) if (captionResultSend(m)) found.add(m);
+        return found;
+    }
+
     static boolean mediaWrites(Instruction i, int r) {
         return i.getOpcode().setsRegister() && (register(i) == r || (i.getOpcode().name().contains("WIDE") && register(i) + 1 == r));
     }

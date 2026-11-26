@@ -211,6 +211,7 @@ hook media_caption LX/7sp;->A0K(LX/7sp;)V
 hook media_caption_chat LX/7gm;->A1q(Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/572;Lcom/facebook/messaging/montage/composer/model/MontageComposerFragmentParams$Builder;Lcom/facebook/messaging/send/trigger/NavigationTrigger;)V
 hook media_caption_direct LX/Pcu;->EqN(Landroid/os/Bundle;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/send/trigger/NavigationTrigger;)V
 hook media_caption_editor LX/7sp;->A0U(Lcom/facebook/messaging/model/messages/Message;)V
+hook media_caption_result LX/7sp;->onActivityResult(IILandroid/content/Intent;)V
 hook menu_blur LX/09m;->onStart()V
 hook menu_blur Lcom/facebook/xapp/messaging/reactions/sendbar/fragment/ReactionsBarFragment;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook menu_settings LX/5qV;->A1p()V
