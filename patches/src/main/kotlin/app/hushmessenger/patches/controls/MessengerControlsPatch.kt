@@ -233,6 +233,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         STORY_CREATE_TILE -> validateStoryCreateTile()
         PINNED_BAR -> validatePinnedBar()
         OPEN_CHAT_SOUND -> validateOpenChatSound()
+        OWN_CHAT_SOUNDS -> validateOwnChatSounds()
         STORY_HOLD -> validateStoryHold()
         CHAT_PREVIEW -> validateChatPreview()
         CHAT_PREVIEW_SIZE -> validateChatPreviewSize()
@@ -390,6 +391,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             STORY_CREATE_TILE -> method.injectStoryCreateTile()
             PINNED_BAR -> method.injectPinnedBar()
             OPEN_CHAT_SOUND -> method.injectOpenChatSound()
+            OWN_CHAT_SOUNDS -> method.injectOwnChatSounds()
             STORY_HOLD -> method.injectStoryHold()
             CHAT_PREVIEW -> method.injectChatPreview()
             CHAT_PREVIEW_SIZE -> method.injectChatPreviewSize()
@@ -964,6 +966,9 @@ val restrictedNotifyPatch = controlPatch("restricted_notify", "Notify for restri
 @Suppress("unused")
 val openChatSoundPatch = controlPatch("open_chat_sound", "Sound in the open chat",
     "Plays Messenger's in-app message sound when a message comes into the chat you have open. Messenger already does that for likes and stickers. A silent phone or Messenger's own In-app sounds switch still keeps it quiet.", "Notifications", OPEN_CHAT_SOUND)
+@Suppress("unused")
+val ownChatSoundsPatch = controlPatch("own_chat_sounds", "Your own chat sounds",
+    "Plays sound files you pick instead of Messenger's send, sent and in-app message sounds, and you can change them any time without patching again. Messenger still decides when each one plays.", "Notifications", OWN_CHAT_SOUNDS)
 @Suppress("unused")
 val avatarShapePatch = controlPatch("avatar_shape", "Square profile pictures",
     "Shows profile pictures as squares instead of circles, or as rounded squares with Round the corners on. Restart Messenger after changing it.", "Theme",

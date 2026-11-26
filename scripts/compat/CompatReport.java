@@ -224,6 +224,7 @@ public class CompatReport {
         PATCHES.put("Hide pictures on the Blocked list", List.of("blocked_list_pictures"));
         PATCHES.put("Notify for restricted chats", List.of("restricted_notify"));
         PATCHES.put("Sound in the open chat", List.of("open_chat_sound"));
+        PATCHES.put("Your own chat sounds", List.of("own_chat_sounds"));
         PATCHES.put("Use the phone's camera app", List.of("system_camera"));
         PATCHES.put("Open your gallery app", List.of("external_gallery", "gallery_temp_file"));
         PATCHES.put("Put gallery picks in the chat", List.of("gallery_to_chat"));

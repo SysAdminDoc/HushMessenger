@@ -114,6 +114,7 @@
         <meta-data android:name="hush.feature.blocked_list_pictures" android:value="true" />
         <meta-data android:name="hush.feature.restricted_notify" android:value="true" />
         <meta-data android:name="hush.feature.open_chat_sound" android:value="true" />
+        <meta-data android:name="hush.feature.own_chat_sounds" android:value="true" />
         <meta-data android:name="hush.feature.material_you" android:value="true" />
         <meta-data android:name="hush.feature.avatar_shape" android:value="true" />
         <meta-data android:name="hush.feature.thin_story_rings" android:value="true" />

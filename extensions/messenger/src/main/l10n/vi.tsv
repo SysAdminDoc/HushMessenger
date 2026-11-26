@@ -340,6 +340,24 @@ tab_icons_tab_metaai	Meta AI
 tab_icons_tab_jewel	Facebook
 tab_icons_tab_more	Menu
 tab_icons_tab_mesetting	Trang cá nhân của bạn
+own_chat_sounds_help	Đang gửi phát khi tin nhắn của bạn đang đi, Đã gửi khi tin đã tới nơi, và Tin nhắn trong ứng dụng khi có tin đến lúc Messenger đang mở. Chọn một tệp .ogg, .mp3, .m4a hoặc .wav tối đa %1$d MB cho bất kỳ âm thanh nào.
+own_chat_sounds_sound_send	Đang gửi
+own_chat_sounds_sound_sent	Đã gửi
+own_chat_sounds_sound_in_app	Tin nhắn trong ứng dụng
+own_chat_sounds_choose	Chọn
+own_chat_sounds_remove	Bỏ
+own_chat_sounds_stock	Âm thanh của Messenger
+own_chat_sounds_yours	Âm thanh của bạn
+own_chat_sounds_copying	Đang sao chép...
+own_chat_sounds_saved	Đã lưu âm thanh.
+own_chat_sounds_removed	Đã trở lại âm thanh của Messenger.
+own_chat_sounds_remove_failed	Không bỏ được âm thanh đó.
+own_chat_sounds_not_sound	Tệp đó không phát được như âm thanh.
+own_chat_sounds_too_large	Âm thanh có thể nặng tối đa %1$d MB.
+own_chat_sounds_unreadable	Không mở được tệp đó.
+own_chat_sounds_not_saved	Không lưu được âm thanh.
+own_chat_sounds_busy	Vẫn đang sao chép tệp trước.
+own_chat_sounds_timeout	Tệp mất quá lâu. Vui lòng thử lại.
 quiet_calls_chosen	Chỉ những cuộc trò chuyện đã chọn
 quiet_calls_chosen_help	Cuộc gọi từ những cuộc trò chuyện bạn bật bên dưới sẽ đến trong im lặng. Các cuộc gọi khác vẫn đổ chuông như bình thường.
 quiet_calls_recent_empty	Những cuộc trò chuyện gọi cho bạn sẽ hiện ở đây, mới nhất ở trên cùng.
@@ -1014,6 +1032,8 @@ restricted_notify.title	Thông báo cho phòng chat bị hạn chế
 restricted_notify.description	Phòng chat với những người bạn đã hạn chế sẽ gửi thông báo cho bạn như các phòng chat khác, trừ khi phòng chat được mã hóa đầu cuối. Phòng chat bạn đã tắt thông báo vẫn im lặng. Người bị hạn chế vẫn không thấy khi nào bạn đang hoạt động hoặc đã đọc tin nhắn của họ.
 open_chat_sound.title	Âm thanh trong đoạn chat đang mở
 open_chat_sound.description	Phát âm thanh tin nhắn trong ứng dụng của Messenger khi có tin nhắn đến trong đoạn chat bạn đang mở. Messenger vốn đã làm vậy với lượt thích và nhãn dán. Nếu điện thoại đang ở chế độ im lặng hoặc bạn đã tắt âm thanh trong ứng dụng của Messenger thì vẫn không có tiếng.
+own_chat_sounds.title	Âm thanh chat của riêng bạn
+own_chat_sounds.description	Phát các tệp âm thanh bạn chọn thay cho âm thanh của Messenger khi bạn gửi tin nhắn, khi tin đã được gửi tới và khi có tin nhắn mới lúc Messenger đang mở. Chọn chúng ở bên dưới. Âm thanh nào bạn không đổi thì vẫn là của Messenger, và Messenger vẫn quyết định khi nào phát từng âm thanh.
 passkey_login.title	Bỏ qua đăng nhập bằng mã khóa
 passkey_login.description	Khi đăng nhập, mã khóa trên điện thoại này không còn được đưa ra nữa, nên Facebook quay lại cách yêu cầu bạn phê duyệt lần đăng nhập từ một thiết bị khác mà bạn đang đăng nhập, giống như với tài khoản không có mã khóa. Messenger đã vá không thể vượt qua bước kiểm tra mã khóa của Facebook, và đó là lý do một số lần đăng nhập cứ quay vòng ở bước kiểm tra bằng trình duyệt. Khi bật, Messenger cũng không dùng được mã khóa cho bản sao lưu được mã hóa, vì vậy hãy để tắt trừ khi một lần đăng nhập bị kẹt. Nhấn giữ biểu tượng Messenger trên màn hình chính để mở phần cài đặt này mà không cần đăng nhập.
 recovery_code_row.title	Hiện tùy chọn mã 40 ký tự

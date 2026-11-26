@@ -340,6 +340,24 @@ tab_icons_tab_metaai	Meta AI
 tab_icons_tab_jewel	Facebook
 tab_icons_tab_more	Menü
 tab_icons_tab_mesetting	Profilin
+own_chat_sounds_help	Gönderiliyor mesajın giderken, Gönderildi mesaj ulaştığında, Uygulama içi mesaj ise Messenger açıkken bir mesaj geldiğinde çalar. Herhangi biri için en fazla %1$d MB'lık bir .ogg, .mp3, .m4a veya .wav dosyası seç.
+own_chat_sounds_sound_send	Gönderiliyor
+own_chat_sounds_sound_sent	Gönderildi
+own_chat_sounds_sound_in_app	Uygulama içi mesaj
+own_chat_sounds_choose	Seç
+own_chat_sounds_remove	Kaldır
+own_chat_sounds_stock	Messenger'ın sesi
+own_chat_sounds_yours	Senin sesin
+own_chat_sounds_copying	Kopyalanıyor...
+own_chat_sounds_saved	Ses kaydedildi.
+own_chat_sounds_removed	Yine Messenger'ın sesi çalacak.
+own_chat_sounds_remove_failed	O ses kaldırılamadı.
+own_chat_sounds_not_sound	O dosya ses olarak çalınmıyor.
+own_chat_sounds_too_large	Sesler en fazla %1$d MB olabilir.
+own_chat_sounds_unreadable	O dosya açılamadı.
+own_chat_sounds_not_saved	Ses kaydedilemedi.
+own_chat_sounds_busy	Önceki dosya hâlâ kopyalanıyor.
+own_chat_sounds_timeout	Dosya çok uzun sürdü. Tekrar dene.
 quiet_calls_chosen	Yalnızca seçilen sohbetler
 quiet_calls_chosen_help	Aşağıda açtığın sohbetlerden gelen aramalar sessizce gelir. Diğer tüm aramalar her zamanki gibi çalar.
 quiet_calls_recent_empty	Seni arayan sohbetler burada görünür, en yenisi en üstte.
@@ -1014,6 +1032,8 @@ restricted_notify.title	Kısıtlanan sohbetler için bildir
 restricted_notify.description	Kısıtladığın kişilerle olan sohbetler, uçtan uca şifreli olmadıkça diğer sohbetlerin gibi sana bildirim gönderir. Sessize aldığın bir sohbet sessiz kalır. Kısıtlanan kişiler yine de ne zaman aktif olduğunu veya mesajlarını ne zaman okuduğunu göremez.
 open_chat_sound.title	Açık sohbette ses
 open_chat_sound.description	Açık olan sohbetine bir mesaj geldiğinde Messenger'ın uygulama içi mesaj sesini çalar. Messenger bunu beğeniler ve çıkartmalar için zaten yapıyor. Telefon sessizdeyse ya da Messenger'ın kendi uygulama içi sesler ayarı kapalıysa yine ses çıkmaz.
+own_chat_sounds.title	Kendi sohbet seslerin
+own_chat_sounds.description	Mesaj gönderirken, mesaj ulaştığında ve Messenger açıkken yeni bir mesaj geldiğinde Messenger'ın sesleri yerine senin seçtiğin ses dosyalarını çalar. Onları aşağıdan seç. Dokunmadıkların Messenger'ın kendi sesi olarak kalır ve her birinin ne zaman çalacağına yine Messenger karar verir.
 passkey_login.title	Geçiş anahtarıyla girişi atla
 passkey_login.description	Giriş yaparken bu telefondaki geçiş anahtarı artık sunulmaz, böylece Facebook girişi oturum açtığın başka bir cihazdan onaylamanı ister, geçiş anahtarı olmayan bir hesapta yaptığı gibi. Yamalı bir Messenger, Facebook'un geçiş anahtarı kontrolünü geçemez ve bazı girişlerin tarayıcı kontrolünde dönüp durmasının nedeni bu. Açıkken Messenger şifreli yedeklemeleri için de geçiş anahtarı kullanamaz, bu yüzden bir giriş takılmadıkça kapalı bırak. Oturum açmadan bu ayarlara ulaşmak için Messenger'ın ana ekran simgesine uzun bas.
 recovery_code_row.title	40 karakterlik kod seçeneğini göster

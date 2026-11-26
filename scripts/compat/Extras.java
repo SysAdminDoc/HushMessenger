@@ -1024,6 +1024,57 @@ final class Extras {
         return found.size() == 1 ? found : List.of();
     }
 
+    private static final String RAW_SOUND_OPEN = "Landroid/content/res/Resources;->openRawResourceFd(I)Landroid/content/res/AssetFileDescriptor;";
+    private static final String RAW_SOUND_HOOK = "Lapp/hushmessenger/extension/OwnChatSounds;->rawSound(Landroid/content/res/Resources;I)Landroid/content/res/AssetFileDescriptor;";
+    private static final String RAW_SOUND_SOURCE = "Landroid/media/MediaPlayer;->setDataSource(Ljava/io/FileDescriptor;JJ)V";
+    private static final List<String> RAW_SOUND_READS = List.of("Landroid/content/res/AssetFileDescriptor;->getFileDescriptor()Ljava/io/FileDescriptor;",
+        "Landroid/content/res/AssetFileDescriptor;->getStartOffset()J", "Landroid/content/res/AssetFileDescriptor;->getLength()J",
+        "Landroid/content/res/AssetFileDescriptor;->close()V");
+
+    private static String rawSoundCall(Instruction i) {
+        return i instanceof ReferenceInstruction ri && ri.getReference() instanceof MethodReference call ? call.toString() : null;
+    }
+
+    /** Mirrors rawSoundSite in OwnChatSounds.kt: the player's one raw sound open, stock or hooked, feeding the player. */
+    private static boolean hasRawSoundSite(Method m) {
+        if (!AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"Z".equals(m.getReturnType()) || m.getImplementation() == null) return false;
+        if (!typeNames(m.getParameterTypes()).equals(List.of(m.getDefiningClass(), "F", "I", "I", "Z"))) return false;
+        var code = instructions(m);
+        int id = m.getImplementation().getRegisterCount() - 3;
+        var stock = new ArrayList<Integer>();
+        var hooked = new ArrayList<Integer>();
+        for (int i = 0; i < code.size(); i++) {
+            var called = rawSoundCall(code.get(i));
+            if (code.get(i).getOpcode() == Opcode.INVOKE_VIRTUAL && RAW_SOUND_OPEN.equals(called)) stock.add(i);
+            if (code.get(i).getOpcode() == Opcode.INVOKE_STATIC && RAW_SOUND_HOOK.equals(called)) hooked.add(i);
+        }
+        int at;
+        if (stock.size() == 1 && hooked.isEmpty()) at = stock.get(0);
+        else if (stock.isEmpty() && hooked.size() == 1) at = hooked.get(0);
+        else return false;
+        var open = (FiveRegisterInstruction) code.get(at);
+        if (open.getRegisterCount() != 2 || open.getRegisterD() != id || at + 1 >= code.size()) return false;
+        var result = code.get(at + 1);
+        if (result.getOpcode() != Opcode.MOVE_RESULT_OBJECT) return false;
+        int descriptor = ((OneRegisterInstruction) result).getRegisterA();
+        var reads = new HashSet<String>();
+        int sources = 0;
+        for (var i : code) {
+            var called = rawSoundCall(i);
+            if (RAW_SOUND_SOURCE.equals(called)) sources++;
+            if (called != null && i.getOpcode() == Opcode.INVOKE_VIRTUAL && ((FiveRegisterInstruction) i).getRegisterCount() == 1
+                && ((FiveRegisterInstruction) i).getRegisterC() == descriptor) reads.add(called);
+        }
+        return reads.containsAll(RAW_SOUND_READS) && sources == 1;
+    }
+
+    /** own_chat_sounds: the one chat sound player whose raw sound open the extension takes. Mirrors findOwnChatSounds. */
+    static List<Method> ownChatSounds(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) if (hasRawSoundSite(method)) found.add(method);
+        return found.size() == 1 ? found : List.of();
+    }
+
     private static final String MARK_THREADS_PARAMS = "Lcom/facebook/messaging/service/model/MarkThreadsParams;";
     private static final String MARK_THREADS_RESULT = "Lcom/facebook/fbservice/service/OperationResult;";
     private static final String MARK_THREAD_KEY = "Lcom/facebook/messaging/model/threadkey/ThreadKey;";

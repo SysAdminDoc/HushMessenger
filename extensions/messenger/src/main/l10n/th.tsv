@@ -340,6 +340,24 @@ tab_icons_tab_metaai	Meta AI
 tab_icons_tab_jewel	Facebook
 tab_icons_tab_more	เมนู
 tab_icons_tab_mesetting	โปรไฟล์ของคุณ
+own_chat_sounds_help	กำลังส่ง จะดังตอนข้อความของคุณกำลังออกไป ส่งแล้ว จะดังเมื่อข้อความส่งถึง และ ข้อความในแอป จะดังเมื่อมีข้อความเข้ามาขณะเปิด Messenger อยู่ เลือกไฟล์ .ogg, .mp3, .m4a หรือ .wav ขนาดไม่เกิน %1$d MB ให้เสียงไหนก็ได้
+own_chat_sounds_sound_send	กำลังส่ง
+own_chat_sounds_sound_sent	ส่งแล้ว
+own_chat_sounds_sound_in_app	ข้อความในแอป
+own_chat_sounds_choose	เลือก
+own_chat_sounds_remove	เอาออก
+own_chat_sounds_stock	เสียงของ Messenger
+own_chat_sounds_yours	เสียงของคุณ
+own_chat_sounds_copying	กำลังคัดลอก...
+own_chat_sounds_saved	บันทึกเสียงแล้ว
+own_chat_sounds_removed	กลับไปใช้เสียงของ Messenger
+own_chat_sounds_remove_failed	เอาเสียงนั้นออกไม่ได้
+own_chat_sounds_not_sound	ไฟล์นั้นเล่นเป็นเสียงไม่ได้
+own_chat_sounds_too_large	เสียงมีขนาดได้ถึง %1$d MB
+own_chat_sounds_unreadable	เปิดไฟล์นั้นไม่ได้
+own_chat_sounds_not_saved	บันทึกเสียงไม่ได้
+own_chat_sounds_busy	กำลังคัดลอกไฟล์ก่อนหน้านี้อยู่
+own_chat_sounds_timeout	ไฟล์ใช้เวลานานเกินไป โปรดลองอีกครั้ง
 quiet_calls_chosen	เฉพาะแชทที่เลือกเท่านั้น
 quiet_calls_chosen_help	สายโทรเข้าจากแชทที่คุณเปิดไว้ด้านล่างจะโทรเข้าเงียบๆ สายโทรเข้าอื่นๆ จะดังตามปกติ
 quiet_calls_recent_empty	แชทที่โทรหาคุณจะแสดงขึ้นที่นี่ โดยเรียงจากใหม่สุดไปเก่าสุด
@@ -1014,6 +1032,8 @@ restricted_notify.title	แจ้งเตือนสำหรับแชท�
 restricted_notify.description	ข้อความจากบุคคลที่คุณจำกัดไว้จะแจ้งเตือนเหมือนแชททั่วไป เว้นแต่คุณจะปิดเสียงแชทนั้นไว้หรือเป็นแชทที่เข้ารหัสแบบต้นทางถึงปลายทาง
 open_chat_sound.title	เสียงในแชทที่เปิดอยู่
 open_chat_sound.description	เล่นเสียงข้อความในแอปของ Messenger เมื่อมีข้อความเข้ามาในแชทที่คุณเปิดอยู่ ซึ่ง Messenger ทำแบบนี้อยู่แล้วกับการกดถูกใจและสติกเกอร์ ถ้าโทรศัพท์ปิดเสียงอยู่หรือปิดเสียงในแอปของ Messenger ไว้ ก็จะยังเงียบเหมือนเดิม
+own_chat_sounds.title	เสียงแชทของคุณเอง
+own_chat_sounds.description	เล่นไฟล์เสียงที่คุณเลือกแทนเสียงของ Messenger ตอนส่งข้อความ ตอนที่ข้อความส่งถึงแล้ว และตอนมีข้อความใหม่ขณะเปิด Messenger อยู่ เลือกได้ที่ด้านล่าง เสียงที่คุณไม่ได้เปลี่ยนจะยังเป็นของ Messenger และ Messenger ยังเป็นผู้ตัดสินใจว่าจะเล่นแต่ละเสียงเมื่อไร
 passkey_login.title	ข้ามการลงชื่อเข้าใช้ด้วยพาสคีย์
 passkey_login.description	การลงชื่อเข้าใช้จะไม่เสนอพาสคีย์จากโทรศัพท์เครื่องนี้อีก ดังนั้น Facebook จะย้อนกลับไปให้คุณอนุมัติการเข้าสู่ระบบจากอุปกรณ์อื่นที่คุณลงชื่อเข้าใช้อยู่ เหมือนกับบัญชีที่ไม่มีพาสคีย์ Messenger ที่แพตช์แล้วไม่สามารถผ่านการตรวจพาสคีย์ของ Facebook ได้ และนั่นคือสาเหตุที่การเข้าสู่ระบบบางครั้งวนอยู่ที่การตรวจสอบผ่านเบราว์เซอร์ ขณะที่เปิดอยู่ Messenger ก็ใช้พาสคีย์สำหรับการสำรองข้อมูลแบบเข้ารหัสไม่ได้ด้วย จึงควรปิดไว้เว้นแต่การเข้าสู่ระบบจะติดค้าง กดไอคอน Messenger บนหน้าจอหลักค้างไว้เพื่อเข้าถึงการตั้งค่านี้โดยไม่ต้องลงชื่อเข้าใช้
 recovery_code_row.title	แสดงตัวเลือกรหัส 40 ตัวอักษร

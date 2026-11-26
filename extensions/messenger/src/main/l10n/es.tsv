@@ -340,6 +340,24 @@ tab_icons_tab_metaai	Meta AI
 tab_icons_tab_jewel	Facebook
 tab_icons_tab_more	Menú
 tab_icons_tab_mesetting	Tu perfil
+own_chat_sounds_help	Enviando suena mientras sale tu mensaje, Enviado cuando ya llegó y Mensaje en la app cuando entra uno con Messenger abierto. Elige un archivo .ogg, .mp3, .m4a o .wav de hasta %1$d MB para cualquiera de ellos.
+own_chat_sounds_sound_send	Enviando
+own_chat_sounds_sound_sent	Enviado
+own_chat_sounds_sound_in_app	Mensaje en la app
+own_chat_sounds_choose	Elegir
+own_chat_sounds_remove	Quitar
+own_chat_sounds_stock	Sonido de Messenger
+own_chat_sounds_yours	Tu sonido
+own_chat_sounds_copying	Copiando...
+own_chat_sounds_saved	Sonido guardado.
+own_chat_sounds_removed	Vuelve el sonido de Messenger.
+own_chat_sounds_remove_failed	No se pudo quitar ese sonido.
+own_chat_sounds_not_sound	Ese archivo no se reproduce como sonido.
+own_chat_sounds_too_large	Los sonidos pueden pesar hasta %1$d MB.
+own_chat_sounds_unreadable	No se pudo abrir ese archivo.
+own_chat_sounds_not_saved	No se pudo guardar el sonido.
+own_chat_sounds_busy	Todavía se está copiando el anterior.
+own_chat_sounds_timeout	El archivo tardó demasiado. Inténtalo de nuevo.
 quiet_calls_chosen	Solo chats elegidos
 quiet_calls_chosen_help	Las llamadas de los chats que actives abajo entran en silencio. Todas las demás suenan como siempre.
 quiet_calls_recent_empty	Los chats que te llaman aparecen aquí, los más recientes primero.
@@ -1014,6 +1032,8 @@ restricted_notify.title	Notificar los chats restringidos
 restricted_notify.description	Los chats con personas que restringiste te notifican como tus otros chats, salvo que tengan cifrado de extremo a extremo. Un chat que silenciaste sigue en silencio. Las personas restringidas siguen sin poder ver cuándo estás en línea ni cuándo leíste sus mensajes.
 open_chat_sound.title	Sonido en el chat abierto
 open_chat_sound.description	Reproduce el sonido de mensaje de Messenger cuando llega un mensaje al chat que tienes abierto. Messenger ya lo hace con los me gusta y los stickers. Si el teléfono está en silencio o desactivas los sonidos en la app de Messenger, sigue sin sonar.
+own_chat_sounds.title	Tus propios sonidos de chat
+own_chat_sounds.description	Reproduce los archivos de sonido que elijas en lugar de los sonidos de Messenger al enviar un mensaje, cuando ya se entregó y cuando llega un mensaje nuevo con Messenger abierto. Elígelos abajo. Los que no cambies siguen siendo los de Messenger, y Messenger sigue decidiendo cuándo suena cada uno.
 passkey_login.title	Omitir inicio con llave de acceso
 passkey_login.description	Al iniciar sesión ya no se ofrece la llave de acceso de este teléfono, así que Facebook vuelve a pedirte que apruebes el inicio de sesión desde otro dispositivo en el que ya estés conectado, igual que con una cuenta sin llave de acceso. Un Messenger parcheado no puede pasar la comprobación de llaves de acceso de Facebook, y eso es lo que deja algunos inicios de sesión dando vueltas en la comprobación del navegador. Mientras está activado, Messenger tampoco puede usar una llave de acceso para sus copias de seguridad cifradas, así que déjalo desactivado salvo que un inicio de sesión se quede atascado. Mantén pulsado el icono de Messenger en la pantalla de inicio para llegar a estos ajustes sin iniciar sesión.
 recovery_code_row.title	Mostrar el código de 40 caracteres

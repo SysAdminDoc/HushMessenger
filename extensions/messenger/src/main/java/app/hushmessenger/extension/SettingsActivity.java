@@ -72,6 +72,7 @@ public final class SettingsActivity extends Activity {
     private final HomeHeaderRow homeHeader = new HomeHeaderRow(this);
     private final HiddenWordsRow hiddenWords = new HiddenWordsRow(this);
     private final TabIconsRow tabIcons = new TabIconsRow(this);
+    private final OwnChatSoundsRow ownChatSounds = new OwnChatSoundsRow(this);
     private final MessageActionsRow messageActions = new MessageActionsRow(this);
     private final ChatMenuItemsRow chatMenuItems = new ChatMenuItemsRow(this);
     private final ProfileMenuRow profileMenuItems = new ProfileMenuRow(this);
@@ -136,7 +137,7 @@ public final class SettingsActivity extends Activity {
     static final int UNDO_MILLIS = 10_000;
     static final int SAVE_CHOICES = 7101, READ_CHOICES = 7102, PICK_FONT = 7103, PICK_AUTO_REPLY_PICTURE = 7104, SAVE_MESSAGE_LOG = 7105,
         PICK_HOME_HEADER = 7106, PICK_TAB_ICON = 7107, PICK_RECORDING_FOLDER = 7108, SAVE_THEME = 7109, READ_THEME = 7110,
-        PICK_HOME_HEADER_FONT = 7111;
+        PICK_HOME_HEADER_FONT = 7111, PICK_CHAT_SOUND = 7112;
     /**
      * The switch for each way back in (#22, HushFacebook#146), and the help and reason each was built with. Turning one
      * way off can change what the others say or whether they can turn off, so they're rebuilt when that changes.
@@ -157,7 +158,7 @@ public final class SettingsActivity extends Activity {
     /** The switches that take a way into these settings away, each with a reason when it can't turn on. */
     static final Set<String> WAYS_IN = Set.of("hide_menu_row", Settings.HIDE_ICON_SHORTCUTS, Settings.HIDE_LOGO_PRESS);
     /** Switches whose effect hasn't been confirmed on a phone. Each shows the Experimental badge. */
-    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", PreviewTaps.KEY, "chat_menu_items", "quiet_calls", QuietMode.KEY, "save_voice", "gallery_to_chat", PastePhoto.KEY, InstantGallery.KEY, "call_recording", "inbox_search_bar", "inbox_typing", "media_caption", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", TabSwipe.KEY, StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY, CallCaptions.KEY, TabIcons.KEY, LinkPlayer.KEY, "profile_menu_items", "chat_bar_plus", "recovery_code_row", "longer_notes", "refresh_rate", "thin_story_rings", SearchSections.SUGGESTED, SearchSections.REELS, SearchSections.STRANGERS, SearchSections.AI_CHATS, StoryTray.KEY, StoryRowSize.KEY, PinnedBar.KEY, OpenChatSound.KEY, Settings.SHOW_INSTANTS_TAB, "mark_read_locally");
+    static final Set<String> EXPERIMENTAL = Set.of("pinned_chats", "hidden_chats", "nearby_scans", "phone_id_sync", "mark_read_button", "story_hold", "chat_preview", "chat_preview_size", PreviewTaps.KEY, "chat_menu_items", "quiet_calls", QuietMode.KEY, "save_voice", "gallery_to_chat", PastePhoto.KEY, InstantGallery.KEY, "call_recording", "inbox_search_bar", "inbox_typing", "media_caption", "landscape", "restricted_notify", "tab_bar_scroll_away", "floating_tab_bar", TabSwipe.KEY, StoryEye.KEY, SpecialContacts.KEY, MenuBlur.KEY, CallCaptions.KEY, TabIcons.KEY, LinkPlayer.KEY, "profile_menu_items", "chat_bar_plus", "recovery_code_row", "longer_notes", "refresh_rate", "thin_story_rings", SearchSections.SUGGESTED, SearchSections.REELS, SearchSections.STRANGERS, SearchSections.AI_CHATS, StoryTray.KEY, StoryRowSize.KEY, PinnedBar.KEY, OpenChatSound.KEY, OwnChatSounds.KEY, Settings.SHOW_INSTANTS_TAB, "mark_read_locally");
     static final String[][] CONTROLS = {
         {"people", "Hide People You May Know", "Hides suggested people in chats, search and stories, and on the People and Notifications tabs. Good if you only want people you know.", "inbox"},
         {"friend_requests", "Hide friend request cards", "Hides friend request cards in your chat list. It doesn't accept or decline anyone.", "inbox"},
@@ -225,6 +226,7 @@ public final class SettingsActivity extends Activity {
         {"quiet_mode", "Quiet mode", "A break from Messenger. Pick 15 minutes, an hour, two hours, eight hours or until you end it yourself, and nothing from Messenger makes a sound or vibrates for that long. Messages and calls still arrive and wait in the notification shade, so nothing goes missing while you're away from it. Every night, under it, does the same between two times you pick. Anyone on your Special contacts list still comes through, whether they message you or call.", "notifications"},
         {"restricted_notify", "Notify for restricted chats", "Chats with people you've restricted notify you like your other chats, unless they're end-to-end encrypted. A chat you've muted stays quiet. Restricted people still can't see when you're active or when you've read their messages.", "notifications"},
         {"open_chat_sound", "Sound in the open chat", "Plays Messenger's in-app message sound when a message comes into the chat you have open. Messenger already does that for likes and stickers. A silent phone or Messenger's own In-app sounds switch still keeps it quiet.", "notifications"},
+        {"own_chat_sounds", "Your own chat sounds", "Plays sound files you pick instead of Messenger's sounds as you send a message, once it has gone through, and for a new message while Messenger is open. Choose them below. Any you leave alone stay Messenger's own, and Messenger still decides when each one plays.", "notifications"},
         {"car_messages", "Android Auto messages", "Lets Android Auto read your messages out loud and send the replies you speak, on its own messaging screen. Android Auto only shows apps from the Play Store. Unknown sources in its developer settings opens that up on a desktop head unit, and a real car can still leave Messenger out. Playing a message aloud marks the chat read and shows Seen, even with Hide read receipts on.", "notifications"},
         {"quiet_calls", "Quiet incoming calls", "Calls still come in, but Messenger doesn't ring, vibrate or pop the call up over your screen. The call waits in the notification shade with Answer and Decline. A call you miss still shows in the chat. Only chosen chats keeps this to the chats you pick, and every other call rings. If the Facebook app is on your phone, it can still ring for the same call.", "calls"},
         {"call_recording", "Record calls", "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it. Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first.", "calls"},
@@ -1188,7 +1190,7 @@ public final class SettingsActivity extends Activity {
                     || MessageLog.KEY.equals(spec[0]) || AutoReply.KEY.equals(spec[0]) || Settings.AVATAR_SHAPE.equals(spec[0])
                     || QuietCalls.KEY.equals(spec[0]) || HomeHeader.KEY.equals(spec[0]) || ChatHiding.KEY.equals(spec[0])
                     || HiddenWords.KEY.equals(spec[0])
-                    || TabIcons.KEY.equals(spec[0])
+                    || TabIcons.KEY.equals(spec[0]) || OwnChatSounds.KEY.equals(spec[0])
                     || MessageActions.KEY.equals(spec[0]) || ChatMenuItems.KEY.equals(spec[0]) || ProfileMenu.KEY.equals(spec[0]) || CameraActivity.KEY.equals(spec[0])
                     || InvisibleButtons.KEY.equals(spec[0]) || QuietMode.KEY.equals(spec[0])
                     || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])
@@ -1228,6 +1230,7 @@ public final class SettingsActivity extends Activity {
                 else if (HomeHeader.KEY.equals(spec[0])) homeHeader.addTo(wrapper);
                 else if (HiddenWords.KEY.equals(spec[0])) hiddenWords.addTo(wrapper);
                 else if (TabIcons.KEY.equals(spec[0])) tabIcons.addTo(wrapper);
+                else if (OwnChatSounds.KEY.equals(spec[0])) ownChatSounds.addTo(wrapper);
                 else if (MessageActions.KEY.equals(spec[0])) messageActions.addTo(wrapper);
                 else if (ChatMenuItems.KEY.equals(spec[0])) chatMenuItems.addTo(wrapper);
                 else if (ProfileMenu.KEY.equals(spec[0])) profileMenuItems.addTo(wrapper);
@@ -2136,6 +2139,10 @@ public final class SettingsActivity extends Activity {
             tabIcons.pictureResult(result, data);
             return;
         }
+        if (request == PICK_CHAT_SOUND) {
+            ownChatSounds.soundResult(result, data);
+            return;
+        }
         if (request == PICK_FONT) {
             // Cancelled: nothing to do and nothing to say.
             if (result != RESULT_OK || data == null || data.getData() == null) return;
@@ -2443,6 +2450,10 @@ public final class SettingsActivity extends Activity {
             if (TabIcons.KEY.equals(spec[0])) {
                 inside = text.get("tab_icons_choose") + " " + text.get("tab_icons_help", HomeHeaderPicture.MAX_MEGABYTES);
                 for (String tab : TabIcons.SHOWN) inside += " " + text.get("tab_icons_tab_" + tab);
+            }
+            if (OwnChatSounds.KEY.equals(spec[0])) {
+                inside = text.get("own_chat_sounds_choose") + " " + text.get("own_chat_sounds_help", OwnChatSounds.MAX_MEGABYTES);
+                for (String sound : OwnChatSounds.SOUNDS) inside += " " + text.get("own_chat_sounds_sound_" + sound);
             }
             if (QuietCalls.KEY.equals(spec[0])) {
                 inside = text.get(QuietCalls.CHOSEN_ONLY) + " " + text.get("quiet_calls_chosen_help");

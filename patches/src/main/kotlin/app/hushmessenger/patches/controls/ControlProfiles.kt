@@ -271,6 +271,7 @@ internal val PROFILE_347617503 = ControlProfile(
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->transcodeImageAsync(Ljava/lang/String;DDLjava/lang/String;Ljava/util/Map;Lcom/facebook/msys/mci/TranscodeImageCompletionCallback;)V",
         ),
         "original_video" to setOf("Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->A05(Lcom/facebook/msys/mci/TranscodeVideoCompletionCallback;Lcom/facebook/msys/mci/VideoEdits;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V"),
+        "own_chat_sounds" to setOf("LX/AhH;->A05(LX/AhH;FIIZ)Z"),
         "passkey_login" to setOf(
             "LX/eqh;->isAvailableOnDevice()Z",
             "Landroidx/credentials/playservices/CredentialProviderPlayServicesImpl;->isAvailableOnDevice()Z",
@@ -647,6 +648,7 @@ internal val PROFILE_347617497 = ControlProfile(
             "Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->transcodeImageAsync(Ljava/lang/String;DDLjava/lang/String;Ljava/util/Map;Lcom/facebook/msys/mci/TranscodeImageCompletionCallback;)V",
         ),
         "original_video" to setOf("Lcom/facebook/msys/mci/transcoder/DefaultMediaTranscoder;->A05(Lcom/facebook/msys/mci/TranscodeVideoCompletionCallback;Lcom/facebook/msys/mci/VideoEdits;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V"),
+        "own_chat_sounds" to setOf("LX/Ak0;->A05(LX/Ak0;FIIZ)Z"),
         "passkey_login" to setOf(
             "LX/VXB;->isAvailableOnDevice()Z",
             "Landroidx/credentials/playservices/CredentialProviderPlayServicesImpl;->isAvailableOnDevice()Z",

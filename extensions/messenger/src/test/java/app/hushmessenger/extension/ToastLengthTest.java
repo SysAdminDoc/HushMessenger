@@ -41,6 +41,8 @@ public class ToastLengthTest {
         "chat_preview_taps_gone",
         "invisible_buttons_invisible", "invisible_buttons_visible", "invisible_buttons_pick_now", "invisible_buttons_pick_none",
         "theme_accent_saved", "theme_accent_saved_on", "theme_pasted", "theme_pasted_on",
+        "own_chat_sounds_saved", "own_chat_sounds_removed", "own_chat_sounds_remove_failed", "own_chat_sounds_not_sound",
+        "own_chat_sounds_unreadable", "own_chat_sounds_not_saved", "own_chat_sounds_busy", "own_chat_sounds_timeout",
     };
 
     @Test public void everyToastFitsOnTwoLinesInEveryLanguage() {
@@ -60,6 +62,7 @@ public class ToastLengthTest {
         check(cut, "quick_setups_hidden", words.get("quick_setups_hidden", words.format("quick_setups_home"), words.format("choices")));
         check(cut, "font_file_too_large", words.get("font_file_too_large", FontFile.MAX_MEGABYTES));
         check(cut, "home_header_too_large", words.get("home_header_too_large", HomeHeaderPicture.MAX_MEGABYTES));
+        check(cut, "own_chat_sounds_too_large", words.get("own_chat_sounds_too_large", OwnChatSounds.MAX_MEGABYTES));
         check(cut, "auto_reply_saved", words.get("auto_reply_saved", 12));
         check(cut, "call_recording_saved", words.get("call_recording_saved", "Recordings/" + CallRecording.FOLDER));
         check(cut, "save_voice_menu_saved", words.get("save_voice_menu_saved", "Recordings/" + VoiceMessages.FOLDER));
