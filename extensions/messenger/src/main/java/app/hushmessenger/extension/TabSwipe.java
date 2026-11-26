@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Changing tab with a sideways swipe on the home screen. Messenger swaps one tab's page in and out of the same
@@ -80,6 +82,8 @@ public final class TabSwipe {
         private TabFollow.Drag follow;
         private boolean tabAfter;
         private boolean tabBefore;
+        /** Which tab each page Messenger built belongs to, learnt as each one shows when a swipe starts. */
+        private final Map<View, Object> pagesBuilt = new WeakHashMap<>();
 
         SwipeFrame(Context context, Route route, Object home) {
             super(context);
@@ -160,9 +164,11 @@ public final class TabSwipe {
                 if (!TabFollow.on()) return;
                 List<View> moving = TabFollow.pages(this);
                 if (moving.isEmpty()) return;
-                tabAfter = next(1) != null;
-                tabBefore = next(-1) != null;
-                follow = new TabFollow.Drag(this, moving);
+                Object after = next(1);
+                Object before = next(-1);
+                tabAfter = after != null;
+                tabBefore = before != null;
+                follow = new TabFollow.Drag(this, moving, pagesBuilt, route.current(home), before, after);
             } catch (Throwable error) {
                 Settings.hookFailedPrivately(TabFollow.KEY, "Can't move the page with the finger", error);
                 follow = null;

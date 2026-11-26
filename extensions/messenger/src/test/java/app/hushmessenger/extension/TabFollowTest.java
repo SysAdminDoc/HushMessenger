@@ -3,6 +3,7 @@ package app.hushmessenger.extension;
 import static org.junit.Assert.*;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -43,6 +44,12 @@ public class TabFollowTest {
     /** Every place the page was put since the last swipe began, with the tab open at that moment. */
     private final List<Object[]> moves = new ArrayList<>();
     private boolean barMoved;
+    /** With the floating tab bar: the view around the holder, the holder of the tabs' pages, and each tab's page. */
+    private FrameLayout level;
+    private FrameLayout holder;
+    private final java.util.Map<TabSwipeTest.Tab, FrameLayout> tabPages = new java.util.EnumMap<>(TabSwipeTest.Tab.class);
+    /** Every place the holder was put, with the tab open at that moment. */
+    private final List<Object[]> holderMoves = new ArrayList<>();
 
     @Test public void thePageAndTitleFollowTheFingerAndTheTabBarStays() {
         on(true);
@@ -177,6 +184,219 @@ public class TabFollowTest {
         // It rides on Swipe between tabs, so that going off stops it as well.
         Settings.preferences.edit().putBoolean(TabSwipe.KEY, false).commit();
         assertFalse(TabFollow.on());
+    }
+
+    /**
+     * With the floating tab bar every tab's page sits in one holder, and Messenger builds a tab's page the first time it
+     * opens, here while the old page is off the side of the screen. Litho draws only what it saw on screen the last time
+     * its own view moved, so the new page came in blank until something moved it (#194).
+     */
+    @Test public void aPageMessengerBuildsWhileTheOldOneIsOffTheScreenIsDrawnOnceItSlidesIn() {
+        on(true);
+        TabSwipeTest.Home home = new TabSwipeTest.Home();
+        TabSwipe.SwipeFrame frame = floating(home, TabSwipeTest.Tab.INBOX);
+
+        down(frame);
+        move(frame, 825);
+        move(frame, 600);
+        assertNull("People has no page yet, so nothing comes along beside", frame.following().beside());
+        assertTrue(level.getClipChildren());
+        up(frame, 600);
+        settle();
+        assertSame(TabSwipeTest.Tab.PEOPLE, home.picked);
+        FrameLayout people = tabPages.get(TabSwipeTest.Tab.PEOPLE);
+        assertNotNull("Messenger built the page while the old one was carried off", people);
+        assertEquals(0f, onScreenX(people), 0.01f);
+        assertEquals("and it was drawn where it came to rest, all of it", 0f, litho(people).seenAt, 0.01f);
+        assertEquals(0f, header.getTranslationX(), 0.01f);
+        assertTrue(level.getClipChildren());
+    }
+
+    /**
+     * A tab opened before keeps its page in the holder, hidden. That page comes along beside the moving one while the
+     * finger drags, and once the swipe commits it's the page Messenger shows, so it stays where it came to.
+     */
+    @Test public void aTabOpenedBeforeComesAlongBesideThePageAndStaysWhenTheSwipeCommits() {
+        on(true);
+        TabSwipeTest.Home home = new TabSwipeTest.Home();
+        TabSwipe.SwipeFrame frame = visitedPeople(home);
+        FrameLayout people = tabPages.get(TabSwipeTest.Tab.PEOPLE);
+        FrameLayout chats = tabPages.get(TabSwipeTest.Tab.INBOX);
+
+        down(frame);
+        move(frame, 825);
+        move(frame, 600);
+        assertSame(people, frame.following().beside());
+        assertEquals(View.VISIBLE, people.getVisibility());
+        assertEquals("People sits just right of the page, the side it opens from", 780f, onScreenX(people), 0.01f);
+        assertFalse("and isn't cut off at the holder's edge", level.getClipChildren());
+        assertTrue("Litho was told it's partly on screen", litho(people).seenAt > 0);
+
+        holderMoves.clear();
+        up(frame, 600);
+        settle();
+        assertSame(TabSwipeTest.Tab.PEOPLE, home.picked);
+        assertEquals(View.GONE, chats.getVisibility());
+        assertEquals(View.VISIBLE, people.getVisibility());
+        assertEquals(0f, people.getTranslationX(), 0.01f);
+        assertEquals(0f, holder.getTranslationX(), 0.01f);
+        for (Object[] move : holderMoves) {
+            if (move[1] == TabSwipeTest.Tab.PEOPLE) assertFalse("The page that came along never jumped back off the screen", (Float) move[0] > 0);
+        }
+        assertEquals(0f, litho(people).seenAt, 0.01f);
+        assertEquals("The title slid in after it", 0f, header.getTranslationX(), 0.01f);
+        assertTrue("The holder's parent clips again", level.getClipChildren());
+        assertNull(frame.following().beside());
+    }
+
+    @Test public void aSwipeThatSpringsBackOrTurnsAroundHidesThePageBesideAgain() {
+        on(true);
+        TabSwipeTest.Home home = new TabSwipeTest.Home();
+        TabSwipe.SwipeFrame frame = visitedPeople(home);
+        FrameLayout people = tabPages.get(TabSwipeTest.Tab.PEOPLE);
+        FrameLayout chats = tabPages.get(TabSwipeTest.Tab.INBOX);
+
+        down(frame);
+        move(frame, 825);
+        move(frame, 750);
+        assertSame(people, frame.following().beside());
+        up(frame, 750);
+        settle();
+        assertSame("Too short to change the tab", TabSwipeTest.Tab.INBOX, home.open);
+        assertEquals(View.GONE, people.getVisibility());
+        assertEquals(0f, people.getTranslationX(), 0.01f);
+        assertEquals(View.VISIBLE, chats.getVisibility());
+        assertEquals(0f, holder.getTranslationX(), 0.01f);
+        assertTrue(level.getClipChildren());
+
+        // Back the other way, where Chats has no tab before it, People goes again at once.
+        down(frame);
+        move(frame, 825);
+        move(frame, 750);
+        assertSame(people, frame.following().beside());
+        move(frame, 1000);
+        assertNull(frame.following().beside());
+        assertEquals(View.GONE, people.getVisibility());
+        assertTrue(level.getClipChildren());
+        up(frame, 1000);
+        settle();
+        assertSame(TabSwipeTest.Tab.INBOX, home.open);
+        assertEquals(View.VISIBLE, chats.getVisibility());
+    }
+
+    /** A floating home screen that has opened People once and come back to Chats, so People's page is kept, hidden. */
+    private TabSwipe.SwipeFrame visitedPeople(TabSwipeTest.Home home) {
+        home.open = TabSwipeTest.Tab.PEOPLE;
+        TabSwipe.SwipeFrame frame = floating(home, TabSwipeTest.Tab.INBOX, TabSwipeTest.Tab.PEOPLE);
+        swipe(frame, 300);
+        settle();
+        assertSame(TabSwipeTest.Tab.INBOX, home.open);
+        assertEquals(View.GONE, tabPages.get(TabSwipeTest.Tab.PEOPLE).getVisibility());
+        assertEquals(View.VISIBLE, tabPages.get(TabSwipeTest.Tab.INBOX).getVisibility());
+        assertEquals(0f, holder.getTranslationX(), 0.01f);
+        return frame;
+    }
+
+    /**
+     * The home screen with the floating tab bar: the holder of the tabs' pages, with a page for each of [built] and only
+     * the open tab's shown, an empty layer, the title along the top and the bar along the bottom. Opening a tab shows its
+     * page, building it the first time, a moment later, the way a fragment change runs.
+     */
+    private TabSwipe.SwipeFrame floating(TabSwipeTest.Home home, TabSwipeTest.Tab... built) {
+        android.content.Context context = RuntimeEnvironment.getApplication();
+        shown = home;
+        tabPages.clear();
+        FrameLayout root = new FrameLayout(context);
+        root.setLayoutParams(new ViewGroup.LayoutParams(1080, 1920));
+        level = new FrameLayout(context);
+        root.addView(level, fill());
+        holder = new FrameLayout(context) {
+            @Override public void setTranslationX(float x) {
+                super.setTranslationX(x);
+                holderMoves.add(new Object[] {x, shown.open});
+            }
+        };
+        level.addView(holder, fill());
+        for (TabSwipeTest.Tab tab : built) {
+            FrameLayout page = tabPage(context);
+            tabPages.put(tab, page);
+            holder.addView(page, fill());
+        }
+        level.addView(new FrameLayout(context), fill());
+        header = new View(context);
+        level.addView(header, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 170, Gravity.TOP));
+        bar = new View(context);
+        level.addView(bar, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 180, Gravity.BOTTOM));
+        View wrapped = TabSwipe.wrap(root, home, ROUTE);
+        assertTrue(wrapped instanceof TabSwipe.SwipeFrame);
+        TabSwipe.SwipeFrame frame = (TabSwipe.SwipeFrame) wrapped;
+        layOut(frame);
+        // Hidden pages keep where they were last laid out, the way a fragment's view does once it's hidden.
+        for (java.util.Map.Entry<TabSwipeTest.Tab, FrameLayout> page : tabPages.entrySet()) {
+            page.getValue().setVisibility(page.getKey() == home.open ? View.VISIBLE : View.GONE);
+        }
+        home.selected = tab -> new Handler(Looper.getMainLooper()).post(() -> {
+            FrameLayout page = tabPages.get(tab);
+            if (page == null) {
+                page = tabPage(context);
+                tabPages.put(tab, page);
+                holder.addView(page, fill());
+            }
+            for (FrameLayout each : tabPages.values()) each.setVisibility(each == page ? View.VISIBLE : View.GONE);
+            layOut(frame);
+        });
+        return frame;
+    }
+
+    private static FrameLayout tabPage(android.content.Context context) {
+        FrameLayout page = new FrameLayout(context);
+        page.addView(new Litho(context), fill());
+        return page;
+    }
+
+    private static Litho litho(FrameLayout page) {
+        return (Litho) page.getChildAt(0);
+    }
+
+    private static FrameLayout.LayoutParams fill() {
+        return new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    }
+
+    private static void layOut(View frame) {
+        frame.measure(View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.EXACTLY));
+        frame.layout(0, 0, 1080, 1920);
+    }
+
+    /** Where [view] sits across the screen, counting every view around it that moved. */
+    private static float onScreenX(View view) {
+        float x = 0;
+        for (View at = view; at != null; at = at.getParent() instanceof View ? (View) at.getParent() : null) {
+            x += at.getLeft() + at.getTranslationX();
+        }
+        return x;
+    }
+
+    /**
+     * Stands in for a Litho view: it looks at where it is on screen only when it moves itself, the way Litho's mounting
+     * view does, and moving by nothing counts.
+     */
+    static final class Litho extends FrameLayout {
+        /** Where it was across the screen the last time it looked, or NaN if it never did. */
+        float seenAt = Float.NaN;
+
+        Litho(android.content.Context context) {
+            super(context);
+        }
+
+        @Override public void offsetLeftAndRight(int offset) {
+            super.offsetLeftAndRight(offset);
+            seenAt = onScreenX(this);
+        }
+
+        @Override public boolean onTouchEvent(MotionEvent event) {
+            return true;
+        }
     }
 
     private void on(boolean follow) {
