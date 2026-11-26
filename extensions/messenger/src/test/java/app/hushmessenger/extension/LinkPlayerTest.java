@@ -3,7 +3,9 @@ package app.hushmessenger.extension;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Looper;
 import android.view.View;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.After;
 import org.junit.Before;
@@ -15,6 +17,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import static org.junit.Assert.*;
+import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = {28, 36})
@@ -212,6 +215,44 @@ public class LinkPlayerTest {
 
         sheet.onStatus("\"" + LinkPlayerSheet.ENDED + "\\u0001Never Gonna Give You Up\"");
         assertFalse("Finished, Play again stays on screen", sheet.fadeWaiting);
+    }
+
+    private static void idleMs(long ms) {
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(ms));
+    }
+
+    /**
+     * Plays until the fade timer fires and hands the fade to the buttons' animator, then stops before its first frame.
+     * Robolectric runs a whole fade inside the idle that fires it, so the timer's runnable is run by hand here.
+     */
+    private LinkPlayerSheet fadeUnderWay() {
+        LinkPlayerSheet sheet = open("https://youtu.be/dQw4w9WgXcQ");
+        sheet.onStatus("\"" + LinkPlayerSheet.PLAYING + "\"");
+        idleMs(LinkPlayerSheet.FADE_MS - 1);
+        assertTrue("The fade is waiting", sheet.fadeWaiting);
+        sheet.fade.run();
+        assertFalse("The fade has started", sheet.fadeWaiting);
+        assertEquals(1f, sheet.buttons.getAlpha(), 0f);
+        return sheet;
+    }
+
+    /** #246: a tap while the buttons fade out brings them back for good, so Pause stays in reach. */
+    @Test public void aTapWhileTheButtonsFadeBringsThemBackForGood() {
+        LinkPlayerSheet sheet = fadeUnderWay();
+        sheet.showButtons();
+        idleMs(LinkPlayerSheet.FADE_ANIMATION_MS * 2);
+        assertEquals("Tapped, the buttons stay up", View.VISIBLE, sheet.buttons.getVisibility());
+        assertEquals(1f, sheet.buttons.getAlpha(), 0f);
+        assertTrue("And they fade again later", sheet.fadeWaiting);
+    }
+
+    /** #246: pausing while the buttons fade out leaves them up. */
+    @Test public void pausingWhileTheButtonsFadeLeavesThemUp() {
+        LinkPlayerSheet sheet = fadeUnderWay();
+        sheet.onStatus("\"" + LinkPlayerSheet.PAUSED + "\"");
+        idleMs(LinkPlayerSheet.FADE_MS + LinkPlayerSheet.FADE_ANIMATION_MS * 2);
+        assertEquals("Paused, the buttons stay up", View.VISIBLE, sheet.buttons.getVisibility());
+        assertEquals(1f, sheet.buttons.getAlpha(), 0f);
     }
 
     @Test public void anAnswerTheFrameCouldNotGiveChangesNothing() {

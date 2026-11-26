@@ -444,6 +444,8 @@ final class LinkPlayerSheet {
     void showButtons() {
         if (buttons == null) return;
         handler.removeCallbacks(this.fade);
+        // A fade already under way would carry on over the alpha set here and hide the buttons again (#246).
+        buttons.animate().cancel();
         fadeWaiting = false;
         buttons.setAlpha(1f);
         buttons.setVisibility(View.VISIBLE);
@@ -457,12 +459,13 @@ final class LinkPlayerSheet {
     private void keepButtons() {
         if (buttons == null) return;
         handler.removeCallbacks(this.fade);
+        buttons.animate().cancel();
         fadeWaiting = false;
         buttons.setAlpha(1f);
         buttons.setVisibility(View.VISIBLE);
     }
 
-    private final Runnable fade = new Runnable() {
+    final Runnable fade = new Runnable() {
         @Override public void run() {
             fadeWaiting = false;
             if (closed || buttons == null) return;
