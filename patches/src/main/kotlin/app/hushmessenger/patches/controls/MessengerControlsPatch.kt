@@ -238,6 +238,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         CHAT_PREVIEW_SIZE -> validateChatPreviewSize()
         INBOX_TYPING -> validateInboxTyping()
         MEDIA_CAPTION -> validateMediaCaption()
+        MEDIA_CAPTION_EDITOR -> validateMediaCaptionEditor()
         CHAT_MENU_ITEMS -> validateChatMenuItems()
         PROFILE_MENU_ITEMS -> validateProfileMenuItems()
         PROFILE_MENU_CALL -> validateProfileMenuCall()
@@ -394,6 +395,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             CHAT_PREVIEW_SIZE -> method.injectChatPreviewSize()
             INBOX_TYPING -> method.injectInboxTyping()
             MEDIA_CAPTION -> method.injectMediaCaption()
+            MEDIA_CAPTION_EDITOR -> method.injectMediaCaptionEditor()
             LANDSCAPE_LOCK -> method.injectPortraitLock()
             LANDSCAPE_MEDIA -> method.injectMediaOrientation()
             BLOCKED_LIST_PICTURES -> method.injectBlockedListPictures()
@@ -596,9 +598,18 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 if (calls.map { it.first }.distinct().size != calls.size)
                     throw PatchException("Messenger controls: two different composer sends in one compose fragment")
                 val helpers = calls.map { (host, send) -> mutableClassDefBy(host) to mediaCaptionHelper(host, send) }
-                for ((host, _) in helpers) host.checkMediaCaptionHelper()
+                // #236: the editor's send hands its fragment to a second helper, which checks the composer view the
+                // first one's reader of the typed text needs.
+                val editorHelpers = methods[MEDIA_CAPTION_EDITOR].orEmpty().map { it.definingClass }.distinct().map { host ->
+                    val send = calls.singleOrNull { it.first == host }?.second
+                        ?: throw PatchException("Messenger controls: the editor's send in $host has no composer send beside it")
+                    val view = mutableClassDefBy(host).methods.singleOrNull { it.hookId() == send.typedText }?.composerViewField()
+                        ?: throw PatchException("Messenger controls: the composer's reader of the typed text changed in $host")
+                    mutableClassDefBy(host) to mediaCaptionEditorHelper(host, view)
+                }
+                for ((host, helper) in helpers + editorHelpers) host.checkMediaCaptionHelper(helper.name)
                 injectControl(key, methods)
-                for ((host, helper) in helpers) host.addMediaCaptionHelper(helper)
+                for ((host, helper) in helpers + editorHelpers) host.addMediaCaptionHelper(helper)
             } else if (key == INBOX_SEARCH_BAR) {
                 val host = mutableClassDefBy(SETTINGS)
                 val stub = host.methods.singleOrNull { it.hookId() == SEARCH_ICON_STUB }
@@ -800,7 +811,7 @@ val messageActionsPatch = controlPatch("message_actions", "Customize message act
     MESSAGE_ACTIONS, MESSAGE_ACTIONS_MORE)
 @Suppress("unused")
 val mediaCaptionPatch = controlPatch("media_caption", "Put your words above the photo",
-    "Type something, attach a photo or video, and your words go out first, as their own message above it, instead of underneath. Mentions still work. With nothing typed, nothing changes.", "Photos and videos", MEDIA_CAPTION)
+    "Type something, attach a photo or video, and your words go out first, as their own message above it, instead of underneath. Mentions still work. With nothing typed, nothing changes.", "Photos and videos", MEDIA_CAPTION, MEDIA_CAPTION_EDITOR)
 @Suppress("unused")
 val hideRecentMediaPatch = controlPatch("recent_media", "Hide the recent photo card",
     "Stops the card above the message box that offers to send the screenshot, photo or video you just took. You can still send it from the gallery.", "Photos and videos")

@@ -150,7 +150,7 @@ final class Media {
      * ending with a list; one branch past it; nothing branching onto its first instruction or writing the flag or the
      * fragment inside it; and one direct reader of the typed text. Mirrors MediaCaption.kt.
      */
-    static boolean mediaCaptionSite(Method method) {
+    static String mediaCaptionPlainSend(Method method) {
         var code = instructions(method);
         String host = method.getDefiningClass();
         boolean marked = false;
@@ -158,18 +158,18 @@ final class Media {
             if ((i.getOpcode() == Opcode.CONST_STRING || i.getOpcode() == Opcode.CONST_STRING_JUMBO) &&
                 i instanceof ReferenceInstruction r && r.getReference() instanceof StringReference s && SEND_CLICKED.equals(s.getString())) marked = true;
         var sends = mediaCaptionSends(method);
-        if (!marked || sends.size() != 1) return false;
+        if (!marked || sends.size() != 1) return null;
         int sendAt = -1;
         for (int i = 0; i < code.size(); i++) {
             var m = captionCall(code.get(i));
             if (m == null || !m.getDefiningClass().equals(host) || !"V".equals(m.getReturnType())) continue;
             var id = m.getName() + "(" + String.join("", m.getParameterTypes().stream().map(Object::toString).toList()) + ")";
             if (!id.equals(sends.get(0))) continue;
-            if (sendAt >= 0) return false;
+            if (sendAt >= 0) return null;
             sendAt = i;
         }
-        if (sendAt < 0 || code.get(sendAt).getOpcode() != Opcode.INVOKE_STATIC) return false;
-        if (!(code.get(sendAt) instanceof FiveRegisterInstruction call) || call.getRegisterCount() != 5) return false;
+        if (sendAt < 0 || code.get(sendAt).getOpcode() != Opcode.INVOKE_STATIC) return null;
+        if (!(code.get(sendAt) instanceof FiveRegisterInstruction call) || call.getRegisterCount() != 5) return null;
         int fragment = call.getRegisterC();
         int check = -1;
         for (int at = sendAt - 3; at >= 0 && check < 0; at--) {
@@ -177,55 +177,168 @@ final class Media {
             if (code.get(at).getOpcode() == Opcode.INVOKE_VIRTUAL && asked != null && asked.getDefiningClass().equals(host) &&
                 asked.getParameterTypes().isEmpty() && "Z".equals(asked.getReturnType()) && captionRegisters(code.get(at)).equals(List.of(fragment))) check = at;
         }
-        if (check < 0) return false;
+        if (check < 0) return null;
         var answer = code.get(check + 1);
         var skip = code.get(check + 2);
-        if (answer.getOpcode() != Opcode.MOVE_RESULT || skip.getOpcode() != Opcode.IF_NEZ || register(answer) != register(skip)) return false;
-        for (int i = check + 3; i < sendAt; i++) if (code.get(i) instanceof OffsetInstruction) return false;
-        if (call.getRegisterD() != call.getRegisterF()) return false;
+        if (answer.getOpcode() != Opcode.MOVE_RESULT || skip.getOpcode() != Opcode.IF_NEZ || register(answer) != register(skip)) return null;
+        for (int i = check + 3; i < sendAt; i++) if (code.get(i) instanceof OffsetInstruction) return null;
+        if (call.getRegisterD() != call.getRegisterF()) return null;
         var nothing = lastCaptionWrite(code, call.getRegisterD(), check + 2, sendAt);
-        if (nothing == null || nothing.getOpcode() != Opcode.CONST_4 || ((NarrowLiteralInstruction) nothing).getNarrowLiteral() != 0) return false;
+        if (nothing == null || nothing.getOpcode() != Opcode.CONST_4 || ((NarrowLiteralInstruction) nothing).getNarrowLiteral() != 0) return null;
         var map = lastCaptionWrite(code, call.getRegisterE(), check + 2, sendAt);
         if (map == null || map.getOpcode() != Opcode.SGET_OBJECT || !(map instanceof ReferenceInstruction mr) ||
-            !(mr.getReference() instanceof FieldReference field) || !CAPTION_MAP.equals(field.getType())) return false;
+            !(mr.getReference() instanceof FieldReference field) || !CAPTION_MAP.equals(field.getType())) return null;
         var list = lastCaptionWrite(code, call.getRegisterG(), check + 2, sendAt);
-        if (list == null || list.getOpcode() != Opcode.MOVE_RESULT_OBJECT) return false;
+        if (list == null || list.getOpcode() != Opcode.MOVE_RESULT_OBJECT) return null;
         int flagAt = -1;
         for (int i = 0; i < code.size(); i++)
-            if (code.get(i).getOpcode() == Opcode.IF_EQZ && mediaTarget(code, i) == check) { if (flagAt >= 0) return false; flagAt = i; }
-        if (flagAt < 1 || flagAt + 1 >= code.size()) return false;
+            if (code.get(i).getOpcode() == Opcode.IF_EQZ && mediaTarget(code, i) == check) { if (flagAt >= 0) return null; flagAt = i; }
+        if (flagAt < 1 || flagAt + 1 >= code.size()) return null;
         var jump = code.get(flagAt + 1).getOpcode();
-        if (jump != Opcode.GOTO && jump != Opcode.GOTO_16 && jump != Opcode.GOTO_32) return false;
+        if (jump != Opcode.GOTO && jump != Opcode.GOTO_16 && jump != Opcode.GOTO_32) return null;
         int sent = register(code.get(flagAt));
         var media = code.get(flagAt - 1);
         var mediaSend = captionCall(media);
-        if (mediaSend == null || (media.getOpcode() != Opcode.INVOKE_STATIC && media.getOpcode() != Opcode.INVOKE_STATIC_RANGE)) return false;
+        if (mediaSend == null || (media.getOpcode() != Opcode.INVOKE_STATIC && media.getOpcode() != Opcode.INVOKE_STATIC_RANGE)) return null;
         var mediaParams = mediaSend.getParameterTypes();
         if (!mediaSend.getDefiningClass().equals(host) || !"V".equals(mediaSend.getReturnType()) || mediaParams.isEmpty() ||
-            !"Ljava/util/List;".equals(mediaParams.get(mediaParams.size() - 1).toString())) return false;
-        if (!captionRegisters(media).contains(fragment)) return false;
+            !"Ljava/util/List;".equals(mediaParams.get(mediaParams.size() - 1).toString())) return null;
+        if (!captionRegisters(media).contains(fragment)) return null;
         int guard = -1;
         for (int i = 0; i < code.size(); i++)
-            if (code.get(i).getOpcode() == Opcode.IF_NEZ && mediaTarget(code, i) == flagAt) { if (guard >= 0) return false; guard = i; }
-        if (guard < 0) return false;
+            if (code.get(i).getOpcode() == Opcode.IF_NEZ && mediaTarget(code, i) == flagAt) { if (guard >= 0) return null; guard = i; }
+        if (guard < 0) return null;
         int at = guard + 1;
-        if (at > flagAt - 1) return false;
+        if (at > flagAt - 1) return null;
         for (int i = at; i < flagAt; i++)
-            if (code.get(i) instanceof OffsetInstruction || captionWrites(code.get(i), sent) || captionWrites(code.get(i), fragment)) return false;
-        if (mediaTargets(method).contains(at) || fragment > 15 || sent > 15) return false;
+            if (code.get(i) instanceof OffsetInstruction || captionWrites(code.get(i), sent) || captionWrites(code.get(i), fragment)) return null;
+        if (mediaTargets(method).contains(at) || fragment > 15 || sent > 15) return null;
         var readers = new HashSet<String>();
         for (var i : code) {
             var m = captionCall(i);
             if (i.getOpcode() == Opcode.INVOKE_DIRECT && m != null && m.getDefiningClass().equals(host) &&
                 m.getParameterTypes().isEmpty() && CAPTION_STRING.equals(m.getReturnType())) readers.add(m.getName());
         }
-        return readers.size() == 1;
+        if (readers.size() != 1) return null;
+        return mediaSend.getName() + "(" + String.join("", mediaParams.stream().map(Object::toString).toList()) + ")";
+    }
+
+    /** Whether mediaCaptionPlainSend finds the composer's send in [method]. */
+    static boolean mediaCaptionSite(Method method) {
+        return mediaCaptionPlainSend(method) != null;
     }
 
     /** media_caption: the one send whose words go out after its plain media send. Mirrors MediaCaption.kt. */
     static List<Method> mediaCaption(List<ClassDef> classes) {
         var found = new ArrayList<Method>();
         for (var cls : classes) for (var method : cls.getMethods()) if (mediaCaptionSite(method)) found.add(method);
+        return found;
+    }
+
+    static final String EDITOR_SEND_MARK = "Unknown media resource type being sent from Camera";
+    static final String EDITOR_MESSAGE = "Lcom/facebook/messaging/model/messages/Message;";
+
+    /** The composer send's one direct reader of the typed text, by name, or null. Mirrors MediaCaption.kt. */
+    static String captionReader(Method send) {
+        var readers = new HashSet<String>();
+        for (var i : instructions(send)) {
+            var m = captionCall(i);
+            if (i.getOpcode() == Opcode.INVOKE_DIRECT && m != null && m.getDefiningClass().equals(send.getDefiningClass()) &&
+                m.getParameterTypes().isEmpty() && CAPTION_STRING.equals(m.getReturnType())) readers.add(m.getName());
+        }
+        return readers.size() == 1 ? readers.iterator().next() : null;
+    }
+
+    /**
+     * Whether the reader of the typed text reads the composer view first and refuses when it's gone: iget-object on p0
+     * of its own class, then an if-eqz on it within the next three. Mirrors MediaCaption.kt's composerViewField.
+     */
+    static boolean captionComposerView(Method reader) {
+        if (AccessFlags.STATIC.isSet(reader.getAccessFlags()) || !reader.getParameterTypes().isEmpty() || reader.getImplementation() == null) return false;
+        var code = instructions(reader);
+        int self = reader.getImplementation().getRegisterCount() - 1;
+        if (code.isEmpty() || code.get(0).getOpcode() != Opcode.IGET_OBJECT) return false;
+        if (!(code.get(0) instanceof ReferenceInstruction r) || !(r.getReference() instanceof FieldReference field)) return false;
+        if (!(code.get(0) instanceof TwoRegisterInstruction read) || read.getRegisterB() != self || !field.getDefiningClass().equals(reader.getDefiningClass())) return false;
+        int view = read.getRegisterA();
+        int check = -1;
+        for (int i = 1; i < Math.min(code.size(), 4) && check < 0; i++)
+            if (code.get(i).getOpcode() == Opcode.IF_EQZ && register(code.get(i)) == view) check = i;
+        if (check < 0) return false;
+        for (int i = 1; i < check; i++) if (captionWrites(code.get(i), view) || code.get(i) instanceof OffsetInstruction) return false;
+        return true;
+    }
+
+    /**
+     * The editor's send: an instance method taking a Message that loads EDITOR_SEND_MARK and ends with one static media
+     * send of its own class (a list last), handed one fragment that is p0 or a copy of it in the straight run up to the
+     * send, and one kind string, both in four-bit registers, with nothing branching onto the send. Answers the media
+     * send's name and parameters, or null. Mirrors MediaCaption.kt's mediaCaptionEditorSite.
+     */
+    static String captionEditorSend(Method method) {
+        String host = method.getDefiningClass();
+        if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || !"V".equals(method.getReturnType()) || method.getImplementation() == null) return null;
+        if (!method.getParameterTypes().stream().map(Object::toString).toList().equals(List.of(EDITOR_MESSAGE))) return null;
+        var code = instructions(method);
+        boolean marked = false;
+        for (var i : code)
+            if ((i.getOpcode() == Opcode.CONST_STRING || i.getOpcode() == Opcode.CONST_STRING_JUMBO) &&
+                i instanceof ReferenceInstruction r && r.getReference() instanceof StringReference s && EDITOR_SEND_MARK.equals(s.getString())) marked = true;
+        if (!marked) return null;
+        int at = -1;
+        for (int i = 0; i < code.size(); i++) {
+            var op = code.get(i).getOpcode();
+            var m = captionCall(code.get(i));
+            if ((op != Opcode.INVOKE_STATIC && op != Opcode.INVOKE_STATIC_RANGE) || m == null || !m.getDefiningClass().equals(host) ||
+                !"V".equals(m.getReturnType())) continue;
+            var params = m.getParameterTypes();
+            if (params.isEmpty() || !"Ljava/util/List;".equals(params.get(params.size() - 1).toString())) continue;
+            if (at >= 0) return null;
+            at = i;
+        }
+        if (at < 0) return null;
+        var send = captionCall(code.get(at));
+        var shape = send.getParameterTypes().stream().map(Object::toString).toList();
+        if (Collections.frequency(shape, host) != 1 || Collections.frequency(shape, CAPTION_STRING) != 1 || shape.contains("J") || shape.contains("D")) return null;
+        var registers = captionRegisters(code.get(at));
+        if (registers.size() != shape.size()) return null;
+        int fragment = registers.get(shape.indexOf(host));
+        int kind = registers.get(shape.indexOf(CAPTION_STRING));
+        int self = method.getImplementation().getRegisterCount() - 2;
+        var targets = mediaTargets(method);
+        if (fragment != self) {
+            int copyAt = -1;
+            for (int i = at - 1; i >= 0 && copyAt < 0; i--) if (captionWrites(code.get(i), fragment)) copyAt = i;
+            if (copyAt < 0) return null;
+            var copy = code.get(copyAt);
+            if (copy.getOpcode() != Opcode.MOVE_OBJECT && copy.getOpcode() != Opcode.MOVE_OBJECT_FROM16) return null;
+            if (((TwoRegisterInstruction) copy).getRegisterB() != self) return null;
+            for (int i = copyAt + 1; i <= at; i++) if (targets.contains(i)) return null;
+        }
+        for (int i = 0; i < at; i++) if (captionWrites(code.get(i), self)) return null;
+        if (at + 1 >= code.size() || code.get(at + 1).getOpcode() != Opcode.RETURN_VOID) return null;
+        if (targets.contains(at) || fragment > 15 || kind > 15) return null;
+        return send.getName() + "(" + String.join("", shape) + ")";
+    }
+
+    /**
+     * media_caption_editor: the editor's send in each compose fragment media_caption found, calling the composer send's
+     * plain media send, in a fragment whose reader of the typed text checks the composer view. Mirrors MediaCaption.kt.
+     */
+    static List<Method> mediaCaptionEditor(List<ClassDef> classes, List<Method> sends) {
+        var found = new ArrayList<Method>();
+        for (var cls : classes) {
+            String plain = null;
+            String reader = null;
+            for (var send : sends)
+                if (send.getDefiningClass().equals(cls.getType())) { plain = mediaCaptionPlainSend(send); reader = captionReader(send); }
+            if (plain == null || reader == null) continue;
+            var readers = new ArrayList<Method>();
+            for (var m : cls.getMethods())
+                if (m.getName().equals(reader) && m.getParameterTypes().isEmpty() && CAPTION_STRING.equals(m.getReturnType())) readers.add(m);
+            if (readers.size() != 1 || !captionComposerView(readers.get(0))) continue;
+            for (var m : cls.getMethods()) if (plain.equals(captionEditorSend(m))) found.add(m);
+        }
         return found;
     }
 

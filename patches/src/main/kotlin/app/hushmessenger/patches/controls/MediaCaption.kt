@@ -16,6 +16,7 @@ import com.android.tools.smali.dexlib2.iface.instruction.OffsetInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.RegisterRangeInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.TwoRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
@@ -56,9 +57,30 @@ internal data class MediaCaptionCalls(val textSend: String, val typedText: Strin
 
 /**
  * The plain media send in the composer's send: where it starts, the registers holding the fragment and the flag for
- * words that already went, and what the helper calls.
+ * words that already went, what the helper calls, and the fragment's media send it calls.
  */
-internal class MediaCaptionSite(val at: Int, val fragment: Int, val sent: Int, val calls: MediaCaptionCalls)
+internal class MediaCaptionSite(val at: Int, val fragment: Int, val sent: Int, val calls: MediaCaptionCalls, val mediaSend: String)
+
+/**
+ * #236: the second hook of the switch, in the compose fragment's send of a photo or video that comes back from
+ * Messenger's editor (Edit on a photo above the message box, or the camera). That send hands the media straight to the
+ * fragment's media send and never reads the composer, so the words typed before opening the editor stayed in the box.
+ */
+internal const val MEDIA_CAPTION_EDITOR = "media_caption_editor"
+
+/** The one string the editor's send loads, for a kind of media it doesn't know. */
+private const val EDITOR_SEND_MARK = "Unknown media resource type being sent from Camera"
+
+private const val EDITOR_MESSAGE = "Lcom/facebook/messaging/model/messages/Message;"
+
+/** The static helper the editor's send calls before its media send. */
+internal const val MEDIA_CAPTION_EDITOR_HELPER = "hushCaptionForEditor"
+
+/** The kind the editor's send gives a sticker made in the camera, which isn't a photo, so its words stay put. */
+internal const val EDITOR_STICKER = "sticker"
+
+/** The editor's media send: where it is, and the registers holding the fragment and the kind of media. */
+internal class MediaCaptionEditorSite(val at: Int, val fragment: Int, val kind: Int, val mediaSend: String)
 
 private fun mediaCaptionChanged(detail: String): Nothing =
     throw PatchException("Messenger controls: the composer's send changed ($detail)")
@@ -167,7 +189,121 @@ internal fun Method.mediaCaptionSite(): MediaCaptionSite? {
         .filter { it.definingClass == definingClass && it.parameterTypes.isEmpty() && it.returnType == CAPTION_STRING }
         .distinctBy { it.id() }.singleOrNull() ?: return null
     return MediaCaptionSite(at, fragment, sent, MediaCaptionCalls(send.id(), reader.id(),
-        "${mapField!!.definingClass}->${mapField.name}:${mapField.type}"))
+        "${mapField!!.definingClass}->${mapField.name}:${mapField.type}"), mediaSend.id())
+}
+
+/**
+ * The editor's send, as Messenger 588 writes it:
+ *
+ *     ...the message's first media, and its kind as a string ("image", "video" or "sticker") in vKind
+ *     move-object vFragment, p0
+ *     invoke-static/range {...}, mediaSend(..., fragment, ..., kind, media list)
+ *     return-void
+ *
+ * The media send is the same one the composer's send uses for a plain photo. The hook goes right before it, so the
+ * words go out only once the media is known and on its way.
+ */
+internal fun Method.mediaCaptionEditorSite(): MediaCaptionEditorSite? {
+    if (AccessFlags.STATIC.isSet(accessFlags) || returnType != "V" || parameterTypes.map { it.toString() } != listOf(EDITOR_MESSAGE)) return null
+    val code = code()
+    if (code.none { it.opcode in CAPTION_STRINGS && it.string() == EDITOR_SEND_MARK }) return null
+    val sends = code.indices.filter { at ->
+        val sent = code[at].method()
+        (code[at].opcode == Opcode.INVOKE_STATIC || code[at].opcode == Opcode.INVOKE_STATIC_RANGE) && sent != null &&
+            sent.definingClass == definingClass && sent.returnType == "V" && sent.shape().lastOrNull() == "Ljava/util/List;"
+    }
+    val at = sends.singleOrNull() ?: return null
+    val send = code[at].method()!!
+    val shape = send.shape()
+    // One fragment and one kind among the arguments, and nothing wide, so each argument has one register.
+    if (shape.count { it == definingClass } != 1 || shape.count { it == CAPTION_STRING } != 1 || shape.any { it == "J" || it == "D" }) return null
+    val registers = code[at].captionRegisters()
+    if (registers.size != shape.size) return null
+    val fragment = registers[shape.indexOf(definingClass)]
+    val kind = registers[shape.indexOf(CAPTION_STRING)]
+    // The fragment handed over is this one: p0, or a copy of p0 made in the straight run up to the send.
+    val self = (implementation?.registerCount ?: return null) - 2
+    val targets = jumpTargets()
+    if (fragment != self) {
+        val copyAt = (at - 1 downTo 0).firstOrNull { code[it].captionWrites(fragment) } ?: return null
+        val copy = code[copyAt]
+        if (copy.opcode != Opcode.MOVE_OBJECT && copy.opcode != Opcode.MOVE_OBJECT_FROM16) return null
+        if ((copy as TwoRegisterInstruction).registerB != self) return null
+        if ((copyAt + 1..at).any { it in targets }) return null
+    }
+    if ((0 until at).any { code[it].captionWrites(self) }) return null
+    // The send ends with it.
+    if (code.getOrNull(at + 1)?.opcode != Opcode.RETURN_VOID) return null
+    // The helper's call goes in front of the media send, so nothing may branch onto it, and it uses the four-bit form.
+    if (at in targets || fragment > 15 || kind > 15) return null
+    return MediaCaptionEditorSite(at, fragment, kind, send.id())
+}
+
+/**
+ * The composer view the fragment's reader of the typed text reads first and refuses when it's gone
+ * (`iget-object vView, p0, field` and then `if-eqz vView`). An activity result can come back before the view does.
+ */
+internal fun Method.composerViewField(): String? {
+    val code = code()
+    val self = (implementation?.registerCount ?: return null) - 1
+    if (AccessFlags.STATIC.isSet(accessFlags) || parameterTypes.isNotEmpty()) return null
+    val read = code.firstOrNull() ?: return null
+    val field = (read as? ReferenceInstruction)?.reference as? FieldReference ?: return null
+    if (read.opcode != Opcode.IGET_OBJECT || (read as TwoRegisterInstruction).registerB != self || field.definingClass != definingClass) return null
+    val view = (read as OneRegisterInstruction).registerA
+    val check = (1 until minOf(code.size, 4)).firstOrNull { code[it].opcode == Opcode.IF_EQZ && (code[it] as OneRegisterInstruction).registerA == view }
+        ?: return null
+    if ((1 until check).any { code[it].captionWrites(view) || code[it] is OffsetInstruction }) return null
+    return "${field.definingClass}->${field.name}:${field.type}"
+}
+
+/**
+ * The editor's send in each compose fragment whose composer send [findMediaCaption] found, calling the same media
+ * send, in a fragment whose reader of the typed text checks for the composer view first.
+ */
+internal fun findMediaCaptionEditor(classes: Iterable<ClassDef>, sends: List<Method>): List<Method> {
+    val sites = sends.mapNotNull { send -> send.mediaCaptionSite()?.let { send.definingClass to it } }.toMap()
+    return classes.filter { it.type in sites }.flatMap { host ->
+        val site = sites.getValue(host.type)
+        if (host.methods.singleOrNull { it.hookId() == site.calls.typedText }?.composerViewField() == null) return@flatMap emptyList<Method>()
+        host.methods.filter { it.mediaCaptionEditorSite()?.mediaSend == site.mediaSend }
+    }
+}
+
+internal fun MutableMethod.validateMediaCaptionEditor(): MediaCaptionEditorSite =
+    mediaCaptionEditorSite() ?: mediaCaptionChanged("no media send at the end of the editor's send in ${hookId()}")
+
+/** Right before the editor's media send, the helper gets the fragment and the kind of media. */
+internal fun MutableMethod.injectMediaCaptionEditor() {
+    val site = validateMediaCaptionEditor()
+    addInstructions(site.at,
+        "invoke-static {v${site.fragment}, v${site.kind}}, $definingClass->$MEDIA_CAPTION_EDITOR_HELPER($definingClass$CAPTION_STRING)V")
+}
+
+/**
+ * The static helper the editor's send calls with the fragment and the kind of media. With the composer view there and
+ * anything but a sticker, it hands the fragment to [mediaCaptionHelper] with the flag down, which sends the words when
+ * the switch is on and something is typed. Messenger's text send clears the box as it always does.
+ */
+internal fun mediaCaptionEditorHelper(host: String, composerView: String): MutableMethod {
+    val parameters = listOf(host, CAPTION_STRING).map { ImmutableMethodParameter(it, null, null) }
+    // p0 is the fragment, p1 the kind of media.
+    return MutableMethod(ImmutableMethod(host, MEDIA_CAPTION_EDITOR_HELPER, parameters, "V",
+        AccessFlags.PUBLIC.value or AccessFlags.STATIC.value, null, null, ImmutableMethodImplementation(3, emptyList(), null, null)))
+        .apply {
+            addInstructionsWithLabels(0, """
+                iget-object v0, p0, $composerView
+                if-eqz v0, :done
+                const-string v0, "$EDITOR_STICKER"
+                invoke-virtual {v0, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+                move-result v0
+                if-nez v0, :done
+                const/4 v0, 0x0
+                invoke-static {p0, v0}, $host->$MEDIA_CAPTION_HELPER(${host}I)I
+                :done
+                return-void
+            """.trimIndent())
+        }
 }
 
 /**
@@ -223,15 +359,15 @@ internal fun mediaCaptionHelper(host: String, calls: MediaCaptionCalls): Mutable
         }
 }
 
-/** Whether the compose fragment can take [mediaCaptionHelper]. */
-internal fun ClassDef.checkMediaCaptionHelper() {
-    if (methods.any { it.name == MEDIA_CAPTION_HELPER })
-        throw PatchException("Messenger controls: $type already has $MEDIA_CAPTION_HELPER")
+/** Whether the compose fragment can take [mediaCaptionHelper], or the helper named [name]. */
+internal fun ClassDef.checkMediaCaptionHelper(name: String = MEDIA_CAPTION_HELPER) {
+    if (methods.any { it.name == name })
+        throw PatchException("Messenger controls: $type already has $name")
 }
 
-/** Adds [mediaCaptionHelper] to the compose fragment once [checkMediaCaptionHelper] passed. */
+/** Adds [mediaCaptionHelper] or [mediaCaptionEditorHelper] to the compose fragment once [checkMediaCaptionHelper] passed. */
 internal fun MutableClass.addMediaCaptionHelper(helper: MutableMethod) {
-    checkMediaCaptionHelper()
+    checkMediaCaptionHelper(helper.name)
     methods.add(helper)
     directMethods.add(helper)
 }

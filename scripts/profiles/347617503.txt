@@ -202,6 +202,7 @@ hook mark_read_bar LX/7oG;->Fou(Lcom/facebook/messaging/model/threadkey/ThreadKe
 hook mark_read_click LX/DBg;->onClick(Landroid/view/View;)V
 hook mark_read_locally LX/80u;->A06(LX/4QM;LX/80u;Ljava/lang/String;)Lcom/facebook/fbservice/service/OperationResult;
 hook media_caption LX/7pp;->A0K(LX/7pp;)V
+hook media_caption_editor LX/7pp;->A0U(Lcom/facebook/messaging/model/messages/Message;)V
 hook menu_blur LX/09m;->onStart()V
 hook menu_blur Lcom/facebook/xapp/messaging/reactions/sendbar/fragment/ReactionsBarFragment;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
 hook menu_settings LX/5nE;->A1o()V
