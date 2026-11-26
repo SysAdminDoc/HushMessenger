@@ -240,6 +240,8 @@ internal fun MutableMethod.validateHook(hook: String) {
         INBOX_TYPING -> validateInboxTyping()
         MEDIA_CAPTION -> validateMediaCaption()
         MEDIA_CAPTION_EDITOR -> validateMediaCaptionEditor()
+        MEDIA_CAPTION_CHAT -> validateMediaCaptionChat()
+        MEDIA_CAPTION_DIRECT -> validateMediaCaptionDirect()
         CHAT_MENU_ITEMS -> validateChatMenuItems()
         PROFILE_MENU_ITEMS -> validateProfileMenuItems()
         PROFILE_MENU_CALL -> validateProfileMenuCall()
@@ -398,6 +400,8 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             INBOX_TYPING -> method.injectInboxTyping()
             MEDIA_CAPTION -> method.injectMediaCaption()
             MEDIA_CAPTION_EDITOR -> method.injectMediaCaptionEditor()
+            MEDIA_CAPTION_CHAT -> method.injectMediaCaptionChat()
+            MEDIA_CAPTION_DIRECT -> method.injectMediaCaptionDirect()
             LANDSCAPE_LOCK -> method.injectPortraitLock()
             LANDSCAPE_MEDIA -> method.injectMediaOrientation()
             BLOCKED_LIST_PICTURES -> method.injectBlockedListPictures()
@@ -609,6 +613,12 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                         ?: throw PatchException("Messenger controls: the composer's reader of the typed text changed in $host")
                     mutableClassDefBy(host) to mediaCaptionEditorHelper(host, view)
                 }
+                // A chat in a bubble gets the editor's own send instead, and the extension reaches the chat's compose
+                // fragment through the field that holds it, by the editor helper above, so each chat has to hold one.
+                val editorHosts = editorHelpers.map { it.first.type }.toSet()
+                for (chat in methods[MEDIA_CAPTION_CHAT].orEmpty().map { it.definingClass }.distinct())
+                    if (mutableClassDefBy(chat).instanceFields.none { it.type in editorHosts })
+                        throw PatchException("Messenger controls: the chat in $chat holds no compose fragment the editor's send was found in")
                 for ((host, helper) in helpers + editorHelpers) host.checkMediaCaptionHelper(helper.name)
                 injectControl(key, methods)
                 for ((host, helper) in helpers + editorHelpers) host.addMediaCaptionHelper(helper)
@@ -817,7 +827,7 @@ val messageActionsPatch = controlPatch("message_actions", "Customize message act
     MESSAGE_ACTIONS, MESSAGE_ACTIONS_MORE)
 @Suppress("unused")
 val mediaCaptionPatch = controlPatch("media_caption", "Put your words above the photo",
-    "Type something, attach a photo or video, and your words go out first, as their own message above it, instead of underneath. Mentions still work. With nothing typed, nothing changes.", "Photos and videos", MEDIA_CAPTION, MEDIA_CAPTION_EDITOR)
+    "Type something, attach a photo or video, and your words go out first, as their own message above it, instead of underneath. Mentions still work. With nothing typed, nothing changes.", "Photos and videos", MEDIA_CAPTION, MEDIA_CAPTION_EDITOR, MEDIA_CAPTION_CHAT, MEDIA_CAPTION_DIRECT)
 @Suppress("unused")
 val hideRecentMediaPatch = controlPatch("recent_media", "Hide the recent photo card",
     "Stops the card above the message box that offers to send the screenshot, photo or video you just took. You can still send it from the gallery.", "Photos and videos")

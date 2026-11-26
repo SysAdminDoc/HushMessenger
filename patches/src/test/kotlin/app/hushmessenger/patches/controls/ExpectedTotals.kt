@@ -14,9 +14,10 @@ internal object ExpectedTotals {
     /**
      * Hook methods per 588 build, armv7 included (587: 324, with five AI mention rows to 588's six). Three of them read
      * the emoji drawer flag (586: seven), three hold back the active status (#243), one picks how a sent video
-     * draws (#104), and one opens the chat sounds (#224).
+     * draws (#104), one opens the chat sounds (#224), and two send the words before a photo the editor sends by itself
+     * (#236).
      */
-    const val HOOKS_588 = 334
+    const val HOOKS_588 = 336
     /** The complete synthetic discovery fixture, one method per expected hook. */
-    const val DISCOVERY_FIXTURE_HOOKS = 312
+    const val DISCOVERY_FIXTURE_HOOKS = 314
 }

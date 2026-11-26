@@ -342,6 +342,135 @@ final class Media {
         return found;
     }
 
+    static final String CAPTION_DIRECT_PLACE = "thread_view";
+    static final int CAPTION_OWN_TASK = 0x14000000;
+    static final Set<Opcode> CAPTION_RUN_ENDS = Set.of(Opcode.GOTO, Opcode.GOTO_16, Opcode.GOTO_32, Opcode.RETURN_VOID, Opcode.RETURN,
+        Opcode.RETURN_OBJECT, Opcode.RETURN_WIDE, Opcode.THROW, Opcode.PACKED_SWITCH, Opcode.SPARSE_SWITCH);
+
+    /**
+     * The chat fragment's opening of the editor: an instance method taking one thread key, one editor parameter builder
+     * and one trigger, which writes a boolean of the builder. Mirrors MediaCaption.kt's mediaCaptionChatSite.
+     */
+    static boolean captionChatOpening(Method method) {
+        if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || !"V".equals(method.getReturnType()) || method.getImplementation() == null) return false;
+        var shape = method.getParameterTypes().stream().map(Object::toString).toList();
+        for (var type : List.of(THREAD_KEY, EDITOR_BUILDER, NAVIGATION_TRIGGER)) if (Collections.frequency(shape, type) != 1) return false;
+        for (var i : instructions(method))
+            if (i.getOpcode() == Opcode.IPUT_BOOLEAN && i instanceof ReferenceInstruction r && r.getReference() instanceof FieldReference f &&
+                EDITOR_BUILDER.equals(f.getDefiningClass())) return true;
+        return false;
+    }
+
+    /** media_caption_chat: the opening of the editor in each class holding a compose fragment media_caption_editor found. */
+    static List<Method> mediaCaptionChat(List<ClassDef> classes, List<Method> editors) {
+        var composers = new HashSet<String>();
+        for (var m : editors) composers.add(m.getDefiningClass());
+        var found = new ArrayList<Method>();
+        if (composers.isEmpty()) return found;
+        for (var cls : classes) {
+            boolean holds = false;
+            for (var f : cls.getInstanceFields()) holds |= composers.contains(f.getType());
+            if (!holds) continue;
+            for (var m : cls.getMethods()) if (captionChatOpening(m)) found.add(m);
+        }
+        return found;
+    }
+
+    /**
+     * The editor's own send to the chat: one "thread_view" string handed last to the virtual send right after it, which
+     * takes a message and a trigger; back from there, past only branches out, an editor parameter boolean checked by
+     * if-eqz; nothing landing from that branch to the send; one null-checked read of the send's message's media list
+     * with the message unchanged after; four-bit registers. Answers the flag's field id, or null. Mirrors
+     * MediaCaption.kt's mediaCaptionDirectSite.
+     */
+    static String captionDirectFlag(Method method) {
+        if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || !"V".equals(method.getReturnType()) || method.getImplementation() == null) return null;
+        if (!method.getParameterTypes().stream().map(Object::toString).toList().equals(List.of("Landroid/os/Bundle;", EDITOR_MESSAGE, NAVIGATION_TRIGGER))) return null;
+        var code = instructions(method);
+        int at = -1;
+        for (int i = 0; i < code.size(); i++) {
+            var op = code.get(i).getOpcode();
+            if ((op == Opcode.CONST_STRING || op == Opcode.CONST_STRING_JUMBO) && code.get(i) instanceof ReferenceInstruction r &&
+                r.getReference() instanceof StringReference s && CAPTION_DIRECT_PLACE.equals(s.getString())) {
+                if (at >= 0) return null;
+                at = i;
+            }
+        }
+        if (at < 0 || at + 1 >= code.size()) return null;
+        var call = code.get(at + 1);
+        var sent = captionCall(call);
+        if (sent == null || (call.getOpcode() != Opcode.INVOKE_VIRTUAL && call.getOpcode() != Opcode.INVOKE_VIRTUAL_RANGE)) return null;
+        var shape = sent.getParameterTypes().stream().map(Object::toString).toList();
+        if (shape.size() != 4 || !EDITOR_MESSAGE.equals(shape.get(1)) || !NAVIGATION_TRIGGER.equals(shape.get(2)) || !CAPTION_STRING.equals(shape.get(3))) return null;
+        var registers = captionRegisters(call);
+        int media = register(code.get(at));
+        if (registers.size() != 5 || registers.get(4) != media) return null;
+        int message = registers.get(2);
+        int guard = -1;
+        for (int i = at - 1; i >= 1 && guard < 0; i--) {
+            if (CAPTION_RUN_ENDS.contains(code.get(i).getOpcode())) return null;
+            var read = code.get(i - 1);
+            if (code.get(i).getOpcode() == Opcode.IF_EQZ && read.getOpcode() == Opcode.IGET_BOOLEAN && read instanceof ReferenceInstruction r &&
+                r.getReference() instanceof FieldReference f && MONTAGE_PARAMS.equals(f.getDefiningClass()) && register(read) == register(code.get(i))) guard = i;
+        }
+        if (guard < 0) return null;
+        String flag = fieldId((FieldReference) ((ReferenceInstruction) code.get(guard - 1)).getReference());
+        var targets = mediaTargets(method);
+        for (int i = guard + 1; i <= at + 1; i++) if (targets.contains(i)) return null;
+        int read = -1;
+        for (int i = guard + 1; i < at; i++) {
+            if (code.get(i).getOpcode() == Opcode.IGET_OBJECT && ((TwoRegisterInstruction) code.get(i)).getRegisterB() == message &&
+                code.get(i) instanceof ReferenceInstruction r && r.getReference() instanceof FieldReference f &&
+                EDITOR_MESSAGE.equals(f.getDefiningClass()) && IMMUTABLE_LIST.equals(f.getType())) {
+                if (read >= 0) return null;
+                read = i;
+            }
+        }
+        if (read < 0) return null;
+        var check = code.get(read + 1);
+        if (check.getOpcode() != Opcode.IF_EQZ || register(check) != register(code.get(read))) return null;
+        for (int i = read + 1; i < at; i++) if (captionWrites(code.get(i), message)) return null;
+        if (media > 15 || message > 15 || media == message) return null;
+        return flag;
+    }
+
+    /**
+     * The flag MontageComposerActivity's static (Context, parameters, trigger) intent builder reads before it gives the
+     * editor a task of its own: its one editor parameter boolean, with the own-task flags loaded. Mirrors
+     * MediaCaption.kt's editorOwnTaskFlag.
+     */
+    static String captionOwnTaskFlag(List<ClassDef> classes) {
+        ClassDef activity = null;
+        for (var cls : classes) if (cls.getType().equals(MONTAGE_ACTIVITY)) { activity = cls; break; }
+        if (activity == null) return null;
+        Method builder = null;
+        for (var m : activity.getMethods()) {
+            if (!AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"Landroid/content/Intent;".equals(m.getReturnType())) continue;
+            if (!m.getParameterTypes().stream().map(Object::toString).toList().equals(List.of("Landroid/content/Context;", MONTAGE_PARAMS, NAVIGATION_TRIGGER))) continue;
+            if (builder != null) return null;
+            builder = m;
+        }
+        if (builder == null) return null;
+        var code = instructions(builder);
+        boolean ownTask = false;
+        var flags = new LinkedHashSet<String>();
+        for (var i : code) {
+            ownTask |= i instanceof NarrowLiteralInstruction n && n.getNarrowLiteral() == CAPTION_OWN_TASK;
+            if (i.getOpcode() == Opcode.IGET_BOOLEAN && i instanceof ReferenceInstruction r && r.getReference() instanceof FieldReference f &&
+                MONTAGE_PARAMS.equals(f.getDefiningClass())) flags.add(fieldId(f));
+        }
+        return ownTask && flags.size() == 1 ? flags.iterator().next() : null;
+    }
+
+    /** media_caption_direct: the editor's own send to the chat behind the own-task flag. Mirrors MediaCaption.kt. */
+    static List<Method> mediaCaptionDirect(List<ClassDef> classes) {
+        var found = new ArrayList<Method>();
+        String flag = captionOwnTaskFlag(classes);
+        if (flag == null) return found;
+        for (var cls : classes) for (var m : cls.getMethods()) if (flag.equals(captionDirectFlag(m))) found.add(m);
+        return found;
+    }
+
     static boolean mediaWrites(Instruction i, int r) {
         return i.getOpcode().setsRegister() && (register(i) == r || (i.getOpcode().name().contains("WIDE") && register(i) + 1 == r));
     }

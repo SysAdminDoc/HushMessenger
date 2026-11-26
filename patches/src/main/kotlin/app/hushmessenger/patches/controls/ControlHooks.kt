@@ -269,6 +269,8 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(INBOX_TYPING).addAll(findInboxTyping(classes))
     found.getValue(MEDIA_CAPTION).addAll(findMediaCaption(classes))
     found.getValue(MEDIA_CAPTION_EDITOR).addAll(findMediaCaptionEditor(classes, found.getValue(MEDIA_CAPTION)))
+    found.getValue(MEDIA_CAPTION_CHAT).addAll(findMediaCaptionChat(classes, found.getValue(MEDIA_CAPTION_EDITOR)))
+    found.getValue(MEDIA_CAPTION_DIRECT).addAll(findMediaCaptionDirect(classes))
     found.getValue(LANDSCAPE_LOCK).addAll(findPortraitLock(classes))
     found.getValue(LANDSCAPE_MEDIA).addAll(findMediaOrientation(classes))
     found.getValue(BLOCKED_LIST_PICTURES).addAll(findBlockedListPictures(classes))

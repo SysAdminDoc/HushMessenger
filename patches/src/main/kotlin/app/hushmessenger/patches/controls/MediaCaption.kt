@@ -307,6 +307,177 @@ internal fun mediaCaptionEditorHelper(host: String, composerView: String): Mutab
 }
 
 /**
+ * #236: the switch's last two hooks, for a photo or video Messenger's editor sends to the chat by itself. A chat in a
+ * bubble opens the editor in a task of its own, and Android hands no result back across tasks, so the editor sends the
+ * media straight to the chat ("thread_view") and the compose fragment's editor send never runs. The chat's opening of
+ * the editor hands the chat fragment to the extension, and the editor's own send hands it the message's media right
+ * before it goes, so the extension can send the chat's words first through [mediaCaptionEditorHelper].
+ */
+internal const val MEDIA_CAPTION_CHAT = "media_caption_chat"
+
+internal const val MEDIA_CAPTION_DIRECT = "media_caption_direct"
+
+private const val CAPTION_EXTENSION = "Lapp/hushmessenger/extension/EditorCaption;"
+
+internal const val EDITOR_OPENING_CALL = "$CAPTION_EXTENSION->editorOpening(Ljava/lang/Object;)V"
+
+internal const val EDITOR_SENDING_CALL = "$CAPTION_EXTENSION->editorSending(Ljava/util/List;)V"
+
+/** Where the editor's own send says the media goes: the chat that opened it. */
+private const val CAPTION_DIRECT_PLACE = "thread_view"
+
+/** The flags MontageComposerActivity's intent gets for a chat in a bubble: a new task, cleared to the top. */
+private const val CAPTION_OWN_TASK = 0x14000000
+
+private val CAPTION_DIRECT_SHAPE = listOf("Landroid/os/Bundle;", EDITOR_MESSAGE, NAVIGATION_TRIGGER)
+
+/** What ends a straight run of code, other than a branch that leaves it. */
+private val CAPTION_RUN_ENDS = setOf(Opcode.GOTO, Opcode.GOTO_16, Opcode.GOTO_32, Opcode.RETURN_VOID, Opcode.RETURN,
+    Opcode.RETURN_OBJECT, Opcode.RETURN_WIDE, Opcode.THROW, Opcode.PACKED_SWITCH, Opcode.SPARSE_SWITCH)
+
+private fun FieldReference.captionId() = "$definingClass->$name:$type"
+
+/**
+ * The chat fragment's opening of Messenger's editor, as 588 writes it: an instance method taking the chat's thread key,
+ * the editor's parameter builder and the trigger, which sets the builder's flag for a chat in a bubble
+ * (`iput-boolean vInBubble, vBuilder, MontageComposerFragmentParams$Builder->...:Z`). The hook goes at its entry.
+ */
+internal fun Method.mediaCaptionChatSite(): Boolean {
+    if (AccessFlags.STATIC.isSet(accessFlags) || returnType != "V" || implementation == null) return false
+    val shape = parameterTypes.map { it.toString() }
+    if (listOf(THREAD_KEY_TYPE, EDITOR_BUILDER, NAVIGATION_TRIGGER).any { type -> shape.count { it == type } != 1 }) return false
+    return code().any { insn ->
+        insn.opcode == Opcode.IPUT_BOOLEAN && ((insn as ReferenceInstruction).reference as? FieldReference)?.definingClass == EDITOR_BUILDER
+    }
+}
+
+/**
+ * The opening of the editor in each chat fragment that holds a compose fragment whose editor send [findMediaCaptionEditor]
+ * found. The extension finds that compose fragment again by the field's type, through the helper the switch adds to it.
+ */
+internal fun findMediaCaptionChat(classes: Iterable<ClassDef>, editors: List<Method>): List<Method> {
+    val composers = editors.map { it.definingClass }.toSet()
+    if (composers.isEmpty()) return emptyList()
+    return classes.filter { chat -> chat.instanceFields.any { it.type in composers } }
+        .flatMap { chat -> chat.methods.filter { it.mediaCaptionChatSite() } }
+}
+
+internal fun Method.editorOpeningHooked(): Boolean = code().any { it.method()?.id() == EDITOR_OPENING_CALL }
+
+internal fun MutableMethod.validateMediaCaptionChat() {
+    if (!editorOpeningHooked() && !mediaCaptionChatSite()) mediaCaptionChanged("no opening of the editor in ${hookId()}")
+}
+
+/** At the entry, the chat fragment goes to the extension, which keeps the one that opened the editor last. */
+internal fun MutableMethod.injectMediaCaptionChat() {
+    validateMediaCaptionChat()
+    if (editorOpeningHooked()) return
+    addInstructions(0, "invoke-static/range {p0 .. p0}, $EDITOR_OPENING_CALL")
+}
+
+/**
+ * The editor's own send to the chat: where the hook goes, the register it may use for the media list (the place
+ * string's, which is written right after), the message the send takes, the message's media list the block checks, and
+ * the editor parameters' flag the block starts with.
+ */
+internal class MediaCaptionDirectSite(val at: Int, val media: Int, val message: Int, val mediaList: String, val flag: String)
+
+/**
+ * The editor's send, as Messenger 588 writes it (`LX/PaT;->EqH` on 347617503):
+ *
+ *     iget-boolean vFlag, vParams, MontageComposerFragmentParams->A0V:Z     (a chat in a bubble)
+ *     if-eqz vFlag, :result
+ *     ...the editor's session and trigger, each leaving for the result when it's missing
+ *     iget-object vList, vMessage, Message->A1L:ImmutableList
+ *     if-eqz vList, :done
+ *     ...the list isn't empty, the chat's send queue, the trigger and the kind of send
+ *     const-string vPlace, "thread_view"                <- at
+ *     invoke-virtual {vQueue, vKind, vMessage, vTrigger, vPlace}, send(LX/...;Message;NavigationTrigger;String)
+ *
+ * Nothing lands anywhere from the flag's branch to the send, so the hook in front of the string runs exactly when the
+ * editor sends by itself. The message comes from the register the send itself takes, never from the parameter.
+ */
+internal fun Method.mediaCaptionDirectSite(): MediaCaptionDirectSite? {
+    if (AccessFlags.STATIC.isSet(accessFlags) || returnType != "V" || parameterTypes.map { it.toString() } != CAPTION_DIRECT_SHAPE) return null
+    val code = code()
+    val at = code.indices.singleOrNull { code[it].opcode in CAPTION_STRINGS && code[it].string() == CAPTION_DIRECT_PLACE } ?: return null
+    val call = code.getOrNull(at + 1) ?: return null
+    val sent = call.method() ?: return null
+    if (call.opcode != Opcode.INVOKE_VIRTUAL && call.opcode != Opcode.INVOKE_VIRTUAL_RANGE) return null
+    val shape = sent.shape()
+    if (shape.size != 4 || shape[1] != EDITOR_MESSAGE || shape[2] != NAVIGATION_TRIGGER || shape[3] != CAPTION_STRING) return null
+    val registers = call.captionRegisters()
+    val media = (code[at] as OneRegisterInstruction).registerA
+    if (registers.size != 5 || registers[4] != media) return null
+    val message = registers[2]
+    // Back to the flag the block starts with, past nothing but the block's own checks.
+    val guard = (at - 1 downTo 1).firstOrNull { i ->
+        if (code[i].opcode in CAPTION_RUN_ENDS) return null
+        val read = code[i - 1]
+        val field = (read as? ReferenceInstruction)?.reference as? FieldReference
+        code[i].opcode == Opcode.IF_EQZ && read.opcode == Opcode.IGET_BOOLEAN && field?.definingClass == MONTAGE_PARAMS &&
+            (read as OneRegisterInstruction).registerA == (code[i] as OneRegisterInstruction).registerA
+    } ?: return null
+    val flag = ((code[guard - 1] as ReferenceInstruction).reference as FieldReference).captionId()
+    val targets = jumpTargets()
+    if ((guard + 1..at + 1).any { it in targets }) return null
+    // The block's one read of the message's media, null-checked, from the message the send takes.
+    val read = (guard + 1 until at).singleOrNull { i ->
+        val field = (code[i] as? ReferenceInstruction)?.reference as? FieldReference
+        code[i].opcode == Opcode.IGET_OBJECT && (code[i] as TwoRegisterInstruction).registerB == message &&
+            field?.definingClass == EDITOR_MESSAGE && field.type == IMMUTABLE_LIST
+    } ?: return null
+    val list = (code[read] as OneRegisterInstruction).registerA
+    val check = code[read + 1]
+    if (check.opcode != Opcode.IF_EQZ || (check as OneRegisterInstruction).registerA != list) return null
+    if ((read + 1 until at).any { code[it].captionWrites(message) }) return null
+    // The hook's read and call use the four-bit form.
+    if (media > 15 || message > 15 || media == message) return null
+    return MediaCaptionDirectSite(at, media, message, ((code[read] as ReferenceInstruction).reference as FieldReference).captionId(), flag)
+}
+
+/**
+ * The flag MontageComposerActivity's intent builder reads before it gives the editor a task of its own, or null: its one
+ * boolean of the editor's parameters, in the one static (Context, parameters, trigger) builder that loads those flags.
+ */
+internal fun editorOwnTaskFlag(classes: Iterable<ClassDef>): String? {
+    val activity = classes.firstOrNull { it.type == MONTAGE_ACTIVITY } ?: return null
+    val builder = activity.methods.singleOrNull {
+        AccessFlags.STATIC.isSet(it.accessFlags) && it.returnType == "Landroid/content/Intent;" &&
+            it.parameterTypes.map { type -> type.toString() } == listOf("Landroid/content/Context;", MONTAGE_PARAMS, NAVIGATION_TRIGGER)
+    } ?: return null
+    val code = builder.code()
+    if (code.none { it is NarrowLiteralInstruction && it.narrowLiteral == CAPTION_OWN_TASK }) return null
+    return code.filter { it.opcode == Opcode.IGET_BOOLEAN }
+        .mapNotNull { (it as ReferenceInstruction).reference as? FieldReference }
+        .filter { it.definingClass == MONTAGE_PARAMS }.map { it.captionId() }.distinct().singleOrNull()
+}
+
+/** The editor's own send to the chat, behind the same flag that gives the editor a task of its own. */
+internal fun findMediaCaptionDirect(classes: Iterable<ClassDef>): List<Method> {
+    val flag = editorOwnTaskFlag(classes) ?: return emptyList()
+    return classes.flatMap { it.methods }.filter { it.mediaCaptionDirectSite()?.flag == flag }
+}
+
+internal fun Method.editorSendingHooked(): Boolean = code().any { it.method()?.id() == EDITOR_SENDING_CALL }
+
+internal fun MutableMethod.validateMediaCaptionDirect() {
+    if (!editorSendingHooked() && mediaCaptionDirectSite() == null)
+        mediaCaptionChanged("no send of its own to the chat in the editor's send ${hookId()}")
+}
+
+/** In front of the editor's own send to the chat, the extension gets the media of the message that send takes. */
+internal fun MutableMethod.injectMediaCaptionDirect() {
+    validateMediaCaptionDirect()
+    if (editorSendingHooked()) return
+    val site = mediaCaptionDirectSite()!!
+    addInstructions(site.at, """
+        iget-object v${site.media}, v${site.message}, ${site.mediaList}
+        invoke-static {v${site.media}}, $EDITOR_SENDING_CALL
+    """.trimIndent())
+}
+
+/**
  * The one send whose words go out after its media. A build whose send no longer reads like that gets no hook, and the
  * switch shows as unavailable instead of moving a message somewhere it doesn't belong.
  */

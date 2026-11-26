@@ -1,0 +1,161 @@
+package app.hushmessenger.extension;
+
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Put your words above the photo, for a photo or video Messenger's editor sends by itself (#236). A chat in a bubble
+ * opens the editor in a task of its own, so the editor's Send goes straight to the chat and the chat's composer never
+ * hears about it: the words stayed in the box. The chat hands itself over as it opens the editor, and right before the
+ * editor's own send the words go out first through the compose fragment's editor helper, the one the composer's own
+ * editor send calls. That helper checks the composer is still there, leaves stickers alone and reads the switch.
+ */
+public final class EditorCaption {
+    static final String KEY = "media_caption";
+    /** The static helper the patch adds to the compose fragment: (the fragment, the kind of media). */
+    static final String HELPER = "hushCaptionForEditor";
+    private static final WeakReference<Object> NONE = new WeakReference<>(null);
+    private static volatile WeakReference<Object> opener = NONE;
+    /** Each chat fragment class's field holding its compose fragment. */
+    private static final Map<Class<?>, Field> composerFields = new ConcurrentHashMap<>();
+    /** Each compose fragment class's editor helper. */
+    private static final Map<Class<?>, Method> helpers = new ConcurrentHashMap<>();
+    /** Each media class's field holding its kind of media. */
+    private static final Map<Class<?>, Field> kindFields = new ConcurrentHashMap<>();
+
+    private EditorCaption() {}
+
+    /** The chat fragment opening Messenger's editor. Only the last one is kept, and only until the editor sends. */
+    public static void editorOpening(Object chat) {
+        opener = chat != null ? new WeakReference<>(chat) : NONE;
+    }
+
+    /**
+     * Right before the editor sends the message by itself, with the message's media. With the switch on and the chat
+     * that opened the editor still there, its words go first. Off, Pause, safe mode, a chat that's gone or a kind of
+     * media the composer wouldn't caption leaves the send to Messenger.
+     */
+    public static void editorSending(List<?> media) {
+        try {
+            Object chat = opener.get();
+            opener = NONE;
+            if (chat == null || !Settings.wouldUse(KEY) || !added(chat)) return;
+            String kind = kind(media);
+            if (kind == null) return;
+            Field field = composerField(chat.getClass());
+            Object composer = field.get(chat);
+            if (composer == null) return;
+            helper(field.getType()).invoke(null, composer, kind);
+        } catch (Throwable error) {
+            Settings.hookFailedPrivately(KEY, "Can't send the words before the editor's photo", error);
+        }
+    }
+
+    /** Whether the chat fragment is still added to its screen. */
+    private static boolean added(Object chat) throws ReflectiveOperationException {
+        return Boolean.TRUE.equals(chat.getClass().getMethod("isAdded").invoke(chat));
+    }
+
+    /**
+     * What the composer's own editor send calls this kind of media: "image" or "video". Anything else, a sticker made in
+     * the camera included, is null, so the words stay put.
+     */
+    static String kind(List<?> media) throws ReflectiveOperationException {
+        if (media == null || media.isEmpty() || media.get(0) == null) return null;
+        Object first = media.get(0);
+        Object kind = kindField(first.getClass()).get(first);
+        if (kind == null) return null;
+        switch (((Enum<?>) kind).name()) {
+            case "PHOTO":
+            case "ENT_PHOTO":
+            case "ANIMATED_PHOTO":
+                return "image";
+            case "VIDEO":
+            case "ENT_VIDEO":
+                return "video";
+            default:
+                return null;
+        }
+    }
+
+    /** The one field of the media whose type is an enum with both PHOTO and VIDEO in it. */
+    private static Field kindField(Class<?> type) throws IllegalAccessException {
+        Field known = kindFields.get(type);
+        if (known != null) return known;
+        Field found = null;
+        for (Class<?> c = type; c != null && c != Object.class; c = c.getSuperclass()) {
+            for (Field field : c.getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers()) || !Enum.class.isAssignableFrom(field.getType()) || !photoAndVideo(field.getType())) continue;
+                if (found != null) throw new IllegalStateException("two kinds of media");
+                found = field;
+            }
+        }
+        if (found == null) throw new IllegalStateException("no kind of media");
+        found.setAccessible(true);
+        kindFields.put(type, found);
+        return found;
+    }
+
+    /**
+     * Whether the enum's constants include PHOTO and VIDEO. Read from its static fields, since Redex can drop the
+     * values() method Class.getEnumConstants calls.
+     */
+    private static boolean photoAndVideo(Class<?> kinds) throws IllegalAccessException {
+        boolean photo = false, video = false;
+        for (Field constant : kinds.getDeclaredFields()) {
+            if (!Modifier.isStatic(constant.getModifiers()) || constant.getType() != kinds) continue;
+            constant.setAccessible(true);
+            Object kind = constant.get(null);
+            if (kind == null) continue;
+            String name = ((Enum<?>) kind).name();
+            photo |= name.equals("PHOTO");
+            video |= name.equals("VIDEO");
+        }
+        return photo && video;
+    }
+
+    /** The chat fragment's one field whose type is a compose fragment the patch gave the editor helper. */
+    private static Field composerField(Class<?> type) {
+        Field known = composerFields.get(type);
+        if (known != null) return known;
+        Field found = null;
+        for (Class<?> c = type; c != null && c != Object.class; c = c.getSuperclass()) {
+            for (Field field : c.getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers()) || helperOf(field.getType()) == null) continue;
+                if (found != null) throw new IllegalStateException("two compose fragments");
+                found = field;
+            }
+        }
+        if (found == null) throw new IllegalStateException("no compose fragment");
+        found.setAccessible(true);
+        composerFields.put(type, found);
+        return found;
+    }
+
+    private static Method helper(Class<?> composer) {
+        Method helper = helperOf(composer);
+        if (helper == null) throw new IllegalStateException("no editor helper");
+        return helper;
+    }
+
+    /** The compose fragment class's static helper(itself, String), or null when it has none. */
+    private static Method helperOf(Class<?> composer) {
+        if (composer.isPrimitive() || composer.isArray()) return null;
+        Method known = helpers.get(composer);
+        if (known != null) return known;
+        try {
+            Method helper = composer.getDeclaredMethod(HELPER, composer, String.class);
+            if (!Modifier.isStatic(helper.getModifiers())) return null;
+            helper.setAccessible(true);
+            helpers.put(composer, helper);
+            return helper;
+        } catch (NoSuchMethodException | LinkageError absent) {
+            return null;
+        }
+    }
+}
