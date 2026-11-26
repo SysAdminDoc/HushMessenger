@@ -167,6 +167,22 @@ class ChatPreviewSizeTest {
         assertStockKept(before, code.filterIndexed { i, _ -> i !in inserted }, "preview view")
     }
 
+    // Keep taps in the chat preview (#247) reads the same layer, and its Open chat row rides on the chat menu's hooks.
+    // Whichever of the two patches comes first puts the preview's calls in, and the second leaves them be.
+    @Test fun keepTapsInThePreviewSharesTheHookAndItGoesInOnce() {
+        assertEquals(setOf(CHAT_PREVIEW_SIZE), controlHooks.getValue(CHAT_PREVIEW_SIZE))
+        assertEquals(setOf(CHAT_PREVIEW_SIZE, HIDDEN_CHAT_LIST, HIDDEN_CHAT_ROW, HIDDEN_CHAT_TAP), controlHooks.getValue("chat_preview_taps"))
+        val method = previewSizeView()
+        assertTrue(!method.chatPreviewSizeHooked())
+        injectControl(CHAT_PREVIEW_SIZE, mapOf(CHAT_PREVIEW_SIZE to listOf(method)))
+        val once = method.sizeCode().map { "${it.opcode} ${it.sizeCall()}" }
+        assertTrue(method.chatPreviewSizeHooked())
+        assertEquals(1, once.count { it.endsWith("->tapLayer(Landroid/view/View;)V") })
+        method.validateChatPreviewSize()
+        method.injectChatPreviewSize()
+        assertEquals(once, method.sizeCode().map { "${it.opcode} ${it.sizeCall()}" })
+    }
+
     @Test fun anUnusableMethodRefusesTheSwitchBeforeAnyEdit() {
         val cases = mapOf(
             "no tap layer tag" to previewSizeChanged(PREVIEW_SIZE_TAG, "const-string v0, \"preview\""),

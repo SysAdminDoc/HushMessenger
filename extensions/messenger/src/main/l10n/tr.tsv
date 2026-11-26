@@ -194,6 +194,8 @@ hidden_chats_failed	Bu sohbet gizlenemedi
 hidden_chats_empty	Sohbet listenden gizlediğin sohbetler burada görünür.
 hidden_chats_unhide	Gizlemeyi kaldır
 hidden_chats_unnamed	Sohbet
+chat_preview_taps_open	Sohbeti aç
+chat_preview_taps_gone	Sohbet listenden aç
 special_contacts_track	Bu kişiyi takip et
 special_contacts_untrack	Takibi bırak
 special_contacts_tracked	Bu kişi artık takipte
@@ -822,6 +824,8 @@ chat_preview.title	Uzun basınca sohbet önizlemesi
 chat_preview.description	Bir sohbete basılı tutarak, sohbeti açmadan Messenger'ın kendi önizlemesinde ona göz at. Sohbetin menüsü de önizlemenin altında olur.
 chat_preview_size.title	Daha büyük sohbet önizlemesi
 chat_preview_size.description	Bir sohbete basılı tuttuğunda açılan önizlemede sohbete daha fazla yer verir ve orada geriye doğru kaydırmana izin verir. Altındaki menünün yüksekliği sabit kalır ve daha fazla öğe olduğunda kaydırılır.
+chat_preview_taps.title	Dokunuşlar sohbet önizlemesinde kalsın
+chat_preview_taps.description	Bir sohbete basılı tuttuğunda açılan önizlemede sohbete dokunmak artık onu açmaz. Dokunuşların sohbetin kendisine gider, böylece en yeni mesaja inen ok çalışır. Altındaki menünün en üstündeki Sohbeti aç ise sohbeti açar.
 mark_read_action.title	Okundu işaretleme seçeneğini gizle
 mark_read_action.description	Sohbet listende bir sohbete basılı tuttuğunda açılan menüdeki Okundu olarak işaretle seçeneğini gizler, böylece bir sohbeti yanlışlıkla okundu olarak işaretleyemezsin. Okunmadı olarak işaretle kalır.
 pinned_chats.title	Daha fazla sohbet sabitle

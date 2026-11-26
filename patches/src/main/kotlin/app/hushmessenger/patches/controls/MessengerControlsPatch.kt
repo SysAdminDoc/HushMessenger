@@ -705,6 +705,10 @@ val previewChatsPatch = controlPatch("chat_preview", "Preview chats on long pres
 val biggerChatPreviewPatch = controlPatch("chat_preview_size", "Bigger chat preview",
     "Gives the chat more room in the preview you get when you press and hold a chat, and lets you scroll back through it there. The menu under it keeps a set height and scrolls when it has more items.", "Chat menu")
 @Suppress("unused")
+val previewTapsPatch = controlPatch("chat_preview_taps", "Keep taps in the chat preview",
+    "A tap on the chat in the preview you get when you press and hold a chat no longer opens it. Your taps go to the chat itself, so its arrow down to the newest message works, and Open chat at the top of the menu under it opens the chat.",
+    "Chat menu", CHAT_PREVIEW_SIZE, HIDDEN_CHAT_LIST, HIDDEN_CHAT_ROW, HIDDEN_CHAT_TAP)
+@Suppress("unused")
 val pinMoreChatsPatch = controlPatch("pinned_chats", "Pin more chats", "Lets you pin chats past Messenger's limit and puts Pin back on chats that don't offer it. Pins past the limit stay on this phone, so they won't show on your other devices.", "Chat menu", PINNED_CHATS, PIN_ROWS, PIN_ASK, PIN_DROP, PIN_FULL, PIN_LIST)
 @Suppress("unused")
 val hideChosenChatsPatch = controlPatch("hidden_chats", "Hide chosen chats", "Adds Hide from chat list to the menu you get when you press and hold a chat. A hidden chat stays off your chat list when new messages come in, and search still finds it. Hiding stays on this phone, and you can unhide chats in HushMessenger settings. It doesn't stop notifications, so mute the chat in Messenger for that.", "Chat menu", HIDDEN_CHAT_LIST, HIDDEN_CHAT_ROW, HIDDEN_CHAT_TAP)

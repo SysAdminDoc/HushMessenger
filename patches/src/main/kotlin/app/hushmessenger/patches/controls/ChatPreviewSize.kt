@@ -128,7 +128,17 @@ internal fun findChatPreviewSize(classes: Iterable<ClassDef>): List<Method> =
 private fun chatPreviewSizeChanged(method: Method): Nothing =
     throw PatchException("Messenger controls: the chat preview's layout in ${method.hookId()} no longer matches the tested build")
 
+private const val TAP_LAYER_CALL = "$CHAT_PREVIEW_SIZE_HOST->tapLayer(Landroid/view/View;)V"
+
+/**
+ * Whether the view builder already calls the extension. Bigger chat preview and Keep taps in the chat preview share the
+ * hook, and the second patch to reach it leaves it as the first one wrote it.
+ */
+internal fun Method.chatPreviewSizeHooked(): Boolean =
+    implementation?.instructions?.any { it.previewMethod()?.toString() == TAP_LAYER_CALL } == true
+
 internal fun MutableMethod.validateChatPreviewSize() {
+    if (chatPreviewSizeHooked()) return
     chatPreviewSizeSite() ?: chatPreviewSizeChanged(this)
 }
 
@@ -137,8 +147,9 @@ internal fun MutableMethod.validateChatPreviewSize() {
  * shrink to just before the stack takes them. The later site goes in first so the earlier index still holds.
  */
 internal fun MutableMethod.injectChatPreviewSize() {
+    if (chatPreviewSizeHooked()) return
     val site = chatPreviewSizeSite() ?: chatPreviewSizeChanged(this)
-    addInstructions(site.tapLayer + 1, "invoke-static/range {v${site.layer} .. v${site.layer}}, $CHAT_PREVIEW_SIZE_HOST->tapLayer(Landroid/view/View;)V")
+    addInstructions(site.tapLayer + 1, "invoke-static/range {v${site.layer} .. v${site.layer}}, $TAP_LAYER_CALL")
     addInstructions(site.stack, """
         invoke-static {v${site.height}, v${site.most}}, $CHAT_PREVIEW_SIZE_HOST->height(II)I
         move-result v${site.height}

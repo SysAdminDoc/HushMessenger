@@ -91,7 +91,7 @@ public class ChatHidingTest {
         }
     }
 
-    public enum Icons { MUTE, EYE, EYE_CROSS, STAR, STAR_CROSS, CLOCK }
+    public enum Icons { MUTE, EYE, EYE_CROSS, STAR, STAR_CROSS, CLOCK, MESSAGE }
 
     /** Messenger's row builder: a factory, an id, an icon, a title and a description, then a static build. */
     public static final class Builder {
@@ -205,6 +205,7 @@ public class ChatHidingTest {
     /** Messenger's next process: nothing kept in memory, the hidden chats still in its preferences. */
     private static void restart() throws Exception {
         ChatHiding.resetForTests();
+        PreviewTaps.resetForTests();
         ChatHiding.route = ChatHiding.Route.of(ROUTE, ChatHidingTest.class.getClassLoader());
     }
 
@@ -321,6 +322,52 @@ public class ChatHidingTest {
         for (String wrong : Arrays.asList(BUILDER + "->title(Ljava/lang/CharSequence;)V", BUILDER + "->create()" + BUILDER, BUILDER + "->id:I")) {
             assertThrows(wrong, IllegalStateException.class, () -> ChatHiding.Route.of(ROUTE.replace(field, wrong), ChatHidingTest.class.getClassLoader()));
         }
+    }
+
+    // #247: with taps kept in the preview, Open chat tops the preview's menu and opens the chat through the layer
+    // Messenger gave that job, the same way a tap on the chat used to.
+    @Test public void openChatTopsThePreviewsMenuAndOpensTheChatThroughItsLayer() {
+        Settings.preferences.edit().putBoolean(ChatHiding.KEY, false).putBoolean(PreviewTaps.KEY, true).commit();
+        Summary chat = new Summary("chat");
+        assertEquals("No preview yet, and Preview chats on long press off", Arrays.asList(mute, null, null), menuRows(chat));
+
+        android.app.Activity screen = Robolectric.buildActivity(android.app.Activity.class).setup().get();
+        View layer = new View(screen);
+        int[] opened = {0};
+        layer.setOnClickListener(tap -> opened[0]++);
+        screen.setContentView(layer);
+        ChatPreviewSize.tapLayer(layer);
+        ArrayList<Object> rows = menuRows(chat);
+        assertEquals("One empty slot made room", 3, rows.size());
+        Built open = (Built) rows.get(0);
+        assertEquals(PreviewTaps.ROW_ID, open.builder.id);
+        assertEquals(text("chat_preview_taps_open"), open.builder.label.toString());
+        assertEquals(Icons.MESSAGE, open.builder.picture);
+        assertEquals("hush_open_chat", open.name);
+        assertSame(mute, rows.get(1));
+        assertNull(rows.get(2));
+        assertTrue(Settings.lastActive(PreviewTaps.KEY) > 0);
+
+        assertTrue(ChatHiding.menuTapped(new Menu(chat), PreviewTaps.ROW_ID));
+        assertEquals(1, opened[0]);
+        // The preview closed under the menu, so there's nothing left to open it through.
+        ((android.view.ViewGroup) layer.getParent()).removeView(layer);
+        assertTrue(ChatHiding.menuTapped(new Menu(chat), PreviewTaps.ROW_ID));
+        idle();
+        assertEquals(1, opened[0]);
+        assertEquals(text("chat_preview_taps_gone"), ShadowToast.getTextOfLatestToast());
+        assertTrue(Settings.hookErrors.isEmpty());
+
+        Settings.preferences.edit().putBoolean(PreviewTaps.KEY, false).commit();
+        assertEquals(Arrays.asList(mute, null, null), menuRows(chat));
+    }
+
+    @Test public void openChatShowsBeforeAnyPreviewWithPreviewChatsOnLongPressOn() {
+        Settings.preferences.edit().putBoolean(ChatHiding.KEY, false).putBoolean(PreviewTaps.KEY, true).putBoolean("chat_preview", true).commit();
+        ArrayList<Object> rows = menuRows(new Summary("chat"));
+        assertEquals(PreviewTaps.ROW_ID, ((Built) rows.get(0)).builder.id);
+        Settings.preferences.edit().putBoolean("paused", true).commit();
+        assertEquals(Arrays.asList(mute, null, null), menuRows(new Summary("chat")));
     }
 
     @Test public void aFullMenuGetsTheRowOnTheEndAndMessengersOwnTapsGoOn() {

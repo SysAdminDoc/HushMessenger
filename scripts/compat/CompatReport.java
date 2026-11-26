@@ -174,6 +174,7 @@ public class CompatReport {
         PATCHES.put("Write longer notes", List.of("longer_notes"));
         PATCHES.put("Preview chats on long press", List.of("chat_preview"));
         PATCHES.put("Bigger chat preview", List.of("chat_preview_size"));
+        PATCHES.put("Keep taps in the chat preview", List.of("chat_preview_size", "hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
         PATCHES.put("Hide Mark as read", List.of("mark_read_action"));
         PATCHES.put("Pin more chats", List.of("pinned_chats", "pin_rows", "pin_ask", "pin_drop", "pin_full", "pin_list"));
         PATCHES.put("Hide chosen chats", List.of("hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));

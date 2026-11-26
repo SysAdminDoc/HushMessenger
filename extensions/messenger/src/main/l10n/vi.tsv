@@ -194,6 +194,8 @@ hidden_chats_failed	Không ẩn được phòng chat này
 hidden_chats_empty	Những phòng chat bạn ẩn khỏi danh sách trò chuyện sẽ hiện ở đây.
 hidden_chats_unhide	Bỏ ẩn
 hidden_chats_unnamed	Phòng chat
+chat_preview_taps_open	Mở phòng chat
+chat_preview_taps_gone	Hãy mở từ danh sách chat
 special_contacts_track	Theo dõi người này
 special_contacts_untrack	Ngừng theo dõi
 special_contacts_tracked	Đang theo dõi người này
@@ -822,6 +824,8 @@ chat_preview.title	Xem trước phòng chat khi nhấn giữ
 chat_preview.description	Nhấn giữ một phòng chat để xem nhanh trong bản xem trước của chính Messenger, kèm menu của phòng chat ở bên dưới, mà không cần mở phòng chat.
 chat_preview_size.title	Bản xem trước phòng chat lớn hơn
 chat_preview_size.description	Cho phòng chat thêm chỗ trong bản xem trước hiện ra khi nhấn giữ phòng chat, và cho phép cuộn lại để xem tin nhắn cũ ngay trong đó. Menu bên dưới giữ chiều cao cố định và cuộn được khi có nhiều mục.
+chat_preview_taps.title	Chạm trong bản xem trước không mở phòng chat
+chat_preview_taps.description	Chạm vào phòng chat trong bản xem trước hiện ra khi nhấn giữ phòng chat sẽ không mở nó nữa. Thao tác chạm đi thẳng vào phòng chat, nên mũi tên xuống tin nhắn mới nhất hoạt động, và Mở phòng chat ở đầu menu bên dưới sẽ mở phòng chat.
 mark_read_action.title	Ẩn 'Đánh dấu là đã đọc'
 mark_read_action.description	Ẩn 'Đánh dấu là đã đọc' trong menu hiển thị khi nhấn giữ phòng chat trong danh sách trò chuyện, tránh việc vô tình đánh dấu phòng chat là đã đọc. 'Đánh dấu là chưa đọc' sẽ vẫn được giữ lại.
 pinned_chats.title	Ghim nhiều cuộc trò chuyện hơn

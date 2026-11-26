@@ -194,6 +194,8 @@ hidden_chats_failed	Impossibile nascondere questa chat
 hidden_chats_empty	Le chat che nascondi dall'elenco compaiono qui.
 hidden_chats_unhide	Mostra di nuovo
 hidden_chats_unnamed	Chat
+chat_preview_taps_open	Apri chat
+chat_preview_taps_gone	Aprila dal tuo elenco delle chat
 special_contacts_track	Segui questa persona
 special_contacts_untrack	Smetti di seguire
 special_contacts_tracked	Ora segui questa persona
@@ -822,6 +824,8 @@ chat_preview.title	Anteprima chat con pressione lunga
 chat_preview.description	Tieni premuta una chat per darle un'occhiata nell'anteprima di Messenger, con il menu della chat sotto, senza aprirla.
 chat_preview_size.title	Anteprima della chat più grande
 chat_preview_size.description	Dà più spazio alla chat nell'anteprima che compare quando tieni premuta una chat, e ti permette di scorrerla all'indietro lì. Il menu sotto mantiene un'altezza fissa e scorre quando ha più voci.
+chat_preview_taps.title	I tocchi restano nell'anteprima della chat
+chat_preview_taps.description	Toccare la chat nell'anteprima che compare quando tieni premuta una chat non la apre più. I tocchi arrivano alla chat stessa, quindi la sua freccia verso il messaggio più recente funziona, e Apri chat in cima al menu sotto apre la chat.
 mark_read_action.title	Nascondi Segna come letto
 mark_read_action.description	Nasconde Segna come letto nel menu che compare quando tieni premuta una chat nell'elenco, così non segni una chat come letta per sbaglio. Segna come non letto resta.
 pinned_chats.title	Fissa più chat

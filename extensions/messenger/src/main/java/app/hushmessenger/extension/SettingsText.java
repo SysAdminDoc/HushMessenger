@@ -299,6 +299,8 @@ final class SettingsText {
         ENGLISH.put("hidden_chats_empty", "Chats you hide from your chat list show up here.");
         ENGLISH.put("hidden_chats_unhide", "Unhide");
         ENGLISH.put("hidden_chats_unnamed", "Chat");
+        ENGLISH.put("chat_preview_taps_open", "Open chat");
+        ENGLISH.put("chat_preview_taps_gone", "Open it from your chat list");
         ENGLISH.put("special_contacts_track", "Track this person");
         ENGLISH.put("special_contacts_untrack", "Stop tracking");
         ENGLISH.put("special_contacts_tracked", "Tracking this person now");

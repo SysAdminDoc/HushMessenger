@@ -194,6 +194,8 @@ hidden_chats_failed	無法隱藏這個聊天室
 hidden_chats_empty	你從聊天清單隱藏的聊天室會顯示在這裡。
 hidden_chats_unhide	取消隱藏
 hidden_chats_unnamed	聊天室
+chat_preview_taps_open	開啟聊天室
+chat_preview_taps_gone	請從聊天室清單開啟
 special_contacts_track	追蹤這個人
 special_contacts_untrack	停止追蹤
 special_contacts_tracked	已開始追蹤這個人
@@ -822,6 +824,8 @@ chat_preview.title	長按預覽聊天室
 chat_preview.description	長按聊天室，就能在 Messenger 內建的預覽中快速看一眼，下方附上聊天室選單，不必開啟聊天室。
 chat_preview_size.title	放大聊天室預覽
 chat_preview_size.description	長按聊天室時，讓預覽中的聊天內容有更多空間，並可在預覽中往回捲動查看。下方的選單維持固定高度，項目較多時可以捲動。
+chat_preview_taps.title	點按聊天室預覽不會開啟聊天室
+chat_preview_taps.description	長按聊天室時出現的預覽中，點按聊天內容不再會開啟聊天室。點按會直接傳到聊天室本身，所以前往最新訊息的向下箭頭可以使用，下方選單最上面的「開啟聊天室」則會開啟聊天室。
 mark_read_action.title	隱藏「標示為已讀」
 mark_read_action.description	在長按聊天清單中的聊天室所顯示的選單中，隱藏「標示為已讀」，避免誤將聊天室標示為已讀。「標示為未讀」仍會保留。
 pinned_chats.title	置頂更多聊天室

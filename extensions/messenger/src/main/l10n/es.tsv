@@ -194,6 +194,8 @@ hidden_chats_failed	No se pudo ocultar este chat
 hidden_chats_empty	Los chats que ocultes de tu lista de chats aparecen aquí.
 hidden_chats_unhide	Dejar de ocultar
 hidden_chats_unnamed	Chat
+chat_preview_taps_open	Abrir chat
+chat_preview_taps_gone	Ábrelo desde tu lista de chats
 special_contacts_track	Rastrear a esta persona
 special_contacts_untrack	Dejar de rastrear
 special_contacts_tracked	Ahora rastreas a esta persona
@@ -822,6 +824,8 @@ chat_preview.title	Vista previa de chats al mantener presionado
 chat_preview.description	Mantén presionado un chat para echarle un vistazo en la vista previa de Messenger, con el menú del chat debajo, sin abrir el chat.
 chat_preview_size.title	Vista previa de chat más grande
 chat_preview_size.description	Da más espacio al chat en la vista previa que aparece al mantener presionado un chat, y te deja desplazarte hacia atrás en él ahí mismo. El menú de debajo tiene una altura fija y se desplaza cuando tiene más elementos.
+chat_preview_taps.title	Los toques se quedan en la vista previa
+chat_preview_taps.description	Tocar el chat en la vista previa que aparece al mantener presionado un chat ya no lo abre. Tus toques van al propio chat, así que su flecha hacia el mensaje más reciente funciona, y Abrir chat, arriba del todo en el menú de debajo, abre el chat.
 mark_read_action.title	Ocultar Marcar como leído
 mark_read_action.description	Oculta Marcar como leído en el menú que aparece al mantener presionado un chat en tu lista de chats, para que no marques un chat como leído sin querer. Marcar como no leído se queda.
 pinned_chats.title	Fijar más chats
