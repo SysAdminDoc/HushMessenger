@@ -428,7 +428,8 @@ final class Controls {
                 }
 
                 // link_player: the message handler's opener, then the launcher's two own void entries, one of them
-                // static on every tested build. Mirrors LinkPlayer.kt.
+                // static on every tested build, Instagram's link launcher, and the Bloks open-URL action whose one
+                // external launch block takes a card's TikTok link out of Messenger (#246). Mirrors LinkPlayer.kt.
                 if ("V".equals(method.getReturnType())) {
                     boolean chatOpen = paramTypes.size() == 7 && paramTypes.get(6).startsWith("L") &&
                         paramTypes.subList(0, 6).equals(List.of("Landroid/content/Context;", "Landroid/net/Uri;",
@@ -436,7 +437,12 @@ final class Controls {
                     boolean launch = MESSENGER_BROWSER_LAUNCHER.equals(cls.getType()) && paramTypes.size() == 5 &&
                         paramTypes.subList(0, 3).equals(List.of("Landroid/content/Context;", "Landroid/net/Uri;", BUBBLE_SESSION)) &&
                         paramTypes.get(3).startsWith("L") && paramTypes.get(4).startsWith("L");
-                    if (chatOpen || launch) found.get("link_player").add(method);
+                    boolean instagramLaunch = !isStatic && paramTypes.equals(List.of("Landroid/content/Context;", "Landroid/net/Uri;")) &&
+                        strings.contains("InstagramLinkLauncher") && strings.contains("com.instagram.android");
+                    boolean bloksOpen = !isStatic && paramTypes.size() == 3 && "Landroid/content/Context;".equals(paramTypes.get(0)) &&
+                        paramTypes.get(1).startsWith("L") && "Ljava/lang/Integer;".equals(paramTypes.get(2)) &&
+                        strings.contains(BLOKS_OPEN_URL_ACTION) && bloksLinkLaunchStart(method) >= 0;
+                    if (chatOpen || launch || instagramLaunch || bloksOpen) found.get("link_player").add(method);
                 }
 
                 // people_jewel, kept once discovery knows the preference getter. It takes the suggestions logger, then its owner.
@@ -805,5 +811,71 @@ final class Controls {
         found.get("mark_read_locally").addAll(markReadLocally(classes));
         found.get("unread_badge").addAll(unreadBadge(classes));
         return found;
+    }
+
+    /** The name the Bloks open-URL action checks its link under, as LinkPlayer.kt's BLOKS_OPEN_URL. */
+    static final String BLOKS_OPEN_URL_ACTION = "com.facebook.bloks.messenger.implementations.plugins.core.openurl.BloksOpenURLImplementation";
+
+    /** LinkPlayer.kt's bloksLaunchSite: the start of the action's one external launch block, or -1 for none or several. */
+    static int bloksLinkLaunchStart(Method method) {
+        var code = instructions(method);
+        var starts = new ArrayList<Integer>();
+        for (int start : new TreeSet<>(mediaTargets(method))) if (start >= 0 && bloksLinkLaunchFrom(code, start)) starts.add(start);
+        return starts.size() == 1 ? starts.get(0) : -1;
+    }
+
+    /** LinkPlayer.kt's intentFromLink: the link's register and the intent's for the intent built at [start], or null. */
+    static int[] bloksLinkIntent(List<Instruction> code, int start) {
+        if (start + 1 >= code.size()) return null;
+        var first = code.get(start);
+        if (first.getOpcode() == Opcode.NEW_INSTANCE) {
+            if (!(((ReferenceInstruction) first).getReference() instanceof TypeReference type) ||
+                !"Landroid/content/Intent;".equals(type.getType())) return null;
+            int intent = ((OneRegisterInstruction) first).getRegisterA();
+            if (!(code.get(start + 1) instanceof FiveRegisterInstruction built) || built.getOpcode() != Opcode.INVOKE_DIRECT ||
+                !"Landroid/content/Intent;-><init>(Ljava/lang/String;Landroid/net/Uri;)V".equals(String.valueOf(((ReferenceInstruction) built).getReference())) ||
+                built.getRegisterCount() != 3 || built.getRegisterC() != intent) return null;
+            return new int[] {built.getRegisterE(), intent};
+        }
+        if (first.getOpcode() != Opcode.INVOKE_STATIC || !(((ReferenceInstruction) first).getReference() instanceof MethodReference call) ||
+            !"Landroid/content/Intent;".equals(call.getReturnType()) ||
+            !call.getParameterTypes().stream().map(CharSequence::toString).toList().equals(List.of("Landroid/net/Uri;", "Ljava/lang/String;"))) return null;
+        if (code.get(start + 1).getOpcode() != Opcode.MOVE_RESULT_OBJECT) return null;
+        int intent = ((OneRegisterInstruction) code.get(start + 1)).getRegisterA();
+        var args = (FiveRegisterInstruction) first;
+        if (intent == args.getRegisterC() || intent == args.getRegisterD()) return null;
+        return new int[] {args.getRegisterC(), intent};
+    }
+
+    /** LinkPlayer.kt's bloksLaunchFrom: a VIEW intent from the link, two categories, then the launch, gotos followed. */
+    static boolean bloksLinkLaunchFrom(List<Instruction> code, int start) {
+        var intent = bloksLinkIntent(code, start);
+        if (intent == null) return false;
+        var written = new HashSet<Integer>();
+        int categories = 0, at = start;
+        for (int step = 0; step < 40; step++) {
+            if (at < 0 || at >= code.size()) return false;
+            var i = code.get(at);
+            var op = i.getOpcode();
+            MethodReference call = i instanceof ReferenceInstruction r && r.getReference() instanceof MethodReference m ? m : null;
+            if (op == Opcode.INVOKE_VIRTUAL && call != null && "Z".equals(call.getReturnType()) &&
+                call.getParameterTypes().stream().map(CharSequence::toString).toList().equals(List.of("Landroid/content/Context;", "Landroid/content/Intent;"))) {
+                int screen = ((FiveRegisterInstruction) i).getRegisterD();
+                return categories == 2 && !written.contains(screen) && screen <= 15 && intent[0] <= 15;
+            }
+            if (op == Opcode.GOTO || op == Opcode.GOTO_16 || op == Opcode.GOTO_32) {
+                at = mediaTarget(code, at);
+                continue;
+            }
+            if (op == Opcode.RETURN_VOID || op == Opcode.RETURN || op == Opcode.RETURN_WIDE || op == Opcode.RETURN_OBJECT || op == Opcode.THROW) return false;
+            if (i instanceof OffsetInstruction && op != Opcode.FILL_ARRAY_DATA) return false;
+            if (call != null && "Landroid/content/Intent;->addCategory(Ljava/lang/String;)Landroid/content/Intent;".equals(call.toString())) categories++;
+            if (op.setsRegister() && i instanceof OneRegisterInstruction one) {
+                written.add(one.getRegisterA());
+                if (op.setsWideRegister()) written.add(one.getRegisterA() + 1);
+            }
+            at++;
+        }
+        return false;
     }
 }

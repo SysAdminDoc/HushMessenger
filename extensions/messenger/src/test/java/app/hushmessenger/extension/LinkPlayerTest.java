@@ -130,10 +130,22 @@ public class LinkPlayerTest {
 
     // ---- the switch in front of it ----
 
+    /** The links a TikTok and an Instagram preview card hand over when tapped (#246). */
+    private static final String[] CARD_LINKS = {
+        "https://www.tiktok.com/@someone/video/7312345678901234567", "https://www.instagram.com/reel/Cx1y2z3A4b5/"};
+
     @Test public void theSwitchOffLeavesEveryLinkToMessenger() {
         on(false);
         assertFalse(Settings.playVideoLink(activity, Uri.parse("https://youtu.be/dQw4w9WgXcQ")));
+        for (String link : CARD_LINKS) assertFalse(link, Settings.playVideoLink(activity, Uri.parse(link)));
         assertNull(LinkPlayerSheet.showing);
+    }
+
+    @Test public void aTikTokOrInstagramCardsLinkIsTakenWithTheSwitchOn() {
+        for (String link : CARD_LINKS) {
+            LinkPlayerSheet sheet = open(link);
+            assertSame(link, sheet, LinkPlayerSheet.showing);
+        }
     }
 
     @Test public void pausedOrInSafeModeNoLinkIsTaken() {

@@ -223,6 +223,8 @@ internal val PROFILE_347617503 = ControlProfile(
         "landscape_media" to setOf("LX/7km;->A00(LX/7km;I)V"),
         "link_player" to setOf(
             "LX/9F4;->A0F(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/4uX;)V",
+            "LX/Ra7;->A00(Landroid/content/Context;Landroid/net/Uri;)V",
+            "LX/Rwk;->Ana(Landroid/content/Context;LX/9Ae;Ljava/lang/Integer;)V",
             "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0C(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;LX/5mG;)V",
             "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0J(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;LX/4uX;LX/5mG;)V",
         ),
@@ -602,6 +604,8 @@ internal val PROFILE_347617497 = ControlProfile(
         "landscape_media" to setOf("LX/7nm;->A00(LX/7nm;I)V"),
         "link_player" to setOf(
             "LX/9I3;->A0F(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/4xo;)V",
+            "LX/V5b;->A00(Landroid/content/Context;Landroid/net/Uri;)V",
+            "LX/VZ4;->Anj(Landroid/content/Context;LX/9Dd;Ljava/lang/Integer;)V",
             "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0C(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;LX/5pX;)V",
             "Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0J(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;LX/4xo;LX/5pX;)V",
         ),

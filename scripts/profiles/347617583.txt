@@ -192,6 +192,8 @@ hook keep_unsent LX/PHT;->A02(Landroid/content/Intent;Lcom/facebook/auth/userses
 hook landscape_lock LX/06f;->A0K()Z
 hook landscape_media LX/7nm;->A00(LX/7nm;I)V
 hook link_player LX/9I3;->A0F(Landroid/content/Context;Landroid/net/Uri;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/4xo;)V
+hook link_player LX/V5b;->A00(Landroid/content/Context;Landroid/net/Uri;)V
+hook link_player LX/VZ4;->Anj(Landroid/content/Context;LX/9Dd;Ljava/lang/Integer;)V
 hook link_player Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0C(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;LX/5pX;)V
 hook link_player Lcom/facebook/messaging/browser/util/MessengerBrowserLauncher;->A0J(Landroid/content/Context;Landroid/net/Uri;Lcom/facebook/auth/usersession/FbUserSession;LX/4xo;LX/5pX;)V
 hook local_chat_search LX/NYl;->FnC(Lcom/facebook/messaging/model/threads/ThreadSummary;Ljava/lang/String;)V
