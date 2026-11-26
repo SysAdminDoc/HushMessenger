@@ -33,6 +33,8 @@ quick_access	Accesso rapido
 access_help	Tieni premuta l'icona di Messenger nella schermata Home per Patch controls o Restart Messenger. Puoi aprire le impostazioni di HushMessenger anche dal cassetto delle app.
 hide_drawer_icon	Nascondi l'icona nel cassetto delle app
 hide_drawer_icon_help	Continui ad accedere dal Menu di Messenger o dalla scorciatoia della sua icona nella schermata Home.
+settings_in_recents	Impostazioni in Recenti
+settings_in_recents_help	Esci dalle impostazioni con Home o con il tasto Recenti e la loro scheda resta in Recenti, così torni dove eri. Se le chiudi con Indietro, non resta nessuna scheda. Con questa opzione disattivata, la scheda sparisce appena esci.
 hide_menu_row	Nascondi la riga nel Menu
 hide_menu_row_help	Toglie la riga di HushMessenger dalla scheda Menu e dal menu laterale di Messenger. Per tornare qui, tieni premuto il logo di Messenger in cima a Chat, oppure tieni premuta l'icona di Messenger nella schermata Home e tocca Patch controls. Se non resta nessuna delle due, la riga torna.
 menu_row_needs_shortcut	Apri prima queste impostazioni una volta dalla scorciatoia con pressione prolungata (tieni premuta l'icona di Messenger nella schermata Home, poi Patch controls), così hai un modo per tornare senza la riga.

@@ -132,6 +132,8 @@ final class SettingsText {
         ENGLISH.put("access_help", "Long-press Messenger's home screen icon for Patch controls or Restart Messenger. You can also open HushMessenger settings from your app drawer.");
         ENGLISH.put("hide_drawer_icon", "Hide app drawer icon");
         ENGLISH.put("hide_drawer_icon_help", "Keep access through Messenger's Menu or its home screen icon shortcut.");
+        ENGLISH.put("settings_in_recents", "Keep settings in Recents");
+        ENGLISH.put("settings_in_recents_help", "Leave settings with Home or the Recents button and their card stays in Recents, so you can come back where you were. Close them with Back and they leave no card. With this off, the card goes as soon as you leave.");
         ENGLISH.put("hide_menu_row", "Hide the Menu row");
         ENGLISH.put("hide_menu_row_help", "Takes the HushMessenger row out of Messenger's Menu tab and side menu. Long-press the Messenger logo at the top of Chats to get back here, or long-press Messenger's home screen icon and tap Patch controls. If neither one is left, the row comes back.");
         ENGLISH.put("menu_row_needs_shortcut", "Open these settings once from the long-press shortcut first (long-press Messenger's home screen icon, then Patch controls), so you have a way back without the row.");

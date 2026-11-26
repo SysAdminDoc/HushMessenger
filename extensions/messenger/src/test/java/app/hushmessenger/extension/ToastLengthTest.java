@@ -92,6 +92,11 @@ public class ToastLengthTest {
             check(cut, "choice_on " + control[0], words.get("choice_on", words.control(control, 1)));
             check(cut, "choice_off " + control[0], words.get("choice_off", words.control(control, 1)));
         }
+        // The App tab's own switches toast the same way.
+        for (String key : new String[] {SettingsActivity.IN_RECENTS}) {
+            check(cut, "choice_on " + key, words.get("choice_on", words.get(key)));
+            check(cut, "choice_off " + key, words.get("choice_off", words.get(key)));
+        }
     }
 
     @Test public void theWrapCutsTheToastThePhoneCut() {

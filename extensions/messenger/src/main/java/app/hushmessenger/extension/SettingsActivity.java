@@ -1,6 +1,7 @@
 package app.hushmessenger.extension;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
@@ -470,6 +471,8 @@ public final class SettingsActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
+        // Back on screen, so Back can close settings for good without leaving a card (#54).
+        inRecents(this, false);
         refreshChoices();
         if (hiddenChats != null) fillHiddenChats();
         if (quietCallers != null) fillQuietCallers();
@@ -520,6 +523,34 @@ public final class SettingsActivity extends Activity {
         updates.cancelUpdateCheck();
         if (licenses != null) licenses.dialog.dismiss();
         super.onDestroy();
+    }
+
+    /**
+     * #207: settings left open with Home or the Recents button keep their card in Recents, to come back where they were.
+     * The manifest keeps their task out of Recents (#54), which with this off still takes the card away on leaving.
+     */
+    static final String IN_RECENTS = "settings_in_recents";
+
+    @Override protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        if (Settings.preferences.getBoolean(IN_RECENTS, false)) inRecents(this, true);
+    }
+
+    /** Lets this screen's task into Recents, or keeps it out again. Nothing changes when the task can't be found. */
+    static void inRecents(Activity activity, boolean shown) {
+        try {
+            ActivityManager activities = activity.getSystemService(ActivityManager.class);
+            if (activities == null) return;
+            for (ActivityManager.AppTask task : activities.getAppTasks()) {
+                ActivityManager.RecentTaskInfo info = task.getTaskInfo();
+                @SuppressWarnings("deprecation") int id = Build.VERSION.SDK_INT >= 29 ? info.taskId : info.persistentId;
+                if (id != activity.getTaskId()) continue;
+                task.setExcludeFromRecents(!shown);
+                return;
+            }
+        } catch (RuntimeException gone) {
+            android.util.Log.w("HushMessenger", "Can't change the settings card in Recents", gone);
+        }
     }
 
     /** Kept in the settings file like the other choices, but not a control: backups and Quick setups never carry it. */
@@ -1632,7 +1663,7 @@ public final class SettingsActivity extends Activity {
 
     /** A row's icon: one its key's words call for, else its section's. Fixed per key, since some rows are rebuilt later. */
     private static String rowIcon(String key) {
-        if (WAYS_IN.contains(key) || "hide_drawer_icon".equals(key) || MenuRows.LOG_OUT.equals(key))
+        if (WAYS_IN.contains(key) || "hide_drawer_icon".equals(key) || MenuRows.LOG_OUT.equals(key) || IN_RECENTS.equals(key))
             return SettingsIcons.forKey(key, sectionIcon("quick_access"));
         if ("light".equals(key) || SettingsTheme.FOLLOW_PHONE.equals(key) || "material_you_black".equals(key)
                 || MaterialYouTheme.LIGHT_KEY.equals(key) || MaterialYouTheme.LIGHT_GRAYS_KEY.equals(key))
@@ -1750,6 +1781,11 @@ public final class SettingsActivity extends Activity {
         if (Settings.logoOpensSettings()) {
             ui.rule(access, 12);
             ui.add(access, wayControl(Settings.HIDE_LOGO_PRESS), 10);
+        }
+        // A Root Mount install shows settings inside a stock screen, which never hears that it was left.
+        if (!hosted) {
+            ui.rule(access, 12);
+            ui.add(access, controlRow(IN_RECENTS, text.format(IN_RECENTS), text.format(IN_RECENTS + "_help"), false), 10);
         }
         if (drawerAlias && !hosted) {
             // Amber, since uninstalling from there wipes Messenger's data along with the icon.
@@ -2379,7 +2415,8 @@ public final class SettingsActivity extends Activity {
         List<String> terms = SettingsSearch.terms(query);
         clearQuery.setVisibility(query.isEmpty() ? View.GONE : View.VISIBLE);
         String drawerWords = "hide app drawer icon launcher settings menu row shortcuts " + text.get("hide_drawer_icon") + " "
-            + text.get("hide_menu_row") + " " + text.get("hide_icon_shortcuts") + " " + text.get("hide_logo_press");
+            + text.get("hide_menu_row") + " " + text.get("hide_icon_shortcuts") + " " + text.get("hide_logo_press")
+            + " recents " + text.get(IN_RECENTS);
         // One letter matches almost anything, so the link waits for a second one.
         drawerSearchLink.setVisibility(controlRows.isEmpty() || (query.trim().length() >= 2 && SettingsSearch.matches(terms, drawerWords)) ? View.VISIBLE : View.GONE);
         int visible = 0;

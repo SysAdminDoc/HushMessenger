@@ -33,6 +33,8 @@ quick_access	Truy cập nhanh
 access_help	Nhấn giữ biểu tượng Messenger trên màn hình chính để chọn 'Điều khiển bản vá (Patch controls)' hoặc 'Khởi động lại Messenger (Restart Messenger)'. Bạn cũng có thể mở Cài đặt HushMessenger từ ngăn kéo ứng dụng.
 hide_drawer_icon	Ẩn biểu tượng trong ngăn kéo ứng dụng
 hide_drawer_icon_help	Vẫn có thể mở cài đặt thông qua menu của Messenger hoặc phím tắt trên màn hình chính.
+settings_in_recents	Giữ cài đặt trong Gần đây
+settings_in_recents_help	Rời cài đặt bằng nút Màn hình chính hoặc nút Gần đây thì thẻ của nó vẫn nằm trong Gần đây, để bạn quay lại đúng chỗ cũ. Đóng bằng nút Quay lại thì không còn thẻ nào. Khi tắt mục này, thẻ biến mất ngay khi bạn rời đi.
 hide_menu_row	Ẩn mục cài đặt trong menu
 hide_menu_row_help	Xóa mục HushMessenger khỏi tab 'Menu' và menu bên của Messenger. Nhấn giữ logo Messenger ở đầu 'Đoạn chat', hoặc nhấn giữ biểu tượng Messenger trên màn hình chính và chọn 'Điều khiển bản vá (Patch controls)' để quay lại đây. Nếu cả hai lối vào này đều không khả dụng, mục trong menu sẽ được hiển thị lại.
 menu_row_needs_shortcut	Vui lòng mở cài đặt ít nhất một lần thông qua phím tắt nhấn giữ (nhấn giữ biểu tượng Messenger trên màn hình chính, sau đó chọn 'Điều khiển bản vá (Patch controls)'), để đảm bảo bạn vẫn có thể quay lại đây sau khi ẩn mục menu.

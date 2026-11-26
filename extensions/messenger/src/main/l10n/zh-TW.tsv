@@ -33,6 +33,8 @@ quick_access	快速存取
 access_help	長按主畫面上的 Messenger 圖示，即可選擇「Patch controls（修補功能控制）」或「Restart Messenger（重新啟動 Messenger）」。你也可以從應用程式抽屜開啟 HushMessenger 設定。
 hide_drawer_icon	隱藏應用程式抽屜圖示
 hide_drawer_icon_help	仍可透過 Messenger 的選單或主畫面圖示捷徑開啟設定。
+settings_in_recents	設定留在最近使用
+settings_in_recents_help	用主畫面鍵或最近使用的應用程式鍵離開設定，它的卡片會留在最近使用的應用程式裡，讓你回到原本的位置。用返回鍵關閉就不會留下卡片。關閉這個選項時，你一離開，卡片就會消失。
 hide_menu_row	隱藏選單中的設定項目
 hide_menu_row_help	從 Messenger 的「選單」分頁與側邊選單移除 HushMessenger 項目。長按「聊天室」頂端的 Messenger 標誌，或長按主畫面上的 Messenger 圖示並點選「Patch controls（修補功能控制）」，即可返回這裡。若這兩種入口都無法使用，選單中的項目就會恢復顯示。
 menu_row_needs_shortcut	請先透過長按捷徑開啟一次設定（長按主畫面上的 Messenger 圖示，再點選「Patch controls（修補功能控制）」），確保隱藏選單項目後仍能返回這裡。

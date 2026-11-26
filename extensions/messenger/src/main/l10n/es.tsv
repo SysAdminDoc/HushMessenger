@@ -33,6 +33,8 @@ quick_access	Acceso rápido
 access_help	Mantén presionado el icono de Messenger en la pantalla de inicio para usar Patch controls o Restart Messenger. También puedes abrir los ajustes de HushMessenger desde el cajón de aplicaciones.
 hide_drawer_icon	Ocultar el icono del cajón de aplicaciones
 hide_drawer_icon_help	Mantén el acceso a través del Menú de Messenger o del acceso directo de su icono en la pantalla de inicio.
+settings_in_recents	Ajustes en Recientes
+settings_in_recents_help	Sal de los ajustes con Inicio o con el botón Recientes y su tarjeta se queda en Recientes, para que vuelvas donde estabas. Si los cierras con Atrás, no queda ninguna tarjeta. Con esto desactivado, la tarjeta desaparece en cuanto sales.
 hide_menu_row	Ocultar la fila del Menú
 hide_menu_row_help	Quita la fila de HushMessenger de la pestaña Menú y del menú lateral de Messenger. Mantén presionado el logo de Messenger en la parte superior de Chats para volver aquí, o mantén presionado el icono de Messenger en la pantalla de inicio y toca Patch controls. Si no queda ninguna de las dos formas, la fila vuelve.
 menu_row_needs_shortcut	Primero abre estos ajustes una vez desde el acceso directo (mantén presionado el icono de Messenger en la pantalla de inicio y luego toca Patch controls), para tener una forma de volver sin la fila.

@@ -33,6 +33,8 @@ quick_access	Hızlı erişim
 access_help	'Patch controls' veya 'Restart Messenger' kısayolları için Messenger'ın ana ekran simgesine uzun bas. HushMessenger ayarlarını uygulama çekmecenden de açabilirsin.
 hide_drawer_icon	Uygulama çekmecesi simgesini gizle
 hide_drawer_icon_help	Ayarlara yine Messenger'ın Menü'sünden veya ana ekran simgesindeki kısayoldan ulaşabilirsin.
+settings_in_recents	Ayarlar son uygulamalarda
+settings_in_recents_help	Ayarlardan Ana ekran veya Son uygulamalar düğmesiyle çıkarsan kartı Son uygulamalar'da kalır, böylece kaldığın yere dönebilirsin. Geri ile kapatırsan kart kalmaz. Bu kapalıyken kart, çıktığın anda kaybolur.
 hide_menu_row	Menü satırını gizle
 hide_menu_row_help	HushMessenger satırını Messenger'ın Menü sekmesinden ve yan menüsünden kaldırır. Buraya dönmek için Sohbetler'in üstündeki Messenger logosuna uzun bas ya da Messenger'ın ana ekran simgesine uzun basıp 'Patch controls' kısayoluna dokun. İkisi de kalmazsa satır geri gelir.
 menu_row_needs_shortcut	Önce bu ayarları bir kez uzun basma kısayolundan aç (Messenger'ın ana ekran simgesine uzun bas, sonra 'Patch controls' kısayoluna dokun). Böylece satır olmadan da geri dönebilirsin.
