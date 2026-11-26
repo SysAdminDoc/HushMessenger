@@ -198,6 +198,8 @@ hidden_chats_unhide	Показать
 hidden_chats_unnamed	Чат
 chat_preview_taps_open	Открыть чат
 chat_preview_taps_gone	Откройте его из списка чатов
+# context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
+confirm_strangers_held	Вы ещё не друзья. Нажмите «Отправить» ещё раз.
 special_contacts_track	Отслеживать этого человека
 special_contacts_untrack	Не отслеживать
 special_contacts_tracked	Теперь вы отслеживаете этого человека
@@ -842,6 +844,9 @@ search_reels.title	Скрыть недавние Reels в поиске
 search_reels.description	Скрывает Reels, которые вы недавно смотрели, из поиска, пока вы ничего не ввели.
 search_strangers.title	Скрывать незнакомых в поиске
 search_strangers.description	Скрывает людей, которые не у вас в друзьях, когда вы вводите запрос в поиске, чтобы вы случайно не написали незнакомцу. Ваши друзья и группы по-прежнему показываются.
+# context: confirm_strangers, the Inbox switch that holds the first Send in a chat with someone who isn't a friend
+confirm_strangers.title	Спрашивать, прежде чем писать незнакомым
+confirm_strangers.description	Задерживает первую отправку в чате с человеком, который не у вас в друзьях, и просит нажать «Отправить» ещё раз. Второе нажатие в течение 5 секунд отправляет сообщение как запрос на переписку. В группах, на страницах и в чатах, где вам уже писали, сообщения уходят сразу.
 longer_notes.title	Писать более длинные заметки
 longer_notes.description	Позволяет вводить в заметку до 600 символов вместо 60. Пропустит ли длинную заметку, решает Facebook.
 chat_preview.title	Предпросмотр чата по долгому нажатию

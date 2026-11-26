@@ -299,6 +299,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         REFRESH_RATE -> validateRefreshRate()
         STORY_ROW_SIZE -> validateStoryRowSize()
         MARK_READ_LOCALLY -> validateMarkReadLocally()
+        CONFIRM_STRANGERS -> validateConfirmStrangers()
         else -> validateSwitch()
     }
 }
@@ -461,6 +462,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             "growth_notes" -> method.injectNotesTips()
             MARK_READ_LOCALLY -> method.injectMarkReadLocally()
             UNREAD_BADGE -> method.injectUnreadBadge()
+            CONFIRM_STRANGERS -> method.injectConfirmStrangers()
             else -> if (hook in pluginGates) method.injectPluginGate(key) else method.injectFeatureSwitch(key)
         }
     }
@@ -698,7 +700,7 @@ val hideStoriesPatch = controlPatch("stories", "Hide stories and notes", "Hides 
     "stories", STORY_RING)
 @Suppress("unused")
 val hideInstantsButtonPatch = controlPatch("instants_button", "Hide the Instants button",
-    "Hides the + button that slides in at the right edge of your chat list and the one under your chat heads. Both open Instants.", "Inbox")
+    "Hides the + button that slides in at the right edge of your chat list and the one under your chat heads. Both open Instants.", "Tab bar")
 @Suppress("unused")
 val hideSubtabsPatch = controlPatch("subtabs", "Hide inbox tabs", "Hides the All, Unread and Groups tabs above your chats.", "Inbox")
 @Suppress("unused")
@@ -998,6 +1000,9 @@ val hideSearchReelsPatch = controlPatch("search_reels", "Hide recent reels in se
 @Suppress("unused")
 val hideSearchStrangersPatch = controlPatch("search_strangers", "Hide people you don't know in search",
     "Hides the people you aren't friends with when you type in search, so you don't message a stranger by mistake. Your friends and groups still come up.", "Inbox", SEARCH_SECTIONS, SEARCH_ITEMS)
+@Suppress("unused")
+val confirmStrangersPatch = controlPatch("confirm_strangers", "Ask before messaging people you don't know",
+    "Holds the first Send in a chat with someone you aren't friends with and asks you to tap Send again. A second tap within 5 seconds sends it as a message request. Groups, pages and chats where they've written to you send right away.", "Inbox", CONFIRM_STRANGERS)
 @Suppress("unused")
 val blockAiChatsPatch = controlPatch("ai_chat_block", "Block Meta AI chats",
     "Stops chats with Meta AI and other AI bots from opening, from search, a link or your chat list. A group with an AI in it still opens.", "Navigation", AI_CHAT_OPEN)

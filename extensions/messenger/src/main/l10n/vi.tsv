@@ -198,6 +198,8 @@ hidden_chats_unhide	Bỏ ẩn
 hidden_chats_unnamed	Phòng chat
 chat_preview_taps_open	Mở phòng chat
 chat_preview_taps_gone	Hãy mở từ danh sách chat
+# context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
+confirm_strangers_held	Hai bạn chưa là bạn bè. Hãy chạm Gửi lần nữa.
 special_contacts_track	Theo dõi người này
 special_contacts_untrack	Ngừng theo dõi
 special_contacts_tracked	Đang theo dõi người này
@@ -842,6 +844,9 @@ search_reels.title	Ẩn reels gần đây trong tìm kiếm
 search_reels.description	Ẩn các reels bạn vừa xem khỏi phần tìm kiếm trước khi bạn gõ.
 search_strangers.title	Ẩn người lạ trong tìm kiếm
 search_strangers.description	Ẩn những người không phải bạn bè của bạn khi bạn gõ vào ô tìm kiếm, để bạn không lỡ nhắn tin cho người lạ. Bạn bè và các nhóm của bạn vẫn hiện ra.
+# context: confirm_strangers, the Inbox switch that holds the first Send in a chat with someone who isn't a friend
+confirm_strangers.title	Hỏi trước khi nhắn tin cho người lạ
+confirm_strangers.description	Giữ lại lần Gửi đầu tiên trong đoạn chat với người không phải bạn bè của bạn và nhắc bạn chạm Gửi lần nữa. Chạm lần thứ hai trong vòng 5 giây sẽ gửi tin nhắn dưới dạng yêu cầu nhắn tin. Nhóm, trang và các đoạn chat mà họ đã nhắn cho bạn sẽ gửi ngay.
 longer_notes.title	Viết ghi chú dài hơn
 longer_notes.description	Cho phép nhập tối đa 600 ký tự trong ghi chú thay vì 60. Facebook quyết định ghi chú dài có đăng được hay không.
 chat_preview.title	Xem trước phòng chat khi nhấn giữ

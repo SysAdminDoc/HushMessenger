@@ -243,6 +243,7 @@ internal val syntheticHooks: Map<String, Set<String>> = mapOf(
     CHAT_BAR_PLUS to setOf(SYNTHETIC_CHAT_JUMP),
     MARK_READ_LOCALLY to setOf(SYNTHETIC_MARK_READ_LOCALLY),
     UNREAD_BADGE to setOf(SYNTHETIC_UNREAD_BADGE),
+    CONFIRM_STRANGERS to setOf(SYNTHETIC_CONFIRM_STRANGERS),
 )
 
 /**

@@ -14,6 +14,16 @@ public final class Message {
     public List<Object> A1D = new ArrayList<>();
     public List<Object> A1L = new ArrayList<>();
     public String A1m = "offline-id";
+    /** Who it was sent for, which most messages leave empty, and who sent it, as 588 names them. */
+    public ParticipantInfo A0T;
+    public ParticipantInfo A0U;
+
+    /** A message from the person with [id]. */
+    public static Message from(String id) {
+        Message message = new Message();
+        message.A0U = new ParticipantInfo(id, "Sender");
+        return message;
+    }
 
     public static Message with(Object... attachments) {
         Message message = new Message();

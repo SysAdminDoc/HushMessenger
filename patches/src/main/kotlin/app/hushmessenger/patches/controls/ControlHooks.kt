@@ -335,6 +335,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(STORY_ROW_SIZE).addAll(findStoryRowSize(classes))
     found.getValue(MARK_READ_LOCALLY).addAll(findMarkReadLocally(classes))
     found.getValue(UNREAD_BADGE).addAll(findUnreadBadge(classes))
+    found.getValue(CONFIRM_STRANGERS).addAll(findConfirmStrangers(classes))
     return found
 }
 

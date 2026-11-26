@@ -38,7 +38,7 @@ public class ToastLengthTest {
         "home_header_not_picture", "home_header_unreadable", "home_header_not_saved", "home_header_busy", "home_header_timeout",
         "home_header_font_saved", "home_header_font_removed", "home_header_font_remove_failed",
         "special_contacts_tracked", "special_contacts_untracked", "special_contacts_full", "special_contacts_failed", "special_contacts_cleared",
-        "chat_preview_taps_gone",
+        "chat_preview_taps_gone", StrangerSend.HELD,
         "invisible_buttons_invisible", "invisible_buttons_visible", "invisible_buttons_pick_now", "invisible_buttons_pick_none",
         "theme_accent_saved", "theme_accent_saved_on", "theme_pasted", "theme_pasted_on",
         "own_chat_sounds_saved", "own_chat_sounds_removed", "own_chat_sounds_remove_failed", "own_chat_sounds_not_sound",

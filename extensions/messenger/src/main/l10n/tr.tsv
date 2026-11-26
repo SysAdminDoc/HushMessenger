@@ -198,6 +198,8 @@ hidden_chats_unhide	Gizlemeyi kaldır
 hidden_chats_unnamed	Sohbet
 chat_preview_taps_open	Sohbeti aç
 chat_preview_taps_gone	Sohbet listenden aç
+# context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
+confirm_strangers_held	Henüz arkadaşın değil. Gönder'e tekrar dokun.
 special_contacts_track	Bu kişiyi takip et
 special_contacts_untrack	Takibi bırak
 special_contacts_tracked	Bu kişi artık takipte
@@ -842,6 +844,9 @@ search_reels.title	Aramada son reels'leri gizle
 search_reels.description	Bir şey yazmadan önce son izlediğin reels'leri aramadan gizler.
 search_strangers.title	Aramada tanımadığın kişileri gizle
 search_strangers.description	Aramaya bir şey yazarken arkadaşın olmayan kişileri gizler, böylece yanlışlıkla bir yabancıya mesaj atmazsın. Arkadaşların ve grupların yine görünür.
+# context: confirm_strangers, the Inbox switch that holds the first Send in a chat with someone who isn't a friend
+confirm_strangers.title	Tanımadığın kişilere yazmadan önce sor
+confirm_strangers.description	Arkadaşın olmayan biriyle sohbette ilk gönderimi bekletir ve Gönder'e tekrar dokunmanı ister. 5 saniye içinde ikinci dokunuş onu mesaj isteği olarak gönderir. Gruplar, sayfalar ve sana yazmış kişilerle olan sohbetler hemen gönderilir.
 longer_notes.title	Daha uzun notlar yaz
 longer_notes.description	Notlara 60 yerine en fazla 600 karakter yazmanı sağlar. Uzun bir notun yayınlanıp yayınlanmayacağına Facebook karar verir.
 chat_preview.title	Uzun basınca sohbet önizlemesi

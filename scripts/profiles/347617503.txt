@@ -99,6 +99,7 @@ hook chat_preview_size Lcom/facebook/messaging/threadlist/threaditemmenu/preview
 hook chat_promotions LX/HuP;->A0C()Z
 hook chat_promotions LX/HuP;->A0D()Z
 hook community_inbox LX/2CS;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
+hook confirm_strangers LX/7pp;->A0K(LX/7pp;)V
 hook delivery_receipt LX/PJl;->A03(Lcom/facebook/auth/usersession/FbUserSession;LX/PkT;Lcom/google/common/base/Optional;Ljava/lang/String;)V
 hook delta_unsent LX/5n0;->E6p(I)Z
 hook delta_unsent LX/cvc;->E6p(I)Z

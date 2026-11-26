@@ -288,6 +288,7 @@ public class CompatReport {
         PATCHES.put("Fix videos in chat heads", List.of("chat_head_video", "groot_texture_view"));
         PATCHES.put("Chat bar buttons in the + menu", List.of("chat_bar_plus"));
         PATCHES.put("Mark as read stays on this phone", List.of("mark_read_locally", "local_read", "unread_badge"));
+        PATCHES.put("Ask before messaging people you don't know", List.of("confirm_strangers"));
     }
 
     static final Set<String> ORIGINAL_PHOTO_HOOKS = Set.of(

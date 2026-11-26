@@ -198,6 +198,8 @@ hidden_chats_unhide	ยกเลิกการซ่อน
 hidden_chats_unnamed	แชท
 chat_preview_taps_open	เปิดแชท
 chat_preview_taps_gone	เปิดจากรายการแชทของคุณ
+# context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
+confirm_strangers_held	ยังไม่ได้เป็นเพื่อนกัน แตะส่งอีกครั้งเพื่อส่ง
 special_contacts_track	ติดตามคนนี้
 special_contacts_untrack	หยุดติดตาม
 special_contacts_tracked	กำลังติดตามคนนี้แล้ว
@@ -842,6 +844,9 @@ search_reels.title	ซ่อนรีลล่าสุดในการค้�
 search_reels.description	ซ่อนรีลที่คุณเพิ่งดูออกจากการค้นหาก่อนที่คุณจะพิมพ์
 search_strangers.title	ซ่อนคนที่คุณไม่รู้จักในการค้นหา
 search_strangers.description	ซ่อนคนที่ไม่ได้เป็นเพื่อนกับคุณเมื่อคุณพิมพ์ในช่องค้นหา เพื่อไม่ให้คุณส่งข้อความหาคนแปลกหน้าโดยไม่ตั้งใจ เพื่อนและกลุ่มของคุณยังคงแสดงอยู่
+# context: confirm_strangers, the Inbox switch that holds the first Send in a chat with someone who isn't a friend
+confirm_strangers.title	ถามก่อนส่งข้อความหาคนที่คุณไม่รู้จัก
+confirm_strangers.description	พักการกดส่งครั้งแรกในแชทกับคนที่ไม่ได้เป็นเพื่อนกับคุณ แล้วขอให้คุณแตะส่งอีกครั้ง การแตะครั้งที่สองภายใน 5 วินาทีจะส่งเป็นคำขอส่งข้อความ กลุ่ม เพจ และแชทที่อีกฝ่ายเคยส่งข้อความถึงคุณจะส่งทันที
 longer_notes.title	เขียนโน้ตให้ยาวขึ้น
 longer_notes.description	ให้พิมพ์โน้ตได้สูงสุด 600 ตัวอักษรแทน 60 ตัวอักษร Facebook เป็นผู้ตัดสินว่าโน้ตยาวจะโพสต์ได้หรือไม่
 chat_preview.title	กดค้างเพื่อดูตัวอย่างแชท

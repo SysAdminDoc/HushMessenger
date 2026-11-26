@@ -2414,4 +2414,68 @@ final class Media {
         found.put("font_input", inputs);
         return found;
     }
+
+    static final String STRANGER_THREAD_KEY = "Lcom/facebook/messaging/model/threadkey/ThreadKey;";
+    static final String STRANGER_USER = "Lcom/facebook/user/model/User;";
+    static final String STRANGER_MESSAGES = "Lcom/facebook/messaging/model/messages/MessagesCollection;";
+
+    /**
+     * The compose fragment's send and the type of the field its thread key comes from, or null. Mirrors
+     * ConfirmStrangers.kt's confirmStrangersSite: static, void, handed its own class, the trace mark first with nothing
+     * branching onto it in a register of four bits that isn't the fragment's, and one field read off the fragment that
+     * the thread key is read from within the next two.
+     */
+    static String strangerParams(Method method) {
+        if (!AccessFlags.STATIC.isSet(method.getAccessFlags()) || !"V".equals(method.getReturnType())) return null;
+        var types = method.getParameterTypes();
+        if (types.size() != 1 || !types.get(0).toString().equals(method.getDefiningClass()) || method.getImplementation() == null) return null;
+        var code = instructions(method);
+        if (code.isEmpty() || code.get(0).getOpcode() != Opcode.CONST_STRING) return null;
+        if (!(((ReferenceInstruction) code.get(0)).getReference() instanceof StringReference mark) || !SEND_CLICKED.equals(mark.getString())) return null;
+        int fragment = method.getImplementation().getRegisterCount() - 1;
+        int scratch = ((OneRegisterInstruction) code.get(0)).getRegisterA();
+        if (scratch > 15 || scratch == fragment || mediaTargets(method).contains(0)) return null;
+        var params = new HashSet<String>();
+        String type = null;
+        for (int at = 0; at < code.size(); at++) {
+            var read = code.get(at);
+            if (read.getOpcode() != Opcode.IGET_OBJECT || !(((ReferenceInstruction) read).getReference() instanceof FieldReference field)) continue;
+            if (!field.getDefiningClass().equals(method.getDefiningClass()) || !field.getType().startsWith("L")) continue;
+            if (((TwoRegisterInstruction) read).getRegisterB() != fragment) continue;
+            int holder = ((TwoRegisterInstruction) read).getRegisterA();
+            for (int next = at + 1; next <= Math.min(at + 2, code.size() - 1); next++) {
+                var keyRead = code.get(next);
+                if (keyRead.getOpcode() != Opcode.IGET_OBJECT || !(((ReferenceInstruction) keyRead).getReference() instanceof FieldReference key)) continue;
+                if (!STRANGER_THREAD_KEY.equals(key.getType()) || !key.getDefiningClass().equals(field.getType()) || ((TwoRegisterInstruction) keyRead).getRegisterB() != holder) continue;
+                params.add(field.getDefiningClass() + "->" + field.getName() + ":" + field.getType());
+                type = field.getType();
+                break;
+            }
+        }
+        return params.size() == 1 ? type : null;
+    }
+
+    /** confirm_strangers: the methods the control hooks. Mirrors findConfirmStrangers in ConfirmStrangers.kt. */
+    static List<Method> confirmStrangers(List<ClassDef> classes) {
+        var sends = new LinkedHashMap<Method, String>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            String params = strangerParams(method);
+            if (params != null) sends.put(method, params);
+        }
+        var known = new HashSet<String>();
+        if (!sends.isEmpty()) for (var cls : classes) {
+            if (!sends.containsValue(cls.getType())) continue;
+            int keys = 0, users = 0, messages = 0;
+            for (Field field : cls.getFields()) {
+                if (AccessFlags.STATIC.isSet(field.getAccessFlags())) continue;
+                if (STRANGER_THREAD_KEY.equals(field.getType())) keys++;
+                if (STRANGER_USER.equals(field.getType())) users++;
+                if (STRANGER_MESSAGES.equals(field.getType())) messages++;
+            }
+            if (keys == 1 && users == 1 && messages == 1) known.add(cls.getType());
+        }
+        var found = new ArrayList<Method>();
+        for (var send : sends.entrySet()) if (known.contains(send.getValue())) found.add(send.getKey());
+        return found;
+    }
 }

@@ -198,6 +198,8 @@ hidden_chats_unhide	Mostra di nuovo
 hidden_chats_unnamed	Chat
 chat_preview_taps_open	Apri chat
 chat_preview_taps_gone	Aprila dal tuo elenco delle chat
+# context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
+confirm_strangers_held	Non siete ancora amici. Tocca di nuovo Invia.
 special_contacts_track	Segui questa persona
 special_contacts_untrack	Smetti di seguire
 special_contacts_tracked	Ora segui questa persona
@@ -842,6 +844,9 @@ search_reels.title	Nascondi i reel recenti nella ricerca
 search_reels.description	Nasconde dalla ricerca i reel che hai guardato di recente, prima che tu scriva qualcosa.
 search_strangers.title	Nascondi gli sconosciuti nella ricerca
 search_strangers.description	Nasconde le persone che non sono tue amiche quando scrivi nella ricerca, così non scrivi per sbaglio a uno sconosciuto. I tuoi amici e i tuoi gruppi continuano ad apparire.
+# context: confirm_strangers, the Inbox switch that holds the first Send in a chat with someone who isn't a friend
+confirm_strangers.title	Chiedi prima di scrivere a sconosciuti
+confirm_strangers.description	Trattiene il primo invio in una chat con qualcuno che non è tuo amico e ti chiede di toccare di nuovo Invia. Un secondo tocco entro 5 secondi lo invia come richiesta di messaggio. Gruppi, pagine e chat in cui ti hanno scritto inviano subito.
 longer_notes.title	Scrivi note più lunghe
 longer_notes.description	Permette alla casella delle note di contenere fino a 600 caratteri invece di 60. È Facebook a decidere se una nota lunga passa.
 chat_preview.title	Anteprima chat con pressione lunga

@@ -811,6 +811,7 @@ final class Controls {
         found.get("story_row_size").addAll(refreshRate(classes));
         found.get("mark_read_locally").addAll(markReadLocally(classes));
         found.get("unread_badge").addAll(unreadBadge(classes));
+        found.get("confirm_strangers").addAll(confirmStrangers(classes));
         return found;
     }
 

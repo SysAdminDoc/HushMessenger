@@ -6,19 +6,19 @@ package app.hushmessenger.patches.controls
  */
 internal object ExpectedTotals {
     /** Settings controls, each its own patch. */
-    const val CONTROLS = 123
+    const val CONTROLS = 124
     /** Controls whose description sends people to HushMessenger settings > Controls. */
-    const val DIRECTED_CONTROLS = 122
+    const val DIRECTED_CONTROLS = 123
     /** Controls declared through controlPatch, whose injection HookInjectionReplayTest replays on the real builds. */
-    const val REPLAYED_CONTROLS = 118
+    const val REPLAYED_CONTROLS = 119
     /**
      * Hook methods per 588 build, armv7 included (587: 324, with five AI mention rows to 588's six). Three of them read
      * the emoji drawer flag (586: seven), three hold back the active status (#243), one picks how a sent video
      * draws (#104), one opens the chat sounds (#224), two send the words before a photo the editor sends by itself
-     * (#236), two send a preview card's TikTok and Instagram links past the link player (#246), and one ranks the
-     * pinned messages bar first (#213).
+     * (#236), two send a preview card's TikTok and Instagram links past the link player (#246), one ranks the
+     * pinned messages bar first (#213), and one holds the first send to someone who isn't a friend (#207).
      */
-    const val HOOKS_588 = 339
+    const val HOOKS_588 = 340
     /** The complete synthetic discovery fixture, one method per expected hook. */
-    const val DISCOVERY_FIXTURE_HOOKS = 317
+    const val DISCOVERY_FIXTURE_HOOKS = 318
 }
