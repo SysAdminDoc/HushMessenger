@@ -240,6 +240,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         STORY_HOLD -> validateStoryHold()
         CHAT_PREVIEW -> validateChatPreview()
         CHAT_PREVIEW_SIZE -> validateChatPreviewSize()
+        CHAT_BAR_PLUS_MENU -> validateChatBarPlusMenu()
         INBOX_TYPING -> validateInboxTyping()
         MEDIA_CAPTION -> validateMediaCaption()
         MEDIA_CAPTION_EDITOR -> validateMediaCaptionEditor()
@@ -405,6 +406,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             STORY_HOLD -> method.injectStoryHold()
             CHAT_PREVIEW -> method.injectChatPreview()
             CHAT_PREVIEW_SIZE -> method.injectChatPreviewSize()
+            CHAT_BAR_PLUS_MENU -> method.injectChatBarPlusMenu()
             INBOX_TYPING -> method.injectInboxTyping()
             MEDIA_CAPTION -> method.injectMediaCaption()
             MEDIA_CAPTION_EDITOR -> method.injectMediaCaptionEditor()
@@ -898,7 +900,7 @@ val allowLandscapePatch = controlPatch("landscape", "Allow landscape",
     LANDSCAPE_LOCK, LANDSCAPE_MEDIA)
 @Suppress("unused")
 val chatBarPlusPatch = controlPatch("chat_bar_plus", "Chat bar buttons in the + menu",
-    "Move the camera, gallery and mic buttons into the + menu.", "Conversations", CHAT_BAR_PLUS)
+    "Move the camera, gallery and mic buttons into the + menu.", "Conversations", CHAT_BAR_PLUS, CHAT_BAR_PLUS_MENU)
 @Suppress("unused")
 val callRecordingPatch = controlPatch("call_recording", "Record calls",
     "Adds a Record button over Messenger during a call. The call goes into one sound file in Recordings/Messenger Calls on your phone (Music/Messenger Calls on Android 10 and 11). While it's on, calls use Android's regular audio path instead of Messenger's own, and Messenger needs a restart after you change it. Messenger doesn't tell the other people, and recording laws differ from place to place, so get everyone's OK first.", "Calls")

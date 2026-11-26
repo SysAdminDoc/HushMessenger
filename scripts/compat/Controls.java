@@ -126,6 +126,7 @@ final class Controls {
         found.get("media_caption_result").addAll(mediaCaptionResult(classes, found.get("media_caption_editor")));
         found.get("chat_preview").addAll(chatPreview(classes));
         found.get("chat_preview_size").addAll(chatPreviewSize(classes));
+        found.get("chat_bar_plus_menu").addAll(chatBarPlusMenu(classes));
         found.get("landscape_lock").addAll(portraitLock(classes));
         found.get("landscape_media").addAll(mediaOrientation(classes));
         found.get("blocked_list_pictures").addAll(blockedListPictures(classes));

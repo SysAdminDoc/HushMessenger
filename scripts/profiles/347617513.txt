@@ -84,6 +84,10 @@ hook car_extension_gate LX/Aa8;->A00(Landroid/graphics/Bitmap;)V
 hook car_messages LX/0Rm;->AoL(LX/0Mh;)V
 hook chat_animation Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;
 hook chat_bar_plus LX/1og;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V
+hook chat_bar_plus_menu LX/5s9;->A1C()LX/4qd;
+hook chat_bar_plus_menu LX/5s9;->A8E(LX/6F1;)V
+hook chat_bar_plus_menu LX/622;->A00(Lcom/facebook/messaging/model/threadkey/ThreadKey;)Z
+hook chat_bar_plus_menu LX/6FA;->A04(LX/6FA;I)Ljava/lang/Object;
 hook chat_channel_keep LX/1ry;->A09(Landroid/app/NotificationChannel;Lcom/facebook/auth/usersession/FbUserSession;LX/1ry;Ljava/lang/String;IZ)Ljava/lang/String;
 hook chat_channel_raise LX/8MI;->run()V
 hook chat_fragment LX/1og;-><init>()V

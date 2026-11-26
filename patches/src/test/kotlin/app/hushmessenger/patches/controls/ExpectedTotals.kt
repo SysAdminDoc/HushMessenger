@@ -16,10 +16,11 @@ internal object ExpectedTotals {
      * the emoji drawer flag (586: seven), three hold back the active status (#243), one picks how a sent video
      * draws (#104), one opens the chat sounds (#224), three send the words before a photo the editor sends by itself
      * or hands back (#236), two send a preview card's TikTok and Instagram links past the link player (#246), one ranks the
-     * pinned messages bar first (#213), one holds the first send to someone who isn't a friend (#207), and eight hand
-     * Remove contact the four contact menus' rows and taps (#253).
+     * pinned messages bar first (#213), one holds the first send to someone who isn't a friend (#207), eight hand
+     * Remove contact the four contact menus' rows and taps (#253), and four read the flags that move the chat bar's
+     * buttons into the + menu (#241).
      */
-    const val HOOKS_588 = 349
+    const val HOOKS_588 = 353
     /** The complete synthetic discovery fixture, one method per expected hook. */
-    const val DISCOVERY_FIXTURE_HOOKS = 321
+    const val DISCOVERY_FIXTURE_HOOKS = 325
 }

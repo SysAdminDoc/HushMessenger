@@ -128,7 +128,7 @@ internal fun Method.hookId() = "$definingClass->$name(${parameterTypes.joinToStr
  * instead of once per finder. A finder called outside [findControls] walks on its own and finds the same methods.
  */
 private fun sharedChecks(): List<WalkCheck> = listOf(
-    chatPreviewBuilders, chatPreviewReaders, storyFinishedLoggers, blockedListBuilders, phoneIdRequesters, phoneIdSenders,
+    chatPreviewBuilders, chatPreviewReaders, chatBarMenuReaders, storyFinishedLoggers, blockedListBuilders, phoneIdRequesters, phoneIdSenders,
     nearbyScanSites, wifiIdentitySites, markReadBars, markIconSetters, voiceDownloads, menuTaps, saveVideoRows, moreSheets,
     audioCasters, trayInsertBuilders, trayPluginClasses, landscapeFlagReaders, mediaOrientationClasses, fontSites,
     searchBarBuilders, searchScreenHintShapes, carBundleWriters, carExtensionSteps, ringDeciders, menuItemsBuilders,
@@ -270,6 +270,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(STORY_HOLD).addAll(findStoryHold(classes))
     found.getValue(CHAT_PREVIEW).addAll(findChatPreview(classes))
     found.getValue(CHAT_PREVIEW_SIZE).addAll(findChatPreviewSize(classes))
+    found.getValue(CHAT_BAR_PLUS_MENU).addAll(findChatBarPlusMenu(classes))
     found.getValue(INBOX_TYPING).addAll(findInboxTyping(classes))
     found.getValue(MEDIA_CAPTION).addAll(findMediaCaption(classes))
     found.getValue(MEDIA_CAPTION_EDITOR).addAll(findMediaCaptionEditor(classes, found.getValue(MEDIA_CAPTION)))

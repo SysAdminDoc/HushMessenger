@@ -123,6 +123,11 @@ internal val PROFILE_347617503 = ControlProfile(
         "car_messages" to setOf("LX/0Rg;->AoC(LX/0Mb;)V"),
         "chat_animation" to setOf("Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;"),
         "chat_bar_plus" to setOf("LX/1oH;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
+        "chat_bar_plus_menu" to setOf(
+            "LX/5os;->A1C()LX/4nM;", "LX/5os;->A8E(LX/6Be;)V",
+            "LX/5yl;->A00(Lcom/facebook/messaging/model/threadkey/ThreadKey;)Z",
+            "LX/6Br;->A04(LX/6Br;I)Ljava/lang/Object;",
+        ),
         "chat_channel_keep" to setOf("LX/1rZ;->A09(Landroid/app/NotificationChannel;Lcom/facebook/auth/usersession/FbUserSession;LX/1rZ;Ljava/lang/String;IZ)Ljava/lang/String;"),
         "chat_channel_raise" to setOf("LX/8JI;->run()V"),
         "chat_fragment" to setOf("LX/1oH;-><init>()V"),
@@ -512,6 +517,11 @@ internal val PROFILE_347617497 = ControlProfile(
         "car_messages" to setOf("LX/0Rm;->AoL(LX/0Mh;)V"),
         "chat_animation" to setOf("Landroidx/fragment/app/Fragment;->onCreateAnimation(IZI)Landroid/view/animation/Animation;"),
         "chat_bar_plus" to setOf("LX/1og;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V"),
+        "chat_bar_plus_menu" to setOf(
+            "LX/5s9;->A1C()LX/4qd;", "LX/5s9;->A8E(LX/6F1;)V",
+            "LX/622;->A00(Lcom/facebook/messaging/model/threadkey/ThreadKey;)Z",
+            "LX/6FA;->A04(LX/6FA;I)Ljava/lang/Object;",
+        ),
         "chat_channel_keep" to setOf("LX/1ry;->A09(Landroid/app/NotificationChannel;Lcom/facebook/auth/usersession/FbUserSession;LX/1ry;Ljava/lang/String;IZ)Ljava/lang/String;"),
         "chat_channel_raise" to setOf("LX/8MI;->run()V"),
         "chat_fragment" to setOf("LX/1og;-><init>()V"),
