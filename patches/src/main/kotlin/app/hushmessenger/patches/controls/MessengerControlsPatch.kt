@@ -124,6 +124,7 @@ internal val settingsExtension = patch(description = "Load HushMessenger runtime
         pinnedBarLoader = null
         pinnedBarModel = null
         saveVoiceMenuRecipe = null
+        removeContactRecipe = null
         autoReplyPictureRecipe = null
         galleryRoute = null
         galleryChatRoute = null
@@ -247,6 +248,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         MEDIA_CAPTION_RESULT -> validateMediaCaptionResult()
         CHAT_MENU_ITEMS -> validateChatMenuItems()
         PROFILE_MENU_ITEMS -> validateProfileMenuItems()
+        REMOVE_CONTACT -> validateRemoveContact()
         PROFILE_MENU_CALL -> validateProfileMenuCall()
         LANDSCAPE_LOCK -> validatePortraitLock()
         LANDSCAPE_MEDIA -> validateMediaOrientation()
@@ -385,6 +387,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             HIDDEN_CHAT_TAP -> method.injectHiddenChatTap()
             CHAT_MENU_ITEMS -> method.injectChatMenuItems()
             PROFILE_MENU_ITEMS -> method.injectProfileMenuItems()
+            REMOVE_CONTACT -> method.injectRemoveContact()
             PROFILE_MENU_CALL -> method.injectProfileMenuCall()
             NEARBY_SCANS -> method.injectNearbyScans()
             WIFI_IDENTITY -> method.injectWifiIdentity()
@@ -593,6 +596,15 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 }
                 injectControl(key, methods)
                 for ((old, new) in built) { host.methods.remove(old); host.directMethods.remove(old); host.methods.add(new); host.directMethods.add(new) }
+            } else if (key == REMOVE_CONTACT) {
+                val recipe = removeContactRecipe ?: throw PatchException("Messenger controls: the Remove contact row's recipe is missing")
+                val host = mutableClassDefBy(REMOVE_CONTACT_HOST)
+                val stub = host.methods.singleOrNull { it.hookId() == REMOVE_CONTACT_START }
+                    ?: throw PatchException("Messenger controls: the Remove contact row's extension stub is missing")
+                // Built before the first edit, so a changed stub stops the patch with Messenger untouched.
+                val built = removeContactBuilder(stub, recipe)
+                injectControl(key, methods)
+                host.methods.remove(stub); host.directMethods.remove(stub); host.methods.add(built); host.directMethods.add(built)
             } else if (key == "keep_unsent" || key == HIDDEN_WORDS) {
                 // Built before the first edit, so a row class without the helper's getters stops the patch with Messenger
                 // untouched. Only encrypted chats' CQL rows take the helper, and both controls that read a row's text
@@ -740,6 +752,9 @@ val hideChatMenuItemsPatch = controlPatch("chat_menu_items", "Hide chat menu ite
 @Suppress("unused")
 val profileMenuItemsPatch = controlPatch("profile_menu_items", "Hide profile menu items",
     "Hides the items you pick from the menu you get when you tap someone's picture beside their message in a chat. Tap one picture once, and that menu's items show up under this switch for you to pick.", "Chat menu", PROFILE_MENU_ITEMS)
+@Suppress("unused")
+val removeContactPatch = controlPatch("remove_contact", "Show Remove contact",
+    "Adds Remove contact back to the menu for people you aren't friends with. It takes them out of your Messenger contacts without blocking them.", "Chat menu", REMOVE_CONTACT)
 @Suppress("unused")
 val hideFacebookPatch = controlPatch("facebook", "Hide Facebook shortcuts", "Hides Facebook buttons, profile and sharing shortcuts, and the Also from Meta and Subscriptions sections in the Menu tab. Handy if you only use Messenger.", "Navigation", "facebook", FACEBOOK_PROFILE, FACEBOOK_PROFILE_HEADER)
 @Suppress("unused")

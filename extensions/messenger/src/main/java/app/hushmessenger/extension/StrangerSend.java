@@ -94,8 +94,8 @@ public final class StrangerSend {
         return false;
     }
 
-    /** A person, not a page, who isn't a friend. */
-    private static boolean stranger(Object person) throws IllegalAccessException {
+    /** A person, not a page, who isn't a friend. {@link RemoveContact} asks the same about a contact menu's person. */
+    static boolean stranger(Object person) throws IllegalAccessException {
         boolean notFriends = false, isPerson = false;
         for (Field field : fields(person.getClass())) {
             Object value = field.get(person);
@@ -133,7 +133,7 @@ public final class StrangerSend {
     }
 
     /** The id a user key holds. */
-    private static String userId(Object userKey) throws IllegalAccessException {
+    static String userId(Object userKey) throws IllegalAccessException {
         if (userKey == null) return null;
         for (Field field : fields(userKey.getClass())) {
             if (field.getName().equals("id") && field.getType() == String.class) return (String) field.get(userKey);
@@ -162,7 +162,7 @@ public final class StrangerSend {
     }
 
     /** What [owner] holds in a field of the class named [type], or null. */
-    private static Object held(Object owner, String type) throws IllegalAccessException {
+    static Object held(Object owner, String type) throws IllegalAccessException {
         if (owner == null) return null;
         for (Field field : fields(owner.getClass())) {
             if (!type.equals(field.getType().getName())) continue;

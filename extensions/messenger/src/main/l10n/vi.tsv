@@ -200,6 +200,12 @@ chat_preview_taps_open	Mở phòng chat
 chat_preview_taps_gone	Hãy mở từ danh sách chat
 # context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
 confirm_strangers_held	Hai bạn chưa là bạn bè. Hãy chạm Gửi lần nữa.
+# context: remove_contact_row, the row this switch adds to the menu you get by holding a person who isn't a friend. Messenger's own old row was called Remove contact.
+remove_contact_row	Xóa liên hệ
+# context: remove_contact_done, the toast after that row took the person out of your Messenger contacts
+remove_contact_done	Đã xóa khỏi danh bạ của bạn
+# context: remove_contact_failed, the toast when that row couldn't take the person out of your contacts
+remove_contact_failed	Không xóa được liên hệ này
 special_contacts_track	Theo dõi người này
 special_contacts_untrack	Ngừng theo dõi
 special_contacts_tracked	Đang theo dõi người này
@@ -867,6 +873,9 @@ chat_menu_items.title	Ẩn mục trong menu phòng chat
 chat_menu_items.description	Ẩn các mục bạn chọn khỏi menu hiện ra khi nhấn giữ một phòng chat trong danh sách trò chuyện. Nhấn giữ một phòng chat bất kỳ một lần, các mục của menu đó sẽ hiện bên dưới công tắc này để bạn chọn.
 profile_menu_items.title	Ẩn mục trong menu hồ sơ
 profile_menu_items.description	Ẩn các mục bạn chọn khỏi menu hiện ra khi bấm vào ảnh của ai đó cạnh tin nhắn của họ trong đoạn chat. Bấm vào một ảnh một lần, các mục của menu đó sẽ hiện dưới công tắc này để bạn chọn.
+# context: remove_contact, the Chat menu switch that adds Remove contact to the menu you get by holding a person who isn't a friend
+remove_contact.title	Hiện mục Xóa liên hệ
+remove_contact.description	Thêm lại mục Xóa liên hệ vào menu hiện ra khi bạn nhấn giữ một người trong tab 'Liên hệ', danh bạ hoặc tìm kiếm, với những người không phải bạn bè của bạn. Mục này xóa họ khỏi danh bạ Messenger của bạn mà không chặn họ.
 facebook.title	Ẩn phím tắt Facebook
 facebook.description	Ẩn nút Facebook, phím tắt trang cá nhân và chia sẻ, cũng như phần 'Các sản phẩm khác của Meta' và 'Đăng ký' trong tab 'Menu'. Phù hợp với người dùng chỉ sử dụng Messenger.
 meta_ai.title	Ẩn Meta AI

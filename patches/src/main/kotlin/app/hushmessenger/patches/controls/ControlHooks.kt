@@ -137,7 +137,7 @@ private fun sharedChecks(): List<WalkCheck> = listOf(
     inboundCopies, tempFolderChecks, configHolders, playoutSwitches, playoutWriters, recordHandovers, recentMediaDetectors,
     attributionUploads, instantCaptures, pinLimitLoaders, sharedFlagReaders, aiMentionShapes, imagineYourselfReaders, headerRenders, logBars,
     ringMountClasses, roundingPrinterClasses, legacyRoundings, tileShapeFlags, messageDebugStrings,
-    profileMenuBuilders, profileCallRows, recoveryCodeRows, noteLimitMethods,
+    profileMenuBuilders, profileCallRows, recoveryCodeRows, noteLimitMethods, contactMenuRows, contactDeleteCallbacks,
     searchResultSources, searchSectionTypes, aiChatLaunchers,
     storyTrayBuilders,
     pinnedBarLoaders,
@@ -249,6 +249,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(CHAT_MENU_ITEMS).addAll(chatMenuRows(hiddenChats))
     val profileMenus = findProfileMenuItems(classes)
     found.getValue(PROFILE_MENU_ITEMS).addAll(profileMenus)
+    found.getValue(REMOVE_CONTACT).addAll(findRemoveContact(classes))
     found.getValue(PROFILE_MENU_CALL).addAll(findProfileMenuCalls(classes, profileMenus, stringTables))
     found.getValue(REACTION_READ).addAll(findReactionRead(classes, stringTables))
     found.getValue(SEARCH_SECTIONS).addAll(findSearchSections(classes))

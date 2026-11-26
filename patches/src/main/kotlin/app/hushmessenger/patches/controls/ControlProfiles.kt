@@ -326,6 +326,11 @@ internal val PROFILE_347617503 = ControlProfile(
         "recovery_code_row" to setOf("LX/Tka;->render(LX/2Gk;)LX/1Jx;"),
         "reels_badge" to setOf("LX/4M2;->A08(LX/4M2;)Z"),
         "refresh_rate" to setOf("Lcom/facebook/base/activity/FbFragmentActivity;->onResume()V"),
+        "remove_contact" to setOf(
+            "LX/PTt;->BLt()Ljava/util/ArrayList;", "LX/PTt;->EW9(I)V", "LX/PTu;->BLt()Ljava/util/ArrayList;",
+            "LX/PTu;->EW9(I)V", "LX/PTv;->BLt()Ljava/util/ArrayList;", "LX/PTv;->EW9(I)V",
+            "LX/PTw;->BLt()Ljava/util/ArrayList;", "LX/PTw;->EW9(I)V",
+        ),
         "reply_read" to setOf("LX/9RJ;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/5Gs;LX/5lP;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/Hnc;LX/5xy;LX/5mC;LX/HmJ;LX/6Be;LX/4nJ;LX/5m9;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4s1;Ljava/lang/String;)V"),
         "restricted_notify" to setOf("Lcom/facebook/messaging/msys/pushnotifications/protobufparsing/MsysNotificationParser\$getThreadLevelResult\$2;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;"),
         "save_stories" to setOf("LX/PR1;->onClick(Landroid/view/View;)V"),
@@ -710,6 +715,11 @@ internal val PROFILE_347617497 = ControlProfile(
         "recovery_code_row" to setOf("LX/Lfp;->render(LX/2H9;)LX/1KM;"),
         "reels_badge" to setOf("LX/4PG;->A08(LX/4PG;)Z"),
         "refresh_rate" to setOf("Lcom/facebook/base/activity/FbFragmentActivity;->onResume()V"),
+        "remove_contact" to setOf(
+            "LX/hZJ;->BM4()Ljava/util/ArrayList;", "LX/hZJ;->EWK(I)V", "LX/hZK;->BM4()Ljava/util/ArrayList;",
+            "LX/hZK;->EWK(I)V", "LX/hZL;->BM4()Ljava/util/ArrayList;", "LX/hZL;->EWK(I)V",
+            "LX/hZM;->BM4()Ljava/util/ArrayList;", "LX/hZM;->EWK(I)V",
+        ),
         "reply_read" to setOf("LX/9UI;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/5K9;LX/5og;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/HpW;LX/61F;LX/5pT;LX/HoJ;LX/6F1;LX/4qa;LX/5pQ;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4vI;Ljava/lang/String;)V"),
         "restricted_notify" to setOf("Lcom/facebook/messaging/msys/pushnotifications/protobufparsing/MsysNotificationParser\$getThreadLevelResult\$2;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;"),
         "save_stories" to setOf("LX/PTZ;->onClick(Landroid/view/View;)V"),

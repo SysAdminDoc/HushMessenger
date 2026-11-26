@@ -200,6 +200,12 @@ chat_preview_taps_open	Abrir chat
 chat_preview_taps_gone	Ábrelo desde tu lista de chats
 # context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
 confirm_strangers_held	Aún no son amigos. Vuelve a tocar Enviar para enviarlo.
+# context: remove_contact_row, the row this switch adds to the menu you get by holding a person who isn't a friend. Messenger's own old row was called Remove contact.
+remove_contact_row	Eliminar contacto
+# context: remove_contact_done, the toast after that row took the person out of your Messenger contacts
+remove_contact_done	Se eliminó de tus contactos
+# context: remove_contact_failed, the toast when that row couldn't take the person out of your contacts
+remove_contact_failed	No se pudo eliminar este contacto
 special_contacts_track	Rastrear a esta persona
 special_contacts_untrack	Dejar de rastrear
 special_contacts_tracked	Ahora rastreas a esta persona
@@ -867,6 +873,9 @@ chat_menu_items.title	Ocultar elementos del menú del chat
 chat_menu_items.description	Oculta los elementos que elijas del menú que aparece al mantener presionado un chat en tu lista de chats. Mantén presionado cualquier chat una vez y los elementos de ese menú aparecerán debajo de este interruptor para que los elijas.
 profile_menu_items.title	Ocultar elementos del menú de perfil
 profile_menu_items.description	Oculta los elementos que elijas del menú que aparece al tocar la foto de alguien junto a su mensaje en un chat. Toca una foto una vez y los elementos de ese menú aparecerán debajo de este interruptor para que los elijas.
+# context: remove_contact, the Chat menu switch that adds Remove contact to the menu you get by holding a person who isn't a friend
+remove_contact.title	Mostrar Eliminar contacto
+remove_contact.description	Vuelve a poner Eliminar contacto en el menú que aparece al mantener presionado a alguien en Personas, tus contactos o la búsqueda, para quienes no son tus amigos. Lo quita de tus contactos de Messenger sin bloquearlo.
 facebook.title	Ocultar accesos directos de Facebook
 facebook.description	Oculta los botones de Facebook, los accesos directos de perfil y de compartir, y las secciones Más de Meta y Suscripciones de la pestaña Menú. Útil si solo usas Messenger.
 meta_ai.title	Ocultar Meta AI

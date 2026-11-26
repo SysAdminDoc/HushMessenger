@@ -200,6 +200,12 @@ chat_preview_taps_open	Открыть чат
 chat_preview_taps_gone	Откройте его из списка чатов
 # context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
 confirm_strangers_held	Вы ещё не друзья. Нажмите «Отправить» ещё раз.
+# context: remove_contact_row, the row this switch adds to the menu you get by holding a person who isn't a friend. Messenger's own old row was called Remove contact.
+remove_contact_row	Удалить контакт
+# context: remove_contact_done, the toast after that row took the person out of your Messenger contacts
+remove_contact_done	Удалено из ваших контактов
+# context: remove_contact_failed, the toast when that row couldn't take the person out of your contacts
+remove_contact_failed	Не удалось удалить этот контакт
 special_contacts_track	Отслеживать этого человека
 special_contacts_untrack	Не отслеживать
 special_contacts_tracked	Теперь вы отслеживаете этого человека
@@ -867,6 +873,9 @@ chat_menu_items.title	Скрыть пункты меню чата
 chat_menu_items.description	Скрывает выбранные вами пункты меню, которое появляется при нажатии и удержании чата в списке чатов. Нажмите и удерживайте любой чат один раз, и пункты этого меню появятся под этим переключателем, чтобы вы могли их выбрать.
 profile_menu_items.title	Скрыть пункты меню профиля
 profile_menu_items.description	Скрывает выбранные вами пункты меню, которое появляется, когда вы нажимаете на фото человека рядом с его сообщением в чате. Нажмите на одно фото один раз, и пункты этого меню появятся под этим переключателем, чтобы вы могли их выбрать.
+# context: remove_contact, the Chat menu switch that adds Remove contact to the menu you get by holding a person who isn't a friend
+remove_contact.title	Показывать «Удалить контакт»
+remove_contact.description	Возвращает пункт «Удалить контакт» в меню, которое появляется, когда вы нажимаете и удерживаете человека на вкладке «Люди», в контактах или в поиске, для тех, кто не у вас в друзьях. Он убирает человека из ваших контактов Messenger, не блокируя его.
 facebook.title	Скрыть ярлыки Facebook
 facebook.description	Скрывает кнопки Facebook, ярлыки профиля и функций «Поделиться», а также разделы «Также от Meta» и «Подписки» во вкладке «Меню». Удобно, если вы пользуетесь только Messenger.
 meta_ai.title	Скрыть Meta AI

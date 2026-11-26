@@ -200,6 +200,12 @@ chat_preview_taps_open	Отваряне на чата
 chat_preview_taps_gone	Отворете го от списъка с чатове
 # context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
 confirm_strangers_held	Още не сте приятели. Докоснете пак за изпращане.
+# context: remove_contact_row, the row this switch adds to the menu you get by holding a person who isn't a friend. Messenger's own old row was called Remove contact.
+remove_contact_row	Премахване на контакта
+# context: remove_contact_done, the toast after that row took the person out of your Messenger contacts
+remove_contact_done	Премахнат от контактите ви
+# context: remove_contact_failed, the toast when that row couldn't take the person out of your contacts
+remove_contact_failed	Контактът не можа да се премахне
 special_contacts_track	Проследяване на човека
 special_contacts_untrack	Спиране на проследяването
 special_contacts_tracked	Човекът вече се проследява
@@ -867,6 +873,9 @@ chat_menu_items.title	Скриване на елементи от менюто �
 chat_menu_items.description	Скрива избраните от вас елементи от менюто, което се отваря, когато докоснете и задържите чат в списъка с чатове. Докоснете и задръжте веднъж който и да е чат и елементите на това меню ще се появят под този превключвател, за да ги изберете.
 profile_menu_items.title	Скриване на редове от менюто на профила
 profile_menu_items.description	Скрива избраните от вас елементи от менюто, което се отваря, когато докоснете нечия снимка до съобщението на човека в чат. Докоснете веднъж една снимка и елементите на това меню ще се появят под този превключвател, за да ги изберете.
+# context: remove_contact, the Chat menu switch that adds Remove contact to the menu you get by holding a person who isn't a friend
+remove_contact.title	Показване на „Премахване на контакта“
+remove_contact.description	Връща „Премахване на контакта“ в менюто, което се отваря, когато задържите някого в Хора, в контактите си или в търсенето, за хора, с които не сте приятели. Премахва ги от контактите ви в Messenger, без да ги блокира.
 facebook.title	Скриване на преките пътища към Facebook
 facebook.description	Скрива бутоните на Facebook, преките пътища към профила и споделянето и секциите Още от Meta и Абонаменти в раздела Меню. Удобно, ако използвате само Messenger.
 meta_ai.title	Скриване на Meta AI

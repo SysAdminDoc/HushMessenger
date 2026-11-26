@@ -200,6 +200,12 @@ chat_preview_taps_open	開啟聊天室
 chat_preview_taps_gone	請從聊天室清單開啟
 # context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
 confirm_strangers_held	你們還不是朋友。再點一下「傳送」即可傳送。
+# context: remove_contact_row, the row this switch adds to the menu you get by holding a person who isn't a friend. Messenger's own old row was called Remove contact.
+remove_contact_row	移除聯絡人
+# context: remove_contact_done, the toast after that row took the person out of your Messenger contacts
+remove_contact_done	已從你的聯絡人中移除
+# context: remove_contact_failed, the toast when that row couldn't take the person out of your contacts
+remove_contact_failed	無法移除這位聯絡人
 special_contacts_track	追蹤這個人
 special_contacts_untrack	停止追蹤
 special_contacts_tracked	已開始追蹤這個人
@@ -867,6 +873,9 @@ chat_menu_items.title	隱藏聊天室選單項目
 chat_menu_items.description	從長按聊天清單中的聊天室所顯示的選單裡，隱藏你選擇的項目。先按住任一聊天室一次，該選單的項目就會顯示在這個開關下方供你選擇。
 profile_menu_items.title	隱藏個人檔案選單項目
 profile_menu_items.description	從點按聊天室中訊息旁的大頭貼所顯示的選單裡，隱藏你選擇的項目。先點按任一大頭貼一次，該選單的項目就會顯示在這個開關下方供你選擇。
+# context: remove_contact, the Chat menu switch that adds Remove contact to the menu you get by holding a person who isn't a friend
+remove_contact.title	顯示「移除聯絡人」
+remove_contact.description	對不是你朋友的人，在「聯絡人」分頁、你的聯絡人清單或搜尋中長按某人時出現的選單裡，重新加入「移除聯絡人」。這會把對方從你的 Messenger 聯絡人中移除，但不會封鎖對方。
 facebook.title	隱藏 Facebook 捷徑
 facebook.description	隱藏 Facebook 按鈕、個人檔案與分享捷徑，以及「選單」分頁中的「Meta 旗下其他產品」與「訂閱」區塊。適合只使用 Messenger 的使用者。
 meta_ai.title	隱藏 Meta AI

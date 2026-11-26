@@ -200,6 +200,12 @@ chat_preview_taps_open	Sohbeti aç
 chat_preview_taps_gone	Sohbet listenden aç
 # context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
 confirm_strangers_held	Henüz arkadaşın değil. Gönder'e tekrar dokun.
+# context: remove_contact_row, the row this switch adds to the menu you get by holding a person who isn't a friend. Messenger's own old row was called Remove contact.
+remove_contact_row	Kişiyi kaldır
+# context: remove_contact_done, the toast after that row took the person out of your Messenger contacts
+remove_contact_done	Kişilerinden kaldırıldı
+# context: remove_contact_failed, the toast when that row couldn't take the person out of your contacts
+remove_contact_failed	Bu kişi kaldırılamadı
 special_contacts_track	Bu kişiyi takip et
 special_contacts_untrack	Takibi bırak
 special_contacts_tracked	Bu kişi artık takipte
@@ -867,6 +873,9 @@ chat_menu_items.title	Sohbet menüsü öğelerini gizle
 chat_menu_items.description	Sohbet listende bir sohbete basılı tuttuğunda açılan menüden seçtiğin öğeleri gizler. Herhangi bir sohbete bir kez basılı tut, o menünün öğeleri seçmen için bu anahtarın altında görünür.
 profile_menu_items.title	Profil menüsü öğelerini gizle
 profile_menu_items.description	Sohbette birinin mesajının yanındaki fotoğrafına dokununca açılan menüden seçtiğin öğeleri gizler. Bir fotoğrafa bir kez dokun, o menünün öğeleri seçmen için bu anahtarın altında görünür.
+# context: remove_contact, the Chat menu switch that adds Remove contact to the menu you get by holding a person who isn't a friend
+remove_contact.title	Kişiyi kaldır seçeneğini göster
+remove_contact.description	Arkadaşın olmayan kişiler için, Kişiler sekmesinde, kişilerinde veya aramada birine basılı tutunca açılan menüye Kişiyi kaldır seçeneğini geri ekler. Kişiyi engellemeden Messenger kişilerinden çıkarır.
 facebook.title	Facebook kısayollarını gizle
 facebook.description	Facebook düğmelerini, profil ve paylaşım kısayollarını ve Menü sekmesindeki Meta'dan diğerleri ile Abonelikler bölümlerini gizler. Yalnızca Messenger kullanıyorsan işine yarar.
 meta_ai.title	Meta AI'ı gizle

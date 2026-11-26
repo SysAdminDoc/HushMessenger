@@ -200,6 +200,12 @@ chat_preview_taps_open	เปิดแชท
 chat_preview_taps_gone	เปิดจากรายการแชทของคุณ
 # context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
 confirm_strangers_held	ยังไม่ได้เป็นเพื่อนกัน แตะส่งอีกครั้งเพื่อส่ง
+# context: remove_contact_row, the row this switch adds to the menu you get by holding a person who isn't a friend. Messenger's own old row was called Remove contact.
+remove_contact_row	ลบผู้ติดต่อ
+# context: remove_contact_done, the toast after that row took the person out of your Messenger contacts
+remove_contact_done	ลบออกจากผู้ติดต่อของคุณแล้ว
+# context: remove_contact_failed, the toast when that row couldn't take the person out of your contacts
+remove_contact_failed	ไม่สามารถลบผู้ติดต่อนี้ได้
 special_contacts_track	ติดตามคนนี้
 special_contacts_untrack	หยุดติดตาม
 special_contacts_tracked	กำลังติดตามคนนี้แล้ว
@@ -867,6 +873,9 @@ chat_menu_items.title	ซ่อนรายการเมนูของแช�
 chat_menu_items.description	กดค้างที่แชทใดก็ได้หนึ่งครั้ง จากนั้นเลือกรายการเมนูที่ต้องการซ่อนที่นี่ โดย Messenger จะคงไว้อย่างน้อยหนึ่งรายการเสมอ (ทดลอง)
 profile_menu_items.title	ซ่อนรายการเมนูโปรไฟล์
 profile_menu_items.description	ซ่อนรายการที่คุณเลือกจากเมนูที่ขึ้นเมื่อแตะรูปของใครสักคนข้างข้อความของเขาในแชท แตะรูปหนึ่งครั้ง แล้วรายการของเมนูนั้นจะแสดงใต้สวิตช์นี้ให้เลือก
+# context: remove_contact, the Chat menu switch that adds Remove contact to the menu you get by holding a person who isn't a friend
+remove_contact.title	แสดงตัวเลือกลบผู้ติดต่อ
+remove_contact.description	เพิ่มตัวเลือกลบผู้ติดต่อกลับมาในเมนูที่ขึ้นเมื่อกดค้างที่ใครสักคนในแท็บผู้คน รายชื่อติดต่อ หรือการค้นหา สำหรับคนที่ไม่ได้เป็นเพื่อนกับคุณ ตัวเลือกนี้จะนำเขาออกจากผู้ติดต่อใน Messenger โดยไม่บล็อกเขา
 facebook.title	ซ่อนปุ่มลัด Facebook
 facebook.description	ลบแถบเครื่องมือ โปรไฟล์ และปุ่มลัดการแชร์ไปยัง Facebook รวมถึงส่วน "อื่นๆ จาก Meta" และ "การสมัครรับข้อมูล" ในแท็บเมนู
 meta_ai.title	ซ่อน Meta AI

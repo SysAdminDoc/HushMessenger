@@ -304,6 +304,9 @@ final class SettingsText {
         ENGLISH.put("chat_preview_taps_open", "Open chat");
         ENGLISH.put("chat_preview_taps_gone", "Open it from your chat list");
         ENGLISH.put("confirm_strangers_held", "Not your friend yet. Tap Send again to send.");
+        ENGLISH.put("remove_contact_row", "Remove contact");
+        ENGLISH.put("remove_contact_done", "Removed from your contacts");
+        ENGLISH.put("remove_contact_failed", "Couldn't remove this contact");
         ENGLISH.put("special_contacts_track", "Track this person");
         ENGLISH.put("special_contacts_untrack", "Stop tracking");
         ENGLISH.put("special_contacts_tracked", "Tracking this person now");

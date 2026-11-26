@@ -807,6 +807,7 @@ final class Controls {
         }
         var profileMenus = profileMenuItems(classes);
         found.get("profile_menu_items").addAll(profileMenus);
+        found.get("remove_contact").addAll(removeContact(classes));
         found.get("profile_menu_call").addAll(profileMenuCalls(classes, profileMenus, stringTables));
         found.get("refresh_rate").addAll(refreshRate(classes));
         found.get("story_row_size").addAll(refreshRate(classes));

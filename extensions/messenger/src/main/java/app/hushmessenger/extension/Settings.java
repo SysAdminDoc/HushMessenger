@@ -3437,5 +3437,8 @@ public final class Settings {
     /** Whether Write longer notes is on. */
     public static boolean longerNotes() { return enabled("longer_notes"); }
 
+    /** Whether Show Remove contact is on. */
+    public static boolean removeContact() { return enabled("remove_contact"); }
+
     private Settings() { }
 }

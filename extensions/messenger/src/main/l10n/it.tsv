@@ -200,6 +200,12 @@ chat_preview_taps_open	Apri chat
 chat_preview_taps_gone	Aprila dal tuo elenco delle chat
 # context: confirm_strangers_held, the toast after that switch holds a Send, asking for a second tap
 confirm_strangers_held	Non siete ancora amici. Tocca di nuovo Invia.
+# context: remove_contact_row, the row this switch adds to the menu you get by holding a person who isn't a friend. Messenger's own old row was called Remove contact.
+remove_contact_row	Rimuovi contatto
+# context: remove_contact_done, the toast after that row took the person out of your Messenger contacts
+remove_contact_done	Rimosso dai tuoi contatti
+# context: remove_contact_failed, the toast when that row couldn't take the person out of your contacts
+remove_contact_failed	Impossibile rimuovere questo contatto
 special_contacts_track	Segui questa persona
 special_contacts_untrack	Smetti di seguire
 special_contacts_tracked	Ora segui questa persona
@@ -867,6 +873,9 @@ chat_menu_items.title	Nascondi voci del menu della chat
 chat_menu_items.description	Nasconde le voci che scegli dal menu che compare quando tieni premuta una chat nell'elenco. Tieni premuta una chat qualsiasi una volta e le voci di quel menu compaiono sotto questo interruttore, pronte da scegliere.
 profile_menu_items.title	Nascondi voci del menu del profilo
 profile_menu_items.description	Nasconde le voci che scegli dal menu che compare quando tocchi l'immagine di qualcuno accanto al suo messaggio in una chat. Tocca un'immagine una volta e le voci di quel menu compaiono sotto questo interruttore, pronte da scegliere.
+# context: remove_contact, the Chat menu switch that adds Remove contact to the menu you get by holding a person who isn't a friend
+remove_contact.title	Mostra Rimuovi contatto
+remove_contact.description	Rimette Rimuovi contatto nel menu che compare quando tieni premuto qualcuno in Persone, nei tuoi contatti o nella ricerca, per le persone che non sono tra i tuoi amici. Lo toglie dai tuoi contatti di Messenger senza bloccarlo.
 facebook.title	Nascondi le scorciatoie di Facebook
 facebook.description	Nasconde i pulsanti di Facebook, le scorciatoie al profilo e alla condivisione, e le sezioni Altro da Meta e Abbonamenti nella scheda Menu. Comodo se usi solo Messenger.
 meta_ai.title	Nascondi Meta AI

@@ -20,6 +20,7 @@
 - `Hide people you don't know in search` is a new switch under Inbox, and it starts off. Type a name in search and Messenger lists people you aren't friends with right next to your friends, so it's easy to message a stranger by mistake. With this on, search leaves them out, and your friends and groups still come up. Refs #207.
 - `Ask before messaging people you don't know` is a new switch under Inbox, and it starts off. With it on, the first time you tap Send in a chat with someone you aren't friends with, the message waits in the box and a short note asks you to tap Send again. Tap it again within 5 seconds and it goes out as a message request. Group chats, pages and chats where they've already written to you send right away. To keep Inbox to its size, `Hide the Instants button` moved to Tab bar, right under `Show Instants tab`. Refs #207.
 - `Keep settings in Recents` is a new switch in the App tab, and it starts off. Leave HushMessenger settings with Home and they keep their card in Recents, so you can come back where you were. Close them with Back and they still leave no card. Refs #207.
+- `Show Remove contact` is a new switch under Chat menu, and it starts off. Messenger took Remove contact out of the menu you get when you press and hold someone in People, your contacts or search. With this on, that menu offers it again for anyone you aren't friends with. Tap it and they come out of your Messenger contacts without being blocked, and a short note says whether it worked. Friends and pages don't get the row. Refs #253.
 
 ### Changed and fixed
 

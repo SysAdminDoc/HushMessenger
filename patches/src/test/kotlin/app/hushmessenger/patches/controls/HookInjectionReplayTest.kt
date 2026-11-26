@@ -60,6 +60,8 @@ class HookInjectionReplayTest {
                     }
                     // The voice message Save row also builds the extension's stubs from this build's recipe.
                     if (key == SAVE_VOICE_MENU) for (id in SAVE_VOICE_MENU_STUBS) saveVoiceMenuBuilder(saveVoiceMenuStub(id), saveVoiceMenuRecipe!!)
+                    // Show Remove contact also builds the extension's removal start from this build's recipe.
+                    if (key == REMOVE_CONTACT) removeContactBuilder(removeContactStub(), removeContactRecipe ?: error("no removal recipe"))
                     // Auto reply also builds the extension's picture send from this build's media factory.
                     if (key == AUTO_REPLY) {
                         val recipe = autoReplyPictureRecipe ?: error("no picture recipe")

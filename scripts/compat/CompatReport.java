@@ -180,6 +180,7 @@ public class CompatReport {
         PATCHES.put("Hide chosen chats", List.of("hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
         PATCHES.put("Hide chat menu items", List.of("chat_menu_items"));
         PATCHES.put("Hide profile menu items", List.of("profile_menu_items"));
+        PATCHES.put("Show Remove contact", List.of("remove_contact"));
         PATCHES.put("Hide Facebook shortcuts", List.of("facebook", "facebook_profile", "facebook_profile_header"));
         PATCHES.put("Hide Meta AI", List.of("ai_menu", "ai_fab", "ai_toolbar", "ai_tab", "ai_muse_tab", "ai_search", "ai_search_chip", "ai_mentions", "ai_commands", "ai_search_hint", "ai_search_screen_hint", "ai_mention_rows", "ai_summary", "tab_config", "search_sections", "search_items"));
         PATCHES.put("Hide Chat Moments", List.of("moments"));
@@ -1090,7 +1091,7 @@ public class CompatReport {
     static final Set<String> NEEDS_A_LOCAL = Set.of("ad_events", "ai_chat_open", "ai_commands", "ai_fab", "ai_mention_rows", "ai_menu", "ai_search",
         "ai_search_chip", "ai_summary", "allow_screenshot", "analytics_uploads", "attribution_uploads", "bubbles", "call_recording", "delta_unsent",
         "disappearing_swipe", "external_gallery", "facebook", "facebook_profile", "font_by_name", "font_repository", "growth_active_status", "growth_notes", "growth_story_card", "instant_gallery", "instants_button", "keep_unsent", "link_player",
-        "mqtt_telemetry", "nearby_scans", "original_photo", "passkey_login", "people_story", "phone_id_sync", "people_tab", "recent_media", "stories", "system_camera",
+        "mqtt_telemetry", "nearby_scans", "original_photo", "passkey_login", "people_story", "phone_id_sync", "people_tab", "recent_media", "remove_contact", "stories", "system_camera",
         "tab_badges", "typing", "unsent_indicator", "unsent_recall");
 
     /** More registers than the parameters take, as ControlHooks.kt's validateScratch asks. */

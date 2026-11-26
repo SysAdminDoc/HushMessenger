@@ -277,6 +277,14 @@ hook recent_media LX/5Th;->A01(LX/4nJ;Lkotlin/jvm/functions/Function0;)V
 hook recovery_code_row LX/Tka;->render(LX/2Gk;)LX/1Jx;
 hook reels_badge LX/4M2;->A08(LX/4M2;)Z
 hook refresh_rate Lcom/facebook/base/activity/FbFragmentActivity;->onResume()V
+hook remove_contact LX/PTt;->BLt()Ljava/util/ArrayList;
+hook remove_contact LX/PTt;->EW9(I)V
+hook remove_contact LX/PTu;->BLt()Ljava/util/ArrayList;
+hook remove_contact LX/PTu;->EW9(I)V
+hook remove_contact LX/PTv;->BLt()Ljava/util/ArrayList;
+hook remove_contact LX/PTv;->EW9(I)V
+hook remove_contact LX/PTw;->BLt()Ljava/util/ArrayList;
+hook remove_contact LX/PTw;->EW9(I)V
 hook reply_read LX/9RJ;->A01(Lcom/facebook/auth/usersession/FbUserSession;LX/5Gs;LX/5lP;Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/Hnc;LX/5xy;LX/5mC;LX/HmJ;LX/6Be;LX/4nJ;LX/5m9;Lcom/facebook/xapp/messaging/composer/send/event/SendMessageEvent;Lcom/facebook/xapp/messaging/map/HeterogeneousMap;LX/4s1;Ljava/lang/String;)V
 hook restricted_notify Lcom/facebook/messaging/msys/pushnotifications/protobufparsing/MsysNotificationParser$getThreadLevelResult$2;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 hook save_stories LX/PR1;->onClick(Landroid/view/View;)V
