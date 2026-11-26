@@ -1,6 +1,8 @@
 package app.hushmessenger.extension;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -9,6 +11,7 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +26,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.GraphicsMode;
 import org.robolectric.annotation.LooperMode;
 import static org.junit.Assert.*;
 import static org.robolectric.Shadows.shadowOf;
@@ -125,6 +129,39 @@ public class IosBarsTest {
         assertTrue("The bars draw over the messages", bar.getZ() > barZ);
         assertTrue(Settings.lastActive(IosBars.KEY) > 0);
         assertFalse(Settings.hookErrors.containsKey(IosBars.KEY));
+    }
+
+    /** [bar]'s blur drawn over red, standing in for the chat list a chat slides in over (#251). */
+    private static Bitmap blurDrawnOverRed(View bar) {
+        Drawable backdrop = ((IosBars.Frost) bar.getBackground()).getDrawable(0);
+        Bitmap drawn = Bitmap.createBitmap(40, 20, Bitmap.Config.ARGB_8888);
+        drawn.eraseColor(0xFFFF0000);
+        backdrop.setBounds(0, 0, 40, 20);
+        backdrop.draw(new Canvas(drawn));
+        return drawn;
+    }
+
+    @Config(sdk = 36)
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @Test public void theBlurSitsOnTheChatsOwnColourSoTheChatListNeverShowsThrough() {
+        on();
+        openChat(true);
+        chat.setBackgroundColor(0x80FFFFFF);
+        ((View) chat.getParent()).setBackgroundColor(0xFF0A0B0C);
+        Bitmap drawn = blurDrawnOverRed(bar);
+        assertEquals("A see-through colour is passed over for the solid one behind it", 0xFF0A0B0C, drawn.getPixel(20, 10));
+        assertEquals(0xFF0A0B0C, drawn.getPixel(39, 19));
+        assertEquals(0xFF0A0B0C, blurDrawnOverRed(composer).getPixel(0, 0));
+    }
+
+    @Config(sdk = 36)
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @Test public void aChatWithNoSolidColourPutsTheBlurOnTheBarsOwnColour() {
+        on();
+        openChat(true);
+        for (ViewParent at = list.getParent(); at instanceof View; at = at.getParent()) ((View) at).setBackground(null);
+        assertEquals(0xFF102030, blurDrawnOverRed(bar).getPixel(20, 10));
+        assertEquals(0xFF203040, blurDrawnOverRed(composer).getPixel(20, 10));
     }
 
     @Config(sdk = 36)

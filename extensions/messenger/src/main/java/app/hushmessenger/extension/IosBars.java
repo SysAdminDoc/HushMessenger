@@ -2,11 +2,14 @@ package app.hushmessenger.extension;
 
 import android.annotation.TargetApi;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RecordingCanvas;
 import android.graphics.RenderEffect;
 import android.graphics.RenderNode;
 import android.graphics.Shader;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
@@ -357,8 +360,29 @@ public final class IosBars {
         // The blur's render node needs Android 12; blurs says the same, but a test can swap blurs out.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || bar == null || bar.getBackground() instanceof Frost) return;
         Drawable own = bar.getBackground();
-        Drawable backdrop = new Backdrop(list, bar, bar.getResources().getDisplayMetrics().density * RADIUS_DP);
+        Drawable backdrop = new Backdrop(list, bar, bar.getResources().getDisplayMetrics().density * RADIUS_DP, solid(own));
         bar.setBackground(new Frost(backdrop, own, faded(own, bar)));
+    }
+
+    /** [drawable]'s colour when it's a colour nothing shows through, else null. */
+    private static Integer solid(Drawable drawable) {
+        if (!(drawable instanceof ColorDrawable)) return null;
+        int color = ((ColorDrawable) drawable).getColor();
+        return Color.alpha(color) == 0xFF ? color : null;
+    }
+
+    /**
+     * What a bar's blur sits on (#251): the colour behind the messages, from the first view around the list with a
+     * solid colour, up to the window's own. With none, [fallback], the bar's own colour. Where the list draws nothing
+     * (no messages yet, the gap above the first one) the blur is see-through, and while the chat slides in over the
+     * chat list that list showed through the bars.
+     */
+    static Integer baseColour(View list, Integer fallback) {
+        for (ViewParent at = list.getParent(); at instanceof View; at = at.getParent()) {
+            Integer color = solid(((View) at).getBackground());
+            if (color != null) return color;
+        }
+        return fallback;
     }
 
     /**
@@ -494,25 +518,35 @@ public final class IosBars {
     /**
      * The messages behind a bar, blurred. Each draw records the list's own drawing into a render node moved into the
      * bar's corner, hands the node the blur and draws it, so the blur is the GPU's work and the messages behind the
-     * bar are the ones on screen. The list is no parent of the bar, so nothing draws itself here.
+     * bar are the ones on screen. The list is no parent of the bar, so nothing draws itself here. The blur goes on the
+     * chat's own solid colour, so nothing from behind the chat shows through the bar.
      */
     @TargetApi(Build.VERSION_CODES.S)
     static final class Backdrop extends Drawable {
         private final WeakReference<View> source, holder;
         private final RenderNode node = new RenderNode("hush-ios-bar");
         private final float radius;
+        /** The bar's own colour when it's solid, for a chat with no solid colour around the list. */
+        private final Integer fallback;
+        private final Paint base = new Paint();
 
-        Backdrop(View source, View holder, float radius) {
+        Backdrop(View source, View holder, float radius, Integer fallback) {
             this.source = new WeakReference<>(source);
             this.holder = new WeakReference<>(holder);
             this.radius = radius;
+            this.fallback = fallback;
         }
 
         @Override public void draw(Canvas canvas) {
             View list = source.get(), bar = holder.get();
             Rect at = getBounds();
-            if (list == null || bar == null || at.isEmpty() || !(canvas instanceof RecordingCanvas)) return;
-            if (list.getWidth() <= 0 || list.getHeight() <= 0) return;
+            if (list == null || bar == null || at.isEmpty()) return;
+            Integer color = baseColour(list, fallback);
+            if (color != null) {
+                base.setColor(color);
+                canvas.drawRect(at, base);
+            }
+            if (!(canvas instanceof RecordingCanvas) || list.getWidth() <= 0 || list.getHeight() <= 0) return;
             try {
                 node.setPosition(0, 0, at.width(), at.height());
                 RecordingCanvas into = node.beginRecording();
