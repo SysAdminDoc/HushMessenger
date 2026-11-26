@@ -1664,6 +1664,55 @@ final class Media {
         return (fields.get(0).getAccessFlags() & locked) != 0 ? List.of() : players;
     }
 
+    /** The class's static (VideoPlayerParams, the class itself, a config) methods with code. Mirrors ChatHeadVideo.kt. */
+    static List<Method> grootMakers(ClassDef cls) {
+        var makers = new ArrayList<Method>();
+        for (var m : cls.getMethods()) {
+            var params = m.getParameterTypes().stream().map(CharSequence::toString).toList();
+            if (AccessFlags.STATIC.isSet(m.getAccessFlags()) && m.getImplementation() != null && params.size() == 3 &&
+                "Lcom/facebook/video/engine/api/VideoPlayerParams;".equals(params.get(0)) && cls.getType().equals(params.get(1)) &&
+                params.get(2).startsWith("L") && !params.get(2).startsWith("Ljava/")) makers.add(m);
+        }
+        return makers;
+    }
+
+    /** The other maker with the same parameters and a different return type, while there's exactly one. */
+    static Method grootTextureSibling(ClassDef cls, Method surface) {
+        var params = surface.getParameterTypes().stream().map(CharSequence::toString).toList();
+        var found = new ArrayList<Method>();
+        for (var m : grootMakers(cls)) {
+            if (!m.getName().equals(surface.getName()) && params.equals(m.getParameterTypes().stream().map(CharSequence::toString).toList()) &&
+                !m.getReturnType().equals(surface.getReturnType())) found.add(m);
+        }
+        return found.size() == 1 ? found.get(0) : null;
+    }
+
+    /**
+     * groot_texture_view: the newer player's SurfaceView maker, while exactly one class has it beside a sibling whose
+     * class implements the maker's interface and holds a TextureView. Mirrors ChatHeadVideo.kt.
+     */
+    static List<Method> grootTexture(List<ClassDef> classes) {
+        var types = new HashMap<String, ClassDef>();
+        var owners = new ArrayList<ClassDef>();
+        for (var cls : classes) {
+            types.put(cls.getType(), cls);
+            if (grootMakers(cls).size() >= 2) owners.add(cls);
+        }
+        var found = new ArrayList<Method>();
+        for (var owner : owners) for (var surface : grootMakers(owner)) {
+            var texture = grootTextureSibling(owner, surface);
+            if (texture == null) continue;
+            var face = types.get(surface.getReturnType());
+            var made = types.get(texture.getReturnType());
+            if (face == null || made == null || !AccessFlags.INTERFACE.isSet(face.getAccessFlags())) continue;
+            if (!made.getInterfaces().contains(surface.getReturnType())) continue;
+            boolean holds = false;
+            for (var f : made.getFields()) if ("Landroid/view/TextureView;".equals(f.getType()) && !AccessFlags.STATIC.isSet(f.getAccessFlags())) holds = true;
+            if (holds && surface.getImplementation().getRegisterCount() > 3) found.add(surface);
+        }
+        return found.size() == 1 ? found : List.of();
+    }
+
     /**
      * The register a call button builder returns its wrapper in: its only return, of a new instance of the declared
      * return type made right before it, which nothing jumps to. -1 for any other method. Mirrors CallButtonBuilt.kt.

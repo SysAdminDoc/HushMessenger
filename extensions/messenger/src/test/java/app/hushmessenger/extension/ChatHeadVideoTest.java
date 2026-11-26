@@ -118,6 +118,32 @@ public class ChatHeadVideoTest {
         assertTrue(Settings.hookErrors.isEmpty());
     }
 
+    /** #104: a video sent in a chat plays through the newer player, which swaps on exactly the same phones. */
+    @Test public void aSentVideoDrawsIntoATextureViewOnlyOnAPhoneThatLeavesABoxBehind() {
+        for (String maker : new String[] {"HUAWEI", "Huawei", " honor "}) {
+            ShadowBuild.setManufacturer(maker);
+            assertTrue(maker, ChatHeadVideo.grootTextureView());
+        }
+        for (String maker : new String[] {"samsung", "Google", "Xiaomi", ""}) {
+            ShadowBuild.setManufacturer(maker);
+            assertFalse(maker, ChatHeadVideo.grootTextureView());
+        }
+        assertTrue(Settings.hookErrors.isEmpty());
+    }
+
+    /** Paused or in safe mode, a sent video stays on Messenger's own SurfaceView even on those phones. */
+    @Test public void aPausedHushLeavesSentVideosOnMessengersSurface() {
+        ShadowBuild.setManufacturer("Huawei");
+        for (String state : new String[] {"paused", "safe"}) {
+            Settings.initialize(app);
+            Settings.preferences.edit().clear().putBoolean("paused", state.equals("paused"))
+                .putBoolean("safe_mode", state.equals("safe")).commit();
+            CrashGuard.resetForTests();
+            CrashGuard.onProcessStart(app);
+            assertFalse(state, ChatHeadVideo.grootTextureView());
+        }
+    }
+
     /** A phone that leaves a box behind still leaves Messenger's videos alone while Hush is paused. */
     @Test public void aPausedHushLeavesEveryVideoAsMessengerDrewIt() {
         ShadowBuild.setManufacturer("Huawei");

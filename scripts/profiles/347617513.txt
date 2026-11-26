@@ -157,6 +157,7 @@ hook gallery_temp_file LX/0Re;->A01()Ljava/io/File;
 hook gallery_to_chat LX/6dg;->A00(Landroidx/fragment/app/Fragment;Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threadkey/ThreadKey;Lcom/facebook/xapp/messaging/composer/activity/event/ActivityResultEvent;LX/4qa;)V
 hook gallery_to_chat LX/NJg;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 hook gallery_to_chat Lcom/facebook/messaging/msys/thread/composer/configuration/xapp/BaseXappComposerConfigurationFactory;->A10()Z
+hook groot_texture_view LX/Amc;->A04(Lcom/facebook/video/engine/api/VideoPlayerParams;LX/Amc;LX/C48;)LX/Z67;
 hook growth LX/24w;->A0A()Z
 hook growth LX/2CV;->A0A(LX/2CV;)Z
 hook growth_active_status LX/5Xt;->A00(Lcom/facebook/auth/usersession/FbUserSession;LX/5UE;)Z

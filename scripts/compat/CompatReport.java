@@ -284,7 +284,7 @@ public class CompatReport {
         PATCHES.put("Bold and italic text", List.of("text_style"));
         PATCHES.put("Open settings from menu", List.of("menu_settings"));
         PATCHES.put("Keep chat pop-ups", List.of("chat_channel_keep", "chat_channel_raise"));
-        PATCHES.put("Fix videos in chat heads", List.of("chat_head_video"));
+        PATCHES.put("Fix videos in chat heads", List.of("chat_head_video", "groot_texture_view"));
         PATCHES.put("Chat bar buttons in the + menu", List.of("chat_bar_plus"));
         PATCHES.put("Mark as read stays on this phone", List.of("mark_read_locally", "local_read", "unread_badge"));
     }

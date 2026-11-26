@@ -175,6 +175,7 @@ final class Controls {
         found.get("special_contacts").addAll(specialContacts(classes));
         found.get("menu_blur").addAll(menuBlur(classes));
         found.get("chat_head_video").addAll(chatHeadVideo(classes));
+        found.get("groot_texture_view").addAll(grootTexture(classes));
         var callButtonBuilders = callButtonBuilt(classes, stringTables);
         found.get("call_button_built").addAll(callButtonBuilders);
         found.get("hide_call_lists").addAll(callButtonLists(classes, callButtonBuilders));

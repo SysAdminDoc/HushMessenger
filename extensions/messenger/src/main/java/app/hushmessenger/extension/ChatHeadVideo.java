@@ -48,6 +48,21 @@ public final class ChatHeadVideo {
         }
     }
 
+    /**
+     * True when Messenger's newer player, the one that plays videos sent in a chat, should draw into a TextureView. That
+     * player picks a SurfaceView before it knows where it will show, so there's no context to go by, and it only swaps
+     * on the phones in [LAYER_LEAVES_A_BOX], where a sent video left the box behind when its chat shrank to a chat head
+     * and again when the chat head moved (#104).
+     */
+    public static boolean grootTextureView() {
+        try {
+            return Settings.running() && layerLeavesABox();
+        } catch (Throwable error) {
+            Settings.hookFailedPrivately(KEY, "Couldn't pick how a sent video draws", error);
+            return false;
+        }
+    }
+
     /** Whether this phone is one of [LAYER_LEAVES_A_BOX]. */
     static boolean layerLeavesABox() {
         String maker = Build.MANUFACTURER;

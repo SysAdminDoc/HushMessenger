@@ -298,6 +298,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(CHAT_CHANNEL_KEEP).addAll(findChatChannelKeep(classes))
     found.getValue(CHAT_CHANNEL_RAISE).addAll(findChatChannelRaise(classes))
     found.getValue(CHAT_HEAD_VIDEO).addAll(findChatHeadVideo(classes))
+    found.getValue(GROOT_TEXTURE).addAll(findGrootTexture(classes))
     val callButtonBuilders = findCallButtonBuilt(classes, stringTables)
     found.getValue(CALL_BUTTON_BUILT).addAll(callButtonBuilders)
     found.getValue(HIDE_CALL_LISTS).addAll(findCallButtonLists(classes, callButtonBuilders))
