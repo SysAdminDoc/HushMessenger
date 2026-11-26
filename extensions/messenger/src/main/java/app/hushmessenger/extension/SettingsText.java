@@ -339,6 +339,8 @@ final class SettingsText {
         ENGLISH.put("invisible_buttons_group_menu", "Menus and sheets");
         ENGLISH.put("invisible_buttons_group_ours", "HushMessenger's buttons");
         ENGLISH.put("invisible_buttons_group_other", "Other");
+        ENGLISH.put("tab_bar_slide", "Slide along the tab bar");
+        ENGLISH.put("tab_bar_slide_help", "Slide your finger along the tab bar at the bottom and a highlight follows it from tab to tab. Let go to open the tab under it. A tap works as before, and this works with Swipe between tabs off too. Restart Messenger after you turn it on.");
         ENGLISH.put("message_actions_hidden_label", "%1$s (hidden)");
         ENGLISH.put("message_actions_move_up", "Move %1$s up");
         ENGLISH.put("message_actions_move_down", "Move %1$s down");

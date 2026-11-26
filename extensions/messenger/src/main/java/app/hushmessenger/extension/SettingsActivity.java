@@ -1154,7 +1154,7 @@ public final class SettingsActivity extends Activity {
                     || StoryEye.OWNER.equals(spec[0]) || SpecialContacts.KEY.equals(spec[0]) || CallCaptions.KEY.equals(spec[0])
                     || MenuBlur.KEY.equals(spec[0]) || "hide_read_receipts".equals(spec[0]) || CallRecording.KEY.equals(spec[0])
                     || RefreshRate.KEY.equals(spec[0]) || ChatJump.KEY.equals(spec[0]) || SeeThroughTabBar.KEY.equals(spec[0])
-                    || StoryRowSize.KEY.equals(spec[0])
+                    || StoryRowSize.KEY.equals(spec[0]) || TabSwipe.KEY.equals(spec[0])
                     || ("allow_screenshot".equals(spec[0]) && Build.VERSION.SDK_INT >= 29)) {
                 // Below the row, where TalkBack reaches them: the row's label column hides its descendants.
                 LinearLayout wrapper = ui.column();
@@ -1199,6 +1199,8 @@ public final class SettingsActivity extends Activity {
                 else if (RefreshRate.KEY.equals(spec[0])) refreshRates.addTo(wrapper);
                 else if (SeeThroughTabBar.KEY.equals(spec[0])) seeThroughLevels.addTo(wrapper);
                 else if (StoryRowSize.KEY.equals(spec[0])) storyRowSizes.addTo(wrapper);
+                else if (TabSwipe.KEY.equals(spec[0])) ui.add(wrapper, controlRow(TabSlide.KEY, text.format(TabSlide.KEY),
+                    text.format("tab_bar_slide_help"), false), 8);
                 else if (CallRecording.KEY.equals(spec[0])) {
                     callRecording.addScopeTo(wrapper);
                     addRecordCallChats(wrapper);
@@ -2385,6 +2387,7 @@ public final class SettingsActivity extends Activity {
             if ("hide_read_receipts".equals(spec[0])) inside = text.get(Settings.HIDE_DELIVERED) + " " + text.get("hide_delivered_help");
             if (ChatJump.KEY.equals(spec[0])) inside = text.get(ChatJump.PAGES) + " " + text.get("chat_page_buttons_help");
             if (InvisibleButtons.KEY.equals(spec[0])) inside = text.get(InvisibleButtonsPick.KEY) + " " + text.get("invisible_buttons_pick_help");
+            if (TabSwipe.KEY.equals(spec[0])) inside = text.get(TabSlide.KEY) + " " + text.get("tab_bar_slide_help");
             if (CallCaptions.KEY.equals(spec[0])) inside = text.get("call_captions_heard_title") + " " + text.get("call_captions_shown_title") + " "
                 + text.get(CallCaptions.SPEAK) + " " + text.get("call_captions_speak_help") + " " + text.get(CallCaptions.DUCK) + " "
                 + text.get("call_captions_duck_help");

@@ -523,6 +523,7 @@ public final class Settings {
         owners.put(Settings.HIDE_DELIVERED, "hide_read_receipts");
         owners.put(ChatJump.PAGES, ChatJump.KEY);
         owners.put(InvisibleButtonsPick.KEY, InvisibleButtons.KEY);
+        owners.put(TabSlide.KEY, TabSwipe.KEY);
         SUB_SWITCHES = Collections.unmodifiableMap(owners);
     }
 
