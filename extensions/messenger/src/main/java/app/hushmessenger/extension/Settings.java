@@ -8,6 +8,11 @@ import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.RectShape;
+import android.graphics.drawable.shapes.RoundRectShape;
+import android.graphics.drawable.shapes.Shape;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
@@ -1259,6 +1264,30 @@ public final class Settings {
         } catch (RuntimeException error) {
             hookFailed(AVATAR_SHAPE, "Can't change the profile picture shape", error);
             return path;
+        }
+    }
+
+    /**
+     * A user tile's photo mask as Messenger sets it. A tile with no badge to cut around, like your picture on the Menu
+     * tab, gets no clip path, just an oval, so here the oval becomes a square or rounded square too (#207). Any other
+     * shape was Messenger's own pick and stays.
+     */
+    public static void avatarTileShape(ShapeDrawable tile, Shape shape) {
+        tile.setShape(avatarTileMask(shape));
+    }
+
+    static Shape avatarTileMask(Shape shape) {
+        if (!(shape instanceof OvalShape)) return shape;
+        try {
+            int held = avatarShape();
+            if (held == AVATAR_CIRCLE) return shape;
+            if (held == AVATAR_SQUARE) return new RectShape();
+            float[] corners = new float[8];
+            Arrays.fill(corners, avatarCornerPx());
+            return new RoundRectShape(corners, null, null);
+        } catch (RuntimeException error) {
+            hookFailed(AVATAR_SHAPE, "Can't change the profile picture shape", error);
+            return shape;
         }
     }
 

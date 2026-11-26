@@ -39,6 +39,7 @@
 - With `Hide app drawer icon` on, an update could bring the drawer icon back until Messenger's next start, and tapping it then opened HushMessenger's settings and shut them straight away. Settings opened that way stay open now and the icon goes once you close them. Turning the switch on from settings you opened through the icon works the same way. If Messenger only wakes up in the background, for a notification say, the icon goes after about ten seconds.
 - `Report a problem` now says which switches you have on haven't done anything yet, and lists any switch that stopped with an error, so a report about a switch that "does nothing" shows why. Before, it only listed the switches that were on. Refs #198, #241.
 - Rows you hide under `Menu rows` now leave the side menu too, on accounts where Messenger opens one from the button at the top left instead of showing a Menu tab. That covers rows tucked under another row, like Friend requests under More, and the side menu's rows now show up in the list for you to pick. Refs #207.
+- `Round the corners` now rounds your own picture on the Menu tab too. It stayed a plain square there, along with a few other pictures Messenger draws the same way. Refs #207.
 - For developers, the release walk passes over a listed phone whose Messenger build has no stock APK in the fixtures and walks the next free one, saying which it skipped and why. It used to take the first free phone and stop there. `release.ps1 -WalkSerial <serial>` picks the walk device yourself.
 
 ## 0.31.0 (2026-11-25)
