@@ -818,6 +818,8 @@ search_suggested.title	在搜尋中隱藏建議
 search_suggested.description	在你輸入任何內容前，隱藏搜尋頂端的建議人選。你搜尋他們時，他們仍會出現。
 search_reels.title	在搜尋中隱藏最近的 Reels
 search_reels.description	在你輸入任何內容前，從搜尋中隱藏你最近看過的 Reels。
+search_strangers.title	在搜尋中隱藏不認識的人
+search_strangers.description	在搜尋中輸入時，隱藏不是你朋友的人，以免不小心傳訊息給陌生人。你的朋友和群組仍會出現。
 longer_notes.title	撰寫較長的便利貼
 longer_notes.description	讓便利貼最多可輸入 600 個字元，而不是 60 個。較長的便利貼能否發布由 Facebook 決定。
 chat_preview.title	長按預覽聊天室

@@ -818,6 +818,8 @@ search_suggested.title	Nascondi Suggeriti nella ricerca
 search_suggested.description	Nasconde le persone suggerite in cima alla ricerca prima che tu scriva qualcosa. Le persone compaiono comunque quando le cerchi.
 search_reels.title	Nascondi i reel recenti nella ricerca
 search_reels.description	Nasconde dalla ricerca i reel che hai guardato di recente, prima che tu scriva qualcosa.
+search_strangers.title	Nascondi gli sconosciuti nella ricerca
+search_strangers.description	Nasconde le persone che non sono tue amiche quando scrivi nella ricerca, così non scrivi per sbaglio a uno sconosciuto. I tuoi amici e i tuoi gruppi continuano ad apparire.
 longer_notes.title	Scrivi note più lunghe
 longer_notes.description	Permette alla casella delle note di contenere fino a 600 caratteri invece di 60. È Facebook a decidere se una nota lunga passa.
 chat_preview.title	Anteprima chat con pressione lunga

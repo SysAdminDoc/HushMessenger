@@ -243,6 +243,7 @@ public class CompatReport {
         PATCHES.put("Show the 40-character code option", List.of("recovery_code_row"));
         PATCHES.put("Hide Suggested in search", List.of("search_sections"));
         PATCHES.put("Hide recent reels in search", List.of("search_sections"));
+        PATCHES.put("Hide people you don't know in search", List.of("search_sections", "search_items"));
         PATCHES.put("Block Meta AI chats", List.of("ai_chat_open"));
         PATCHES.put("Hide Create story", List.of("story_create_tile"));
         PATCHES.put("Show pinned messages", List.of("pinned_bar"));

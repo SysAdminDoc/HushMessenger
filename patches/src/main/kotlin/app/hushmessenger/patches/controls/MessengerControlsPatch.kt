@@ -978,6 +978,9 @@ val hideSearchSuggestedPatch = controlPatch("search_suggested", "Hide Suggested 
 val hideSearchReelsPatch = controlPatch("search_reels", "Hide recent reels in search",
     "Hides the reels you watched lately from search before you type anything.", "Inbox", SEARCH_SECTIONS)
 @Suppress("unused")
+val hideSearchStrangersPatch = controlPatch("search_strangers", "Hide people you don't know in search",
+    "Hides the people you aren't friends with when you type in search, so you don't message a stranger by mistake. Your friends and groups still come up.", "Inbox", SEARCH_SECTIONS, SEARCH_ITEMS)
+@Suppress("unused")
 val blockAiChatsPatch = controlPatch("ai_chat_block", "Block Meta AI chats",
     "Stops chats with Meta AI and other AI bots from opening, from search, a link or your chat list. A group with an AI in it still opens.", "Navigation", AI_CHAT_OPEN)
 @Suppress("unused")
