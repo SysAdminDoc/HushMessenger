@@ -35,7 +35,7 @@ import static org.robolectric.Shadows.shadowOf;
 @Config(sdk = {28, 36})
 @LooperMode(LooperMode.Mode.PAUSED)
 public class IosBarsTest {
-    private static final int BAR = 60, COMPOSER = 90;
+    private static final int BAR = 60, COMPOSER = 90, STRIP = 24;
 
     private ActivityController<Activity> controller;
     private Activity activity;
@@ -62,6 +62,12 @@ public class IosBarsTest {
 
     /** A chat like Messenger's: the name and call buttons on top, the messages, then the message box. */
     private void openChat(boolean bars) {
+        buildChat(bars);
+        activity.setContentView(chat);
+        showChat(bars);
+    }
+
+    private void buildChat(boolean bars) {
         controller = Robolectric.buildActivity(Activity.class).setup();
         activity = controller.get();
         chat = new FrameLayout(activity);
@@ -80,7 +86,9 @@ public class IosBarsTest {
             column.addView(composer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, COMPOSER));
         }
         chat.addView(column);
-        activity.setContentView(chat);
+    }
+
+    private void showChat(boolean bars) {
         idle();
         if (bars) {
             barPaint = bar.getBackground();
@@ -345,6 +353,130 @@ public class IosBarsTest {
         assertEquals(255, topAgain.getAlpha());
         assertEquals(0f, jump.getTranslationY(), 0f);
         assertEquals(jumpWas, screen(jump));
+    }
+
+    /**
+     * Messenger 588's chat screen: its own strip behind the status bar and the chat below it sit side by side in the
+     * window's content, so the strip isn't in the chat. [gap] puts that much room between the strip and the chat.
+     */
+    private View openChatUnderStrip(int gap) {
+        buildChat(true);
+        FrameLayout content = new FrameLayout(activity);
+        View strip = new View(activity);
+        strip.setBackground(new ColorDrawable(0xFF000000));
+        content.addView(strip, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, STRIP));
+        FrameLayout.LayoutParams below = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT);
+        below.topMargin = STRIP + gap;
+        content.addView(chat, below);
+        activity.setContentView(content);
+        showChat(true);
+        idle();
+        return strip;
+    }
+
+    /**
+     * #252: the top bar's blur stopped under the solid strip Messenger keeps behind the status bar. The strip is frosted
+     * too, under the top bar's colour, and the messages get its room as well, so they show blurred all the way up.
+     */
+    @Config(sdk = 36)
+    @Test public void theStripBehindTheStatusBarGoesSeeThroughWithTheTopBar() {
+        on();
+        View strip = openChatUnderStrip(0);
+        Drawable stripPaint = ((IosBars.Frost) strip.getBackground()).own;
+        assertEquals(0xFF000000, ((ColorDrawable) stripPaint).getColor());
+        LayerDrawable layers = (LayerDrawable) strip.getBackground();
+        assertEquals(2, layers.getNumberOfLayers());
+        assertTrue(layers.getDrawable(0) instanceof IosBars.Backdrop);
+        assertEquals("The strip takes the top bar's colour, so the two read as one bar",
+            0x102030, ((ColorDrawable) layers.getDrawable(1)).getColor() & 0xFFFFFF);
+        assertEquals(IosBars.TINT, layers.getDrawable(1).getAlpha());
+        assertEquals(255, stripPaint.getAlpha());
+        assertFrosted(bar, (ColorDrawable) barPaint);
+
+        assertEquals("The messages reach up under the strip too", BAR + STRIP, list.getPaddingTop());
+        assertEquals(-(BAR + STRIP), room().topMargin);
+        assertEquals(COMPOSER, list.getPaddingBottom());
+        assertEquals(0, screen(list).top - screen(strip).top);
+        assertTrue("The chat still cuts the messages off at its top", chat.getClipChildren());
+
+        // A layout later changes nothing, and Messenger painting the strip again gets the blur put back.
+        Drawable frosted = strip.getBackground();
+        IosBars.look(chat, true);
+        IosBars.upkeep(chat);
+        assertSame(frosted, strip.getBackground());
+        assertEquals(BAR + STRIP, list.getPaddingTop());
+        ColorDrawable again = new ColorDrawable(0xFF000000);
+        strip.setBackground(again);
+        IosBars.upkeep(chat);
+        assertSame(again, ((IosBars.Frost) strip.getBackground()).own);
+
+        Settings.preferences.edit().putBoolean(IosBars.KEY, false).commit();
+        IosBars.look(chat, true);
+        assertSame("The strip gets back the colour it had last", again, strip.getBackground());
+        assertEquals(0, list.getPaddingTop());
+        assertEquals(0, room().topMargin);
+        assertFalse(Settings.hookErrors.containsKey(IosBars.KEY));
+    }
+
+    /**
+     * A chat opened from the chat list has no strip over it, only the window, so the parent at the top of the window
+     * paints the frost in a band as high as the room over the top bar, and only while the top bar shows (#252).
+     */
+    @Config(sdk = 36)
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @Test public void aChatWithNothingOverItGetsTheFrostInTheWindowsTopBand() {
+        on();
+        buildChat(true);
+        activity.getWindow().requestFeature(android.view.Window.FEATURE_NO_TITLE);
+        FrameLayout content = new FrameLayout(activity);
+        ColorDrawable contentPaint = new ColorDrawable(0xFF000000);
+        content.setBackground(contentPaint);
+        FrameLayout.LayoutParams below = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT);
+        below.topMargin = STRIP;
+        content.addView(chat, below);
+        activity.setContentView(content);
+        showChat(true);
+        idle();
+
+        assertTrue(content.getBackground() instanceof IosBars.Frost);
+        assertSame(contentPaint, ((IosBars.Frost) content.getBackground()).own);
+        assertEquals(BAR + STRIP, list.getPaddingTop());
+        assertEquals(-(BAR + STRIP), room().topMargin);
+        Drawable band = content.getBackground();
+        // The window's own colour would be the blur's base, so the base is the top bar's colour here.
+        for (ViewParent at = content.getParent(); at instanceof View; at = at.getParent()) ((View) at).setBackground(null);
+        band.setBounds(0, 0, content.getWidth(), content.getHeight());
+        assertEquals("Only the band over the top bar is frosted", STRIP, ((LayerDrawable) band).getDrawable(0).getBounds().height());
+        Bitmap drawn = Bitmap.createBitmap(content.getWidth(), content.getHeight(), Bitmap.Config.ARGB_8888);
+        band.draw(new Canvas(drawn));
+        assertEquals("The band takes the top bar's colour", 0xFF102030, drawn.getPixel(10, STRIP / 2));
+        assertEquals("Under the band the parent keeps its own colour", 0xFF000000, drawn.getPixel(10, STRIP + BAR + 10));
+
+        bar.setVisibility(View.GONE);
+        drawn.eraseColor(0);
+        band.draw(new Canvas(drawn));
+        assertEquals("With the top bar gone (back on the chat list) the band is the parent's own colour again",
+            0xFF000000, drawn.getPixel(10, STRIP / 2));
+        bar.setVisibility(View.VISIBLE);
+
+        Settings.preferences.edit().putBoolean(IosBars.KEY, false).commit();
+        IosBars.look(chat, true);
+        assertSame(contentPaint, content.getBackground());
+        assertEquals(0, list.getPaddingTop());
+        assertFalse(Settings.hookErrors.containsKey(IosBars.KEY));
+    }
+
+    /** A view at the top that doesn't touch the chat's top bar isn't the status bar's strip, and stays as it is. */
+    @Config(sdk = 36)
+    @Test public void aStripThatDoesntTouchTheTopBarIsLeftAlone() {
+        on();
+        View strip = openChatUnderStrip(20);
+        assertTrue(strip.getBackground() instanceof ColorDrawable);
+        assertFrosted(bar, (ColorDrawable) barPaint);
+        assertEquals(BAR, list.getPaddingTop());
+        assertEquals(-BAR, room().topMargin);
     }
 
     /** [bar] shows the blur under a see-through copy of [own], and [own] itself is untouched. */
