@@ -57,6 +57,15 @@ public final class ChatPreviewSize {
         }
     }
 
+    /** Hands each preview to Keep taps in the chat preview as its view is built, so Open chat can open the chat its way. */
+    public static void preview(Object fragment) {
+        try {
+            PreviewTaps.keep(fragment);
+        } catch (Throwable error) {
+            Settings.hookFailedPrivately(PreviewTaps.KEY, "Couldn't keep the chat preview's way into the chat", error);
+        }
+    }
+
     /**
      * Holds on to a press until it moves past the touch slop. Then it ends the layer's own press, so letting go opens
      * nothing, and hands the press and the rest of the gesture to the chat under the layer.
