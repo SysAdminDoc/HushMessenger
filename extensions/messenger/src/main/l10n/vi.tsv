@@ -222,6 +222,18 @@ invisible_buttons_level_choice	%1$s cho %2$s
 invisible_buttons_invisible	Đã vô hình
 invisible_buttons_visible	Đã trở lại bình thường
 invisible_buttons_level	Giờ hiện %1$s
+invisible_buttons_pick	Chọn nút trên màn hình
+invisible_buttons_pick_help	Đặt một nút tròn nhỏ ở cạnh các màn hình và menu của Messenger. Chạm vào nó, rồi chạm vào nút bất kỳ để chọn độ trong suốt của nút đó. Tắt đi khi bạn xong.
+invisible_buttons_pick_dot	Chọn một nút
+invisible_buttons_pick_now	Giờ hãy chạm vào nút bạn muốn
+invisible_buttons_pick_none	Không có nút nào ở đó
+invisible_buttons_group_screen	Danh sách chat và màn hình khác
+invisible_buttons_group_header	Phần trên của đoạn chat
+invisible_buttons_group_composer	Ô soạn tin nhắn
+invisible_buttons_group_chat	Trong đoạn chat
+invisible_buttons_group_menu	Menu và bảng
+invisible_buttons_group_ours	Nút của HushMessenger
+invisible_buttons_group_other	Khác
 message_actions_hidden_label	%1$s (đã ẩn)
 message_actions_move_up	Đưa %1$s lên
 message_actions_move_down	Đưa %1$s xuống

@@ -222,6 +222,18 @@ invisible_buttons_level_choice	%2$s 設為 %1$s
 invisible_buttons_invisible	現在看不見了
 invisible_buttons_visible	恢復原狀了
 invisible_buttons_level	現在以 %1$s 顯示
+invisible_buttons_pick	在畫面上挑選按鈕
+invisible_buttons_pick_help	在 Messenger 的畫面和選單旁放一個小圓形按鈕。點一下它，再點任何按鈕，就能選擇它要多透明。用完後請關閉。
+invisible_buttons_pick_dot	挑選按鈕
+invisible_buttons_pick_now	現在點一下你要的按鈕
+invisible_buttons_pick_none	那裡沒有可挑選的按鈕
+invisible_buttons_group_screen	聊天列表和其他畫面
+invisible_buttons_group_header	聊天的頂端
+invisible_buttons_group_composer	訊息框
+invisible_buttons_group_chat	聊天裡面
+invisible_buttons_group_menu	選單和面板
+invisible_buttons_group_ours	HushMessenger 的按鈕
+invisible_buttons_group_other	其他
 message_actions_hidden_label	%1$s（已隱藏）
 message_actions_move_up	將%1$s上移
 message_actions_move_down	將%1$s下移

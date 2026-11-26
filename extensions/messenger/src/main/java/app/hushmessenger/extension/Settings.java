@@ -522,6 +522,7 @@ public final class Settings {
         owners.put(FloatingMenu.KEY, MenuBlur.KEY);
         owners.put(Settings.HIDE_DELIVERED, "hide_read_receipts");
         owners.put(ChatJump.PAGES, ChatJump.KEY);
+        owners.put(InvisibleButtonsPick.KEY, InvisibleButtons.KEY);
         SUB_SWITCHES = Collections.unmodifiableMap(owners);
     }
 

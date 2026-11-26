@@ -1191,7 +1191,11 @@ public final class SettingsActivity extends Activity {
                 else if (MessageActions.KEY.equals(spec[0])) messageActions.addTo(wrapper);
                 else if (ChatMenuItems.KEY.equals(spec[0])) chatMenuItems.addTo(wrapper);
                 else if (ProfileMenu.KEY.equals(spec[0])) profileMenuItems.addTo(wrapper);
-                else if (InvisibleButtons.KEY.equals(spec[0])) invisibleButtons.addTo(wrapper);
+                else if (InvisibleButtons.KEY.equals(spec[0])) {
+                    ui.add(wrapper, controlRow(InvisibleButtonsPick.KEY, text.format(InvisibleButtonsPick.KEY),
+                        text.format("invisible_buttons_pick_help"), false), 8);
+                    invisibleButtons.addTo(wrapper);
+                }
                 else if (RefreshRate.KEY.equals(spec[0])) refreshRates.addTo(wrapper);
                 else if (SeeThroughTabBar.KEY.equals(spec[0])) seeThroughLevels.addTo(wrapper);
                 else if (StoryRowSize.KEY.equals(spec[0])) storyRowSizes.addTo(wrapper);
@@ -2380,6 +2384,7 @@ public final class SettingsActivity extends Activity {
             if (MenuBlur.KEY.equals(spec[0])) inside = text.get(FloatingMenu.KEY) + " " + text.get("floating_menu_help");
             if ("hide_read_receipts".equals(spec[0])) inside = text.get(Settings.HIDE_DELIVERED) + " " + text.get("hide_delivered_help");
             if (ChatJump.KEY.equals(spec[0])) inside = text.get(ChatJump.PAGES) + " " + text.get("chat_page_buttons_help");
+            if (InvisibleButtons.KEY.equals(spec[0])) inside = text.get(InvisibleButtonsPick.KEY) + " " + text.get("invisible_buttons_pick_help");
             if (CallCaptions.KEY.equals(spec[0])) inside = text.get("call_captions_heard_title") + " " + text.get("call_captions_shown_title") + " "
                 + text.get(CallCaptions.SPEAK) + " " + text.get("call_captions_speak_help") + " " + text.get(CallCaptions.DUCK) + " "
                 + text.get("call_captions_duck_help");

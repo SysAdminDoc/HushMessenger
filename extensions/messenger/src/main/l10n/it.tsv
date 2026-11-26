@@ -222,6 +222,18 @@ invisible_buttons_level_choice	%1$s per %2$s
 invisible_buttons_invisible	Ora invisibile
 invisible_buttons_visible	Di nuovo normale
 invisible_buttons_level	Ora visibile al %1$s
+invisible_buttons_pick	Scegli i pulsanti sullo schermo
+invisible_buttons_pick_help	Mette un piccolo pulsante rotondo sul lato delle schermate e dei menu di Messenger. Toccalo, poi tocca un pulsante qualsiasi per scegliere quanto è trasparente. Spegnilo quando hai finito.
+invisible_buttons_pick_dot	Scegli un pulsante
+invisible_buttons_pick_now	Ora tocca il pulsante che vuoi
+invisible_buttons_pick_none	Nessun pulsante qui
+invisible_buttons_group_screen	Elenco chat e altre schermate
+invisible_buttons_group_header	Parte alta di una chat
+invisible_buttons_group_composer	Casella del messaggio
+invisible_buttons_group_chat	Dentro una chat
+invisible_buttons_group_menu	Menu e pannelli
+invisible_buttons_group_ours	Pulsanti di HushMessenger
+invisible_buttons_group_other	Altri
 message_actions_hidden_label	%1$s (nascosta)
 message_actions_move_up	Sposta %1$s su
 message_actions_move_down	Sposta %1$s giù

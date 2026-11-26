@@ -327,6 +327,18 @@ final class SettingsText {
         ENGLISH.put("invisible_buttons_invisible", "Invisible now");
         ENGLISH.put("invisible_buttons_visible", "Back to normal");
         ENGLISH.put("invisible_buttons_level", "Now %1$s visible");
+        ENGLISH.put("invisible_buttons_pick", "Pick buttons on the screen");
+        ENGLISH.put("invisible_buttons_pick_help", "Puts a small round button at the side of Messenger's screens and menus. Tap it, then tap any button to choose how see-through it is. Turn this off when you're done.");
+        ENGLISH.put("invisible_buttons_pick_dot", "Pick a button");
+        ENGLISH.put("invisible_buttons_pick_now", "Now tap the button you want");
+        ENGLISH.put("invisible_buttons_pick_none", "No button there to pick");
+        ENGLISH.put("invisible_buttons_group_screen", "Chat list and other screens");
+        ENGLISH.put("invisible_buttons_group_header", "Top of a chat");
+        ENGLISH.put("invisible_buttons_group_composer", "Message box");
+        ENGLISH.put("invisible_buttons_group_chat", "Inside a chat");
+        ENGLISH.put("invisible_buttons_group_menu", "Menus and sheets");
+        ENGLISH.put("invisible_buttons_group_ours", "HushMessenger's buttons");
+        ENGLISH.put("invisible_buttons_group_other", "Other");
         ENGLISH.put("message_actions_hidden_label", "%1$s (hidden)");
         ENGLISH.put("message_actions_move_up", "Move %1$s up");
         ENGLISH.put("message_actions_move_down", "Move %1$s down");
