@@ -170,6 +170,8 @@ final class LinkPlayerSheet {
     private View card() {
         LinearLayout root = new LinearLayout(context);
         this.root = root;
+        // Its buttons sit in a sheet over Messenger, so Invisible buttons lists them with HushMessenger's own (#191).
+        InvisibleButtons.ownView(root);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(dp(16), dp(16), dp(16), dp(16));
 

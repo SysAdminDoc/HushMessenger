@@ -209,6 +209,7 @@ public class LinkPlayerTest {
 
     @Test public void theJarIsEmptiedWhenTheWindowOpensAndAgainWhenItCloses() {
         LinkPlayerSheet sheet = open("https://youtu.be/dQw4w9WgXcQ");
+        assertTrue("#191: Invisible buttons lists its buttons with HushMessenger's own", InvisibleButtons.isOwn(sheet.root));
         assertEquals(1, emptied);
         sheet.close();
         assertEquals(2, emptied);

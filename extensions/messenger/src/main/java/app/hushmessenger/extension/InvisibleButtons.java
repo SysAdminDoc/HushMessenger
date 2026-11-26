@@ -35,7 +35,10 @@ import java.util.WeakHashMap;
  * scrolling lists are left alone, since those rows are chats, people and messages; a menu's list that fits without
  * scrolling is its buttons, so those are taken. HushMessenger settings are never touched.
  * Each name also keeps where it was first seen (the chat list or another screen, a chat's top bar, its message box, among
- * its messages, a menu, or HushMessenger's own), which settings groups the list by. [InvisibleButtonsPick] lets a
+ * its messages, a menu, or HushMessenger's own), which settings groups the list by. HushMessenger's own buttons go in
+ * their group wherever they sit, older entries included. Text Messenger draws from a message (a link's preview over the
+ * message box, a pinned message or a reply across the chat, a web address) is never kept, and a name not seen for
+ * [STALE_DAYS] days or last seen in another language leaves the list unless it's picked. [InvisibleButtonsPick] lets a
  * button be picked by tapping it on screen.
  * Public, since the calls come from Messenger's own chat fragment and Application in other packages.
  */
@@ -77,12 +80,21 @@ public final class InvisibleButtons {
     /** The order settings shows the groups in. A name seen before places were kept goes last, on its own. */
     static final List<String> PLACES_SHOWN = java.util.Collections.unmodifiableList(java.util.Arrays.asList(
         PLACE_SCREEN, PLACE_HEADER, PLACE_COMPOSER, PLACE_CHAT, PLACE_MENU, PLACE_OURS));
-    /** A chat with no message list in it, where every button counts as inside the chat. */
-    private static final int[] NO_LIST = {Integer.MIN_VALUE, Integer.MAX_VALUE};
+    /** When and in which language each name was last seen: the day, the language and the name per line. */
+    static final String SEEN_ON = "invisible_buttons_seen_on";
+    /** An unpicked name not seen for longer than this many days leaves the list. */
+    static final int STALE_DAYS = 14;
+    /** Names only HushMessenger's own buttons use, by their text keys, so one stored before its group existed lands there. */
+    private static final String[] OWN_LABELS = {
+        "chat_jump_first", "chat_page_up", "chat_page_down", "local_search_open", "call_recording_stop_pill"};
     /** The views Messenger's chat fragment hands over. Their buttons go by where they sit around the messages. */
     private static final Map<View, Boolean> chats = new WeakHashMap<>();
+    /** HushMessenger's own views on Messenger's screens. Every button in one is HushMessenger's. */
+    private static final Map<View, Boolean> ownViews = new WeakHashMap<>();
     /** The clock the walk paces itself by. Tests move it by hand. */
     static java.util.function.LongSupplier clock = android.os.SystemClock::uptimeMillis;
+    /** Today, counted in days, for [SEEN_ON]. Tests move it by hand. */
+    static java.util.function.LongSupplier today = () -> System.currentTimeMillis() / 86_400_000L;
     private static Application watching;
     private static Application.ActivityLifecycleCallbacks screens;
 
@@ -98,9 +110,11 @@ public final class InvisibleButtons {
         lookedAt.clear();
         ownNames.clear();
         chats.clear();
+        ownViews.clear();
         InvisibleButtonsPick.resetForTests();
         generation = 0;
         clock = android.os.SystemClock::uptimeMillis;
+        today = () -> System.currentTimeMillis() / 86_400_000L;
     }
 
     /** Messenger's Application, on its way in: from here on every screen it shows is looked over. */
@@ -237,8 +251,8 @@ public final class InvisibleButtons {
             lookedAt.put(view, generation);
             Map<View, String> buttons = new LinkedHashMap<>();
             Map<String, String> places = new LinkedHashMap<>();
-            collect(view, buttons, places, Boolean.TRUE.equals(watched.get(view)), null);
-            remember(places);
+            collect(view, buttons, places, Boolean.TRUE.equals(watched.get(view)), null, false);
+            remember(places, languageOf(view));
             Map<String, Integer> levels = levels();
             boolean any = false;
             for (Map.Entry<View, String> button : buttons.entrySet()) {
@@ -255,30 +269,55 @@ public final class InvisibleButtons {
     /**
      * Every button under [view] that a tap reaches and a screen reader names, with that name, and in [places] where each
      * name sits. A list that scrolls holds chats, people or messages and is skipped; in a [menu], a list that fits is its
-     * buttons. Inside a chat, [messages] is the span on screen its messages show in.
+     * buttons. Inside a chat, [messages] is the span on screen its messages show in, and what Messenger draws from a
+     * message is skipped with everything in it. [own] is true inside one of HushMessenger's own views.
      */
-    private static void collect(View view, Map<View, String> into, Map<String, String> places, boolean menu, int[] messages) {
+    private static void collect(View view, Map<View, String> into, Map<String, String> places, boolean menu, int[] messages,
+            boolean own) {
         if (view.getVisibility() != View.VISIBLE || InvisibleButtonsPick.isOurs(view)) return;
         if (ChatJump.isList(view.getClass()) && (!menu || scrolls(view))) return;
+        own |= isOwn(view);
         if (!menu && messages == null && chats.containsKey(view)) messages = messageSpan(view);
         if ((view.isClickable() || view.isLongClickable()) && view.getWidth() > 0 && view.getHeight() > 0) {
             String name = nameOf(view);
             if (name != null) {
-                into.put(view, name);
-                if (!places.containsKey(name)) places.put(name, placeOf(view, menu, messages));
+                if (!own && fromAMessage(view, menu, messages)) return;
+                if (!looksLikeLink(name)) {
+                    into.put(view, name);
+                    if (!places.containsKey(name)) places.put(name, own ? PLACE_OURS : placeOf(view, menu, messages));
+                }
             }
         }
         if (!(view instanceof ViewGroup)) return;
         ViewGroup group = (ViewGroup) view;
-        for (int i = 0; i < group.getChildCount(); i++) collect(group.getChildAt(i), into, places, menu, messages);
+        for (int i = 0; i < group.getChildCount(); i++) collect(group.getChildAt(i), into, places, menu, messages, own);
     }
 
     /**
-     * Where [button] sits: HushMessenger's own wherever it is, a menu's, above a chat's messages (its top bar), below them
-     * (the message box) or among them, and otherwise on the chat list or another screen.
+     * True for a named [view] in a chat that shows something from a message rather than a button of the chat's: one as
+     * wide as the chat across its top or its messages (a pinned message, a banner about one), or anything between the
+     * messages and the box you type in (a link's preview card, the message a reply answers).
+     */
+    private static boolean fromAMessage(View view, boolean menu, int[] messages) {
+        if (menu || messages == null) return false;
+        int[] at = new int[2];
+        view.getLocationOnScreen(at);
+        int middle = at[1] + view.getHeight() / 2;
+        if (middle <= messages[1] && messages[2] > 0 && view.getWidth() * 4 >= messages[2] * 3) return true;
+        return messages[3] != Integer.MIN_VALUE && middle > messages[1] && middle < messages[3];
+    }
+
+    /** A web address, which is a link someone sent rather than the name of a button. */
+    static boolean looksLikeLink(String name) {
+        String lower = name.toLowerCase(java.util.Locale.ROOT);
+        return lower.contains("http://") || lower.contains("https://") || lower.contains("www.");
+    }
+
+    /**
+     * Where [button], one of Messenger's, sits: a menu's, above a chat's messages (its top bar), below them (the message
+     * box) or among them, and otherwise on the chat list or another screen.
      */
     private static String placeOf(View button, boolean menu, int[] messages) {
-        if (ownNames.containsKey(button)) return PLACE_OURS;
         if (menu) return PLACE_MENU;
         if (messages == null) return PLACE_SCREEN;
         int[] at = new int[2];
@@ -291,14 +330,31 @@ public final class InvisibleButtons {
 
     /**
      * The span on screen a chat's messages show in: its tallest list, less the padding Translucent chat bars gives it,
-     * since the messages then scroll under the bars.
+     * since the messages then scroll under the bars. Then the chat's width, and the top of the box you type in below the
+     * messages, or Integer.MIN_VALUE when there's none. A chat with no list counts every button as inside it.
      */
     private static int[] messageSpan(View chat) {
         View list = tallestList(chat, null);
-        if (list == null) return NO_LIST;
+        if (list == null) return new int[] {Integer.MIN_VALUE, Integer.MAX_VALUE, chat.getWidth(), Integer.MIN_VALUE};
         int[] at = new int[2];
         list.getLocationOnScreen(at);
-        return new int[] {at[1] + list.getPaddingTop(), at[1] + list.getHeight() - list.getPaddingBottom()};
+        int bottom = at[1] + list.getHeight() - list.getPaddingBottom();
+        return new int[] {at[1] + list.getPaddingTop(), bottom, chat.getWidth(), fieldTop(chat, bottom, Integer.MIN_VALUE)};
+    }
+
+    /** The top on screen of the highest box you type in under [view] whose middle sits below [below], or [best]. */
+    private static int fieldTop(View view, int below, int best) {
+        if (view.getVisibility() != View.VISIBLE) return best;
+        if (view instanceof android.widget.EditText) {
+            int[] at = new int[2];
+            view.getLocationOnScreen(at);
+            if (at[1] + view.getHeight() / 2 > below && (best == Integer.MIN_VALUE || at[1] < best)) return at[1];
+            return best;
+        }
+        if (!(view instanceof ViewGroup)) return best;
+        ViewGroup group = (ViewGroup) view;
+        for (int i = 0; i < group.getChildCount(); i++) best = fieldTop(group.getChildAt(i), below, best);
+        return best;
     }
 
     private static View tallestList(View view, View best) {
@@ -316,7 +372,7 @@ public final class InvisibleButtons {
      */
     static Map.Entry<View, String> buttonAt(View window, int x, int y) {
         Map<View, String> buttons = new LinkedHashMap<>();
-        collect(window, buttons, new LinkedHashMap<>(), Boolean.TRUE.equals(watched.get(window)), null);
+        collect(window, buttons, new LinkedHashMap<>(), Boolean.TRUE.equals(watched.get(window)), null, false);
         Map.Entry<View, String> best = null;
         long bestArea = Long.MAX_VALUE;
         int[] at = new int[2];
@@ -351,6 +407,19 @@ public final class InvisibleButtons {
         if (button == null) return;
         if (TextUtils.isEmpty(name)) ownNames.remove(button);
         else ownNames.put(button, name.toString());
+    }
+
+    /**
+     * Marks [view], one of HushMessenger's own put on a Messenger screen, so it and every button in it are listed with
+     * HushMessenger's buttons wherever they sit, rather than by the place they're seen in (#191).
+     */
+    static void ownView(View view) {
+        if (view != null) ownViews.put(view, true);
+    }
+
+    /** True for a view [ownView] or [own] marked. */
+    static boolean isOwn(View view) {
+        return ownViews.containsKey(view) || ownNames.containsKey(view);
     }
 
     /** The name a screen reader says for [view], on one line, or null when it has none worth keeping. */
@@ -455,7 +524,10 @@ public final class InvisibleButtons {
         generation++;
     }
 
-    /** Where each listed button was first seen, by name. A name seen before places were kept has none. */
+    /**
+     * Where each listed button was first seen, by name. A name seen before places were kept has none. A name only
+     * HushMessenger's own buttons use is theirs whatever was stored, since older builds filed them by where they sat.
+     */
     static Map<String, String> places() {
         Map<String, String> places = new LinkedHashMap<>();
         for (String line : ChatMenuItems.split(Settings.preferences.getString(PLACES, ""))) {
@@ -464,30 +536,84 @@ public final class InvisibleButtons {
                 places.put(line.substring(tab + 1), line.substring(0, tab));
             }
         }
+        if (Settings.appContext != null) {
+            SettingsText text = new SettingsText(Settings.appContext);
+            for (String key : OWN_LABELS) {
+                String name = text.get(key);
+                if (places.containsKey(name)) places.put(name, PLACE_OURS);
+            }
+        }
         return places;
     }
 
+    /** The language [view] is drawn in, which is the one its buttons are named in. */
+    static String languageOf(View view) {
+        android.os.LocaleList locales = view.getResources().getConfiguration().getLocales();
+        return locales.isEmpty() ? "" : locales.get(0).toLanguageTag();
+    }
+
+    /** When and in which language each name was last seen, from [SEEN_ON]: the day as a number, then the language. */
+    private static Map<String, String[]> seenOn() {
+        Map<String, String[]> records = new LinkedHashMap<>();
+        for (String line : ChatMenuItems.split(Settings.preferences.getString(SEEN_ON, ""))) {
+            int first = line.indexOf('\t');
+            int second = first < 0 ? -1 : line.indexOf('\t', first + 1);
+            if (first <= 0 || second < 0 || second == line.length() - 1 || !digits(line.substring(0, first))) continue;
+            records.put(line.substring(second + 1), new String[] {line.substring(0, first), line.substring(first + 1, second)});
+        }
+        return records;
+    }
+
+    private static boolean digits(String text) {
+        if (text.isEmpty() || text.length() > 12) return false;
+        for (int i = 0; i < text.length(); i++) if (text.charAt(i) < '0' || text.charAt(i) > '9') return false;
+        return true;
+    }
+
     /**
-     * Notes any button Messenger has shown that settings hasn't listed yet, and where, in one write, and only then. A
-     * listed name without a place gets the one it's seen in now. The oldest unpicked names drop off first; a picked one
-     * stays, since settings is where it's taken back.
+     * Notes any button Messenger has shown that settings hasn't listed yet, and where, and when and in which [language]
+     * each was seen, in one write, and only when something changed. A listed name without a place gets the one it's seen
+     * in now, and one of HushMessenger's own moves to their group. An unpicked name goes when it was last seen in another
+     * language, more than [STALE_DAYS] days ago, or before this was kept, and when it's a web address; the oldest go
+     * first past [REMEMBERED]. A picked one always stays, since settings is where it's taken back.
      */
-    private static void remember(Map<String, String> found) {
+    private static void remember(Map<String, String> found, String language) {
         List<String> seen = seen();
         Map<String, String> places = places();
+        Map<String, String[]> records = seenOn();
+        String day = String.valueOf(today.getAsLong());
         boolean changed = false;
         for (Map.Entry<String, String> button : found.entrySet()) {
-            if (!seen.contains(button.getKey())) {
-                seen.add(button.getKey());
+            String name = button.getKey();
+            if (!seen.contains(name)) {
+                seen.add(name);
                 changed = true;
             }
-            if (!places.containsKey(button.getKey())) {
-                places.put(button.getKey(), button.getValue());
+            if (!places.containsKey(name) || PLACE_OURS.equals(button.getValue()) && !PLACE_OURS.equals(places.get(name))) {
+                places.put(name, button.getValue());
+                changed = true;
+            }
+            String[] record = records.get(name);
+            if (record == null || !record[0].equals(day) || !record[1].equals(language)) {
+                records.put(name, new String[] {day, language});
                 changed = true;
             }
         }
-        if (!changed) return;
         Map<String, Integer> levels = levels();
+        long now = today.getAsLong();
+        for (int i = 0; i < seen.size(); ) {
+            String name = seen.get(i);
+            String[] record = records.get(name);
+            boolean stale = record == null || !record[1].equals(language) || now - Long.parseLong(record[0]) > STALE_DAYS
+                || looksLikeLink(name);
+            if (stale && !levels.containsKey(name)) {
+                seen.remove(i);
+                changed = true;
+            } else {
+                i++;
+            }
+        }
+        if (!changed) return;
         for (int i = 0; seen.size() > REMEMBERED && i < seen.size(); ) {
             if (levels.containsKey(seen.get(i))) i++;
             else seen.remove(i);
@@ -496,9 +622,15 @@ public final class InvisibleButtons {
         for (Map.Entry<String, String> place : places.entrySet()) {
             if (seen.contains(place.getKey()) || levels.containsKey(place.getKey())) lines.add(place.getValue() + "\t" + place.getKey());
         }
+        List<String> when = new ArrayList<>();
+        for (Map.Entry<String, String[]> record : records.entrySet()) {
+            String name = record.getKey();
+            if (seen.contains(name) || levels.containsKey(name)) when.add(record.getValue()[0] + "\t" + record.getValue()[1] + "\t" + name);
+        }
         SharedPreferences.Editor edit = Settings.preferences.edit();
         edit.putString(SEEN, String.join("\n", seen));
         edit.putString(PLACES, String.join("\n", lines));
+        edit.putString(SEEN_ON, String.join("\n", when));
         edit.apply();
     }
 }
