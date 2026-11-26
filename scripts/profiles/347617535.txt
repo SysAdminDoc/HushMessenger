@@ -257,6 +257,7 @@ hook pin_list Lcom/facebook/messaging/msys/threadlist/plugins/core/itemsupplier/
 hook pin_rows Lcom/facebook/messaging/threadlist/threaditemmenu/plugins/core/pinmenuitem/PinMenuItemImplementation;->A00(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/22K;)Z
 hook pin_rows Lcom/facebook/messaging/threadlist/threaditemmenu/plugins/core/unpinmenuitem/UnpinMenuItemImplementation;->A00(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/22K;)Z
 hook pinned_bar Lcom/facebook/messaging/msys/thread/banner/datafetch/ThreadViewBannerDataFetch;->A03()LX/4o4;
+hook pinned_bar_first LX/5W2;->A00(LX/DV9;)I
 hook pinned_chats LX/KUW;->onCompletion(Ljava/lang/Object;)V
 hook pinned_chats LX/VFJ;->onCompletion(Ljava/lang/Object;)V
 hook pinned_chats Lcom/facebook/messaging/modularsync/networkfetcher/MessengerMsysDbNetworkFetcher;->A0O(LX/PAa;LX/1CW;LX/5Bx;)Ljava/lang/Object;

@@ -247,7 +247,7 @@ public class CompatReport {
         PATCHES.put("Hide people you don't know in search", List.of("search_sections", "search_items"));
         PATCHES.put("Block Meta AI chats", List.of("ai_chat_open"));
         PATCHES.put("Hide Create story", List.of("story_create_tile"));
-        PATCHES.put("Show pinned messages", List.of("pinned_bar"));
+        PATCHES.put("Show pinned messages", List.of("pinned_bar", "pinned_bar_first"));
         PATCHES.put("Keep a message log", List.of("message_log", "unsent_recall", "unsent_clear", "message_log_button", "message_log_click",
             "quiet_log_check", "quiet_log_drop", "hidden_chat_list", "hidden_chat_row", "hidden_chat_tap"));
         // No hooks of its own: it runs in the row text getter Keep unsent messages reads and the notification pair the log reads.

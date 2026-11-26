@@ -122,6 +122,7 @@ internal val settingsExtension = patch(description = "Load HushMessenger runtime
         markReadRecipe = null
         messageLogButtonRecipe = null
         pinnedBarLoader = null
+        pinnedBarModel = null
         saveVoiceMenuRecipe = null
         autoReplyPictureRecipe = null
         galleryRoute = null
@@ -232,6 +233,7 @@ internal fun MutableMethod.validateHook(hook: String) {
         AI_CHAT_OPEN -> validateAiChatOpen()
         STORY_CREATE_TILE -> validateStoryCreateTile()
         PINNED_BAR -> validatePinnedBar()
+        PINNED_BAR_FIRST -> validatePinnedBarFirst()
         OPEN_CHAT_SOUND -> validateOpenChatSound()
         OWN_CHAT_SOUNDS -> validateOwnChatSounds()
         STORY_HOLD -> validateStoryHold()
@@ -392,6 +394,7 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             AI_CHAT_OPEN -> method.injectAiChatOpen()
             STORY_CREATE_TILE -> method.injectStoryCreateTile()
             PINNED_BAR -> method.injectPinnedBar()
+            PINNED_BAR_FIRST -> method.injectPinnedBarFirst()
             OPEN_CHAT_SOUND -> method.injectOpenChatSound()
             OWN_CHAT_SOUNDS -> method.injectOwnChatSounds()
             STORY_HOLD -> method.injectStoryHold()
@@ -1003,7 +1006,7 @@ val hideStoryCreateTilePatch = controlPatch("story_create_tile", "Hide Create st
     "Takes the Create story tile off the start of the row of stories and notes above your chats. Your own story and note sit on that tile, so they go with it.", "Inbox", STORY_CREATE_TILE)
 @Suppress("unused")
 val showPinnedBarPatch = controlPatch("pinned_bar", "Show pinned messages",
-    "Shows a chat's pinned messages in a bar under its name. Messenger has that bar already, but only turns it on in some chats.", "Conversations", PINNED_BAR)
+    "Shows a chat's pinned messages in a bar under its name. Messenger has that bar already, but only turns it on in some chats.", "Conversations", PINNED_BAR, PINNED_BAR_FIRST)
 @Suppress("unused")
 val homeHeaderPatch = controlPatch("home_header", "Your own home header",
     "Puts words or a picture of your own at the top of the chat list in place of Messenger's wordmark. Type the words or pick the picture in HushMessenger settings. With neither, the wordmark stays.",

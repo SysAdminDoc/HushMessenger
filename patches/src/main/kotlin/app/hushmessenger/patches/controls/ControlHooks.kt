@@ -141,6 +141,7 @@ private fun sharedChecks(): List<WalkCheck> = listOf(
     searchResultSources, searchSectionTypes, aiChatLaunchers,
     storyTrayBuilders,
     pinnedBarLoaders,
+    bannerPrioritizers,
     messageSoundPickers,
     rawSoundPlayers,
 )
@@ -256,6 +257,8 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(STORY_CREATE_TILE).addAll(findStoryCreateTile(classes))
     pinnedBarLoader = resolvePinnedBarLoader(classes)
     found.getValue(PINNED_BAR).addAll(findPinnedBar(classes, pinnedBarLoader))
+    pinnedBarModel = resolvePinnedBarModel(classes, pinnedBarLoader)
+    found.getValue(PINNED_BAR_FIRST).addAll(findPinnedBarFirst(classes, pinnedBarModel))
     found.getValue(OPEN_CHAT_SOUND).addAll(findOpenChatSound(classes))
     found.getValue(OWN_CHAT_SOUNDS).addAll(findOwnChatSounds(classes))
     found.getValue(NEARBY_SCANS).addAll(patchStage("Find nearby scans") { findNearbyScans(classes) })

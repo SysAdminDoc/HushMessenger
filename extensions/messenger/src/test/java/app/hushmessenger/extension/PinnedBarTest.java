@@ -50,6 +50,37 @@ public class PinnedBarTest {
         }
     }
 
+    @Test public void offLeavesEveryBannersRank() {
+        assertEquals(19, PinnedBar.bannerRank(1, 19));
+        assertEquals(1, PinnedBar.bannerRank(0, 1));
+        assertTrue(Settings.activeAt.isEmpty());
+    }
+
+    /** On, the pinned bar goes ahead of every other banner, the deleted messages reminder included, which keeps its rank. */
+    @Test public void onPutsThePinnedBarFirst() {
+        Settings.preferences.edit().putBoolean(PinnedBar.KEY, true).commit();
+        assertEquals(1, PinnedBar.bannerRank(0, 1));
+        assertEquals(Integer.MAX_VALUE, PinnedBar.bannerRank(0, Integer.MAX_VALUE));
+        assertTrue(Settings.activeAt.isEmpty());
+        int pinned = PinnedBar.bannerRank(1, 19);
+        assertEquals(Integer.MIN_VALUE, pinned);
+        assertTrue(pinned < PinnedBar.bannerRank(0, 1));
+        assertTrue(Settings.activeAt.containsKey(PinnedBar.KEY));
+    }
+
+    @Test public void pauseAndSafeModeLeaveThePinnedBarsRank() {
+        for (String state : new String[] {"paused", "safe"}) {
+            Settings.initialize(RuntimeEnvironment.getApplication());
+            Settings.preferences.edit().clear().putBoolean(PinnedBar.KEY, true)
+                .putBoolean("paused", state.equals("paused")).putBoolean("safe_mode", state.equals("safe")).commit();
+            CrashGuard.resetForTests();
+            CrashGuard.onProcessStart(RuntimeEnvironment.getApplication());
+            Settings.activeAt.clear();
+            assertEquals(state, 19, PinnedBar.bannerRank(1, 19));
+            assertTrue(state, Settings.activeAt.isEmpty());
+        }
+    }
+
     @Test public void theSwitchSitsWithTheChatSwitchesAndStartsOff() {
         String[] spec = null;
         for (String[] control : SettingsActivity.CONTROLS) if (control[0].equals(PinnedBar.KEY)) spec = control;

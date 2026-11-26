@@ -965,6 +965,84 @@ final class Extras {
         return List.of();
     }
 
+    /** Mirrors pinnedBannersBuilt in PinnedBar.kt: the types built right where the code branches on an open banner of type 0x3dc. */
+    private static void pinnedBannersBuilt(Method m, Set<String> into) {
+        var code = instructions(m);
+        for (int i = 0; i + 1 < code.size(); i++) {
+            var load = code.get(i);
+            if (load.getOpcode() != Opcode.CONST_16 && load.getOpcode() != Opcode.CONST) continue;
+            if (((NarrowLiteralInstruction) load).getNarrowLiteral() != 0x3dc) continue;
+            int register = ((OneRegisterInstruction) load).getRegisterA();
+            var branch = code.get(i + 1);
+            if (branch.getOpcode() != Opcode.IF_EQ) continue;
+            var compared = (TwoRegisterInstruction) branch;
+            if (compared.getRegisterA() != register && compared.getRegisterB() != register) continue;
+            int target = mediaTarget(code, i + 1);
+            if (target < 0 || target + 1 >= code.size()) continue;
+            var made = code.get(target);
+            var init = code.get(target + 1);
+            if (made.getOpcode() != Opcode.NEW_INSTANCE) continue;
+            String type = ((ReferenceInstruction) made).getReference().toString();
+            if (init.getOpcode() != Opcode.INVOKE_DIRECT && init.getOpcode() != Opcode.INVOKE_DIRECT_RANGE) continue;
+            if (((ReferenceInstruction) init).getReference() instanceof MethodReference call && type.equals(call.getDefiningClass())
+                && "<init>".equals(call.getName())) into.add(type);
+        }
+    }
+
+    /** Mirrors bannerRankSite in PinnedBar.kt on the stock shape: intValue, its move-result, the return, and a parameter nothing writes. */
+    private static boolean isBannerRankSite(Method m) {
+        if (AccessFlags.STATIC.isSet(m.getAccessFlags()) || !"I".equals(m.getReturnType()) || m.getParameterTypes().size() != 1) return false;
+        if (!m.getParameterTypes().get(0).toString().startsWith("L") || m.getImplementation() == null) return false;
+        var code = instructions(m);
+        int banner = m.getImplementation().getRegisterCount() - 1;
+        int read = -1;
+        for (int i = 0; i < code.size(); i++) {
+            if (code.get(i).getOpcode() != Opcode.INVOKE_VIRTUAL
+                || !"Ljava/lang/Number;->intValue()I".equals(((ReferenceInstruction) code.get(i)).getReference().toString())) continue;
+            if (read >= 0) return false;
+            read = i;
+        }
+        if (read < 0 || read + 2 >= code.size() || code.get(read + 1).getOpcode() != Opcode.MOVE_RESULT) return false;
+        int rank = ((OneRegisterInstruction) code.get(read + 1)).getRegisterA();
+        if (banner > 15 || rank > 15 || banner == rank) return false;
+        var done = code.get(read + 2);
+        if (done.getOpcode() != Opcode.RETURN || ((OneRegisterInstruction) done).getRegisterA() != rank) return false;
+        var targets = mediaTargets(m);
+        if (targets.contains(read + 1) || targets.contains(read + 2)) return false;
+        for (var i : code) if (writes(i, banner)) return false;
+        return true;
+    }
+
+    /**
+     * pinned_bar_first: the banner prioritizer, whose return ranks the banner the pinned loader keeps in a field, the one
+     * class built for an open banner of type 0x3dc. Mirrors resolvePinnedBarModel and findPinnedBarFirst.
+     */
+    static List<Method> pinnedBarFirst(List<ClassDef> classes) {
+        var pinnedLoaders = new ArrayList<ClassDef>();
+        for (var cls : classes) for (var method : cls.getMethods())
+            if (method.getImplementation() != null && stringsOf(method).contains("PinnedMessagesMsysBannerDataSource")) {
+                pinnedLoaders.add(cls);
+                break;
+            }
+        if (pinnedLoaders.size() != 1) return List.of();
+        var held = new HashSet<String>();
+        for (var field : pinnedLoaders.get(0).getInstanceFields()) held.add(field.getType());
+        var defined = new HashSet<String>();
+        for (var cls : classes) if (held.contains(cls.getType())) defined.add(cls.getType());
+        if (defined.isEmpty()) return List.of();
+        var built = new HashSet<String>();
+        for (var cls : classes) for (var method : cls.getMethods()) pinnedBannersBuilt(method, built);
+        built.retainAll(defined);
+        if (built.size() != 1) return List.of();
+        var found = new ArrayList<Method>();
+        for (var cls : classes) for (var method : cls.getMethods()) {
+            if (method.getImplementation() == null) continue;
+            var strings = stringsOf(method);
+            if (strings.contains("Missing priority for banner: ") && strings.contains("DefaultBannerPrioritizer")) found.add(method);
+        }
+        return found.size() == 1 && isBannerRankSite(found.get(0)) ? found : List.of();
+    }
+
     private static List<String> typeNames(List<? extends CharSequence> types) {
         var names = new ArrayList<String>();
         for (var type : types) names.add(type.toString());

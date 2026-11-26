@@ -301,6 +301,7 @@ internal val PROFILE_347617503 = ControlProfile(
             "Lcom/facebook/messaging/threadlist/threaditemmenu/plugins/core/unpinmenuitem/UnpinMenuItemImplementation;->A00(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/22K;)Z",
         ),
         "pinned_bar" to setOf("Lcom/facebook/messaging/msys/thread/banner/datafetch/ThreadViewBannerDataFetch;->A03()LX/4o4;"),
+        "pinned_bar_first" to setOf("LX/5W2;->A00(LX/DV9;)I"),
         "pinned_chats" to setOf(
             "LX/KUW;->onCompletion(Ljava/lang/Object;)V", "LX/VFJ;->onCompletion(Ljava/lang/Object;)V",
             "Lcom/facebook/messaging/modularsync/networkfetcher/MessengerMsysDbNetworkFetcher;->A0O(LX/PAa;LX/1CW;LX/5Bx;)Ljava/lang/Object;",
@@ -682,6 +683,7 @@ internal val PROFILE_347617497 = ControlProfile(
             "Lcom/facebook/messaging/threadlist/threaditemmenu/plugins/core/unpinmenuitem/UnpinMenuItemImplementation;->A00(Lcom/facebook/auth/usersession/FbUserSession;Lcom/facebook/messaging/model/threads/ThreadSummary;LX/22j;)Z",
         ),
         "pinned_bar" to setOf("Lcom/facebook/messaging/msys/thread/banner/datafetch/ThreadViewBannerDataFetch;->A03()LX/4rL;"),
+        "pinned_bar_first" to setOf("LX/5ZJ;->A00(LX/DU8;)I"),
         "pinned_chats" to setOf(
             "LX/HxO;->onCompletion(Ljava/lang/Object;)V", "LX/SQy;->onCompletion(Ljava/lang/Object;)V",
             "Lcom/facebook/messaging/modularsync/networkfetcher/MessengerMsysDbNetworkFetcher;->A0O(LX/Y80;LX/1Cv;LX/5FE;)Ljava/lang/Object;",
