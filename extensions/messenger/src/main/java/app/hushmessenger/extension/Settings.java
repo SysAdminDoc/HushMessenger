@@ -1435,25 +1435,37 @@ public final class Settings {
 
     /**
      * The message object itself, handed over right after its id and before its text, for the photo or voice clip its
-     * attachment points at. Only the address is read here, on Messenger's own thread; the fetch happens off it.
+     * attachment points at and the address it shared. Only addresses are read here, on Messenger's own thread; the
+     * fetch happens off it.
      */
     private static final ThreadLocal<MessageLogAttachment.Found> INCOMING_MEDIA = new ThreadLocal<>();
+    private static final ThreadLocal<String> INCOMING_LINK = new ThreadLocal<>();
 
     public static void incomingMessageMedia(Object message) {
-        // Only the log keeps attachments. With the hook on for hidden words alone, nothing here is read.
+        // Only the log keeps attachments and links. With the hook on for hidden words alone, nothing here is read.
         if (!wouldUse(MessageLog.KEY)) {
             INCOMING_MEDIA.remove();
+            INCOMING_LINK.remove();
             return;
         }
         MessageLogAttachment.Found found = MessageLogAttachment.found(message);
         if (found == null) INCOMING_MEDIA.remove();
         else INCOMING_MEDIA.set(found);
+        String link = MessageLogLink.shared(message);
+        if (link == null) INCOMING_LINK.remove();
+        else INCOMING_LINK.set(link);
     }
 
     static MessageLogAttachment.Found takeIncomingMessageMedia() {
         MessageLogAttachment.Found found = INCOMING_MEDIA.get();
         INCOMING_MEDIA.remove();
         return found;
+    }
+
+    static String takeIncomingMessageLink() {
+        String link = INCOMING_LINK.get();
+        INCOMING_LINK.remove();
+        return link;
     }
 
     /**
@@ -1463,8 +1475,9 @@ public final class Settings {
     public static void recordReceivedMessage(String text, String thread) {
         String id = takeIncomingMessageId();
         MessageLogAttachment.Found media = takeIncomingMessageMedia();
+        String link = takeIncomingMessageLink();
         HiddenWords.received(text, id);
-        if (wouldUse(MessageLog.KEY)) MessageLog.record(text, thread, id, media);
+        if (wouldUse(MessageLog.KEY)) MessageLog.record(text, thread, id, media, link);
     }
 
     /** The same notification hook asks this for an auto reply: on, not paused, and with at least one reply written. */

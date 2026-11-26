@@ -143,8 +143,11 @@ final class MessageLogAttachment {
         return prefs != null && prefs.getBoolean(key, false) && Settings.wouldUse(MessageLog.KEY);
     }
 
-    /** The list fields of [type], which is where attachments sit. Every list is looked at, since none is named here. */
-    private static Field[] fields(Class<?> type) {
+    /**
+     * The list fields of [type], which is where attachments sit. Every list is looked at, since none is named here.
+     * {@link MessageLogLink} walks the same lists for a shared address.
+     */
+    static Field[] fields(Class<?> type) {
         Field[] known = FIELDS.get(type);
         if (known != null) return known;
         List<Field> lists = new ArrayList<>();
