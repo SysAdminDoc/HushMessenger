@@ -15,9 +15,11 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inspector.WindowInspector;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
@@ -40,6 +42,9 @@ import java.util.WeakHashMap;
  * message box, a pinned message or a reply across the chat, a web address) is never kept, and a name not seen for
  * [STALE_DAYS] days or last seen in another language leaves the list unless it's picked. [InvisibleButtonsPick] lets a
  * button be picked by tapping it on screen.
+ * Some names are a person's or a chat's name, a comma and one of Messenger's own labels ("Pat, Thread details" is the
+ * chat's name in its top bar). When that label is a button's whole name too, the name in front is left out: the button
+ * is kept as [SOMEONE] and the label, one row whose level holds in every chat, with nobody's name kept.
  * Public, since the calls come from Messenger's own chat fragment and Application in other packages.
  */
 public final class InvisibleButtons {
@@ -84,6 +89,11 @@ public final class InvisibleButtons {
     static final String SEEN_ON = "invisible_buttons_seen_on";
     /** An unpicked name not seen for longer than this many days leaves the list. */
     static final int STALE_DAYS = 14;
+    /**
+     * What stands in for the person's or chat's name in front of one of Messenger's labels (#191): an ellipsis and a
+     * comma, so the chat's name in its top bar reads as one row next to the details button's own "Thread details".
+     */
+    static final String SOMEONE = (char) 0x2026 + ", ";
     /** Names only HushMessenger's own buttons use, by their text keys, so one stored before its group existed lands there. */
     private static final String[] OWN_LABELS = {
         "chat_jump_first", "chat_page_up", "chat_page_down", "local_search_open", "call_recording_stop_pill"};
@@ -252,6 +262,7 @@ public final class InvisibleButtons {
             Map<View, String> buttons = new LinkedHashMap<>();
             Map<String, String> places = new LinkedHashMap<>();
             collect(view, buttons, places, Boolean.TRUE.equals(watched.get(view)), null, false);
+            fold(buttons, places);
             remember(places, languageOf(view));
             Map<String, Integer> levels = levels();
             boolean any = false;
@@ -373,6 +384,7 @@ public final class InvisibleButtons {
     static Map.Entry<View, String> buttonAt(View window, int x, int y) {
         Map<View, String> buttons = new LinkedHashMap<>();
         collect(window, buttons, new LinkedHashMap<>(), Boolean.TRUE.equals(watched.get(window)), null, false);
+        fold(buttons, new LinkedHashMap<>());
         Map.Entry<View, String> best = null;
         long bestArea = Long.MAX_VALUE;
         int[] at = new int[2];
@@ -469,9 +481,52 @@ public final class InvisibleButtons {
         for (int i = 0; i < group.getChildCount(); i++) give(group.getChildAt(i));
     }
 
+    /**
+     * The name [name] is kept under. When what follows one of its commas is a button's whole name too ([labels]), the
+     * part in front is a person's or a chat's name, so it's left out and the button is kept as [SOMEONE] and that label.
+     * The shortest such label wins, since a name in front can hold a comma of its own.
+     */
+    static String keyOf(String name, Set<String> labels) {
+        for (int comma = name.lastIndexOf(", "); comma > 0; comma = name.lastIndexOf(", ", comma - 1)) {
+            String label = name.substring(comma + 2);
+            if (labels.contains(label)) return SOMEONE + label;
+        }
+        return name;
+    }
+
+    /** Every name kept, seen or picked, which is what tells one of Messenger's own labels from a name in front of one. */
+    private static Set<String> labels() {
+        Set<String> labels = new HashSet<>(ChatMenuItems.split(Settings.preferences.getString(SEEN, "")));
+        labels.addAll(storedLevels().keySet());
+        return labels;
+    }
+
+    /** Puts every name in [buttons] and [places] under the one it's kept as, going by the names kept and these. */
+    private static void fold(Map<View, String> buttons, Map<String, String> places) {
+        Set<String> labels = labels();
+        labels.addAll(buttons.values());
+        for (Map.Entry<View, String> button : buttons.entrySet()) button.setValue(keyOf(button.getValue(), labels));
+        Map<String, String> kept = new LinkedHashMap<>();
+        for (Map.Entry<String, String> place : places.entrySet()) {
+            String key = keyOf(place.getKey(), labels);
+            if (!kept.containsKey(key)) kept.put(key, place.getValue());
+        }
+        places.clear();
+        places.putAll(kept);
+    }
+
     /** The buttons seen so far, in the order Messenger first showed them. */
     static List<String> seen() {
-        return ChatMenuItems.split(Settings.preferences.getString(SEEN, ""));
+        return seenWith(labels());
+    }
+
+    private static List<String> seenWith(Set<String> labels) {
+        List<String> seen = new ArrayList<>();
+        for (String name : ChatMenuItems.split(Settings.preferences.getString(SEEN, ""))) {
+            String key = keyOf(name, labels);
+            if (!seen.contains(key)) seen.add(key);
+        }
+        return seen;
     }
 
     /** What settings list: every button seen, then any picked one that has since dropped off that list. */
@@ -481,8 +536,26 @@ public final class InvisibleButtons {
         return listed;
     }
 
-    /** Every picked button's level in percent, below 100. */
+    /**
+     * Every picked button's level in percent, below 100. Picks saved under names that are now kept as one, a chat's
+     * name in its top bar picked in more than one chat, are that one, at the lowest of their levels.
+     */
     static Map<String, Integer> levels() {
+        return levelsWith(labels());
+    }
+
+    private static Map<String, Integer> levelsWith(Set<String> labels) {
+        Map<String, Integer> levels = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> picked : storedLevels().entrySet()) {
+            String key = keyOf(picked.getKey(), labels);
+            Integer was = levels.get(key);
+            levels.put(key, was == null ? picked.getValue() : Math.min(was, picked.getValue()));
+        }
+        return levels;
+    }
+
+    /** The levels as saved, under the names they were saved with, the first build's picks at 0. */
+    private static Map<String, Integer> storedLevels() {
         Map<String, Integer> levels = new LinkedHashMap<>();
         for (String name : ChatMenuItems.split(Settings.preferences.getString(HIDDEN, ""))) levels.put(name, 0);
         for (String line : ChatMenuItems.split(Settings.preferences.getString(LEVELS, ""))) {
@@ -502,13 +575,16 @@ public final class InvisibleButtons {
 
     /** [name]'s level in percent, 100 when it isn't picked. */
     static int level(String name) {
-        Integer level = levels().get(name);
+        Set<String> labels = labels();
+        Integer level = levelsWith(labels).get(keyOf(name, labels));
         return level == null ? 100 : level;
     }
 
     /** Sets [name] to [level] percent. 100 or more gives it back to Messenger as it was. */
     static void setLevel(String name, int level) {
-        Map<String, Integer> levels = levels();
+        Set<String> labels = labels();
+        Map<String, Integer> levels = levelsWith(labels);
+        name = keyOf(name, labels);
         Integer was = levels.get(name);
         if (level >= 100) {
             if (was == null) return;
@@ -518,10 +594,17 @@ public final class InvisibleButtons {
             if (was != null && was == wanted) return;
             levels.put(name, wanted);
         }
+        SharedPreferences.Editor edit = Settings.preferences.edit();
+        saveLevels(edit, levels);
+        edit.apply();
+        generation++;
+    }
+
+    /** Puts [levels] in [edit] as the saved picks, which moves the first build's picks over too. */
+    private static void saveLevels(SharedPreferences.Editor edit, Map<String, Integer> levels) {
         List<String> lines = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : levels.entrySet()) lines.add(entry.getValue() + "\t" + entry.getKey());
-        Settings.preferences.edit().putString(LEVELS, String.join("\n", lines)).remove(HIDDEN).apply();
-        generation++;
+        edit.putString(LEVELS, String.join("\n", lines)).remove(HIDDEN);
     }
 
     /**
@@ -529,12 +612,16 @@ public final class InvisibleButtons {
      * HushMessenger's own buttons use is theirs whatever was stored, since older builds filed them by where they sat.
      */
     static Map<String, String> places() {
+        return placesWith(labels());
+    }
+
+    private static Map<String, String> placesWith(Set<String> labels) {
         Map<String, String> places = new LinkedHashMap<>();
         for (String line : ChatMenuItems.split(Settings.preferences.getString(PLACES, ""))) {
             int tab = line.indexOf('\t');
-            if (tab > 0 && tab < line.length() - 1 && !places.containsKey(line.substring(tab + 1))) {
-                places.put(line.substring(tab + 1), line.substring(0, tab));
-            }
+            if (tab <= 0 || tab == line.length() - 1) continue;
+            String key = keyOf(line.substring(tab + 1), labels);
+            if (!places.containsKey(key)) places.put(key, line.substring(0, tab));
         }
         if (Settings.appContext != null) {
             SettingsText text = new SettingsText(Settings.appContext);
@@ -552,14 +639,20 @@ public final class InvisibleButtons {
         return locales.isEmpty() ? "" : locales.get(0).toLanguageTag();
     }
 
-    /** When and in which language each name was last seen, from [SEEN_ON]: the day as a number, then the language. */
-    private static Map<String, String[]> seenOn() {
+    /**
+     * When and in which language each name was last seen, from [SEEN_ON]: the day as a number, then the language. Of
+     * names now kept as one, the latest goes.
+     */
+    private static Map<String, String[]> seenOnWith(Set<String> labels) {
         Map<String, String[]> records = new LinkedHashMap<>();
         for (String line : ChatMenuItems.split(Settings.preferences.getString(SEEN_ON, ""))) {
             int first = line.indexOf('\t');
             int second = first < 0 ? -1 : line.indexOf('\t', first + 1);
             if (first <= 0 || second < 0 || second == line.length() - 1 || !digits(line.substring(0, first))) continue;
-            records.put(line.substring(second + 1), new String[] {line.substring(0, first), line.substring(first + 1, second)});
+            String key = keyOf(line.substring(second + 1), labels);
+            String[] record = {line.substring(0, first), line.substring(first + 1, second)};
+            String[] was = records.get(key);
+            if (was == null || Long.parseLong(record[0]) > Long.parseLong(was[0])) records.put(key, record);
         }
         return records;
     }
@@ -578,11 +671,17 @@ public final class InvisibleButtons {
      * first past [REMEMBERED]. A picked one always stays, since settings is where it's taken back.
      */
     private static void remember(Map<String, String> found, String language) {
-        List<String> seen = seen();
-        Map<String, String> places = places();
-        Map<String, String[]> records = seenOn();
+        Set<String> labels = labels();
+        labels.addAll(found.keySet());
+        List<String> seen = seenWith(labels);
+        Map<String, String> places = placesWith(labels);
+        Map<String, String[]> records = seenOnWith(labels);
+        Map<String, Integer> levels = levelsWith(labels);
+        // Names saved with a person's or chat's name in front go into the one row, and the names go from what's saved.
+        boolean folded = false;
+        for (String name : labels) folded |= !keyOf(name, labels).equals(name);
         String day = String.valueOf(today.getAsLong());
-        boolean changed = false;
+        boolean changed = folded;
         for (Map.Entry<String, String> button : found.entrySet()) {
             String name = button.getKey();
             if (!seen.contains(name)) {
@@ -599,7 +698,6 @@ public final class InvisibleButtons {
                 changed = true;
             }
         }
-        Map<String, Integer> levels = levels();
         long now = today.getAsLong();
         for (int i = 0; i < seen.size(); ) {
             String name = seen.get(i);
@@ -631,6 +729,7 @@ public final class InvisibleButtons {
         edit.putString(SEEN, String.join("\n", seen));
         edit.putString(PLACES, String.join("\n", lines));
         edit.putString(SEEN_ON, String.join("\n", when));
+        if (folded) saveLevels(edit, levels);
         edit.apply();
     }
 }
