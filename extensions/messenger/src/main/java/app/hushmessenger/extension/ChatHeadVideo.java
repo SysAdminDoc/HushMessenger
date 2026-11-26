@@ -74,7 +74,9 @@ public final class ChatHeadVideo {
      * a bubble is an activity of its own and keeps Messenger's choice: its video layer draws fine there, and a forced
      * TextureView left a black box on a link's preview and blanked the bubble when the gallery opened (#221). A player
      * built on the app's own context could be in either, and with Android bubbles picked under Allow chat bubbles there
-     * are no chat heads for it to be in, so it keeps Messenger's choice too (#249).
+     * are no chat heads for it to be in, so it keeps Messenger's choice too (#249). Chat heads also hide while any of
+     * Messenger's screens is up, so with one up (a bubble Messenger opened on its own included, whatever is picked) an
+     * app context player isn't in a chat head either (#249).
      */
     static boolean inChatHead(Context context) {
         Context at = context;
@@ -83,6 +85,7 @@ public final class ChatHeadVideo {
             if (at instanceof Service) return true;
             at = ((ContextWrapper) at).getBaseContext();
         }
+        if (HostScreens.messengerShowing()) return false;
         return !Settings.enableBubbles();
     }
 }

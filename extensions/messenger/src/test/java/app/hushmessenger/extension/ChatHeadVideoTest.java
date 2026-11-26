@@ -46,13 +46,38 @@ public class ChatHeadVideoTest {
         CrashGuard.resetForTests();
         HostScreens.started = true;
         HostScreens.failed = false;
+        HostScreens.screensShown = 0;
         Settings.hookErrors.clear();
         activity = Robolectric.buildActivity(Activity.class).setup().get();
     }
 
     @After public void tearDown() {
+        HostScreens.screensShown = 0;
         Settings.hookErrors.clear();
         Settings.hookErrorLogged.clear();
+    }
+
+    /**
+     * #249: chat heads hide while any of Messenger's screens is up, so a player built on the app's context then is in
+     * the app or a bubble Messenger opened by itself, whatever is picked under Allow chat bubbles, and keeps
+     * Messenger's choice. Once every screen has stopped, the app's context can be a chat head's again.
+     */
+    @Test @Config(sdk = 36) public void withAMessengerScreenUpTheAppContextKeepsMessengersChoice() {
+        assertFalse(Settings.enableBubbles());
+        app.registerActivityLifecycleCallbacks(new HostScreens.LeavingMessenger());
+        org.robolectric.android.controller.ActivityController<BubbleActivity> bubble =
+            Robolectric.buildActivity(BubbleActivity.class).setup();
+        assertTrue(HostScreens.messengerShowing());
+        assertFalse(ChatHeadVideo.textureView(app, false));
+        assertFalse(ChatHeadVideo.textureView(new ContextThemeWrapper(app, 0), false));
+        assertTrue("Messenger's own TextureView stays", ChatHeadVideo.textureView(app, true));
+        Context service = Robolectric.buildService(ChatHeadService.class).create().get();
+        assertTrue("The chat head service still gets its TextureView", ChatHeadVideo.textureView(service, false));
+
+        bubble.pause().stop();
+        assertFalse(HostScreens.messengerShowing());
+        assertTrue(ChatHeadVideo.textureView(app, false));
+        assertTrue(Settings.hookErrors.isEmpty());
     }
 
     @Test public void videosInTheAppKeepMessengersChoice() {
