@@ -60,8 +60,8 @@ menu_row_needs_way	Prima riattiva le scorciatoie dell'icona o la pressione prolu
 hide_menu_row_help_without_shortcut	Toglie la riga di HushMessenger dalla scheda Menu e dal menu laterale di Messenger. Per tornare qui, tieni premuto il logo di Messenger in cima a Chat. Se disattivi la pressione prolungata sul logo, la riga torna.
 hide_menu_row_help_plain	Toglie la riga di HushMessenger dalla scheda Menu e dal menu laterale di Messenger.
 menu_tab	Scheda Menu
-menu_rows_help	Le righe che Messenger mette nella scheda Menu, come Community o Inviti ai canali. Nascondi quelle che non apri mai. Ogni riga compare qui dopo che la scheda Menu l'ha mostrata.
-menu_rows_empty	Apri una volta la scheda Menu di Messenger e le sue righe compaiono qui, pronte da nascondere.
+menu_rows_help	Le righe che Messenger mette nella scheda Menu o nel menu laterale, come Community o Inviti ai canali. Nascondi quelle che non apri mai. Ogni riga compare qui dopo che Messenger l'ha mostrata.
+menu_rows_empty	Apri una volta la scheda Menu o il menu laterale di Messenger e le sue righe compaiono qui, pronte da nascondere.
 menu_log_out	Riga Esci nella scheda Menu
 menu_log_out_help	Mette Esci nella scheda Menu di Messenger, sotto Impostazioni. Ti disconnette come fa l'opzione Esci di Messenger.
 way_menu	Apri le impostazioni di HushMessenger dalla loro riga nella scheda Menu o nel menu laterale di Messenger.

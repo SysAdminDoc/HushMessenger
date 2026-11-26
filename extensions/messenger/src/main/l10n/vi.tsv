@@ -60,8 +60,8 @@ menu_row_needs_way	Vui lòng bật lại phím tắt của biểu tượng hoặ
 hide_menu_row_help_without_shortcut	Xóa mục HushMessenger khỏi tab 'Menu' và menu bên của Messenger. Nhấn giữ logo Messenger ở đầu 'Đoạn chat' để quay lại đây. Nếu tắt tính năng nhấn giữ logo, mục trong menu sẽ được hiển thị lại.
 hide_menu_row_help_plain	Xóa mục HushMessenger khỏi tab 'Menu' và menu bên của Messenger.
 menu_tab	Tab 'Menu'
-menu_rows_help	Những mục Messenger đặt trong tab 'Menu', chẳng hạn Cộng đồng hoặc Lời mời vào kênh. Hãy ẩn những mục bạn không bao giờ mở. Mỗi mục xuất hiện ở đây sau khi tab 'Menu' đã hiển thị nó một lần.
-menu_rows_empty	Hãy mở tab 'Menu' của Messenger một lần, các mục sẽ xuất hiện ở đây để bạn ẩn.
+menu_rows_help	Những mục Messenger đặt trong tab 'Menu' hoặc menu bên, chẳng hạn Cộng đồng hoặc Lời mời vào kênh. Hãy ẩn những mục bạn không bao giờ mở. Mỗi mục xuất hiện ở đây sau khi Messenger đã hiển thị nó một lần.
+menu_rows_empty	Hãy mở tab 'Menu' hoặc menu bên của Messenger một lần, các mục sẽ xuất hiện ở đây để bạn ẩn.
 menu_log_out	Mục 'Đăng xuất' trong tab 'Menu'
 menu_log_out_help	Đặt 'Đăng xuất' vào tab 'Menu' của Messenger, bên dưới Cài đặt. Nó đăng xuất theo cách giống với tính năng 'Đăng xuất' của chính Messenger.
 way_menu	Mở cài đặt từ mục HushMessenger trong tab 'Menu' hoặc menu bên của Messenger.

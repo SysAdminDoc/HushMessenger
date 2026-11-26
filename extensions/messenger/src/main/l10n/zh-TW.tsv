@@ -60,8 +60,8 @@ menu_row_needs_way	請先重新啟用圖示捷徑或長按標誌，確保隱藏�
 hide_menu_row_help_without_shortcut	從 Messenger 的「選單」分頁與側邊選單移除 HushMessenger 項目。長按「聊天室」頂端的 Messenger 標誌即可返回這裡。停用長按標誌後，選單中的項目就會恢復顯示。
 hide_menu_row_help_plain	從 Messenger 的「選單」分頁與側邊選單移除 HushMessenger 項目。
 menu_tab	「選單」分頁
-menu_rows_help	Messenger 放在「選單」分頁裡的項目，例如社群或頻道邀請。把你從不打開的隱藏起來。每個項目在「選單」分頁顯示過一次之後，就會出現在這裡。
-menu_rows_empty	先開一次 Messenger 的「選單」分頁，它的項目就會出現在這裡讓你隱藏。
+menu_rows_help	Messenger 放在「選單」分頁或側邊選單裡的項目，例如社群或頻道邀請。把你從不打開的隱藏起來。每個項目在 Messenger 顯示過一次之後，就會出現在這裡。
+menu_rows_empty	先開一次 Messenger 的「選單」分頁或側邊選單，它的項目就會出現在這裡讓你隱藏。
 menu_log_out	「選單」分頁中的登出項目
 menu_log_out_help	在 Messenger「選單」分頁的設定下方加入登出，登出方式與 Messenger 本身的「登出」相同。
 way_menu	從 Messenger「選單」分頁或側邊選單中的 HushMessenger 項目開啟設定。

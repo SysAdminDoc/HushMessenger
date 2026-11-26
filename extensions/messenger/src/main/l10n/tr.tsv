@@ -60,8 +60,8 @@ menu_row_needs_way	Satır olmadan da geri dönebilmek için önce simge kısayol
 hide_menu_row_help_without_shortcut	HushMessenger satırını Messenger'ın Menü sekmesinden ve yan menüsünden kaldırır. Buraya dönmek için Sohbetler'in üstündeki Messenger logosuna uzun bas. Logoya uzun basmayı kapatırsan satır geri gelir.
 hide_menu_row_help_plain	HushMessenger satırını Messenger'ın Menü sekmesinden ve yan menüsünden kaldırır.
 menu_tab	Menü sekmesi
-menu_rows_help	Messenger'ın Menü sekmesine koyduğu satırlar, örneğin Topluluklar veya Kanal davetleri. Hiç açmadıklarını gizle. Her satır, Menü sekmesi onu bir kez gösterdikten sonra burada görünür.
-menu_rows_empty	Messenger'ın Menü sekmesini bir kez aç, satırları gizleyebilmen için burada görünür.
+menu_rows_help	Messenger'ın Menü sekmesine veya yan menüsüne koyduğu satırlar, örneğin Topluluklar veya Kanal davetleri. Hiç açmadıklarını gizle. Her satır, Messenger onu bir kez gösterdikten sonra burada görünür.
+menu_rows_empty	Messenger'ın Menü sekmesini veya yan menüsünü bir kez aç, satırları gizleyebilmen için burada görünür.
 menu_log_out	Menü sekmesinde Çıkış yap satırı
 menu_log_out_help	Messenger'ın Menü sekmesinde, Ayarlar'ın altına Çıkış yap'ı koyar. Messenger'ın kendi Çıkış yap seçeneğiyle aynı şekilde çıkış yapar.
 way_menu	HushMessenger ayarlarını Messenger'ın Menü sekmesindeki veya yan menüsündeki satırından aç.

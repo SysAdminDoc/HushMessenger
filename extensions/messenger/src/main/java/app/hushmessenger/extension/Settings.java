@@ -2996,6 +2996,8 @@ public final class Settings {
     public static List addLegacyDrawerEntry(Object fragment, List sections) {
         if (fragment == null || sections == null) return sections;
         try {
+            // The rows picked under Menu rows leave the side menu too (#207).
+            sections = MenuRows.drawer(sections);
             if (menuRowHidden()) return sections;
             java.lang.reflect.Method getContext = fragment.getClass().getMethod("getContext");
             getContext.setAccessible(true);

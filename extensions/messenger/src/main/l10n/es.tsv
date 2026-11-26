@@ -60,8 +60,8 @@ menu_row_needs_way	Vuelve a activar primero los accesos directos del icono o la 
 hide_menu_row_help_without_shortcut	Quita la fila de HushMessenger de la pestaña Menú y del menú lateral de Messenger. Mantén presionado el logo de Messenger en la parte superior de Chats para volver aquí. Si desactivas la pulsación larga en el logo, la fila vuelve.
 hide_menu_row_help_plain	Quita la fila de HushMessenger de la pestaña Menú y del menú lateral de Messenger.
 menu_tab	Pestaña Menú
-menu_rows_help	Filas que Messenger pone en su pestaña Menú, como Comunidades o Invitaciones a canales. Oculta las que nunca abres. Cada fila aparece aquí en cuanto la pestaña Menú la ha mostrado.
-menu_rows_empty	Abre una vez la pestaña Menú de Messenger y sus filas aparecerán aquí para que las ocultes.
+menu_rows_help	Filas que Messenger pone en su pestaña Menú o en el menú lateral, como Comunidades o Invitaciones a canales. Oculta las que nunca abres. Cada fila aparece aquí en cuanto Messenger la ha mostrado.
+menu_rows_empty	Abre una vez la pestaña Menú o el menú lateral de Messenger y sus filas aparecerán aquí para que las ocultes.
 menu_log_out	Fila Cerrar sesión en la pestaña Menú
 menu_log_out_help	Pone Cerrar sesión en la pestaña Menú de Messenger, debajo de Configuración. Cierra la sesión igual que la opción Cerrar sesión de Messenger.
 way_menu	Abre los ajustes de HushMessenger desde su fila en la pestaña Menú o en el menú lateral de Messenger.
