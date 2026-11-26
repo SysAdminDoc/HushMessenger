@@ -529,6 +529,7 @@ public final class Settings {
         owners.put(ChatJump.PAGES, ChatJump.KEY);
         owners.put(InvisibleButtonsPick.KEY, InvisibleButtons.KEY);
         owners.put(TabSlide.KEY, TabSwipe.KEY);
+        owners.put(TabFollow.KEY, TabSwipe.KEY);
         SUB_SWITCHES = Collections.unmodifiableMap(owners);
     }
 

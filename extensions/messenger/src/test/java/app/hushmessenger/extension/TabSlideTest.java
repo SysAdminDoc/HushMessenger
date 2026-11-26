@@ -338,7 +338,11 @@ public class TabSlideTest {
             assertNotNull(owner);
             ViewGroup meet = (ViewGroup) owner.getParent();
             while (!isAncestor(meet, title)) meet = (ViewGroup) meet.getParent();
-            assertEquals("in the block Swipe between tabs heads, as its one sub-switch", 2, meet.getChildCount());
+            assertEquals("in the block Swipe between tabs heads, beside Page follows your finger", 3, meet.getChildCount());
+            View follow = root.findViewWithTag("title_line_" + TabFollow.KEY);
+            assertNotNull(follow);
+            assertTrue(isAncestor(meet, follow));
+            assertEquals(TabSwipe.KEY, Settings.SUB_SWITCHES.get(TabFollow.KEY));
         }
     }
 

@@ -242,6 +242,8 @@ invisible_buttons_group_ours	ปุ่มของ HushMessenger
 invisible_buttons_group_other	อื่นๆ
 tab_bar_slide	เลื่อนไปตามแถบแท็บ
 tab_bar_slide_help	เลื่อนนิ้วไปตามแถบแท็บด้านล่าง แล้วไฮไลต์จะตามนิ้วไปทีละแท็บ ปล่อยนิ้วเพื่อเปิดแท็บที่อยู่ใต้นิ้ว การแตะยังใช้ได้เหมือนเดิม และใช้ได้แม้ปิดปัดเพื่อเปลี่ยนแท็บไว้ รีสตาร์ท Messenger หลังจากเปิดใช้
+tab_swipe_follow	หน้าเลื่อนตามนิ้ว
+tab_swipe_follow_help	ขณะปัดสลับแท็บ หน้าจะเลื่อนตามนิ้วของคุณ และเมื่อปล่อยนิ้ว แท็บถัดไปจะเลื่อนเข้ามาจากด้านข้าง ถ้าปัดสั้นๆ หน้าจะเด้งกลับที่เดิม แถบแท็บอยู่ที่เดิม
 message_actions_hidden_label	%1$s (ซ่อนอยู่)
 message_actions_move_up	เลื่อน %1$s ขึ้น
 message_actions_move_down	เลื่อน %1$s ลง

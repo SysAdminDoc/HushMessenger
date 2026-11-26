@@ -242,6 +242,8 @@ invisible_buttons_group_ours	Botones de HushMessenger
 invisible_buttons_group_other	Otros
 tab_bar_slide	Deslizar por la barra de pestañas
 tab_bar_slide_help	Desliza el dedo por la barra de pestañas de abajo y un resaltado lo sigue de pestaña en pestaña. Suelta para abrir la pestaña que queda debajo. Un toque funciona como antes, y esto funciona también con Deslizar entre pestañas apagado. Reinicia Messenger después de activarlo.
+tab_swipe_follow	La página sigue tu dedo
+tab_swipe_follow_help	Mientras deslizas entre pestañas, la página se mueve con tu dedo y, al soltarlo, la siguiente pestaña entra desde el lado. Un deslizamiento corto la devuelve a su sitio. La barra de pestañas se queda donde está.
 message_actions_hidden_label	%1$s (sin mostrar)
 message_actions_move_up	Subir %1$s
 message_actions_move_down	Bajar %1$s

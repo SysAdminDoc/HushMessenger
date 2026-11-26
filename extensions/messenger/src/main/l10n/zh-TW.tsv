@@ -242,6 +242,8 @@ invisible_buttons_group_ours	HushMessenger 的按鈕
 invisible_buttons_group_other	其他
 tab_bar_slide	沿著分頁列滑動
 tab_bar_slide_help	手指沿著下方的分頁列滑動，會有一個醒目框跟著手指一個分頁一個分頁移動。放開手指就會開啟底下的分頁。點一下還是跟以前一樣，而且關閉滑動切換分頁時也能用。開啟後請重新啟動 Messenger。
+tab_swipe_follow	頁面跟著手指移動
+tab_swipe_follow_help	在分頁之間滑動時，頁面會跟著手指移動，放開手指後下一個分頁會從旁邊滑入。滑動距離太短時頁面會彈回原位。分頁列不會移動。
 message_actions_hidden_label	%1$s（已隱藏）
 message_actions_move_up	將%1$s上移
 message_actions_move_down	將%1$s下移
