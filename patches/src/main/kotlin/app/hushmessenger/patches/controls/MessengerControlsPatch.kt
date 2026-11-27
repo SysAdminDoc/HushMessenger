@@ -247,6 +247,8 @@ internal fun MutableMethod.validateHook(hook: String) {
         MEDIA_CAPTION_CHAT -> validateMediaCaptionChat()
         MEDIA_CAPTION_DIRECT -> validateMediaCaptionDirect()
         MEDIA_CAPTION_RESULT -> validateMediaCaptionResult()
+        MEDIA_CAPTION_CHIP -> validateMediaCaptionChip()
+        MEDIA_CAPTION_CHIP_SEND -> validateMediaCaptionChipSend()
         CHAT_MENU_ITEMS -> validateChatMenuItems()
         PROFILE_MENU_ITEMS -> validateProfileMenuItems()
         REMOVE_CONTACT -> validateRemoveContact()
@@ -413,6 +415,8 @@ internal fun injectControl(key: String, methods: Map<String, List<MutableMethod>
             MEDIA_CAPTION_CHAT -> method.injectMediaCaptionChat()
             MEDIA_CAPTION_DIRECT -> method.injectMediaCaptionDirect()
             MEDIA_CAPTION_RESULT -> method.injectMediaCaptionResult()
+            MEDIA_CAPTION_CHIP -> method.injectMediaCaptionChip()
+            MEDIA_CAPTION_CHIP_SEND -> method.injectMediaCaptionChipSend()
             LANDSCAPE_LOCK -> method.injectPortraitLock()
             LANDSCAPE_MEDIA -> method.injectMediaOrientation()
             BLOCKED_LIST_PICTURES -> method.injectBlockedListPictures()
@@ -641,9 +645,25 @@ private fun controlPatch(key: String, title: String, summary: String, group: Str
                 for (chat in methods[MEDIA_CAPTION_CHAT].orEmpty().map { it.definingClass }.distinct())
                     if (mutableClassDefBy(chat).instanceFields.none { it.type in editorHosts })
                         throw PatchException("Messenger controls: the chat in $chat holds no compose fragment the editor's send was found in")
-                for ((host, helper) in helpers + editorHelpers) host.checkMediaCaptionHelper(helper.name)
+                // The msys composer's attachment chip opens the editor from its preview plugin, and the editor's result
+                // goes out through the camera plugin's batch send. Each plugin class gets the helper that hands the
+                // extension the composer's bus and typed text, and each batch send's class the one that sends the words.
+                val chipHelpers = methods[MEDIA_CAPTION_CHIP].orEmpty().groupBy { it.definingClass }.map { (host, handlers) ->
+                    val handler = handlers.singleOrNull()
+                        ?: throw PatchException("Messenger controls: two openings of the editor from the attachment chip in $host")
+                    val text = mutableClassDefBy(host).chipTextField { classDefByOrNull(it) }
+                        ?: throw PatchException("Messenger controls: the attachment chip's plugin in $host holds no composer text")
+                    mutableClassDefBy(host) to mediaCaptionChipHelper(host, handler.parameterTypes.map { it.toString() }, text)
+                }
+                val chipSendHelpers = methods[MEDIA_CAPTION_CHIP_SEND].orEmpty().groupBy { it.definingClass }.map { (host, sends) ->
+                    val site = sends.singleOrNull()?.mediaCaptionChipSendSite()
+                        ?: throw PatchException("Messenger controls: the batch send of the editor's result changed in $host")
+                    mutableClassDefBy(host) to mediaCaptionChipSendHelper(host, site)
+                }
+                val added = helpers + editorHelpers + chipHelpers + chipSendHelpers
+                for ((host, helper) in added) host.checkMediaCaptionHelper(helper.name)
                 injectControl(key, methods)
-                for ((host, helper) in helpers + editorHelpers) host.addMediaCaptionHelper(helper)
+                for ((host, helper) in added) host.addMediaCaptionHelper(helper)
             } else if (key == INBOX_SEARCH_BAR) {
                 val host = mutableClassDefBy(SETTINGS)
                 val stub = host.methods.singleOrNull { it.hookId() == SEARCH_ICON_STUB }
@@ -852,7 +872,8 @@ val messageActionsPatch = controlPatch("message_actions", "Customize message act
     MESSAGE_ACTIONS, MESSAGE_ACTIONS_MORE)
 @Suppress("unused")
 val mediaCaptionPatch = controlPatch("media_caption", "Put your words above the photo",
-    "Type something, attach a photo or video, and your words go out first, as their own message above it, instead of underneath. Mentions still work. With nothing typed, nothing changes.", "Photos and videos", MEDIA_CAPTION, MEDIA_CAPTION_EDITOR, MEDIA_CAPTION_CHAT, MEDIA_CAPTION_DIRECT, MEDIA_CAPTION_RESULT)
+    "Type something, attach a photo or video, and your words go out first, as their own message above it, instead of underneath. Mentions still work. With nothing typed, nothing changes.", "Photos and videos", MEDIA_CAPTION, MEDIA_CAPTION_EDITOR, MEDIA_CAPTION_CHAT, MEDIA_CAPTION_DIRECT, MEDIA_CAPTION_RESULT,
+    MEDIA_CAPTION_CHIP, MEDIA_CAPTION_CHIP_SEND)
 @Suppress("unused")
 val hideRecentMediaPatch = controlPatch("recent_media", "Hide the recent photo card",
     "Stops the card above the message box that offers to send the screenshot, photo or video you just took. You can still send it from the gallery.", "Photos and videos")

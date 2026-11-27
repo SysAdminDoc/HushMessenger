@@ -213,6 +213,8 @@ hook mark_read_click LX/DBg;->onClick(Landroid/view/View;)V
 hook mark_read_locally LX/80u;->A06(LX/4QM;LX/80u;Ljava/lang/String;)Lcom/facebook/fbservice/service/OperationResult;
 hook media_caption LX/7pp;->A0K(LX/7pp;)V
 hook media_caption_chat LX/7dm;->A1p(Lcom/facebook/messaging/model/threadkey/ThreadKey;LX/53l;Lcom/facebook/messaging/montage/composer/model/MontageComposerFragmentParams$Builder;Lcom/facebook/messaging/send/trigger/NavigationTrigger;)V
+hook media_caption_chip LX/B6i;->Diu(Lcom/facebook/xapp/messaging/capability/vector/Capabilities;LX/6Be;LX/4nJ;Lcom/facebook/xapp/messaging/composer/event/ComposerEvent;)V
+hook media_caption_chip_send LX/732;->invoke()Ljava/lang/Object;
 hook media_caption_direct LX/PaT;->EqH(Landroid/os/Bundle;Lcom/facebook/messaging/model/messages/Message;Lcom/facebook/messaging/send/trigger/NavigationTrigger;)V
 hook media_caption_editor LX/7pp;->A0U(Lcom/facebook/messaging/model/messages/Message;)V
 hook media_caption_result LX/7pp;->onActivityResult(IILandroid/content/Intent;)V

@@ -541,6 +541,133 @@ final class Media {
         return found;
     }
 
+    static final String COMPOSER_CAPABILITIES = "Lcom/facebook/xapp/messaging/capability/vector/Capabilities;";
+    static final String EDIT_ATTACHMENT_EVENT = "Lcom/facebook/xapp/messaging/composer/attachmentpreview/events/EditAttachmentEvent;";
+    static final String REMOVE_ATTACHMENT_EVENT = "Lcom/facebook/xapp/messaging/composer/attachmentpreview/events/RemoveAttachmentEvent;";
+    static final String SEND_TEXT_EVENT = "Lcom/facebook/xapp/messaging/composer/text/event/SendTextEvent;";
+    static final String SEND_TEXT_EVENT_INIT = SEND_TEXT_EVENT + "-><init>(Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;IJ)V";
+
+    static List<String> captionShape(MethodReference m) { return m.getParameterTypes().stream().map(Object::toString).toList(); }
+
+    static String captionId(MethodReference m) {
+        return m.getDefiningClass() + "->" + m.getName() + "(" + String.join("", captionShape(m)) + ")" + m.getReturnType();
+    }
+
+    static boolean captionStaticCall(Instruction i) { return i.getOpcode() == Opcode.INVOKE_STATIC || i.getOpcode() == Opcode.INVOKE_STATIC_RANGE; }
+
+    /** Whether the class is an interface declaring getText() returning a CharSequence. */
+    static boolean declaresTypedText(ClassDef cls) {
+        if (cls == null || !AccessFlags.INTERFACE.isSet(cls.getAccessFlags())) return false;
+        for (var m : cls.getMethods())
+            if ("getText".equals(m.getName()) && m.getParameterTypes().isEmpty() && "Ljava/lang/CharSequence;".equals(m.getReturnType())) return true;
+        return false;
+    }
+
+    /** Whether the class has exactly one instance field whose type declaresTypedText. */
+    static boolean holdsTypedText(ClassDef cls, Map<String, ClassDef> byType) {
+        int holders = 0;
+        for (var f : cls.getInstanceFields()) if (declaresTypedText(byType.get(f.getType()))) holders++;
+        return holders == 1;
+    }
+
+    /**
+     * The attachment preview plugin's handler: an instance void method taking (Capabilities, state, bus, ComposerEvent)
+     * that checks for an EditAttachmentEvent, with one distinct static call taking that event and the bus, and nothing
+     * branching onto its first instruction. Answers the bus's type, or null. Mirrors MediaCaption.kt's mediaCaptionChipSite.
+     */
+    static String captionChipBus(Method method) {
+        if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || !"V".equals(method.getReturnType()) || method.getImplementation() == null) return null;
+        var shape = method.getParameterTypes().stream().map(Object::toString).toList();
+        if (shape.size() != 4 || !COMPOSER_CAPABILITIES.equals(shape.get(0)) || !COMPOSER_EVENT.equals(shape.get(3))) return null;
+        String bus = shape.get(2);
+        var code = instructions(method);
+        boolean checks = false;
+        var opens = new HashSet<String>();
+        for (var i : code) {
+            if (i.getOpcode() == Opcode.INSTANCE_OF && EDIT_ATTACHMENT_EVENT.equals(ref(i))) checks = true;
+            var called = captionCall(i);
+            if (captionStaticCall(i) && called != null && captionShape(called).contains(EDIT_ATTACHMENT_EVENT) && captionShape(called).contains(bus))
+                opens.add(captionId(called));
+        }
+        if (!checks || opens.size() != 1 || mediaTargets(method).contains(0)) return null;
+        return bus;
+    }
+
+    /** media_caption_chip: the handler in each class holding the composer's typed text. Mirrors MediaCaption.kt. */
+    static List<Method> mediaCaptionChip(List<ClassDef> classes) {
+        var byType = new HashMap<String, ClassDef>();
+        for (var cls : classes) byType.put(cls.getType(), cls);
+        var found = new ArrayList<Method>();
+        for (var cls : classes) {
+            if (!holdsTypedText(cls, byType)) continue;
+            for (var m : cls.getMethods()) if (captionChipBus(m) != null) found.add(m);
+        }
+        return found;
+    }
+
+    /**
+     * The batch send of the editor's result: an instance invoke() returning Object that makes a RemoveAttachmentEvent,
+     * posts through one distinct static void (bus, ComposerEvent), hands the media to one distinct static void taking the
+     * bus, two lists and a map, reads exactly one field of its own class of the bus's type and one of type List, and has
+     * nothing branching onto its first instruction. Answers the bus's type, or null. Mirrors MediaCaption.kt's
+     * mediaCaptionChipSendSite.
+     */
+    static String captionChipSendBus(Method method) {
+        if (AccessFlags.STATIC.isSet(method.getAccessFlags()) || !"invoke".equals(method.getName()) || !method.getParameterTypes().isEmpty() ||
+            !"Ljava/lang/Object;".equals(method.getReturnType()) || method.getImplementation() == null) return null;
+        var code = instructions(method);
+        boolean removes = false;
+        var posts = new LinkedHashMap<String, MethodReference>();
+        for (var i : code) {
+            if (i.getOpcode() == Opcode.NEW_INSTANCE && REMOVE_ATTACHMENT_EVENT.equals(ref(i))) removes = true;
+            var called = captionCall(i);
+            if (captionStaticCall(i) && called != null && "V".equals(called.getReturnType()) && captionShape(called).size() == 2 &&
+                COMPOSER_EVENT.equals(captionShape(called).get(1))) posts.put(captionId(called), called);
+        }
+        if (!removes || posts.size() != 1) return null;
+        String bus = captionShape(posts.values().iterator().next()).get(0);
+        var sends = new HashSet<String>();
+        var busFields = new HashSet<String>();
+        var mediaFields = new HashSet<String>();
+        for (var i : code) {
+            var called = captionCall(i);
+            if (captionStaticCall(i) && called != null && "V".equals(called.getReturnType())) {
+                var shape = captionShape(called);
+                if (shape.contains(bus) && shape.contains("Ljava/util/Map;") && shape.stream().filter("Ljava/util/List;"::equals).count() >= 2)
+                    sends.add(captionId(called));
+            }
+            if (i.getOpcode() == Opcode.IGET_OBJECT && i instanceof ReferenceInstruction r && r.getReference() instanceof FieldReference f &&
+                f.getDefiningClass().equals(method.getDefiningClass())) {
+                String id = f.getDefiningClass() + "->" + f.getName() + ":" + f.getType();
+                if (f.getType().equals(bus)) busFields.add(id);
+                if (f.getType().equals("Ljava/util/List;")) mediaFields.add(id);
+            }
+        }
+        if (sends.size() != 1 || busFields.size() != 1 || mediaFields.size() != 1 || mediaTargets(method).contains(0)) return null;
+        return bus;
+    }
+
+    /**
+     * media_caption_chip_send: the batch send on the bus of a handler media_caption_chip found, in a build whose
+     * SendTextEvent has the constructor the helper calls. Mirrors MediaCaption.kt.
+     */
+    static List<Method> mediaCaptionChipSend(List<ClassDef> classes, List<Method> chips) {
+        var buses = new HashSet<String>();
+        for (var m : chips) { String bus = captionChipBus(m); if (bus != null) buses.add(bus); }
+        var found = new ArrayList<Method>();
+        if (buses.isEmpty()) return found;
+        boolean constructor = false;
+        for (var cls : classes) {
+            if (!cls.getType().equals(SEND_TEXT_EVENT)) continue;
+            for (var m : cls.getMethods()) if ((SEND_TEXT_EVENT + "->" + m.getName() + "(" + m.getParameterTypes().stream().map(Object::toString)
+                .collect(Collectors.joining()) + ")" + m.getReturnType()).equals(SEND_TEXT_EVENT_INIT)) constructor = true;
+        }
+        if (!constructor) return found;
+        for (var cls : classes) for (var m : cls.getMethods())
+            if ("invoke".equals(m.getName()) && buses.contains(captionChipSendBus(m))) found.add(m);
+        return found;
+    }
+
     static boolean mediaWrites(Instruction i, int r) {
         return i.getOpcode().setsRegister() && (register(i) == r || (i.getOpcode().name().contains("WIDE") && register(i) + 1 == r));
     }

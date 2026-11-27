@@ -588,6 +588,209 @@ internal fun MutableMethod.injectMediaCaptionResult() {
 }
 
 /**
+ * #236: the switch's hooks for the editor the chip opens, the way Messenger 588 runs it on the phone. The chip belongs to
+ * the msys composer's attachment preview plugin, which opens the editor on an EditAttachmentEvent. The editor's Send comes
+ * back to the composer's camera plugin as an activity result, and the batch send it builds (`LX/732;->invoke` on
+ * 347617503, `LX/76A;` on the 497 family) hands the photo to the media send without reading the box, so the words stayed
+ * behind. The plugin's handler gives the extension the composer's event bus and the holder of its typed text when the chip
+ * opens the editor. At the batch send's entry a helper asks the extension whether that composer's words go first, and if
+ * so posts the same SendTextEvent the composer's send button posts, on the same bus, so the composer's text plugin sends
+ * the words and clears the box before the photo is handed over.
+ */
+internal const val MEDIA_CAPTION_CHIP = "media_caption_chip"
+
+internal const val MEDIA_CAPTION_CHIP_SEND = "media_caption_chip_send"
+
+private const val COMPOSER_CAPABILITIES = "Lcom/facebook/xapp/messaging/capability/vector/Capabilities;"
+
+private const val EDIT_ATTACHMENT_EVENT = "Lcom/facebook/xapp/messaging/composer/attachmentpreview/events/EditAttachmentEvent;"
+
+private const val REMOVE_ATTACHMENT_EVENT = "Lcom/facebook/xapp/messaging/composer/attachmentpreview/events/RemoveAttachmentEvent;"
+
+internal const val SEND_TEXT_EVENT = "Lcom/facebook/xapp/messaging/composer/text/event/SendTextEvent;"
+
+/** SendTextEvent's Kotlin constructor: text, trigger, mentions, extras, the mask of the ones left to their defaults, time. */
+internal const val SEND_TEXT_EVENT_INIT = "$SEND_TEXT_EVENT-><init>(Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;IJ)V"
+
+/**
+ * The mask the composer's send button hands SendTextEvent: every argument but the time left to its default, so the text
+ * plugin reads the box itself and sends it from the text tab.
+ */
+internal const val SEND_BUTTON_DEFAULTS = 0x3e
+
+internal const val CHIP_OPENING_CALL = "$CAPTION_EXTENSION->chipOpening(Ljava/lang/Object;Ljava/lang/Object;)V"
+
+internal const val CHIP_SENDING_CALL = "$CAPTION_EXTENSION->chipSending(Ljava/lang/Object;Ljava/util/List;)Z"
+
+/** The static helper the plugin's handler calls at its entry with its own arguments. */
+internal const val MEDIA_CAPTION_CHIP_HELPER = "hushCaptionChip"
+
+/** The static helper the batch send calls at its entry with itself. */
+internal const val MEDIA_CAPTION_CHIP_SEND_HELPER = "hushCaptionChipSend"
+
+private const val CAPTION_LIST = "Ljava/util/List;"
+
+/** Whether the class is an interface that declares the composer's `getText()`, which the extension calls by that name. */
+internal fun ClassDef.declaresTypedText(): Boolean = AccessFlags.INTERFACE.isSet(accessFlags) &&
+    methods.any { it.name == "getText" && it.parameterTypes.isEmpty() && it.returnType == "Ljava/lang/CharSequence;" }
+
+/** The plugin's one instance field holding the composer's typed text, as `class->name:type`, or null. */
+internal fun ClassDef.chipTextField(classOf: (String) -> ClassDef?): String? =
+    instanceFields.filter { classOf(it.type)?.declaresTypedText() == true }.singleOrNull()?.captionId()
+
+private fun Instruction.isStaticCall() = opcode == Opcode.INVOKE_STATIC || opcode == Opcode.INVOKE_STATIC_RANGE
+
+/**
+ * The attachment preview plugin's event handler, as 588 writes it (`LX/B6i;->Diu` on 347617503): an instance method
+ * taking (Capabilities, the composer's state, the composer's bus, ComposerEvent) that checks for an EditAttachmentEvent and
+ * hands it with the bus to one static opening of the editor. The hook goes at its entry and passes the handler's own
+ * arguments on as a range, so it reads them before anything is written. Answers the bus's type.
+ */
+internal fun Method.mediaCaptionChipSite(): String? {
+    if (AccessFlags.STATIC.isSet(accessFlags) || returnType != "V" || implementation == null) return null
+    val shape = parameterTypes.map { it.toString() }
+    if (shape.size != 4 || shape[0] != COMPOSER_CAPABILITIES || shape[3] != COMPOSER_EVENT) return null
+    val bus = shape[2]
+    val code = code()
+    if (code.none { it.opcode == Opcode.INSTANCE_OF && (it as ReferenceInstruction).reference.toString() == EDIT_ATTACHMENT_EVENT }) return null
+    val opens = code.filter { it.isStaticCall() }.mapNotNull { it.method() }
+        .filter { EDIT_ATTACHMENT_EVENT in it.shape() && bus in it.shape() }.distinctBy { it.id() }
+    if (opens.size != 1) return null
+    // The helper's call goes in front of the first instruction, so nothing may branch onto it.
+    if (0 in jumpTargets()) return null
+    return bus
+}
+
+/** The handler in each plugin class that holds the composer's typed text. */
+internal fun findMediaCaptionChip(classes: Iterable<ClassDef>): List<Method> {
+    val byType = classes.associateBy { it.type }
+    return classes.filter { it.chipTextField { type -> byType[type] } != null }
+        .flatMap { host -> host.methods.filter { it.mediaCaptionChipSite() != null } }
+}
+
+/** The batch send: its own fields holding the composer's bus and the media, the bus's type, and the bus post it uses. */
+internal class MediaCaptionChipSendSite(val bus: String, val media: String, val busType: String, val post: String)
+
+/**
+ * The batch send of the editor's result, as 588 writes it (`LX/732;->invoke` on 347617503): a lambda's `invoke()` that
+ * reads its captured bus and media list, hands the media to one static media send taking the bus, two lists and a map,
+ * and then posts a RemoveAttachmentEvent for each photo through one static bus post (bus, ComposerEvent). The hook goes at
+ * its entry, ahead of the media send.
+ */
+internal fun Method.mediaCaptionChipSendSite(): MediaCaptionChipSendSite? {
+    if (AccessFlags.STATIC.isSet(accessFlags) || name != "invoke" || parameterTypes.isNotEmpty() ||
+        returnType != "Ljava/lang/Object;" || implementation == null) return null
+    val code = code()
+    if (code.none { it.opcode == Opcode.NEW_INSTANCE && (it as ReferenceInstruction).reference.toString() == REMOVE_ATTACHMENT_EVENT }) return null
+    val calls = code.filter { it.isStaticCall() }.mapNotNull { it.method() }.filter { it.returnType == "V" }
+    val post = calls.filter { it.shape().size == 2 && it.shape()[1] == COMPOSER_EVENT }.distinctBy { it.id() }.singleOrNull() ?: return null
+    val busType = post.shape()[0]
+    val sends = calls.filter { send -> busType in send.shape() && send.shape().count { it == CAPTION_LIST } >= 2 && "Ljava/util/Map;" in send.shape() }
+    if (sends.distinctBy { it.id() }.size != 1) return null
+    val own = code.filter { it.opcode == Opcode.IGET_OBJECT }.mapNotNull { (it as ReferenceInstruction).reference as? FieldReference }
+        .filter { it.definingClass == definingClass }.distinctBy { it.captionId() }
+    val bus = own.singleOrNull { it.type == busType } ?: return null
+    val media = own.singleOrNull { it.type == CAPTION_LIST } ?: return null
+    if (0 in jumpTargets()) return null
+    return MediaCaptionChipSendSite(bus.captionId(), media.captionId(), busType, post.id())
+}
+
+/**
+ * The batch send on the bus of a handler [findMediaCaptionChip] found, in a build whose SendTextEvent has the constructor
+ * the helper calls.
+ */
+internal fun findMediaCaptionChipSend(classes: Iterable<ClassDef>, chips: List<Method>): List<Method> {
+    val buses = chips.mapNotNull { it.mediaCaptionChipSite() }.toSet()
+    if (buses.isEmpty()) return emptyList()
+    if (classes.none { it.type == SEND_TEXT_EVENT && it.methods.any { m -> m.hookId() == SEND_TEXT_EVENT_INIT } }) return emptyList()
+    return classes.flatMap { cls -> cls.methods.filter { it.name == "invoke" && it.mediaCaptionChipSendSite()?.busType in buses } }
+}
+
+private fun Method.firstCall() = code().firstOrNull()?.takeIf { it.opcode == Opcode.INVOKE_STATIC_RANGE }?.method()
+
+internal fun Method.chipOpeningHooked(): Boolean = firstCall()?.let { it.definingClass == definingClass && it.name == MEDIA_CAPTION_CHIP_HELPER } == true
+
+internal fun Method.chipSendingHooked(): Boolean = firstCall()?.let { it.definingClass == definingClass && it.name == MEDIA_CAPTION_CHIP_SEND_HELPER } == true
+
+internal fun MutableMethod.validateMediaCaptionChip() {
+    if (!chipOpeningHooked() && mediaCaptionChipSite() == null) mediaCaptionChanged("no opening of the editor from the attachment chip in ${hookId()}")
+}
+
+/** At the entry, the handler's own arguments go to the chip helper. */
+internal fun MutableMethod.injectMediaCaptionChip() {
+    validateMediaCaptionChip()
+    if (chipOpeningHooked()) return
+    addInstructions(0, "invoke-static/range {p0 .. p4}, $definingClass->$MEDIA_CAPTION_CHIP_HELPER($definingClass${parameterTypes.joinToString("")})V")
+}
+
+internal fun MutableMethod.validateMediaCaptionChipSend() {
+    if (!chipSendingHooked() && mediaCaptionChipSendSite() == null) mediaCaptionChanged("no batch send of the editor's result in ${hookId()}")
+}
+
+/** At the entry, the batch send hands itself to the chip send helper. */
+internal fun MutableMethod.injectMediaCaptionChipSend() {
+    validateMediaCaptionChipSend()
+    if (chipSendingHooked()) return
+    addInstructions(0, "invoke-static/range {p0 .. p0}, $definingClass->$MEDIA_CAPTION_CHIP_SEND_HELPER($definingClass)V")
+}
+
+/**
+ * The static helper the plugin's handler calls with its own arguments. For an EditAttachmentEvent, the chip opening the
+ * editor, it hands the extension the composer's bus and the holder of its typed text. Every other event goes by.
+ */
+internal fun mediaCaptionChipHelper(host: String, shape: List<String>, text: String): MutableMethod {
+    val parameters = (listOf(host) + shape).map { ImmutableMethodParameter(it, null, null) }
+    // p0 is the plugin, p3 the composer's bus and p4 the event.
+    return MutableMethod(ImmutableMethod(host, MEDIA_CAPTION_CHIP_HELPER, parameters, "V",
+        AccessFlags.PUBLIC.value or AccessFlags.STATIC.value, null, null, ImmutableMethodImplementation(6, emptyList(), null, null)))
+        .apply {
+            addInstructionsWithLabels(0, """
+                instance-of v0, p4, $EDIT_ATTACHMENT_EVENT
+                if-eqz v0, :done
+                iget-object v0, p0, $text
+                invoke-static {p3, v0}, $CHIP_OPENING_CALL
+                :done
+                return-void
+            """.trimIndent())
+        }
+}
+
+/**
+ * The static helper the batch send calls with itself. When the extension says the words go first (the chip on this bus
+ * opened the editor, the switch is on, the media is a photo or video and something is typed), it posts what the
+ * composer's send button posts: a SendTextEvent with no text of its own, the button's defaults and System.nanoTime(),
+ * through the bus post the batch send uses. The text plugin then reads the box, sends the words and clears it.
+ */
+internal fun mediaCaptionChipSendHelper(host: String, site: MediaCaptionChipSendSite): MutableMethod {
+    val parameters = listOf(ImmutableMethodParameter(host, null, null))
+    // p0 is the batch send (v9). The event's constructor takes v1 to v8: the event, text, trigger, mentions, extras,
+    // the mask and the time.
+    return MutableMethod(ImmutableMethod(host, MEDIA_CAPTION_CHIP_SEND_HELPER, parameters, "V",
+        AccessFlags.PUBLIC.value or AccessFlags.STATIC.value, null, null, ImmutableMethodImplementation(10, emptyList(), null, null)))
+        .apply {
+            addInstructionsWithLabels(0, """
+                iget-object v0, p0, ${site.bus}
+                iget-object v1, p0, ${site.media}
+                invoke-static {v0, v1}, $CHIP_SENDING_CALL
+                move-result v1
+                if-eqz v1, :done
+                invoke-static {}, Ljava/lang/System;->nanoTime()J
+                move-result-wide v7
+                const/16 v6, 0x${SEND_BUTTON_DEFAULTS.toString(16)}
+                const/4 v2, 0x0
+                move-object v3, v2
+                move-object v4, v2
+                move-object v5, v2
+                new-instance v1, $SEND_TEXT_EVENT
+                invoke-direct/range {v1 .. v8}, $SEND_TEXT_EVENT_INIT
+                invoke-static {v0, v1}, ${site.post}
+                :done
+                return-void
+            """.trimIndent())
+        }
+}
+
+/**
  * The one send whose words go out after its media. A build whose send no longer reads like that gets no hook, and the
  * switch shows as unavailable instead of moving a message somewhere it doesn't belong.
  */

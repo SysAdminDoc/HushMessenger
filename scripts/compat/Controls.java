@@ -124,6 +124,8 @@ final class Controls {
         found.get("media_caption_chat").addAll(mediaCaptionChat(classes, found.get("media_caption_editor")));
         found.get("media_caption_direct").addAll(mediaCaptionDirect(classes));
         found.get("media_caption_result").addAll(mediaCaptionResult(classes, found.get("media_caption_editor")));
+        found.get("media_caption_chip").addAll(mediaCaptionChip(classes));
+        found.get("media_caption_chip_send").addAll(mediaCaptionChipSend(classes, found.get("media_caption_chip")));
         found.get("chat_preview").addAll(chatPreview(classes));
         found.get("chat_preview_size").addAll(chatPreviewSize(classes));
         found.get("chat_bar_plus_menu").addAll(chatBarPlusMenu(classes));

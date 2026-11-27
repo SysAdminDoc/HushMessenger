@@ -17,7 +17,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * editor's own send the words go out first through the compose fragment's editor helper, the one the composer's own
  * editor send calls. That helper checks the composer is still there, leaves stickers alone and reads the switch. The
  * editor a chat opens from the attachment chip hands its photo back to the compose fragment as a result instead, and
- * {@link #resultKind} tells the same helper what kind of media that result's message holds.
+ * {@link #resultKind} tells the same helper what kind of media that result's message holds. In the msys composer the
+ * phone runs, that result goes out through the composer's batch send, which never reads the box: {@link #chipOpening}
+ * keeps the composer whose chip opened the editor, and {@link #chipSending} tells the patch's helper in the batch send
+ * whether that composer's words go first.
  */
 public final class EditorCaption {
     static final String KEY = "media_caption";
@@ -35,8 +38,65 @@ public final class EditorCaption {
     static final String MEDIA_RESOURCE = "com.facebook.ui.media.attachments.model.MediaResource";
     /** Each message class's list fields, one of which holds its media. */
     private static final Map<Class<?>, List<Field>> listFields = new ConcurrentHashMap<>();
+    /** The composer whose attachment chip opened the editor last, until the editor's result goes out. */
+    private static volatile ChipOpener chip;
+    /** Each text holder class's getText(). */
+    private static final Map<Class<?>, Method> textGetters = new ConcurrentHashMap<>();
+
+    /** The bus of the composer whose chip opened the editor, and the holder of the words typed in it. */
+    private static final class ChipOpener {
+        final WeakReference<Object> bus;
+        final WeakReference<Object> text;
+
+        ChipOpener(Object bus, Object text) {
+            this.bus = new WeakReference<>(bus);
+            this.text = new WeakReference<>(text);
+        }
+    }
 
     private EditorCaption() {}
+
+    /**
+     * The attachment chip opening Messenger's editor (#236), with the composer's event bus and the holder of its typed
+     * text. Only the last one is kept, and only until the editor's result goes out. Reads nothing.
+     */
+    public static void chipOpening(Object bus, Object text) {
+        chip = bus != null && text != null ? new ChipOpener(bus, text) : null;
+    }
+
+    /**
+     * Right before the composer's batch send hands over the editor's result, with that send's bus and media. True when
+     * the words go first: the chip on this same bus opened the editor, the switch is on, the media is a photo or video and
+     * the box holds more than spaces. The patch's helper then posts the composer's own text send, which sends the words
+     * and clears the box. A send on another bus, a sticker, an empty box, off, Pause and safe mode answer false and the
+     * send goes on as Messenger wrote it. Never throws.
+     */
+    public static boolean chipSending(Object bus, List<?> media) {
+        try {
+            ChipOpener opened = chip;
+            if (bus == null || opened == null || opened.bus.get() != bus) return false;
+            chip = null;
+            if (!Settings.enabled(KEY) || kind(media) == null) return false;
+            Object holder = opened.text.get();
+            CharSequence typed = holder != null ? typed(holder) : null;
+            return typed != null && !typed.toString().trim().isEmpty();
+        } catch (Throwable error) {
+            Settings.hookFailedPrivately(KEY, "Can't send the words before the chip's photo", error);
+            return false;
+        }
+    }
+
+    /** What the composer's text holder holds now, through its getText(). */
+    private static CharSequence typed(Object holder) throws ReflectiveOperationException {
+        Method getter = textGetters.get(holder.getClass());
+        if (getter == null) {
+            getter = holder.getClass().getMethod("getText");
+            if (!CharSequence.class.isAssignableFrom(getter.getReturnType())) throw new IllegalStateException("no typed text");
+            getter.setAccessible(true);
+            textGetters.put(holder.getClass(), getter);
+        }
+        return (CharSequence) getter.invoke(holder);
+    }
 
     /** The chat fragment opening Messenger's editor. Only the last one is kept, and only until the editor sends. */
     public static void editorOpening(Object chat) {

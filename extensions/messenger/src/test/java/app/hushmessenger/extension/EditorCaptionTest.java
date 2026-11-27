@@ -30,6 +30,7 @@ public class EditorCaptionTest {
         CrashGuard.resetForTests();
         CrashGuard.onProcessStart(context);
         EditorCaption.editorOpening(null);
+        EditorCaption.chipOpening(null, null);
     }
 
     /** Like androidx's Fragment: isAdded() is public on the base class the chat fragment extends. */
@@ -286,6 +287,132 @@ public class EditorCaptionTest {
             assertEquals(state, "image", EditorCaption.resultKind(result(MediaResource.Type.SELFIE_STICKER)));
             assertEquals(state, 0, Settings.hookErrorAt(KEY));
         }
+    }
+
+    /** The composer's text holder, like Messenger's (588's X.5Dx for LX/6BR;): getText() reads the box as it is now. */
+    public static final class TextHolder {
+        CharSequence text;
+
+        TextHolder(CharSequence text) {
+            this.text = text;
+        }
+
+        public CharSequence getText() {
+            return text;
+        }
+    }
+
+    /** A text holder whose box is gone. */
+    public static final class BrokenHolder {
+        public CharSequence getText() {
+            throw new IllegalStateException("the composer's view is gone");
+        }
+    }
+
+    /** The batch send's media, as Messenger hands it over: a list of MediaResource. */
+    private static List<MediaResource> resources(MediaResource.Type... kinds) {
+        List<MediaResource> list = new ArrayList<>();
+        for (MediaResource.Type kind : kinds) list.add(new MediaResource(kind));
+        return list;
+    }
+
+    // #236 on the phone: the chip's editor result goes out through the msys composer's batch send, which never reads the
+    // box. The chip's opening keeps the composer's bus and text holder, and the batch send asks whether the words go first.
+    @Test public void aPhotoOrVideoFromTheChipsEditorSendsTheWordsFirst() {
+        on();
+        Object bus = new Object();
+        for (MediaResource.Type kind : new MediaResource.Type[] {MediaResource.Type.PHOTO, MediaResource.Type.ENT_PHOTO,
+                MediaResource.Type.ANIMATED_PHOTO, MediaResource.Type.VIDEO, MediaResource.Type.ENT_VIDEO}) {
+            EditorCaption.chipOpening(bus, new TextHolder("hello there"));
+            assertTrue(kind.name(), EditorCaption.chipSending(bus, resources(kind)));
+        }
+        // The first photo decides, and words with spaces around them still go.
+        EditorCaption.chipOpening(bus, new TextHolder("  hi  "));
+        assertTrue(EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO, MediaResource.Type.SELFIE_STICKER)));
+        assertEquals(0, Settings.hookErrorAt(KEY));
+    }
+
+    @Test public void theBoxIsReadWhenTheEditorsResultGoesOutNotWhenTheChipOpensIt() {
+        on();
+        Object bus = new Object();
+        TextHolder box = new TextHolder("");
+        EditorCaption.chipOpening(bus, box);
+        box.text = "typed later";
+        assertTrue(EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO)));
+        TextHolder emptied = new TextHolder("typed first");
+        EditorCaption.chipOpening(bus, emptied);
+        emptied.text = "";
+        assertFalse(EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO)));
+    }
+
+    @Test public void anEmptyBoxAStickerOrAnotherKindLeavesTheSendAlone() {
+        on();
+        Object bus = new Object();
+        for (CharSequence typed : new CharSequence[] {null, "", "   ", "\n\t"}) {
+            EditorCaption.chipOpening(bus, new TextHolder(typed));
+            assertFalse(String.valueOf(typed), EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO)));
+        }
+        for (MediaResource.Type kind : new MediaResource.Type[] {MediaResource.Type.SELFIE_STICKER, MediaResource.Type.AUDIO,
+                MediaResource.Type.FILE, MediaResource.Type.OTHER, null}) {
+            EditorCaption.chipOpening(bus, new TextHolder("hello"));
+            assertFalse(String.valueOf(kind), EditorCaption.chipSending(bus, resources(kind)));
+        }
+        for (List<?> media : Arrays.<List<?>>asList(null, Collections.emptyList(), Collections.singletonList(null))) {
+            EditorCaption.chipOpening(bus, new TextHolder("hello"));
+            assertFalse(EditorCaption.chipSending(bus, media));
+        }
+        assertEquals(0, Settings.hookErrorAt(KEY));
+    }
+
+    @Test public void offPauseAndSafeModeLeaveTheChipsSendToMessenger() {
+        for (String state : new String[] {"off", "paused", "safe"}) {
+            Settings.preferences.edit().clear().putBoolean(KEY, !state.equals("off"))
+                .putBoolean("paused", state.equals("paused")).putBoolean("safe_mode", state.equals("safe")).commit();
+            CrashGuard.resetForTests();
+            CrashGuard.onProcessStart(RuntimeEnvironment.getApplication());
+            Object bus = new Object();
+            EditorCaption.chipOpening(bus, new TextHolder("hello"));
+            assertFalse(state, EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO)));
+            assertEquals(state, 0, Settings.hookErrorAt(KEY));
+        }
+    }
+
+    @Test public void onlyTheComposerWhoseChipOpenedTheEditorAndOnlyOnce() {
+        on();
+        Object bus = new Object(), other = new Object();
+        // A batch send nobody's chip asked for: the camera, or another chat's composer.
+        assertFalse(EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO)));
+        EditorCaption.chipOpening(bus, new TextHolder("hello"));
+        assertFalse(EditorCaption.chipSending(other, resources(MediaResource.Type.PHOTO)));
+        assertFalse(EditorCaption.chipSending(null, resources(MediaResource.Type.PHOTO)));
+        // The chip's own composer is still waiting, and its words go once.
+        assertTrue(EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO)));
+        assertFalse(EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO)));
+        // The last chip to open the editor counts, and an opening without a bus or a box keeps nothing.
+        EditorCaption.chipOpening(other, new TextHolder("first"));
+        EditorCaption.chipOpening(bus, new TextHolder("second"));
+        assertFalse(EditorCaption.chipSending(other, resources(MediaResource.Type.PHOTO)));
+        EditorCaption.chipOpening(bus, null);
+        assertFalse(EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO)));
+        EditorCaption.chipOpening(null, new TextHolder("hello"));
+        assertFalse(EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO)));
+        assertEquals(0, Settings.hookErrorAt(KEY));
+    }
+
+    @Test public void aBoxThatCantBeReadIsRecordedAndTheSendGoesOn() {
+        on();
+        Object bus = new Object();
+        EditorCaption.chipOpening(bus, new BrokenHolder());
+        assertFalse(EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO)));
+        assertTrue(Settings.hookErrorAt(KEY) > 0);
+        Settings.hookErrors.clear();
+        EditorCaption.chipOpening(bus, "no getText here");
+        assertFalse(EditorCaption.chipSending(bus, resources(MediaResource.Type.PHOTO)));
+        assertTrue(Settings.hookErrorAt(KEY) > 0);
+        Settings.hookErrors.clear();
+        EditorCaption.chipOpening(bus, new TextHolder("hello"));
+        assertFalse(EditorCaption.chipSending(bus, Collections.singletonList(new Shapeless())));
+        assertTrue(Settings.hookErrorAt(KEY) > 0);
     }
 
     @Test public void theSwitchShipsWithTheExtension() {
