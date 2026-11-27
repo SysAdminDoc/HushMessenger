@@ -6093,7 +6093,7 @@
         },
         {
             "name": "Show pinned messages",
-            "description": "Shows a chat's pinned messages in a bar under its name. Messenger has that bar already, but only turns it on in some chats. Starts off. Turn it on in HushMessenger settings > Controls.",
+            "description": "Shows a bar under the chat's name with its newest pinned message, in end-to-end encrypted chats. Tap it to jump to the message. Starts off. Turn it on in HushMessenger settings > Controls.",
             "default": true,
             "category": "Conversations",
             "dependencies": [

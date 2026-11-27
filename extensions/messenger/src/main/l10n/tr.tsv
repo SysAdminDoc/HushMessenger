@@ -810,6 +810,9 @@ chat_jump_loading	Eski mesajlar yükleniyor (şu ana kadar %1$d)
 chat_jump_loading_plain	Eski mesajlar yükleniyor
 chat_jump_seeking	O gün aranıyor
 chat_jump_cancel	İptal
+pinned_bar_one	Sabitlenmiş mesaj
+pinned_bar_many	%1$d sabitlenmiş mesaj
+pinned_bar_attachment	Bir ek
 chat_jump_start	Sohbetin başı burası
 chat_jump_found	O günün ilk mesajı burada
 chat_jump_next	O gün mesaj yok, işte sonraki mesaj
@@ -960,7 +963,7 @@ local_chat_search.description	Bir sohbetin arama sonuçlarına, bu telefonda kay
 chat_jump.title	İlk mesaja veya bir tarihe git
 chat_jump.description	Sohbetin ilk mesajına veya seçtiğin bir güne gitmek için üstteki sohbet adına uzun bas. Sohbetin sol alt köşesindeki ok ilk mesaja götürür, oka uzun basarsan bir gün sorar. Messenger bir sohbeti sayfa sayfa yüklediği için oraya varana kadar ekranda bir sayaçla geriye kaydırır ve İptal bunu durdurur. Ancak Messenger'ın yükleyebildiği kadar geriye gidebilir.
 pinned_bar.title	Sabitlenmiş mesajları göster
-pinned_bar.description	Bir sohbetin sabitlenmiş mesajlarını adının altındaki bir çubukta gösterir. Messenger'da bu çubuk zaten var ama yalnızca bazı sohbetlerde açıyor.
+pinned_bar.description	Uçtan uca şifreli sohbetlerde, sohbetin adının altında en yeni sabitlenmiş mesajını gösteren bir çubuk gösterir. Mesaja gitmek için çubuğa dokunun.
 landscape.title	Yatay moda izin ver
 landscape.description	Daha geniş bir klavye ve daha büyük fotoğraf ve videolar için Messenger'ın telefonunla birlikte yan dönmesini sağlar. Telefonunun otomatik döndürme ayarına uyar. Aramalar, kamera, ödemeler ve birkaç ekran daha dik kalır. Değiştirdikten sonra Messenger'ı yeniden başlat.
 chat_bar_plus.title	Sohbet çubuğu düğmeleri + menüsünde

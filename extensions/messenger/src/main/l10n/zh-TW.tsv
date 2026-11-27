@@ -810,6 +810,9 @@ chat_jump_loading	正在載入較早的訊息（目前 %1$d 則）
 chat_jump_loading_plain	正在載入較早的訊息
 chat_jump_seeking	正在找那一天
 chat_jump_cancel	取消
+pinned_bar_one	置頂訊息
+pinned_bar_many	%1$d 則置頂訊息
+pinned_bar_attachment	附件
 chat_jump_start	這是聊天室的開頭
 chat_jump_found	這是那一天的第一則訊息
 chat_jump_next	那一天沒有訊息，這是下一則
@@ -960,7 +963,7 @@ local_chat_search.description	在聊天室的搜尋結果中加入一個按鈕�
 chat_jump.title	跳到第一則訊息或指定日期
 chat_jump.description	長按聊天室頂端的名稱，即可跳到第一則訊息或你選的日期。聊天室左下角的箭頭可直接跳到第一則訊息，長按箭頭則可選擇日期。Messenger 一次只載入一頁聊天內容，所以會一路往回捲動並在畫面上顯示數量，直到抵達為止，按「取消」即可停止。最多只能回到 Messenger 能載入的範圍。
 pinned_bar.title	顯示置頂訊息
-pinned_bar.description	在聊天名稱下方的橫列中顯示該聊天置頂的訊息。Messenger 本來就有這個橫列，但只在部分聊天中開啟。
+pinned_bar.description	在端對端加密的聊天中，於聊天名稱下方顯示一個橫列，列出最新的置頂訊息。點一下即可跳到該訊息。
 landscape.title	允許橫向顯示
 landscape.description	讓 Messenger 隨手機轉成橫向，鍵盤更寬，照片和影片也更大。會依照手機的自動旋轉設定。通話、相機、付款和其他少數畫面仍保持直向。變更後請重新啟動 Messenger。
 chat_bar_plus.title	將聊天列按鈕移到 + 選單

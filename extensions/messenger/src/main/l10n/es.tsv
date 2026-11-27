@@ -810,6 +810,9 @@ chat_jump_loading	Cargando mensajes anteriores (%1$d hasta ahora)
 chat_jump_loading_plain	Cargando mensajes anteriores
 chat_jump_seeking	Buscando ese día
 chat_jump_cancel	Cancelar
+pinned_bar_one	Mensaje fijado
+pinned_bar_many	%1$d mensajes fijados
+pinned_bar_attachment	Un archivo adjunto
 chat_jump_start	Este es el comienzo del chat
 chat_jump_found	Este es el primer mensaje de ese día
 chat_jump_next	No hay nada ese día, así que este es el siguiente mensaje
@@ -960,7 +963,7 @@ local_chat_search.description	Añade un botón a los resultados de búsqueda de 
 chat_jump.title	Saltar al primer mensaje o a una fecha
 chat_jump.description	Mantén presionado el nombre de un chat en la parte superior para saltar a su primer mensaje o a un día que elijas. La flecha en la parte inferior izquierda del chat lleva a su primer mensaje, y si la mantienes presionada te pide un día. Tocar una de las fechas entre los mensajes abre el mismo selector en ese día. Messenger carga un chat página por página, así que va hacia atrás con un contador en pantalla hasta llegar, y Cancelar lo detiene. Solo puede llegar hasta donde Messenger pueda cargar.
 pinned_bar.title	Mostrar mensajes fijados
-pinned_bar.description	Muestra los mensajes fijados de un chat en una barra debajo de su nombre. Messenger ya tiene esa barra, pero solo la activa en algunos chats.
+pinned_bar.description	Muestra una barra debajo del nombre del chat con su mensaje fijado más reciente, en los chats con cifrado de extremo a extremo. Tócala para ir al mensaje.
 landscape.title	Permitir modo horizontal
 landscape.description	Permite que Messenger gire con tu teléfono, para tener un teclado más ancho y fotos y videos más grandes. Sigue el ajuste de rotación automática de tu teléfono. Las llamadas, la cámara, los pagos y algunas otras pantallas se quedan en vertical. Reinicia Messenger después de cambiarlo.
 chat_bar_plus.title	Botones de la barra del chat en el menú +

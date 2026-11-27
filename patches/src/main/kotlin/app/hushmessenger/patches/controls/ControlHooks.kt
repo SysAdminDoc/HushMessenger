@@ -140,8 +140,6 @@ private fun sharedChecks(): List<WalkCheck> = listOf(
     profileMenuBuilders, profileCallRows, recoveryCodeRows, noteLimitMethods, contactMenuRows, contactDeleteCallbacks,
     searchResultSources, searchSectionTypes, aiChatLaunchers,
     storyTrayBuilders,
-    pinnedBarLoaders,
-    bannerPrioritizers,
     messageSoundPickers,
     rawSoundPlayers,
 )
@@ -256,10 +254,7 @@ private fun findControlsIn(classes: Iterable<ClassDef>, community: CommunityInbo
     found.getValue(SEARCH_ITEMS).addAll(findSearchItems(classes))
     found.getValue(AI_CHAT_OPEN).addAll(findAiChatOpen(classes))
     found.getValue(STORY_CREATE_TILE).addAll(findStoryCreateTile(classes))
-    pinnedBarLoader = resolvePinnedBarLoader(classes)
-    found.getValue(PINNED_BAR).addAll(findPinnedBar(classes, pinnedBarLoader))
-    pinnedBarModel = resolvePinnedBarModel(classes, pinnedBarLoader)
-    found.getValue(PINNED_BAR_FIRST).addAll(findPinnedBarFirst(classes, pinnedBarModel))
+    pinnedBarRecipe = resolvePinnedBar(classes, found.getValue(PINNED_BAR).singleOrNull())
     found.getValue(OPEN_CHAT_SOUND).addAll(findOpenChatSound(classes))
     found.getValue(OWN_CHAT_SOUNDS).addAll(findOwnChatSounds(classes))
     found.getValue(NEARBY_SCANS).addAll(patchStage("Find nearby scans") { findNearbyScans(classes) })
@@ -669,14 +664,15 @@ private class ControlScan(
             if (original == CHAT_FRAGMENT_NAME) add("chat_fragment")
             if (original == "M4TabNavigationFragment") add("chat_inbox")
         }
-        // Five controls open at the chat's own view handover: the jump menu, the screenshot block, the dimmer, the
-        // translucent bars and the chat bar's + menu.
+        // Six controls open at the chat's own view handover: the jump menu, the screenshot block, the dimmer, the
+        // translucent bars, the chat bar's + menu and the pinned message bar.
         if (original == CHAT_FRAGMENT_NAME && method.isChatJumpView()) {
             add(CHAT_JUMP)
             add(SECURE_CHAT)
             add(INVISIBLE_BUTTONS)
             add(IOS_BARS)
             add(CHAT_BAR_PLUS)
+            add(PINNED_BAR)
         }
         // Chats on Messenger's older route open in this fragment, which loads its own animation.
         if (original == "ThreadViewFragment" && method.name == "onCreateAnimation" &&

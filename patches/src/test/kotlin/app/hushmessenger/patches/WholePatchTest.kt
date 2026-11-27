@@ -17,6 +17,7 @@ import app.hushmessenger.patches.controls.MESSAGE_LOG_BUTTON_BUILD
 import app.hushmessenger.patches.controls.MESSAGE_LOG_BUTTON_ID_OF
 import app.hushmessenger.patches.controls.NATIVE_BUBBLE_ROUTES
 import app.hushmessenger.patches.controls.ORIGINAL_BUILD
+import app.hushmessenger.patches.controls.PINNED_BAR_STUBS
 import app.hushmessenger.patches.controls.PINNED_CHAT_ROUTE
 import app.hushmessenger.patches.controls.REMOVE_CONTACT_START
 import app.hushmessenger.patches.controls.SAVE_VOICE_MENU_ADD_ROW
@@ -79,7 +80,7 @@ class WholePatchTest {
         SAVE_VOICE_MENU_SHEET_SESSION, SAVE_VOICE_MENU_VOICE_URI,
         AUTO_REPLY_PICTURES, AUTO_REPLY_PICTURE_MESSAGES, AUTO_REPLY_SEND_MESSAGE, LEGACY_SECTION, SEARCH_ICON_STUB,
         REMOVE_CONTACT_START,
-    )
+    ) + PINNED_BAR_STUBS
 
     @Test fun theDefaultPatchesLeaveTheExtensionAsBuilt(@TempDir temporary: Path) =
         assertExtensionAsBuilt(temporary, patches().filterTo(mutableSetOf()) { it.default }, intendedWrites)

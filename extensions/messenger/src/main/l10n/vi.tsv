@@ -810,6 +810,9 @@ chat_jump_loading	Đang tải tin nhắn cũ hơn (đã có %1$d)
 chat_jump_loading_plain	Đang tải tin nhắn cũ hơn
 chat_jump_seeking	Đang tìm ngày đó
 chat_jump_cancel	Hủy
+pinned_bar_one	Tin nhắn đã ghim
+pinned_bar_many	%1$d tin nhắn đã ghim
+pinned_bar_attachment	Một tệp đính kèm
 chat_jump_start	Đây là đầu đoạn chat
 chat_jump_found	Đây là tin nhắn đầu tiên của ngày đó
 chat_jump_next	Ngày đó không có tin nhắn, đây là tin nhắn tiếp theo
@@ -960,7 +963,7 @@ local_chat_search.description	Thêm một nút vào kết quả tìm kiếm tron
 chat_jump.title	Chuyển đến tin nhắn đầu tiên hoặc một ngày
 chat_jump.description	Nhấn giữ tên đoạn chat ở trên cùng để chuyển đến tin nhắn đầu tiên hoặc một ngày bạn chọn. Mũi tên ở góc dưới bên trái đoạn chat đưa bạn đến tin nhắn đầu tiên, nhấn giữ mũi tên để chọn một ngày. Messenger chỉ tải đoạn chat từng trang, nên nó cuộn ngược lại và hiện số lượng trên màn hình cho đến khi tới nơi, bấm Hủy để dừng. Nó chỉ lùi được tới mức Messenger tải được.
 pinned_bar.title	Hiện tin nhắn đã ghim
-pinned_bar.description	Hiện các tin nhắn đã ghim của đoạn chat trong một thanh dưới tên đoạn chat. Messenger đã có thanh này nhưng chỉ bật ở một số đoạn chat.
+pinned_bar.description	Hiện một thanh dưới tên đoạn chat với tin nhắn đã ghim mới nhất, trong các đoạn chat được mã hóa đầu cuối. Nhấn vào thanh để chuyển đến tin nhắn đó.
 landscape.title	Cho phép xoay ngang
 landscape.description	Cho phép Messenger xoay ngang theo điện thoại, để bàn phím rộng hơn và ảnh, video lớn hơn. Nó làm theo cài đặt tự động xoay của điện thoại. Cuộc gọi, máy ảnh, thanh toán và một vài màn hình khác vẫn giữ dọc. Hãy khởi động lại Messenger sau khi thay đổi.
 chat_bar_plus.title	Đưa nút trên thanh chat vào menu +

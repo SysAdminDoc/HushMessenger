@@ -113,8 +113,6 @@ final class Controls {
         found.get("search_items").addAll(searchItems(classes));
         found.get("ai_chat_open").addAll(aiChatOpen(classes));
         found.get("story_create_tile").addAll(storyCreateTile(classes));
-        found.get("pinned_bar").addAll(pinnedBar(classes));
-        found.get("pinned_bar_first").addAll(pinnedBarFirst(classes));
         found.get("open_chat_sound").addAll(openChatSound(classes));
         found.get("own_chat_sounds").addAll(ownChatSounds(classes));
         found.get("story_hold").addAll(storyHold(classes));
@@ -634,9 +632,9 @@ final class Controls {
                     if ("M4TabNavigationFragment".equals(original)) found.get("chat_inbox").add(method);
                 }
 
-                // chat_jump, secure_chat, invisible_buttons, ios_bars and chat_bar_plus: the chat fragment's own
-                // onViewCreated, where the chat first has a view. Mirrors ChatJump.kt, SecureChat.kt,
-                // InvisibleButtons.kt, IosBars.kt and ChatBarPlus.kt, which all inject there.
+                // chat_jump, secure_chat, invisible_buttons, ios_bars, chat_bar_plus and pinned_bar: the chat
+                // fragment's own onViewCreated, where the chat first has a view. Mirrors ChatJump.kt, SecureChat.kt,
+                // InvisibleButtons.kt, IosBars.kt, ChatBarPlus.kt and PinnedBar.kt, which all inject there.
                 if ("MsysThreadViewFragment".equals(original) && !isStatic && "onViewCreated".equals(method.getName()) &&
                     "V".equals(method.getReturnType()) && paramTypes.equals(List.of("Landroid/view/View;", "Landroid/os/Bundle;")) &&
                     method.getImplementation() != null) {
@@ -645,6 +643,7 @@ final class Controls {
                     found.get("invisible_buttons").add(method);
                     found.get("ios_bars").add(method);
                     found.get("chat_bar_plus").add(method);
+                    found.get("pinned_bar").add(method);
                 }
 
                 // chat_legacy: the chat fragment on Messenger's older route, which loads its own animation

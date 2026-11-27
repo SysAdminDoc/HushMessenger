@@ -232,7 +232,8 @@ public final class IosBars {
             View above = null, below = null;
             for (int i = 0; i < group.getChildCount(); i++) {
                 View child = group.getChildAt(i);
-                if (child == node || !child.isShown()) continue;
+                // The pinned message bar sits right under the chat's name, so it would read as the top bar.
+                if (child == node || !child.isShown() || PinnedBar.isBar(child)) continue;
                 Rect at = bounds(child);
                 if (at.height() <= 0 || at.height() > mine.height() || at.width() < mine.width() * WIDE) continue;
                 if (at.bottom <= mine.top + SLACK && (above == null || at.bottom > bounds(above).bottom)) above = child;

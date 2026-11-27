@@ -913,6 +913,9 @@ final class SettingsText {
         ENGLISH.put("chat_jump_loading_plain", "Loading older messages");
         ENGLISH.put("chat_jump_seeking", "Finding that day");
         ENGLISH.put("chat_jump_cancel", "Cancel");
+        ENGLISH.put("pinned_bar_one", "Pinned message");
+        ENGLISH.put("pinned_bar_many", "%1$d pinned messages");
+        ENGLISH.put("pinned_bar_attachment", "An attachment");
         ENGLISH.put("chat_jump_start", "This is the start of the chat");
         ENGLISH.put("chat_jump_found", "Here's the first message from that day");
         ENGLISH.put("chat_jump_next", "Nothing that day, so here's the next message");
